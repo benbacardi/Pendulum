@@ -7,6 +7,8 @@
 
 import Foundation
 import GRDB
+import SwiftUI
+import UIKit
 
 struct PenPal: Identifiable, Hashable {
     let id: String
@@ -37,6 +39,24 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
             parts.append(familyName)
         }
         return parts.joined(separator: " ")
+    }
+    
+    var initials: String {
+        var initials: String = ""
+        if let givenName = self.givenName {
+            initials = "\(initials)\(givenName.prefix(1))"
+        }
+        if let familyName = self.familyName {
+            initials = "\(initials)\(familyName.prefix(1))"
+        }
+        return initials.uppercased()
+    }
+    
+    var displayImage: Image? {
+        if let imageData = self.image, let image = UIImage(data: imageData) {
+            return Image(uiImage: image).resizable()
+        }
+        return nil
     }
     
     func fetchLatestEvent() async -> Event? {

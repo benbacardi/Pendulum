@@ -23,8 +23,27 @@ struct PenPalListSection: View {
                     .fullWidth()
             }
             ForEach(penpals) { penpal in
-                Text(penpal.fullName)
-                    .fullWidth()
+                GroupBox {
+                    HStack {
+                        if let image = penpal.displayImage {
+                            image
+                                .clipShape(Circle())
+                                .frame(width: 40, height: 40)
+                        } else {
+                            ZStack {
+                                Circle()
+                                    .fill(.gray)
+                                Text(penpal.initials)
+                                    .font(.system(.headline, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            .frame(width: 40, height: 40)
+                        }
+                        Text(penpal.fullName)
+                            .font(.headline)
+                            .fullWidth()
+                    }
+                }
             }
         }
         .padding()
