@@ -1,0 +1,508 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
+		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
+		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
+		5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40551C29151B9A00BD52BF /* Loggers.swift */; };
+		5E40552129151C8200BD52BF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 5E40552029151C8200BD52BF /* GRDB */; };
+		5E40552329151CA600BD52BF /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552229151CA600BD52BF /* AppDatabase.swift */; };
+		5E40552629151E2200BD52BF /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552529151E2200BD52BF /* AppInfo.swift */; };
+		5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552729151FEC00BD52BF /* PenPalList.swift */; };
+		5E40552A2915202B00BD52BF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055292915202B00BD52BF /* ContentView.swift */; };
+		5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */; };
+		5E40552E291523A300BD52BF /* PenPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552D291523A300BD52BF /* PenPal.swift */; };
+		5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552F291525AA00BD52BF /* UserDefaults.swift */; };
+		5E4055322915280C00BD52BF /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055312915280C00BD52BF /* UIApplication.swift */; };
+		5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553329152C6100BD52BF /* AddPenPalSheet.swift */; };
+		5E40553629152DA000BD52BF /* CNContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553529152DA000BD52BF /* CNContact.swift */; };
+		5E40553829155C5F00BD52BF /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553729155C5F00BD52BF /* Event.swift */; };
+		5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553A29155F9F00BD52BF /* PenPalListController.swift */; };
+		5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
+		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		5E40550E2914205F00BD52BF /* Pendulum.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Pendulum.entitlements; sourceTree = "<group>"; };
+		5E4055102914205F00BD52BF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		5E40551C29151B9A00BD52BF /* Loggers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loggers.swift; sourceTree = "<group>"; };
+		5E40551E29151C0200BD52BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		5E40552229151CA600BD52BF /* AppDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
+		5E40552529151E2200BD52BF /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
+		5E40552729151FEC00BD52BF /* PenPalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalList.swift; sourceTree = "<group>"; };
+		5E4055292915202B00BD52BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDatabase+Queries.swift"; sourceTree = "<group>"; };
+		5E40552D291523A300BD52BF /* PenPal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPal.swift; sourceTree = "<group>"; };
+		5E40552F291525AA00BD52BF /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
+		5E4055312915280C00BD52BF /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
+		5E40553329152C6100BD52BF /* AddPenPalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPenPalSheet.swift; sourceTree = "<group>"; };
+		5E40553529152DA000BD52BF /* CNContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNContact.swift; sourceTree = "<group>"; };
+		5E40553729155C5F00BD52BF /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
+		5E40553A29155F9F00BD52BF /* PenPalListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListController.swift; sourceTree = "<group>"; };
+		5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsAccessRequiredView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		5E4055022914205D00BD52BF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E40552129151C8200BD52BF /* GRDB in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		5E4054FC2914205D00BD52BF = {
+			isa = PBXGroup;
+			children = (
+				5E4055072914205D00BD52BF /* Pendulum */,
+				5E4055062914205D00BD52BF /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		5E4055062914205D00BD52BF /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				5E4055052914205D00BD52BF /* Pendulum.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		5E4055072914205D00BD52BF /* Pendulum */ = {
+			isa = PBXGroup;
+			children = (
+				5E40551E29151C0200BD52BF /* Info.plist */,
+				5E40552429151E1600BD52BF /* App Info */,
+				5E40551B29151B8E00BD52BF /* Debug */,
+				5E40551929151B6C00BD52BF /* Helpers */,
+				5E40551829151B6500BD52BF /* Extensions */,
+				5E40551729151B5F00BD52BF /* Views */,
+				5E40553929155F7A00BD52BF /* Controllers */,
+				5E40551A29151B7000BD52BF /* Model */,
+				5E4055082914205D00BD52BF /* PendulumApp.swift */,
+				5E40550C2914205F00BD52BF /* Assets.xcassets */,
+				5E40550E2914205F00BD52BF /* Pendulum.entitlements */,
+				5E40550F2914205F00BD52BF /* Preview Content */,
+			);
+			path = Pendulum;
+			sourceTree = "<group>";
+		};
+		5E40550F2914205F00BD52BF /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				5E4055102914205F00BD52BF /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		5E40551729151B5F00BD52BF /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5E4055292915202B00BD52BF /* ContentView.swift */,
+				5E40552729151FEC00BD52BF /* PenPalList.swift */,
+				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
+				5E40553C29165ED500BD52BF /* Subviews */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5E40551829151B6500BD52BF /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5E40552F291525AA00BD52BF /* UserDefaults.swift */,
+				5E4055312915280C00BD52BF /* UIApplication.swift */,
+				5E40553529152DA000BD52BF /* CNContact.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5E40551929151B6C00BD52BF /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
+		5E40551A29151B7000BD52BF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				5E40552229151CA600BD52BF /* AppDatabase.swift */,
+				5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */,
+				5E40552D291523A300BD52BF /* PenPal.swift */,
+				5E40553729155C5F00BD52BF /* Event.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5E40551B29151B8E00BD52BF /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				5E40551C29151B9A00BD52BF /* Loggers.swift */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		5E40552429151E1600BD52BF /* App Info */ = {
+			isa = PBXGroup;
+			children = (
+				5E40552529151E2200BD52BF /* AppInfo.swift */,
+			);
+			path = "App Info";
+			sourceTree = "<group>";
+		};
+		5E40553929155F7A00BD52BF /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5E40553A29155F9F00BD52BF /* PenPalListController.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5E40553C29165ED500BD52BF /* Subviews */ = {
+			isa = PBXGroup;
+			children = (
+				5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */,
+			);
+			path = Subviews;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		5E4055042914205D00BD52BF /* Pendulum */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5E4055142914205F00BD52BF /* Build configuration list for PBXNativeTarget "Pendulum" */;
+			buildPhases = (
+				5E4055012914205D00BD52BF /* Sources */,
+				5E4055022914205D00BD52BF /* Frameworks */,
+				5E4055032914205D00BD52BF /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = Pendulum;
+			packageProductDependencies = (
+				5E40552029151C8200BD52BF /* GRDB */,
+			);
+			productName = Pendulum;
+			productReference = 5E4055052914205D00BD52BF /* Pendulum.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		5E4054FD2914205D00BD52BF /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1400;
+				LastUpgradeCheck = 1400;
+				TargetAttributes = {
+					5E4055042914205D00BD52BF = {
+						CreatedOnToolsVersion = 14.0;
+					};
+				};
+			};
+			buildConfigurationList = 5E4055002914205D00BD52BF /* Build configuration list for PBXProject "Pendulum" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 5E4054FC2914205D00BD52BF;
+			packageReferences = (
+				5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */,
+			);
+			productRefGroup = 5E4055062914205D00BD52BF /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				5E4055042914205D00BD52BF /* Pendulum */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		5E4055032914205D00BD52BF /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */,
+				5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5E4055012914205D00BD52BF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
+				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
+				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
+				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
+				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
+				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
+				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
+				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
+				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
+				5E40552329151CA600BD52BF /* AppDatabase.swift in Sources */,
+				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
+				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
+				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
+				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
+				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		5E4055122914205F00BD52BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		5E4055132914205F00BD52BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+			};
+			name = Release;
+		};
+		5E4055152914205F00BD52BF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Pendulum/Preview Content\"";
+				DEVELOPMENT_TEAM = 56477RN8FN;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pendulum/Info.plist;
+				INFOPLIST_KEY_NSContactsUsageDescription = "To choose your Pen Pals";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.co.bencardy.Pendulum;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5E4055162914205F00BD52BF /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"Pendulum/Preview Content\"";
+				DEVELOPMENT_TEAM = 56477RN8FN;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Pendulum/Info.plist;
+				INFOPLIST_KEY_NSContactsUsageDescription = "To choose your Pen Pals";
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = uk.co.bencardy.Pendulum;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator macosx";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		5E4055002914205D00BD52BF /* Build configuration list for PBXProject "Pendulum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E4055122914205F00BD52BF /* Debug */,
+				5E4055132914205F00BD52BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5E4055142914205F00BD52BF /* Build configuration list for PBXNativeTarget "Pendulum" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5E4055152914205F00BD52BF /* Debug */,
+				5E4055162914205F00BD52BF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDB.swift.git";
+			requirement = {
+				kind = exactVersion;
+				version = 6.2.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5E40552029151C8200BD52BF /* GRDB */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */;
+			productName = GRDB;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 5E4054FD2914205D00BD52BF /* Project object */;
+}
