@@ -42,9 +42,14 @@ class PenPalListController: ObservableObject {
         if let penpals = penpals {
             let result = await self.groupPenPals(with: penpals)
             DispatchQueue.main.async {
-                withAnimation {
+                if self.penpals.isEmpty {
                     self.penpals = penpals
                     self.groupedPenPals = result
+                } else {
+                    withAnimation {
+                        self.penpals = penpals
+                        self.groupedPenPals = result
+                    }
                 }
             }
         } else {

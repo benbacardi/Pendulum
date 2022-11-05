@@ -25,13 +25,13 @@ enum EventType: Int, CaseIterable {
         case .noEvent:
             return "Nothing yet"
         case .written:
-            return "Written"
+            return "You wrote a letter"
         case .sent:
-            return "Sent"
+            return "You sent a letter"
         case .inbound:
-            return "Inbound"
+            return "They sent something"
         case .received:
-            return "Received"
+            return "You received something"
         }
     }
     

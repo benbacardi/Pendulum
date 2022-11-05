@@ -46,8 +46,12 @@ class PenPalViewController: ObservableObject {
     private func refresh() async {
         let fetchedEvents = await penpal.fetchAllEvents()
         DispatchQueue.main.async {
-            withAnimation {
+            if self.events.isEmpty {
                 self.events = fetchedEvents
+            } else {
+                withAnimation {
+                    self.events = fetchedEvents
+                }
             }
         }
     }

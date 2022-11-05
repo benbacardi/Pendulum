@@ -20,10 +20,48 @@ struct PenPalView: View {
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
     
+    func eventIsMyAction(_ event: Event) -> Bool {
+        event.eventType == .written || event.eventType == .sent
+    }
+    
+    func eventIcon(_ event: Event) -> some View {
+        ZStack {
+            Circle()
+                .fill(.gray)
+            Image(systemName: event.eventType.icon)
+                .fontWeight(.bold)
+                .foregroundColor(.white)
+        }
+        .frame(width: 40, height: 40)
+    }
+    
     var body: some View {
         ScrollView {
-            Text("Hello")
-            Text("\(penPalViewController.events.count) Events")
+            VStack(spacing: 0) {
+                Divider()
+                    .padding(.bottom)
+                ForEach(penPalViewController.events, id: \.id) { event in
+                    HStack {
+                        if !eventIsMyAction(event) {
+                            eventIcon(event)
+                        }
+                        VStack {
+                            Text(event.date, style: .date)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
+                            Text(event.eventType.description)
+                                .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
+                        }
+                        if eventIsMyAction(event) {
+                            eventIcon(event)
+                        }
+                    }
+                    Divider()
+                        .padding(.vertical)
+                }
+            }
+            .padding()
         }
         .navigationTitle(penpal.fullName)
         .onAppear {
