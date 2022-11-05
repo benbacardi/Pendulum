@@ -28,6 +28,12 @@ extension AppDatabase {
         }
     }
     
+    func updateLastEvent(for penpal: PenPal, with event: Event) async throws {
+        try await dbWriter.write { db in
+            try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: event._type), Column("lastEventDate").set(to: event.date))
+        }
+    }
+    
     func fetchLatestEvent(for penpal: PenPal) async throws -> Event? {
         try await dbWriter.read { db in
             try penpal.events.order(Column("date").desc).fetchOne(db)

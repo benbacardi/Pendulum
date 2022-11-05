@@ -61,16 +61,61 @@ enum EventType: Int, CaseIterable {
         }
     }
     
+    var datePrefix: String {
+        switch self {
+        case .noEvent:
+            return "N/A"
+        case .written:
+            return "You wrote to them"
+        case .sent:
+            return "You posted their letter"
+        case .inbound:
+            return "They posted their letter"
+        case .received:
+            return "You received their letter"
+        }
+    }
+    
+    var nextType: EventType? {
+        switch self {
+        case .noEvent:
+            return nil
+        case .written:
+            return .sent
+        case .sent:
+            return nil
+        case .inbound:
+            return .received
+        case .received:
+            return .written
+        }
+    }
+    
+    var nextTypeButtonText: String {
+        switch self {
+        case .noEvent:
+            return ""
+        case .written:
+            return "I've posted it!"
+        case .sent:
+            return ""
+        case .inbound:
+            return "I've received it!"
+        case .received:
+            return "I've written back!"
+        }
+    }
+    
 }
 
 struct Event: Identifiable, Hashable {
     let id: Int64?
-    let type: Int
+    let _type: Int
     let date: Date
     let penpalID: String
     
     var eventType: EventType {
-        EventType(rawValue: self.type) ?? .noEvent
+        EventType(rawValue: self._type) ?? .noEvent
     }
     
 }
@@ -78,7 +123,7 @@ struct Event: Identifiable, Hashable {
 extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     enum Columns {
         static let id = Column(CodingKeys.id)
-        static let type = Column(CodingKeys.type)
+        static let _type = Column(CodingKeys._type)
         static let date = Column(CodingKeys.date)
     }
     static let penpal = belongsTo(PenPal.self)

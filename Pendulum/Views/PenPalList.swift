@@ -33,44 +33,7 @@ struct PenPalList: View {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
                             if penPalListController.groupedPenPals.keys.contains(eventType) {
-                                
                                 PenPalListSection(type: eventType, penpals: penPalListController.groupedPenPals[eventType]!)
-                                
-                                Text("\(eventType.description)")
-                                ForEach(penPalListController.groupedPenPals[eventType]!, id: \.self) { penpal in
-                                    Text(penpal.fullName)
-                                    HStack {
-                                        Button(action: {
-                                            Task {
-                                                await penpal.addEvent(ofType: .written)
-                                            }
-                                        }) {
-                                            Text("Written")
-                                        }
-                                        Button(action: {
-                                            Task {
-                                                await penpal.addEvent(ofType: .sent)
-                                            }
-                                        }) {
-                                            Text("Sent")
-                                        }
-                                        Button(action: {
-                                            Task {
-                                                await penpal.addEvent(ofType: .inbound)
-                                            }
-                                        }) {
-                                            Text("Inbound")
-                                        }
-                                        Button(action: {
-                                            Task {
-                                                await penpal.addEvent(ofType: .received)
-                                            }
-                                        }) {
-                                            Text("Received")
-                                        }
-                                    }
-                                }
-                                Divider()
                             }
                         }
                     }

@@ -24,7 +24,7 @@ struct AddPenPalSheet: View {
                 if !existingPenPalIdentifiers.contains(contact.identifier) {
                     Button(action: {
                         Task {
-                            let newPenPal = PenPal(id: contact.identifier, givenName: contact.givenName, familyName: contact.familyName, image: contact.imageData)
+                            let newPenPal = PenPal(id: contact.identifier, givenName: contact.givenName, familyName: contact.familyName, image: contact.imageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil)
                             do {
                                 try await AppDatabase.shared.save(newPenPal)
                                 presentationMode.wrappedValue.dismiss()

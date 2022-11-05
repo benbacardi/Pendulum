@@ -77,12 +77,12 @@ class PenPalListController: ObservableObject {
     private func groupPenPals(with penpals: [PenPal]) async -> [EventType: [PenPal]] {
         var groups: [EventType: [PenPal]] = [:]
         for penpal in penpals {
-            let key: EventType
-            if let latestEvent = await penpal.fetchLatestEvent() {
-                key = latestEvent.eventType
-            } else {
-                key = .noEvent
-            }
+            let key: EventType = penpal.lastEventType
+//            if let latestEvent = await penpal.fetchLatestEvent() {
+//                key = latestEvent.eventType
+//            } else {
+//                key = .noEvent
+//            }
             if !groups.keys.contains(key) {
                 groups[key] = []
             }

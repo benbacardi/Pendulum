@@ -38,6 +38,8 @@ final class AppDatabase {
                 table.column("givenName", .text)
                 table.column("familyName", .text)
                 table.column("image", .blob)
+                table.column("_lastEventType", .integer)
+                table.column("lastEventDate", .date)
             }
         }
         
@@ -45,7 +47,7 @@ final class AppDatabase {
             try db.create(table: "event") { table in
                 table.autoIncrementedPrimaryKey("id")
                 table.column("penpalId", .text).notNull().references("penpal")
-                table.column("type", .integer).notNull()
+                table.column("_type", .integer).notNull()
                 table.column("date", .datetime).notNull()
             }
         }
