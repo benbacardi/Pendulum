@@ -16,7 +16,7 @@ struct ContentView: View {
             PenPalList()
                 .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                 .tag(Tab.penPalList.rawValue)
-            Text("Settings")
+            Text("For Ellen")
                 .tabItem { Label("Settings", systemImage: "gear") }
                 .tag(Tab.settings.rawValue)
         }
