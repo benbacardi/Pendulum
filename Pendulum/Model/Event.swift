@@ -16,6 +16,10 @@ enum EventType: Int, CaseIterable {
     
     case noEvent = 99
     
+    static var actionableCases: [EventType] {
+        EventType.allCases.filter { $0 != .noEvent }
+    }
+    
     var description: String {
         switch self {
         case .noEvent:
@@ -76,33 +80,18 @@ enum EventType: Int, CaseIterable {
         }
     }
     
-    var nextType: EventType? {
-        switch self {
-        case .noEvent:
-            return nil
-        case .written:
-            return .sent
-        case .sent:
-            return nil
-        case .inbound:
-            return .received
-        case .received:
-            return .written
-        }
-    }
-    
-    var nextTypeButtonText: String {
+    var actionableText: String {
         switch self {
         case .noEvent:
             return ""
         case .written:
-            return "I've posted it!"
+            return "I've written a letter"
         case .sent:
-            return ""
+            return "I've posted a letter"
         case .inbound:
-            return "I've received it!"
+            return "Something's on its way"
         case .received:
-            return "I've written back!"
+            return "I've received something"
         }
     }
     

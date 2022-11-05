@@ -80,6 +80,15 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
+    func fetchAllEvents() async -> [Event] {
+        do {
+            return try await AppDatabase.shared.fetchAllEvents(for: self)
+        } catch {
+            dataLogger.error("Could not fetch events for \(id) \(fullName): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     func createEvent(ofType type: EventType) -> Event {
         return Event(id: nil, _type: type.rawValue, date: Date(), penpalID: self.id)
     }
