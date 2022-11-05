@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
+		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
@@ -30,6 +32,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
+		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -114,6 +118,7 @@
 			children = (
 				5E4055292915202B00BD52BF /* ContentView.swift */,
 				5E40552729151FEC00BD52BF /* PenPalList.swift */,
+				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
 			);
@@ -123,9 +128,10 @@
 		5E40551829151B6500BD52BF /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				406626ED2916E98B00CA0BD7 /* Bundle.swift */,
+				5E40553529152DA000BD52BF /* CNContact.swift */,
 				5E40552F291525AA00BD52BF /* UserDefaults.swift */,
 				5E4055312915280C00BD52BF /* UIApplication.swift */,
-				5E40553529152DA000BD52BF /* CNContact.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -221,7 +227,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1400;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1410;
 				TargetAttributes = {
 					5E4055042914205D00BD52BF = {
 						CreatedOnToolsVersion = 14.0;
@@ -269,6 +275,7 @@
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
+				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
 				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
@@ -280,6 +287,7 @@
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
+				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
@@ -322,6 +330,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -380,6 +389,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -404,8 +414,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pendulum/Preview Content\"";
 				DEVELOPMENT_TEAM = 56477RN8FN;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -444,8 +456,10 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
+				CODE_SIGN_IDENTITY = "-";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_ASSET_PATHS = "\"Pendulum/Preview Content\"";
 				DEVELOPMENT_TEAM = 56477RN8FN;
 				ENABLE_HARDENED_RUNTIME = YES;
