@@ -33,6 +33,9 @@ struct PenPalList: View {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
                             if penPalListController.groupedPenPals.keys.contains(eventType) {
+                                
+                                PenPalListSection(type: eventType, penpals: penPalListController.groupedPenPals[eventType]!)
+                                
                                 Text("\(eventType.description)")
                                 ForEach(penPalListController.groupedPenPals[eventType]!, id: \.self) { penpal in
                                     Text(penpal.fullName)

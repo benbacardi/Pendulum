@@ -31,6 +31,36 @@ enum EventType: Int, CaseIterable {
         }
     }
     
+    var icon: String {
+        switch self {
+        case .noEvent:
+            return "hourglass"
+        case .written:
+            return "envelope"
+        case .sent:
+            return "paperplane"
+        case .inbound:
+            return "square.and.arrow.down"
+        case .received:
+            return "pencil.line"
+        }
+    }
+    
+    var phrase: String {
+        switch self {
+        case .noEvent:
+            return "Get started!"
+        case .written:
+            return "You have letters to post!"
+        case .sent:
+            return "Waiting for a response..."
+        case .inbound:
+            return "Post is on its way!"
+        case .received:
+            return "You have letters to reply to!"
+        }
+    }
+    
 }
 
 struct Event: Identifiable, Hashable {

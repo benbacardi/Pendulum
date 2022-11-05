@@ -25,6 +25,8 @@
 		5E40553829155C5F00BD52BF /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553729155C5F00BD52BF /* Event.swift */; };
 		5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553A29155F9F00BD52BF /* PenPalListController.swift */; };
 		5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */; };
+		5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553F29166DA100BD52BF /* PenPalListSection.swift */; };
+		5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554129166EBE00BD52BF /* FullWidthText.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +50,8 @@
 		5E40553729155C5F00BD52BF /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		5E40553A29155F9F00BD52BF /* PenPalListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListController.swift; sourceTree = "<group>"; };
 		5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsAccessRequiredView.swift; sourceTree = "<group>"; };
+		5E40553F29166DA100BD52BF /* PenPalListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection.swift; sourceTree = "<group>"; };
+		5E40554129166EBE00BD52BF /* FullWidthText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthText.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -110,7 +114,7 @@
 			children = (
 				5E4055292915202B00BD52BF /* ContentView.swift */,
 				5E40552729151FEC00BD52BF /* PenPalList.swift */,
-				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
+				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
 			);
 			path = Views;
@@ -129,6 +133,7 @@
 		5E40551929151B6C00BD52BF /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5E40554129166EBE00BD52BF /* FullWidthText.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -172,8 +177,17 @@
 			isa = PBXGroup;
 			children = (
 				5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */,
+				5E40553F29166DA100BD52BF /* PenPalListSection.swift */,
 			);
 			path = Subviews;
+			sourceTree = "<group>";
+		};
+		5E405543291671B800BD52BF /* Sheets */ = {
+			isa = PBXGroup;
+			children = (
+				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
+			);
+			path = Sheets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -255,6 +269,7 @@
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
+				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
 				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
@@ -266,6 +281,7 @@
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
+				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
