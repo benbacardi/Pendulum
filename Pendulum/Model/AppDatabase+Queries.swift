@@ -29,7 +29,7 @@ extension AppDatabase {
     }
     
     func updateLastEvent(for penpal: PenPal, with event: Event) async throws {
-        try await dbWriter.write { db in
+        let _ = try await dbWriter.write { db in
             try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: event._type), Column("lastEventDate").set(to: event.date))
         }
     }
