@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Contacts
 
 struct PenPalView: View {
     
@@ -14,6 +15,8 @@ struct PenPalView: View {
     
     // MARK: State
     @StateObject private var penPalViewController: PenPalViewController
+    @State private var showingPenPalContactSheet: Bool = false
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     
     init(penpal: PenPal) {
         self.penpal = penpal
@@ -94,12 +97,27 @@ struct PenPalView: View {
         .navigationTitle(penpal.fullName)
         .onAppear {
             penPalViewController.start()
-        }.toolbar {
-            Button(action: {
-                print("More information pressed")
-            }){
-                Label("Contact Information", systemImage:"person.crop.circle")
+            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
+        }
+        .sheet(isPresented: $showingPenPalContactSheet) {
+            NavigationStack {
+                PenPalContactSheet(penpal: penpal)
+                    .toolbar {
+                        Button(action: {
+                            self.showingPenPalContactSheet = false
+                        }) {
+                            Text("Done")
+                        }
+                    }
             }
+        }
+        .toolbar {
+            Button(action: {
+                self.showingPenPalContactSheet = true
+            }){
+                Label("Pen Pal Addresses", systemImage:"person.crop.circle")
+            }
+            .disabled(contactsAccessStatus != .authorized)
         }
     }
 }

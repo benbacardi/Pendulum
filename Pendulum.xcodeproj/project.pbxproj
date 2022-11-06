@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
-		406626F0291811B900CA0BD7 /* PenPalContactView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EF291811B900CA0BD7 /* PenPalContactView.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
@@ -34,12 +33,13 @@
 		5E4055472917065800BD52BF /* PenPalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055462917065800BD52BF /* PenPalViewController.swift */; };
 		5E4055492918184000BD52BF /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055482918184000BD52BF /* Calendar.swift */; };
 		5E40554B29181AE700BD52BF /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554A29181AE700BD52BF /* DividerWithText.swift */; };
+		5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */; };
+		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
-		406626EF291811B900CA0BD7 /* PenPalContactView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactView.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -66,6 +66,8 @@
 		5E4055462917065800BD52BF /* PenPalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalViewController.swift; sourceTree = "<group>"; };
 		5E4055482918184000BD52BF /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		5E40554A29181AE700BD52BF /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
+		5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactSheet.swift; sourceTree = "<group>"; };
+		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -130,7 +132,6 @@
 				5E40552729151FEC00BD52BF /* PenPalList.swift */,
 				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E4055442917051D00BD52BF /* PenPalView.swift */,
-				406626EF291811B900CA0BD7 /* PenPalContactView.swift */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
 			);
@@ -145,6 +146,7 @@
 				5E40552F291525AA00BD52BF /* UserDefaults.swift */,
 				5E4055312915280C00BD52BF /* UIApplication.swift */,
 				5E4055482918184000BD52BF /* Calendar.swift */,
+				5E40554E2918215C00BD52BF /* CNPostalAddress.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -207,6 +209,7 @@
 			isa = PBXGroup;
 			children = (
 				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
+				5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -292,6 +295,7 @@
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
 				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
+				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40554B29181AE700BD52BF /* DividerWithText.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
@@ -300,13 +304,13 @@
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
+				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
 				5E40552329151CA600BD52BF /* AppDatabase.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
 				5E4055472917065800BD52BF /* PenPalViewController.swift in Sources */,
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
-				406626F0291811B900CA0BD7 /* PenPalContactView.swift in Sources */,
 				5E4055452917051D00BD52BF /* PenPalView.swift in Sources */,
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
