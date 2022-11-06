@@ -14,6 +14,7 @@ class PenPalViewController: ObservableObject {
     let penpal: PenPal
     
     @Published var events: [Event] = []
+    @Published var eventsWithDifferences: [(Event, Int)] = []
     
     private var penPalObservation = AppDatabase.shared.observePenPalObservation()
     private var penPalObservationCancellable: DatabaseCancellable?
@@ -48,11 +49,27 @@ class PenPalViewController: ObservableObject {
         DispatchQueue.main.async {
             if self.events.isEmpty {
                 self.events = fetchedEvents
+                self.setDifferences(for: fetchedEvents)
             } else {
                 withAnimation {
                     self.events = fetchedEvents
+                    self.setDifferences(for: fetchedEvents)
                 }
             }
+        }
+    }
+    
+    private func setDifferences(for events: [Event]) {
+        self.eventsWithDifferences = []
+        let calendar = Calendar.current
+        for (index, item) in events.enumerated() {
+            let newIndex = index + 1
+            if newIndex == events.count {
+                self.eventsWithDifferences.append((item, 0))
+                break
+            }
+            let newItem = events[newIndex]
+            self.eventsWithDifferences.append((item, calendar.numberOfDaysBetween(newItem.date, and: item.date)))
         }
     }
     

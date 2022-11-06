@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import Contacts
 
 struct PenPalView: View {
     
@@ -14,6 +15,8 @@ struct PenPalView: View {
     
     // MARK: State
     @StateObject private var penPalViewController: PenPalViewController
+    @State private var showingPenPalContactSheet: Bool = false
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     
     init(penpal: PenPal) {
         self.penpal = penpal
@@ -36,7 +39,7 @@ struct PenPalView: View {
     }
     
     var body: some View {
-        //MARK: Action Buttons
+        // MARK: Action Buttons
         ForEach(EventType.actionableCases, id: \.self) { eventType in
             Button(action: {
                 Task {
@@ -47,17 +50,25 @@ struct PenPalView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
-            .padding(.leading, 5.0)
-            .padding(.trailing, 5.0)
-
-            
+            .padding(.horizontal)
         }
-        //MARK: Timeline
+        // MARK: Timeline
         ScrollView {
             VStack(spacing: 0) {
-                Divider()
+                
+                if let firstEvent = penPalViewController.events.first {
+                    let daysAgo = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
+                    Group {
+                        if daysAgo == 0 {
+                            DividerWithText("Today")
+                        } else {
+                            DividerWithText("\(daysAgo) day\(daysAgo > 1 ? "s" : "") ago")
+                        }
+                    }
                     .padding(.bottom)
-                ForEach(penPalViewController.events, id: \.id) { event in
+                }
+                
+                ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
                     HStack {
                         if !eventIsMyAction(event) {
                             eventIcon(event)
@@ -74,8 +85,11 @@ struct PenPalView: View {
                             eventIcon(event)
                         }
                     }
-                    Divider()
-                        .padding(.vertical)
+                    .padding(.bottom)
+                    if difference > 0 {
+                        DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before")
+                            .padding(.bottom)
+                    }
                 }
             }
             .padding()
@@ -83,12 +97,27 @@ struct PenPalView: View {
         .navigationTitle(penpal.fullName)
         .onAppear {
             penPalViewController.start()
-        }.toolbar {
-            Button(action: {
-                print("More information pressed")
-            }){
-                Label("Contact Information", systemImage:"person.crop.circle")
+            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
+        }
+        .sheet(isPresented: $showingPenPalContactSheet) {
+            NavigationStack {
+                PenPalContactSheet(penpal: penpal)
+                    .toolbar {
+                        Button(action: {
+                            self.showingPenPalContactSheet = false
+                        }) {
+                            Text("Done")
+                        }
+                    }
             }
+        }
+        .toolbar {
+            Button(action: {
+                self.showingPenPalContactSheet = true
+            }){
+                Label("Pen Pal Addresses", systemImage:"person.crop.circle")
+            }
+            .disabled(contactsAccessStatus != .authorized)
         }
     }
 }
