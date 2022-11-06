@@ -26,7 +26,11 @@ struct PenPalList: View {
                 } else if penPalListController.penpals.isEmpty {
                     VStack {
                         Spacer()
-                        Text("Add your first Pen Pal to get started!")
+                        Button(action: {
+                            self.presentingAddPenPalSheet = true
+                        }) {
+                            Text("Add your first Pen Pal to get started!")
+                        }
                         Spacer()
                     }
                 } else {
