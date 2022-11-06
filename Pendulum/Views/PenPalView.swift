@@ -17,6 +17,7 @@ struct PenPalView: View {
     @StateObject private var penPalViewController: PenPalViewController
     @State private var showingPenPalContactSheet: Bool = false
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
+    @State private var presentAddEventSheetForType: EventType? = nil
     
     init(penpal: PenPal) {
         self.penpal = penpal
@@ -28,23 +29,24 @@ struct PenPalView: View {
     }
     
     func eventIcon(_ event: Event) -> some View {
-        ZStack {
-            Circle()
-                .fill(.gray)
-            Image(systemName: event.eventType.icon)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-        }
-        .frame(width: 40, height: 40)
+        Image(systemName: event.eventType.icon)
+            .bold()
+            .padding(.top, 15)
+//        ZStack {
+//            Circle()
+//                .fill(.gray)
+//            Image(systemName: event.eventType.icon)
+//                .fontWeight(.bold)
+//                .foregroundColor(.white)
+//        }
+//        .frame(width: 40, height: 40)
     }
     
     var body: some View {
         // MARK: Action Buttons
         ForEach(EventType.actionableCases, id: \.self) { eventType in
             Button(action: {
-                Task {
-                    await penpal.addEvent(ofType: eventType)
-                }
+                presentAddEventSheetForType = eventType
             }) {
                 Label(eventType.actionableText, systemImage: eventType.icon)
                     .frame(maxWidth: .infinity)
@@ -69,17 +71,40 @@ struct PenPalView: View {
                 }
                 
                 ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
-                    HStack {
+                    HStack(alignment: .top) {
                         if !eventIsMyAction(event) {
                             eventIcon(event)
                         }
-                        VStack {
-                            Text(event.date, style: .date)
+                        GroupBox {
+                            VStack {
+//                                Text(event.date, style: .date)
+//                                    .font(.caption)
+//                                    .foregroundColor(.secondary)
+//                                    .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
+                                Text(event.eventType.description)
+                                    .fullWidth()//alignment: eventIsMyAction(event) ? .trailing : .leading)
+                            }
+                            if event.hasNotes {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    if let notes = event.notes, !notes.isEmpty {
+                                        Text(notes)
+                                    }
+                                    if let pen = event.pen, !pen.isEmpty {
+                                        Label(pen, systemImage: "pencil")
+                                    }
+                                    if let ink = event.ink, !ink.isEmpty {
+                                        Label(ink, systemImage: "swatchpalette")
+                                    }
+                                    if let paper = event.paper, !paper.isEmpty {
+                                        Label(paper, systemImage: "doc.plaintext")
+                                    }
+                                }
+                                .fullWidth()
                                 .font(.caption)
                                 .foregroundColor(.secondary)
-                                .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
-                            Text(event.eventType.description)
-                                .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
+                                .padding(.top, 1)
+                            }
+                            
                         }
                         if eventIsMyAction(event) {
                             eventIcon(event)
@@ -109,6 +134,11 @@ struct PenPalView: View {
                             Text("Done")
                         }
                     }
+            }
+        }
+        .sheet(item: $presentAddEventSheetForType) { eventType in
+            NavigationStack {
+                AddEventSheet(penpal: penpal, eventType: eventType)
             }
         }
         .toolbar {

@@ -49,6 +49,10 @@ final class AppDatabase {
                 table.column("penpalId", .text).notNull().references("penpal")
                 table.column("_type", .integer).notNull()
                 table.column("date", .datetime).notNull()
+                table.column("notes", .text)
+                table.column("pen", .text)
+                table.column("ink", .text)
+                table.column("paper", .text)
             }
         }
         

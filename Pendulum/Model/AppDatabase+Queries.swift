@@ -12,7 +12,7 @@ extension AppDatabase {
     
     func fetchAllPenPals() async throws -> [PenPal] {
         try await dbWriter.read { db in
-            try PenPal.fetchAll(db)
+            try PenPal.order(Column("lastEventDate").asc).fetchAll(db)
         }
     }
     

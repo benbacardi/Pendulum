@@ -65,7 +65,11 @@ class PenPalListController: ObservableObject {
     private func groupPenPals(with penpals: [PenPal]) async -> [EventType: [PenPal]] {
         var groups: [EventType: [PenPal]] = [:]
         for penpal in penpals {
-            let key: EventType = penpal.lastEventType
+            var key: EventType = penpal.lastEventType
+            if key == .theyReceived {
+                /// Group "they received" statuses with "you sent" statuses on the home page
+                key = .sent
+            }
             if !groups.keys.contains(key) {
                 groups[key] = []
             }

@@ -12,17 +12,10 @@ struct PenPalListSection: View {
     // MARK: Parameters
     let type: EventType
     let penpals: [PenPal]
-//
-//    let relativeDateFormatter = RelativeDateTimeFormatter()
-//
-//    func dateString(for penpal: PenPal) -> String {
-//        var result = penpal.lastEventType.datePrefix
-//        let formattedDate =
-//    }
     
     func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
-            return Text("\(penpal.lastEventType.datePrefix) ") + Text(date, style: .relative) + Text(" ago")
+            return Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
         } else {
             return Text("")
         }
@@ -31,7 +24,7 @@ struct PenPalListSection: View {
     var body: some View {
         VStack {
             HStack {
-                Image(systemName: type.icon)
+                Image(systemName: type.phraseIcon)
                     .font(.headline)
                 Text(type.phrase)
                     .font(.headline)
