@@ -36,7 +36,7 @@ struct PenPalView: View {
     }
     
     var body: some View {
-        //MARK: Action Buttons
+        // MARK: Action Buttons
         ForEach(EventType.actionableCases, id: \.self) { eventType in
             Button(action: {
                 Task {
@@ -47,17 +47,14 @@ struct PenPalView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.bordered)
-            .padding(.leading, 5.0)
-            .padding(.trailing, 5.0)
-
-            
+            .padding(.horizontal)
         }
-        //MARK: Timeline
+        // MARK: Timeline
         ScrollView {
             VStack(spacing: 0) {
                 
-                if let eventDate = penpal.lastEventDate {
-                    let daysAgo = Calendar.current.numberOfDaysBetween(eventDate, and: Date())
+                if let firstEvent = penPalViewController.events.first {
+                    let daysAgo = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
                     Group {
                         if daysAgo == 0 {
                             DividerWithText("Today")
