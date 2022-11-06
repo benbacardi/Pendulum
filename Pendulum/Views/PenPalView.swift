@@ -36,6 +36,23 @@ struct PenPalView: View {
     }
     
     var body: some View {
+        //MARK: Action Buttons
+        ForEach(EventType.actionableCases, id: \.self) { eventType in
+            Button(action: {
+                Task {
+                    await penpal.addEvent(ofType: eventType)
+                }
+            }) {
+                Label(eventType.actionableText, systemImage: eventType.icon)
+                    .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.bordered)
+            .padding(.leading, 5.0)
+            .padding(.trailing, 5.0)
+
+            
+        }
+        //MARK: Timeline
         ScrollView {
             VStack(spacing: 0) {
                 Divider()
@@ -66,6 +83,12 @@ struct PenPalView: View {
         .navigationTitle(penpal.fullName)
         .onAppear {
             penPalViewController.start()
+        }.toolbar {
+            Button(action: {
+                print("More information pressed")
+            }){
+                Label("Contact Information", systemImage:"person.crop.circle")
+            }
         }
     }
 }
