@@ -55,9 +55,20 @@ struct PenPalView: View {
         //MARK: Timeline
         ScrollView {
             VStack(spacing: 0) {
-                Divider()
+                
+                if let eventDate = penpal.lastEventDate {
+                    let daysAgo = Calendar.current.numberOfDaysBetween(eventDate, and: Date())
+                    Group {
+                        if daysAgo == 0 {
+                            DividerWithText("Today")
+                        } else {
+                            DividerWithText("\(daysAgo) day\(daysAgo > 1 ? "s" : "") ago")
+                        }
+                    }
                     .padding(.bottom)
-                ForEach(penPalViewController.events, id: \.id) { event in
+                }
+                
+                ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
                     HStack {
                         if !eventIsMyAction(event) {
                             eventIcon(event)
@@ -74,8 +85,11 @@ struct PenPalView: View {
                             eventIcon(event)
                         }
                     }
-                    Divider()
-                        .padding(.vertical)
+                    .padding(.bottom)
+                    if difference > 0 {
+                        DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before")
+                            .padding(.bottom)
+                    }
                 }
             }
             .padding()
