@@ -17,7 +17,7 @@ struct ContentView: View {
                 .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                 .tag(Tab.penPalList.rawValue)
             SettingsList()
-                .tabItem { Label("Ellen", systemImage: "tortoise") }
+                .tabItem { Label("Settings", systemImage: "tortoise") }
                 .tag(Tab.settings.rawValue)
         }
     }

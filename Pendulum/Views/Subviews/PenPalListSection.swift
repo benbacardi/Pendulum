@@ -38,41 +38,46 @@ struct PenPalListSection: View {
                     .fullWidth()
             }
             ForEach(penpals) { penpal in
-                GroupBox {
-                    VStack {
-                        HStack {
-                            if let image = penpal.displayImage {
-                                image
-                                    .clipShape(Circle())
+                NavigationLink(destination: PenPalView(penpal: penpal)) {
+                    GroupBox {
+                        VStack {
+                            HStack {
+                                if let image = penpal.displayImage {
+                                    image
+                                        .clipShape(Circle())
+                                        .frame(width: 40, height: 40)
+                                } else {
+                                    ZStack {
+                                        Circle()
+                                            .fill(.gray)
+                                        Text(penpal.initials)
+                                            .font(.system(.headline, design: .rounded))
+                                            .foregroundColor(.white)
+                                    }
                                     .frame(width: 40, height: 40)
-                            } else {
-                                ZStack {
-                                    Circle()
-                                        .fill(.gray)
-                                    Text(penpal.initials)
-                                        .font(.system(.headline, design: .rounded))
-                                        .foregroundColor(.white)
                                 }
-                                .frame(width: 40, height: 40)
-                            }
-                            VStack {
-                                Text(penpal.fullName)
-                                    .font(.headline)
-                                    .fullWidth()
-                                if penpal.lastEventDate != nil {
-                                    self.dateText(for: penpal)
-                                        .font(.caption)
+                                VStack {
+                                    Text(penpal.fullName)
+                                        .font(.headline)
                                         .fullWidth()
+                                    if penpal.lastEventDate != nil {
+                                        self.dateText(for: penpal)
+                                            .font(.caption)
+                                            .fullWidth()
+                                    }
                                 }
                             }
                         }
-                        if let nextEventType = type.nextType {
+                        .foregroundColor(.primary)
+                    }
+                    .contextMenu {
+                        ForEach(EventType.actionableCases, id: \.self) { eventType in
                             Button(action: {
                                 Task {
-                                    await penpal.addEvent(ofType: nextEventType)
+                                    await penpal.addEvent(ofType: eventType)
                                 }
                             }) {
-                                Text(type.nextTypeButtonText)
+                                Label(eventType.actionableText, systemImage: eventType.icon)
                             }
                         }
                     }

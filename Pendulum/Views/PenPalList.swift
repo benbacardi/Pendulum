@@ -32,8 +32,8 @@ struct PenPalList: View {
                 } else {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
-                            if penPalListController.groupedPenPals.keys.contains(eventType) {
-                                PenPalListSection(type: eventType, penpals: penPalListController.groupedPenPals[eventType]!)
+                            if let penpals = penPalListController.groupedPenPals[eventType] {
+                                PenPalListSection(type: eventType, penpals: penpals)
                             }
                         }
                     }

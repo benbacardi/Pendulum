@@ -40,4 +40,10 @@ extension AppDatabase {
         }
     }
     
+    func fetchAllEvents(for penpal: PenPal) async throws -> [Event] {
+        try await dbWriter.read { db in
+            try penpal.events.order(Column("date").desc).fetchAll(db)
+        }
+    }
+    
 }

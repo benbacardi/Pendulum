@@ -27,25 +27,6 @@ class PenPalListController: ObservableObject {
             Task {
                 await self.refresh(with: penpals)
             }
-//            self.penpals = penpals
-            
-//            if let penpal = penpals.last {
-//                Task {
-//                    let event = Event(id: nil, type: EventType.inbound.rawValue, date: Date(), penpalID: penpal.id)
-//                    do {
-//                        try await AppDatabase.shared.save(event)
-//                    } catch {
-//                        print("Could not save event: \(error.localizedDescription)")
-//                    }
-//                }
-//            }
-            
-//            Task {
-//                let result = await self.groupPenPals(with: penpals)
-//                DispatchQueue.main.async {
-//                    self.groupedPenPals = result
-//                }
-//            }
         }
         self.eventObservationCancellable = AppDatabase.shared.start(observation: self.eventObservation) { error in
             dataLogger.error("Error observing events: \(error.localizedDescription)")
@@ -61,8 +42,15 @@ class PenPalListController: ObservableObject {
         if let penpals = penpals {
             let result = await self.groupPenPals(with: penpals)
             DispatchQueue.main.async {
-                self.penpals = penpals
-                self.groupedPenPals = result
+                if self.penpals.isEmpty {
+                    self.penpals = penpals
+                    self.groupedPenPals = result
+                } else {
+                    withAnimation {
+                        self.penpals = penpals
+                        self.groupedPenPals = result
+                    }
+                }
             }
         } else {
             do {
@@ -78,11 +66,6 @@ class PenPalListController: ObservableObject {
         var groups: [EventType: [PenPal]] = [:]
         for penpal in penpals {
             let key: EventType = penpal.lastEventType
-//            if let latestEvent = await penpal.fetchLatestEvent() {
-//                key = latestEvent.eventType
-//            } else {
-//                key = .noEvent
-//            }
             if !groups.keys.contains(key) {
                 groups[key] = []
             }
