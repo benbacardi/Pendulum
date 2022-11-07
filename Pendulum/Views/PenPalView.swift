@@ -46,10 +46,13 @@ struct PenPalView: View {
         //        .frame(width: 40, height: 40)
     }
     
-    var body: some View {
-        // MARK: Action Buttons
-        
-        VStack {
+    @ViewBuilder
+    func headerAndButtons() -> some View {
+        Group {
+            
+            PenPalHeader(penpal: penpal)
+                .padding(.horizontal)
+//                .border(.red)
             
             HStack(alignment: .top) {
                 ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
@@ -82,6 +85,16 @@ struct PenPalView: View {
                 .buttonStyle(.bordered)
             }
             .padding(.horizontal)
+//            .border(.yellow)
+        }
+    }
+    
+    var body: some View {
+        // MARK: Action Buttons
+        
+        VStack(spacing: 10) {
+            
+            self.headerAndButtons()
             
             // MARK: Timeline
             if penPalViewController.events.isEmpty {
@@ -173,7 +186,7 @@ struct PenPalView: View {
                 }
             }
         }
-        .navigationTitle(penpal.name)
+//        .navigationTitle(penpal.name)
         .onAppear {
             penPalViewController.start()
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
@@ -213,6 +226,7 @@ struct PenPalView: View {
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
             self.buttonHeight = $0
         }
+        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

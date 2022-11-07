@@ -34,25 +34,7 @@ struct PenPalContactSheet: View {
     var body: some View {
         VStack {
             
-            if let image = penpal.displayImage {
-                image
-                    .clipShape(Circle())
-                    .frame(width: 60, height: 60)
-            } else {
-                ZStack {
-                    Circle()
-                        .fill(.gray)
-                    Text(penpal.initials)
-                        .font(.system(.headline, design: .rounded))
-                        .foregroundColor(.white)
-                }
-                .frame(width: 60, height: 60)
-            }
-            
-            Text(penpal.name)
-                .font(.largeTitle)
-                .bold()
-                .fullWidth(alignment: .center)
+            PenPalHeader(penpal: penpal)
             
             ScrollView {
                 if addresses.isEmpty {
@@ -126,6 +108,8 @@ struct PenPalContactSheet: View {
                 }
             }
         }
+        .navigationTitle("Contact Details")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
 }
