@@ -9,11 +9,12 @@ import Foundation
 import GRDB
 import SwiftUI
 import UIKit
+import Contacts
 
 struct PenPal: Identifiable, Hashable {
     let id: String
-    let givenName: String?
-    let familyName: String?
+    let name: String
+    let initials: String
     let image: Data?
     let _lastEventType: Int?
     let lastEventDate: Date?
@@ -22,8 +23,8 @@ struct PenPal: Identifiable, Hashable {
 extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     enum Columns {
         static let id = Column(CodingKeys.id)
-        static let givenName = Column(CodingKeys.givenName)
-        static let familyName = Column(CodingKeys.familyName)
+        static let name = Column(CodingKeys.name)
+        static let initials = Column(CodingKeys.initials)
         static let image = Column(CodingKeys.image)
         static let _lastEventType = Column(CodingKeys._lastEventType)
         static let lastEventDate = Column(CodingKeys.lastEventDate)
@@ -42,28 +43,6 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
-    var fullName: String {
-        var parts: [String] = []
-        if let givenName = self.givenName {
-            parts.append(givenName)
-        }
-        if let familyName = self.familyName {
-            parts.append(familyName)
-        }
-        return parts.joined(separator: " ")
-    }
-    
-    var initials: String {
-        var initials: String = ""
-        if let givenName = self.givenName {
-            initials = "\(initials)\(givenName.prefix(1))"
-        }
-        if let familyName = self.familyName {
-            initials = "\(initials)\(familyName.prefix(1))"
-        }
-        return initials.uppercased()
-    }
-    
     var displayImage: Image? {
         if let imageData = self.image, let image = UIImage(data: imageData) {
             return Image(uiImage: image).resizable()
@@ -75,7 +54,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         do {
             return try await AppDatabase.shared.fetchLatestEvent(for: self)
         } catch {
-            dataLogger.error("Could not fetch latest event for \(id) \(fullName): \(error.localizedDescription)")
+            dataLogger.error("Could not fetch latest event for \(id) \(name): \(error.localizedDescription)")
             return nil
         }
     }
@@ -84,7 +63,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         do {
             return try await AppDatabase.shared.fetchAllEvents(for: self)
         } catch {
-            dataLogger.error("Could not fetch events for \(id) \(fullName): \(error.localizedDescription)")
+            dataLogger.error("Could not fetch events for \(id) \(name): \(error.localizedDescription)")
             return []
         }
     }

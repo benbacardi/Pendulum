@@ -55,7 +55,7 @@ extension CNContact {
     }
     
     var image: Image? {
-        if self.imageDataAvailable, let imageData = self.imageData, let image = UIImage(data: imageData) {
+        if self.imageDataAvailable, let imageData = self.thumbnailImageData, let image = UIImage(data: imageData) {
             return Image(uiImage: image).resizable()
         }
         return nil

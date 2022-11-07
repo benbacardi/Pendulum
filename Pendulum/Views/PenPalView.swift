@@ -119,7 +119,7 @@ struct PenPalView: View {
             }
             .padding()
         }
-        .navigationTitle(penpal.fullName)
+        .navigationTitle(penpal.name)
         .onAppear {
             penPalViewController.start()
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
@@ -155,7 +155,7 @@ struct PenPalView: View {
 struct PenPalView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            PenPalView(penpal: PenPal(id: "2", givenName: "Alex", familyName: "Faber", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()))
+            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()))
         }
     }
 }

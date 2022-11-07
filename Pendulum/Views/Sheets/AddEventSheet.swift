@@ -52,7 +52,7 @@ struct AddEventSheet: View {
 struct AddEventSheet_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            AddEventSheet(penpal: PenPal(id: "1", givenName: "Alex", familyName: "Faber", image: nil, _lastEventType: nil, lastEventDate: nil), eventType: .written)
+            AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil), eventType: .written)
         }
     }
 }

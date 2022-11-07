@@ -50,7 +50,7 @@ struct PenPalListSection: View {
                                     .frame(width: 40, height: 40)
                                 }
                                 VStack {
-                                    Text(penpal.fullName)
+                                    Text(penpal.name)
                                         .font(.headline)
                                         .fullWidth()
                                     if penpal.lastEventDate != nil {
@@ -84,9 +84,9 @@ struct PenPalListSection: View {
 struct PenPalListSection_Previews: PreviewProvider {
     static var previews: some View {
         PenPalListSection(type: .written, penpals: [
-            PenPal(id: "1", givenName: "Ben", familyName: "Cardy", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
-            PenPal(id: "2", givenName: "Alex", familyName: "Faber", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
-            PenPal(id: "3", givenName: "Madi", familyName: "Van Houten", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date())
+            PenPal(id: "1", name: "Ben Cardy", initials: "BC", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
+            PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
+            PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date())
         ])
     }
 }

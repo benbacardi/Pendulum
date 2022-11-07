@@ -28,7 +28,7 @@ struct AddPenPalSheet: View {
                     if !existingPenPalIdentifiers.contains(contact.identifier) {
                         Button(action: {
                             Task {
-                                let newPenPal = PenPal(id: contact.identifier, givenName: contact.givenName, familyName: contact.familyName, image: contact.imageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil)
+                                let newPenPal = PenPal(id: contact.identifier, name: contact.fullName ?? "Unknown Contact", initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil)
                                 do {
                                     try await AppDatabase.shared.save(newPenPal)
                                     presentationMode.wrappedValue.dismiss()
@@ -71,9 +71,8 @@ struct AddPenPalSheet: View {
                     let keys = [
                         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
                         CNContactOrganizationNameKey,
-                        CNContactPostalAddressesKey,
                         CNContactImageDataAvailableKey,
-                        CNContactImageDataKey,
+                        CNContactThumbnailImageDataKey
                     ] as! [CNKeyDescriptor]
                     let request = CNContactFetchRequest(keysToFetch: keys)
                     DispatchQueue.global(qos: .userInitiated).async {
