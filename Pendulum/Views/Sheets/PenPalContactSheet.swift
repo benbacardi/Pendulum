@@ -77,11 +77,16 @@ struct PenPalContactSheet: View {
                                     .fullWidth()
                                 Text(address.value.getFullAddress())
                                     .fullWidth()
-                                if let placemark = placemark, let location = placemark.location {
-                                    Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
-                                        MapMarker(coordinate: pin.location.coordinate, tint: .orange)
+                                ZStack {
+                                    Rectangle()
+                                        .fill(Color.black.opacity(0.05))
+                                        .frame(height: 100)
+                                    if let placemark = placemark, let location = placemark.location {
+                                        Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
+                                            MapMarker(coordinate: pin.location.coordinate, tint: .orange)
+                                        }
+                                        .frame(height: 100)
                                     }
-                                    .frame(height: 100)
                                 }
                             }
                             .foregroundColor(.primary)
