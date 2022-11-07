@@ -52,7 +52,11 @@ struct AddPenPalSheet: View {
                                     }
                                     .frame(width: 40, height: 40)
                                 }
-                                Text(contact.fullName)
+                                if let name = contact.fullName {
+                                    Text(name)
+                                } else {
+                                    Text("Unknown Contact")
+                                }
                             }
                             .foregroundColor(.primary)
                         }
@@ -66,6 +70,7 @@ struct AddPenPalSheet: View {
                     let store = CNContactStore()
                     let keys = [
                         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                        CNContactOrganizationNameKey,
                         CNContactPostalAddressesKey,
                         CNContactImageDataAvailableKey,
                         CNContactImageDataKey,
@@ -84,7 +89,7 @@ struct AddPenPalSheet: View {
                                 self.contactsFetched = true
                             }
                         } catch {
-                            print("Could not enumerate contacts: \(error.localizedDescription)")
+                            dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                         }
                     }
                 }
@@ -110,20 +115,16 @@ struct AddPenPalSheet: View {
     func sortAndFilterContacts(with searchText: String = "") {
         let st = searchText.lowercased()
         withAnimation {
-            self.sortedContacts = contactDetails.filter { c1 in
+            self.sortedContacts = contactDetails.filter { contact in
+                if contact.fullName == nil {
+                    return false
+                }
                 if st.isEmpty {
                     return true
                 }
-                return c1.givenName.lowercased().contains(st) || c1.familyName.lowercased().contains(st)
+                return contact.matches(term: st)
             }.sorted { c1, c2 in
-                let f1 = "\(c1.familyName.prefix(1))"
-                let f2 = "\(c2.familyName.prefix(1))"
-                if f1 == f2 {
-                    let g1 = "\(c1.givenName.prefix(1))"
-                    let g2 = "\(c2.givenName.prefix(1))"
-                    return g1 < g2
-                }
-                return f1 < f2
+                return c1.sortKey < c2.sortKey
             }
         }
     }
