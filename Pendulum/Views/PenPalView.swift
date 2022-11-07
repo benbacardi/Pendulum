@@ -164,6 +164,18 @@ struct PenPalView: View {
                                     .padding(.bottom)
                             }
                         }
+                        Button(action: {
+                            Task {
+                                let now = Date()
+                                await penpal.addEvent(ofType: .written, forDate: now.addingTimeInterval(-60 * 60 * 24 * 10))
+                                await penpal.addEvent(ofType: .sent, forDate: now.addingTimeInterval(-60 * 60 * 24 * 9))
+                                await penpal.addEvent(ofType: .theyReceived, forDate: now.addingTimeInterval(-60 * 60 * 24 * 6))
+                                await penpal.addEvent(ofType: .inbound, forDate: now.addingTimeInterval((-60 * 60 * 24 * 6) + (60 * 60)))
+                                await penpal.addEvent(ofType: .received, forDate: now.addingTimeInterval(-60 * 60 * 24 * 3))
+                            }
+                        }) {
+                            Text("Add Debug Data")
+                        }
                     }
                     .padding()
                 }

@@ -68,13 +68,13 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
-    func createEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) -> Event {
-        return Event(id: nil, _type: type.rawValue, date: Date(), penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper)
+    func createEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, forDate: Date = Date()) -> Event {
+        return Event(id: nil, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper)
     }
     
     @discardableResult
-    func addEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) async -> Event? {
-        let event = self.createEvent(ofType: type, notes: notes, pen: pen, ink: ink, paper: paper)
+    func addEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, forDate: Date = Date()) async -> Event? {
+        let event = self.createEvent(ofType: type, notes: notes, pen: pen, ink: ink, paper: paper, forDate: forDate)
         do {
             try await AppDatabase.shared.save(event)
             try await AppDatabase.shared.updateLastEvent(for: self, with: event)

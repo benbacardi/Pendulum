@@ -68,7 +68,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "paperplane"
         case .inbound:
-            return "paperplane"
+            return "box.truck"
         case .received:
             return "envelope"
         case .theyReceived:
@@ -158,7 +158,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "Sent"
         case .inbound:
-            return "Notified"
+            return "Incoming"
         case .received:
             return "Received"
         case .theyReceived:
