@@ -29,9 +29,21 @@ struct AddEventSheet: View {
             }
             if eventType == .written || eventType == .sent {
                 Section {
-                    TextField("Pen", text: $pen)
-                    TextField("Ink", text: $ink)
-                    TextField("Paper", text: $paper)
+                    HStack {
+                        Image(systemName: "pencil")
+                            .foregroundColor(.secondary)
+                        TextField("Pen", text: $pen)
+                    }
+                    HStack {
+                        Image(systemName: "drop")
+                            .foregroundColor(.secondary)
+                        TextField("Ink", text: $ink)
+                    }
+                    HStack {
+                        Image(systemName: "doc.plaintext")
+                            .foregroundColor(.secondary)
+                        TextField("Paper", text: $paper)
+                    }
                 }
             }
             Section {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 enum EventType: Int, CaseIterable, Identifiable {
     case written = 1
@@ -40,6 +41,23 @@ enum EventType: Int, CaseIterable, Identifiable {
         }
     }
     
+    var color: Color {
+        switch self {
+        case .noEvent:
+            return .gray
+        case .written:
+            return .teal
+        case .sent:
+            return .indigo
+        case .inbound:
+            return .orange
+        case .received:
+            return .green
+        case .theyReceived:
+            return .purple
+        }
+    }
+    
     var icon: String {
         /// Displayed in laces such as the list of historical events for a Pen Pal
         switch self {
@@ -54,7 +72,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .received:
             return "envelope"
         case .theyReceived:
-            return "square.and.arrow.down"
+            return "airplane.arrival"
         }
     }
     
@@ -126,7 +144,42 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .received:
             return "I've received something"
         case .theyReceived:
-            return "They received your letter"
+            return "They received my letter"
+        }
+    }
+    
+    var actionableTextShort: String {
+        /// Displayed on buttons that register an event of this type
+        switch self {
+        case .noEvent:
+            return ""
+        case .written:
+            return "Written"
+        case .sent:
+            return "Sent"
+        case .inbound:
+            return "Notified"
+        case .received:
+            return "Received"
+        case .theyReceived:
+            return "Arrived"
+        }
+    }
+    
+    var nextLogicalEventTypes: [EventType] {
+        switch self {
+        case .noEvent:
+            return [.written, .sent]
+        case .written:
+            return [.sent]
+        case .sent:
+            return [.theyReceived]
+        case .inbound:
+            return [.received]
+        case .received:
+            return [.written, .sent]
+        case .theyReceived:
+            return [.inbound, .received]
         }
     }
     
