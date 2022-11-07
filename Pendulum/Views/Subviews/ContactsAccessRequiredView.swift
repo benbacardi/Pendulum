@@ -19,10 +19,13 @@ struct ContactsAccessRequiredView: View {
     var body: some View {
         VStack {
             Spacer()
-            Image(systemName: "person.crop.circle")
-                .font(.largeTitle)
-                .imageScale(.large)
-                .padding(.bottom, 10)
+            if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200)
+                    .padding(.bottom)
+            }
             Text("Pendulum needs access to your contacts so that you can select your Pen Pals!")
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)

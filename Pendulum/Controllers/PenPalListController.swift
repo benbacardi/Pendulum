@@ -8,6 +8,7 @@
 import Foundation
 import GRDB
 import SwiftUI
+import Contacts
 
 class PenPalListController: ObservableObject {
     
@@ -52,6 +53,7 @@ class PenPalListController: ObservableObject {
                     }
                 }
             }
+            await self.syncWithContacts()
         } else {
             do {
                 let newPenpals = try await AppDatabase.shared.fetchAllPenPals()
@@ -65,13 +67,35 @@ class PenPalListController: ObservableObject {
     private func groupPenPals(with penpals: [PenPal]) async -> [EventType: [PenPal]] {
         var groups: [EventType: [PenPal]] = [:]
         for penpal in penpals {
-            let key: EventType = penpal.lastEventType
+            var key: EventType = penpal.lastEventType
+            if key == .theyReceived {
+                /// Group "they received" statuses with "you sent" statuses on the home page
+                key = .sent
+            }
             if !groups.keys.contains(key) {
                 groups[key] = []
             }
             groups[key]?.append(penpal)
         }
         return groups
+    }
+    
+    func syncWithContacts() async {
+        let store = CNContactStore()
+        let keys = [
+            CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+            CNContactOrganizationNameKey,
+            CNContactImageDataAvailableKey,
+            CNContactThumbnailImageDataKey
+        ] as! [CNKeyDescriptor]
+        for penpal in self.penpals {
+            do {
+                let contact = try store.unifiedContact(withIdentifier: penpal.id, keysToFetch: keys)
+                await penpal.update(from: contact)
+            } catch {
+                dataLogger.error("Could not fetch contact with ID \(penpal.id) (\(penpal.name)): \(error.localizedDescription)")
+            }
+        }
     }
     
 }

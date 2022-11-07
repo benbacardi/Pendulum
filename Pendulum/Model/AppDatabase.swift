@@ -35,8 +35,8 @@ final class AppDatabase {
         migrator.registerMigration("createInitialTables") { db in
             try db.create(table: "penpal") { table in
                 table.column("id", .text).primaryKey()
-                table.column("givenName", .text)
-                table.column("familyName", .text)
+                table.column("name", .text)
+                table.column("initials", .text)
                 table.column("image", .blob)
                 table.column("_lastEventType", .integer)
                 table.column("lastEventDate", .date)
@@ -49,6 +49,10 @@ final class AppDatabase {
                 table.column("penpalId", .text).notNull().references("penpal")
                 table.column("_type", .integer).notNull()
                 table.column("date", .datetime).notNull()
+                table.column("notes", .text)
+                table.column("pen", .text)
+                table.column("ink", .text)
+                table.column("paper", .text)
             }
         }
         

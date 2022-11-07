@@ -10,9 +10,11 @@ import SwiftUI
 struct DividerWithText: View {
     
     let text: String
+    let subText: Text?
     
-    init(_ text: String) {
+    init(_ text: String, subText: Text? = nil) {
         self.text = text
+        self.subText = subText
     }
     
     var body: some View {
@@ -20,9 +22,14 @@ struct DividerWithText: View {
             VStack {
                 Divider()
             }
-            Text(text)
-                .font(.caption)
-                .foregroundColor(.secondary)
+            VStack {
+                Text(text)
+                if let subText = subText {
+                    subText
+                }
+            }
+            .font(.caption)
+            .foregroundColor(.secondary)
             VStack {
                 Divider()
             }

@@ -12,17 +12,19 @@ extension AppDatabase {
     
     func fetchAllPenPals() async throws -> [PenPal] {
         try await dbWriter.read { db in
-            try PenPal.fetchAll(db)
+            try PenPal.order(Column("lastEventDate").asc).fetchAll(db)
         }
     }
     
-    @discardableResult func save(_ penPal: PenPal) async throws -> PenPal {
+    @discardableResult
+    func save(_ penPal: PenPal) async throws -> PenPal {
         try await dbWriter.write { db in
             try penPal.saved(db)
         }
     }
     
-    @discardableResult func save(_ event: Event) async throws -> Event {
+    @discardableResult
+    func save(_ event: Event) async throws -> Event {
         try await dbWriter.write { db in
             try event.saved(db)
         }
@@ -31,6 +33,13 @@ extension AppDatabase {
     func updateLastEvent(for penpal: PenPal, with event: Event) async throws {
         let _ = try await dbWriter.write { db in
             try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: event._type), Column("lastEventDate").set(to: event.date))
+        }
+    }
+    
+    @discardableResult
+    func updatePenPal(_ existing: PenPal, from new: PenPal) async throws -> Bool {
+        try await dbWriter.write { db in
+            try new.updateChanges(db, from: existing)
         }
     }
     

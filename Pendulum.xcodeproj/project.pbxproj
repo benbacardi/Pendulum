@@ -35,6 +35,8 @@
 		5E40554B29181AE700BD52BF /* DividerWithText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554A29181AE700BD52BF /* DividerWithText.swift */; };
 		5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
+		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
+		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -68,6 +70,8 @@
 		5E40554A29181AE700BD52BF /* DividerWithText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividerWithText.swift; sourceTree = "<group>"; };
 		5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactSheet.swift; sourceTree = "<group>"; };
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
+		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
+		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -165,6 +169,7 @@
 				5E40552229151CA600BD52BF /* AppDatabase.swift */,
 				5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */,
 				5E40552D291523A300BD52BF /* PenPal.swift */,
+				5E8BA57929185E320065FCC4 /* EventType.swift */,
 				5E40553729155C5F00BD52BF /* Event.swift */,
 			);
 			path = Model;
@@ -210,6 +215,7 @@
 			children = (
 				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
 				5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */,
+				5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -302,6 +308,8 @@
 				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
+				5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */,
+				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
@@ -439,6 +447,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
 				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
@@ -481,6 +491,8 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = Pendulum/Pendulum.entitlements;
 				CODE_SIGN_IDENTITY = "-";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;

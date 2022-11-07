@@ -22,9 +22,8 @@ struct SettingsList: View {
                     Toggle("Ellen", isOn: $enableEllen)
                 }
                 Section(
-                    footer: Text("\(Bundle.main.appName) \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))\nA Cardy Production")
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth:.infinity)
+                    footer: Text("\(Bundle.main.appName) \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))\n**A Faber & Cardy Production**\nFor Ellen, adequately ginger")
+                        .fullWidth(alignment: .center)
                 ){}
             }
             
