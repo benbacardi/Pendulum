@@ -15,6 +15,7 @@ struct AddEventSheet: View {
     // MARK: Parameters
     let penpal: PenPal
     let eventType: EventType
+    let done: (Event?) -> ()
     
     // MARK: State
     @State private var notes: String = ""
@@ -49,9 +50,9 @@ struct AddEventSheet: View {
             Section {
                 Button(action: {
                     Task {
-                        await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                        let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                        self.done(newEvent)
                     }
-                    presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Save")
                 }
@@ -64,7 +65,9 @@ struct AddEventSheet: View {
 struct AddEventSheet_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil), eventType: .written)
+            AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil), eventType: .written) { newEvent in
+                
+            }
         }
     }
 }

@@ -19,10 +19,12 @@ struct PenPalView: View {
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentAddEventSheetForType: EventType? = nil
     
+    @State private var lastEventType: EventType
     @State private var buttonHeight: CGFloat?
         
     init(penpal: PenPal) {
         self.penpal = penpal
+        self._lastEventType = State(wrappedValue: penpal.lastEventType)
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
     
@@ -50,7 +52,7 @@ struct PenPalView: View {
         VStack {
             
             HStack(alignment: .top) {
-                ForEach(penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
                     Button(action: {
                         presentAddEventSheetForType = eventType
                     }) {
@@ -186,7 +188,14 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             NavigationStack {
-                AddEventSheet(penpal: penpal, eventType: eventType)
+                AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
+                    if let newEvent = newEvent {
+                        withAnimation {
+                            self.lastEventType = newEvent.eventType
+                        }
+                    }
+                    self.presentAddEventSheetForType = nil
+                }
             }
         }
         .toolbar {
