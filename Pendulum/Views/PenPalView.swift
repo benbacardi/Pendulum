@@ -21,7 +21,7 @@ struct PenPalView: View {
     
     @State private var lastEventType: EventType
     @State private var buttonHeight: CGFloat?
-        
+    
     init(penpal: PenPal) {
         self.penpal = penpal
         self._lastEventType = State(wrappedValue: penpal.lastEventType)
@@ -36,14 +36,14 @@ struct PenPalView: View {
         Image(systemName: event.eventType.icon)
             .bold()
             .padding(.top, 15)
-//        ZStack {
-//            Circle()
-//                .fill(.gray)
-//            Image(systemName: event.eventType.icon)
-//                .fontWeight(.bold)
-//                .foregroundColor(.white)
-//        }
-//        .frame(width: 40, height: 40)
+        //        ZStack {
+        //            Circle()
+        //                .fill(.gray)
+        //            Image(systemName: event.eventType.icon)
+        //                .fontWeight(.bold)
+        //                .foregroundColor(.white)
+        //        }
+        //        .frame(width: 40, height: 40)
     }
     
     var body: some View {
@@ -108,17 +108,17 @@ struct PenPalView: View {
                         
                         if let firstEvent = penPalViewController.events.first {
                             let daysAgo = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
-                            Group {
-                                if daysAgo == 0 {
-                                    DividerWithText("Today")
-                                } else {
-                                    DividerWithText("\(daysAgo) day\(daysAgo > 1 ? "s" : "") ago")
-                                }
+                            if daysAgo == 0 {
+                                DividerWithText("Today", subText: Text(firstEvent.date, style: .date))
+                                    .padding(.bottom)
                             }
-                            .padding(.bottom)
                         }
                         
                         ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
+                            if difference > 0 {
+                                DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before", subText: Text(event.date, style: .date))
+                                    .padding(.bottom)
+                            }
                             HStack(alignment: .top) {
                                 if !eventIsMyAction(event) {
                                     eventIcon(event)
@@ -159,10 +159,6 @@ struct PenPalView: View {
                                 }
                             }
                             .padding(.bottom)
-                            if difference > 0 {
-                                DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before")
-                                    .padding(.bottom)
-                            }
                         }
                         Button(action: {
                             Task {

@@ -63,13 +63,13 @@ class PenPalViewController: ObservableObject {
         self.eventsWithDifferences = []
         let calendar = Calendar.current
         for (index, item) in events.enumerated() {
-            let newIndex = index + 1
-            if newIndex == events.count {
+            if index == 0 {
                 self.eventsWithDifferences.append((item, 0))
-                break
+                continue
             }
+            let newIndex = index - 1
             let newItem = events[newIndex]
-            self.eventsWithDifferences.append((item, calendar.numberOfDaysBetween(newItem.date, and: item.date)))
+            self.eventsWithDifferences.append((item, calendar.numberOfDaysBetween(item.date, and: newItem.date)))
         }
     }
     
