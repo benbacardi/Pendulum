@@ -86,9 +86,17 @@ struct PenPalView: View {
                 
                 Spacer()
                 
+                if let image = UIImage(named: "undraw_letter_re_8m03") {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 200)
+                }
+                
                 Text("It seems you haven't sent or received any letters with \(penpal.name) yet!")
                     .fullWidth(alignment: .center)
                     .padding()
+                    .padding(.top)
                 
                 Spacer()
                 

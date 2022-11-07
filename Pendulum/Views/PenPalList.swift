@@ -26,6 +26,13 @@ struct PenPalList: View {
                 } else if penPalListController.penpals.isEmpty {
                     VStack {
                         Spacer()
+                        if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fit)
+                                .frame(maxWidth: 200)
+                                .padding(.bottom)
+                        }
                         Button(action: {
                             self.presentingAddPenPalSheet = true
                         }) {
