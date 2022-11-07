@@ -10,7 +10,7 @@ import Contacts
 
 extension CNPostalAddress {
     
-    var fullAddress: String {
+    func getFullAddress(separator: String = "\n") -> String {
         let parts: [String] = [
             self.street,
             self.subLocality,
@@ -18,9 +18,10 @@ extension CNPostalAddress {
             self.subAdministrativeArea,
             self.state,
             self.postalCode,
+            self.country
         ]
         return parts.filter { $0 != "" }
-            .joined(separator: "\n")
+            .joined(separator: separator)
     }
     
 }
