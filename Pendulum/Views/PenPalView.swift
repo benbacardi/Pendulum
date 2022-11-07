@@ -125,12 +125,8 @@ struct PenPalView: View {
                                 }
                                 GroupBox {
                                     VStack {
-                                        //                                Text(event.date, style: .date)
-                                        //                                    .font(.caption)
-                                        //                                    .foregroundColor(.secondary)
-                                        //                                    .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
                                         Text(event.eventType.description)
-                                            .fullWidth()//alignment: eventIsMyAction(event) ? .trailing : .leading)
+                                            .fullWidth()
                                     }
                                     if event.hasNotes {
                                         VStack(alignment: .leading, spacing: 2) {
