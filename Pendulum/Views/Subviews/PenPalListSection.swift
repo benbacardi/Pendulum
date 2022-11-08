@@ -97,7 +97,7 @@ struct PenPalListSection: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             if let penpal = self.currentPenPal {
-                AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
+                AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
                     self.presentAddEventSheetForType = nil
                 }
             }

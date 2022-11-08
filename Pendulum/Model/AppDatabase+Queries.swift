@@ -59,6 +59,13 @@ extension AppDatabase {
         }
     }
     
+    @discardableResult
+    func updateEvent(_ existing: Event, from new: Event) async throws -> Bool {
+        try await dbWriter.write { db in
+            try new.updateChanges(db, from: existing)
+        }
+    }
+    
     func fetchLatestEvent(for penpal: PenPal) async throws -> Event? {
         try await dbWriter.read { db in
             try penpal.events.order(Column("date").desc).fetchOne(db)

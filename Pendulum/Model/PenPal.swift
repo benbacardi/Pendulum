@@ -86,6 +86,16 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     }
     
     @discardableResult
+    func updateLastEvent(with event: Event? = nil) async -> EventType {
+        do {
+            return try await AppDatabase.shared.updateLastEvent(for: self, with: event)
+        } catch {
+            dataLogger.error("Could not update last event: \(error.localizedDescription)")
+            return .noEvent
+        }
+    }
+    
+    @discardableResult
     func update(from contact: CNContact) async -> Bool {
         let newPenPal = PenPal(id: self.id, name: contact.fullName ?? self.name, initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate)
         do {

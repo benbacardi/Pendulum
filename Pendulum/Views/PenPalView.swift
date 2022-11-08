@@ -137,7 +137,7 @@ struct PenPalView: View {
                                 dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            EventCell(event: event, lastEventTypeForPenPal: $lastEventType)
+                            EventCell(event: event, penpal: penpal, lastEventTypeForPenPal: $lastEventType)
                                 .padding(.bottom)
                         }
                         #if DEBUG
@@ -177,7 +177,7 @@ struct PenPalView: View {
             }
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
+            AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
                 self.presentAddEventSheetForType = nil
             }
         }

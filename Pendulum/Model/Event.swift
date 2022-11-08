@@ -23,7 +23,11 @@ struct Event: Identifiable, Hashable {
     }
     
     var hasNotes: Bool {
-        !(self.notes?.isEmpty ?? true) || !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true)
+        !(self.notes?.isEmpty ?? true) || self.hasAttributes
+    }
+    
+    var hasAttributes: Bool {
+        !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true)
     }
     
 }
@@ -41,6 +45,16 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     static let penpal = belongsTo(PenPal.self)
     var penpal: QueryInterfaceRequest<PenPal> {
         request(for: Event.penpal)
+    }
+    
+    @discardableResult
+    func update(from newEvent: Event) async -> Bool {
+        do {
+            return try await AppDatabase.shared.updateEvent(self, from: newEvent)
+        } catch {
+            dataLogger.error("Could not update Event: \(error.localizedDescription)")
+        }
+        return false
     }
     
     func delete() async -> EventType {
