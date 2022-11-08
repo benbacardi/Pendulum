@@ -45,7 +45,7 @@ struct PenPalView: View {
             HStack(alignment: .top) {
                 ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
                     Button(action: {
-                        presentAddEventSheetForType = eventType
+                        self.userTappedAddEvent(ofType: eventType)
                     }) {
                         Label(eventType.actionableTextShort, systemImage: eventType.icon)
                             .fullWidth(alignment: .center)
@@ -60,7 +60,7 @@ struct PenPalView: View {
                 Menu {
                     ForEach(EventType.actionableCases, id: \.self) { eventType in
                         Button(action: {
-                            presentAddEventSheetForType = eventType
+                            self.userTappedAddEvent(ofType: eventType)
                         }) {
                             Label(eventType.actionableText, systemImage: eventType.icon)
                         }
@@ -194,6 +194,22 @@ struct PenPalView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
     }
+    
+    func userTappedAddEvent(ofType eventType: EventType) {
+        if eventType.presentFullNotesSheetByDefault {
+            self.presentAddEventSheetForType = eventType
+        } else {
+            Task {
+                await self.penpal.addEvent(ofType: eventType)
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.lastEventType = eventType
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 private extension PenPalView {

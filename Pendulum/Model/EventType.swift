@@ -158,7 +158,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .inbound:
             return "Replied"
         case .received:
-            return "Received"
+            return "It's here"
         case .theyReceived:
             return "Arrived"
         }
@@ -178,6 +178,23 @@ enum EventType: Int, CaseIterable, Identifiable {
             return [.written, .sent]
         case .theyReceived:
             return [.inbound, .received]
+        }
+    }
+    
+    var presentFullNotesSheetByDefault: Bool {
+        switch self {
+        case .noEvent:
+            return false
+        case .written:
+            return true
+        case .sent:
+            return true
+        case .inbound:
+            return false
+        case .received:
+            return false
+        case .theyReceived:
+            return false
         }
     }
     
