@@ -16,6 +16,7 @@ struct PenPalListSection: View {
     // MARK: State
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
+    @State private var presentAddEventSheetForType: EventType? = nil
     
     func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
@@ -70,9 +71,8 @@ struct PenPalListSection: View {
                     .contextMenu {
                         ForEach(EventType.actionableCases, id: \.self) { eventType in
                             Button(action: {
-                                Task {
-                                    await penpal.addEvent(ofType: eventType)
-                                }
+                                self.currentPenPal = penpal
+                                self.presentAddEventSheetForType = eventType
                             }) {
                                 Label(eventType.actionableText, systemImage: eventType.icon)
                             }
@@ -92,6 +92,13 @@ struct PenPalListSection: View {
                             }
                         }
                     }
+                }
+            }
+        }
+        .sheet(item: $presentAddEventSheetForType) { eventType in
+            if let penpal = self.currentPenPal {
+                AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
+                    self.presentAddEventSheetForType = nil
                 }
             }
         }

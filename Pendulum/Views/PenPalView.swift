@@ -177,15 +177,8 @@ struct PenPalView: View {
             }
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            NavigationStack {
-                AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
-                    if let newEvent = newEvent {
-                        withAnimation {
-                            self.lastEventType = newEvent.eventType
-                        }
-                    }
-                    self.presentAddEventSheetForType = nil
-                }
+            AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
+                self.presentAddEventSheetForType = nil
             }
         }
         .toolbar {
