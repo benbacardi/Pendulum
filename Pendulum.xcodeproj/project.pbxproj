@@ -36,6 +36,7 @@
 		5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
 		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
+		5E52C661291A503700BBD58D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C660291A503700BBD58D /* EventCell.swift */; };
 		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 /* End PBXBuildFile section */
@@ -72,6 +73,7 @@
 		5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactSheet.swift; sourceTree = "<group>"; };
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
 		5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalHeader.swift; sourceTree = "<group>"; };
+		5E52C660291A503700BBD58D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -209,6 +211,7 @@
 				5E40553F29166DA100BD52BF /* PenPalListSection.swift */,
 				5E40554A29181AE700BD52BF /* DividerWithText.swift */,
 				5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */,
+				5E52C660291A503700BBD58D /* EventCell.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
 				5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */,
+				5E52C661291A503700BBD58D /* EventCell.swift in Sources */,
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E4055452917051D00BD52BF /* PenPalView.swift in Sources */,
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,

@@ -51,7 +51,7 @@ extension CNContact {
     }
     
     func matches(term: String) -> Bool {
-        self.fullName?.contains(term) ?? false
+        self.fullName?.lowercased().contains(term) ?? false
     }
     
     var image: Image? {

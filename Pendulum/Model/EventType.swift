@@ -83,14 +83,12 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "Get started!"
         case .written:
             return "You have letters to post!"
-        case .sent:
-            return "Waiting for a response..."
+        case .sent, .theyReceived:
+            return "You're waiting for a response"
         case .inbound:
             return "Post is on its way!"
         case .received:
             return "You have letters to reply to!"
-        case .theyReceived:
-            return "Waiting for a response..."
         }
     }
     

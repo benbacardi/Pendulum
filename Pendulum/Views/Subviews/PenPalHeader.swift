@@ -16,7 +16,7 @@ struct PenPalHeader: View {
             if let image = penpal.displayImage {
                 image
                     .clipShape(Circle())
-                    .frame(width: 60, height: 60)
+                    .frame(width: 40, height: 40)
             } else {
                 ZStack {
                     Circle()
@@ -25,7 +25,7 @@ struct PenPalHeader: View {
                         .font(.system(.headline, design: .rounded))
                         .foregroundColor(.white)
                 }
-                .frame(width: 60, height: 60)
+                .frame(width: 40, height: 40)
             }
             Text(penpal.name)
                 .font(.largeTitle)

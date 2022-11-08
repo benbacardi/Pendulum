@@ -28,31 +28,19 @@ struct PenPalView: View {
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
     
-    func eventIsMyAction(_ event: Event) -> Bool {
-        event.eventType == .written || event.eventType == .sent
-    }
-    
-    func eventIcon(_ event: Event) -> some View {
-        Image(systemName: event.eventType.icon)
-            .bold()
-            .padding(.top, 15)
-        //        ZStack {
-        //            Circle()
-        //                .fill(.gray)
-        //            Image(systemName: event.eventType.icon)
-        //                .fontWeight(.bold)
-        //                .foregroundColor(.white)
-        //        }
-        //        .frame(width: 40, height: 40)
-    }
-    
     @ViewBuilder
     func headerAndButtons() -> some View {
         Group {
             
             PenPalHeader(penpal: penpal)
                 .padding(.horizontal)
-//                .border(.red)
+            
+            if penpal.lastEventType != .noEvent {
+                Text(penpal.lastEventType.phrase)
+                    .font(.headline)
+                    .fullWidth()
+                    .padding(.horizontal)
+            }
             
             HStack(alignment: .top) {
                 ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
@@ -85,8 +73,27 @@ struct PenPalView: View {
                 .buttonStyle(.bordered)
             }
             .padding(.horizontal)
-//            .border(.yellow)
         }
+    }
+    
+    @ViewBuilder
+    func dateDivider(for date: Date, withDifference difference: Int, relativeToToday: Bool = false) -> some View {
+        let plural = difference > 1 ? "s" : ""
+        HStack {
+            if relativeToToday {
+                if difference == 0 {
+                    Text("Today")
+                } else {
+                    Text("\(difference) day\(plural) ago")
+                }
+            } else {
+                Text("\(difference) day\(plural) before")
+            }
+            Text("–")
+            Text(date, style: .date)
+        }
+        .font(.caption)
+        .foregroundColor(.secondary)
     }
     
     var body: some View {
@@ -120,55 +127,20 @@ struct PenPalView: View {
                     VStack(spacing: 0) {
                         
                         if let firstEvent = penPalViewController.events.first {
-                            let daysAgo = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
-                            if daysAgo == 0 {
-                                DividerWithText("Today", subText: Text(firstEvent.date, style: .date))
-                                    .padding(.bottom)
-                            }
+                            let difference = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
+                            dateDivider(for: firstEvent.date, withDifference: difference, relativeToToday: true)
+                                .padding(.bottom)
                         }
                         
                         ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
                             if difference > 0 {
-                                DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before", subText: Text(event.date, style: .date))
+                                dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            HStack(alignment: .top) {
-                                if !eventIsMyAction(event) {
-                                    eventIcon(event)
-                                }
-                                GroupBox {
-                                    VStack {
-                                        Text(event.eventType.description)
-                                            .fullWidth()
-                                    }
-                                    if event.hasNotes {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            if let notes = event.notes, !notes.isEmpty {
-                                                Text(notes)
-                                            }
-                                            if let pen = event.pen, !pen.isEmpty {
-                                                Label(pen, systemImage: "pencil")
-                                            }
-                                            if let ink = event.ink, !ink.isEmpty {
-                                                Label(ink, systemImage: "drop")
-                                            }
-                                            if let paper = event.paper, !paper.isEmpty {
-                                                Label(paper, systemImage: "doc.plaintext")
-                                            }
-                                        }
-                                        .fullWidth()
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .padding(.top, 1)
-                                    }
-                                    
-                                }
-                                if eventIsMyAction(event) {
-                                    eventIcon(event)
-                                }
-                            }
-                            .padding(.bottom)
+                            EventCell(event: event)
+                                .padding(.bottom)
                         }
+                        #if DEBUG
                         Button(action: {
                             Task {
                                 let now = Date()
@@ -181,6 +153,7 @@ struct PenPalView: View {
                         }) {
                             Text("Add Debug Data")
                         }
+                        #endif
                     }
                     .padding()
                 }
