@@ -156,7 +156,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "Sent"
         case .inbound:
-            return "Incoming"
+            return "Replied"
         case .received:
             return "Received"
         case .theyReceived:
@@ -171,7 +171,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .written:
             return [.sent]
         case .sent:
-            return [.theyReceived]
+            return [.theyReceived, .inbound]
         case .inbound:
             return [.received]
         case .received:

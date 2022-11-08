@@ -42,4 +42,22 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     var penpal: QueryInterfaceRequest<PenPal> {
         request(for: Event.penpal)
     }
+    
+    func delete() async -> EventType {
+        do {
+            let penpal = try await AppDatabase.shared.penPalFor(event: self)
+            do {
+                try await AppDatabase.shared.delete(self)
+                if let penpal = penpal {
+                    return try await AppDatabase.shared.updateLastEvent(for: penpal)
+                }
+            } catch {
+                dataLogger.error("Could not delete event: \(error.localizedDescription)")
+            }
+        } catch {
+            dataLogger.error("Could not fetch PenPal for event: \(error.localizedDescription)")
+        }
+        return .noEvent
+    }
+    
 }

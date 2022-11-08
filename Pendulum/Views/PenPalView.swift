@@ -35,8 +35,8 @@ struct PenPalView: View {
             PenPalHeader(penpal: penpal)
                 .padding(.horizontal)
             
-            if penpal.lastEventType != .noEvent {
-                Text(penpal.lastEventType.phrase)
+            if lastEventType != .noEvent {
+                Text(lastEventType.phrase)
                     .font(.headline)
                     .fullWidth()
                     .padding(.horizontal)
@@ -137,7 +137,7 @@ struct PenPalView: View {
                                 dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            EventCell(event: event)
+                            EventCell(event: event, lastEventTypeForPenPal: $lastEventType)
                                 .padding(.bottom)
                         }
                         #if DEBUG
