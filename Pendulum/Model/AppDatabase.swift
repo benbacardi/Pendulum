@@ -46,7 +46,7 @@ final class AppDatabase {
         migrator.registerMigration("createEventTables") { db in
             try db.create(table: "event") { table in
                 table.autoIncrementedPrimaryKey("id")
-                table.column("penpalId", .text).notNull().references("penpal")
+                table.column("penpalId", .text).notNull().references("penpal", onDelete: .cascade)
                 table.column("_type", .integer).notNull()
                 table.column("date", .datetime).notNull()
                 table.column("notes", .text)

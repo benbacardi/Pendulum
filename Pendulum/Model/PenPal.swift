@@ -96,4 +96,12 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         return false
     }
     
+    func delete() async {
+        do {
+            try await AppDatabase.shared.delete(self)
+        } catch {
+            dataLogger.error("Could not delete penpal: \(error.localizedDescription)")
+        }
+    }
+    
 }

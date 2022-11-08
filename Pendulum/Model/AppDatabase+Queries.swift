@@ -72,6 +72,13 @@ extension AppDatabase {
     }
     
     @discardableResult
+    func delete(_ penpal: PenPal) async throws -> Bool {
+        try await dbWriter.write { db in
+            try penpal.delete(db)
+        }
+    }
+    
+    @discardableResult
     func delete(_ event: Event) async throws -> Bool {
         try await dbWriter.write { db in
             try event.delete(db)

@@ -13,6 +13,10 @@ struct PenPalListSection: View {
     let type: EventType
     let penpals: [PenPal]
     
+    // MARK: State
+    @State private var currentPenPal: PenPal? = nil
+    @State private var showDeleteAlert = false
+    
     func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
             return Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
@@ -71,6 +75,20 @@ struct PenPalListSection: View {
                                 }
                             }) {
                                 Label(eventType.actionableText, systemImage: eventType.icon)
+                            }
+                        }
+                        Divider()
+                        Button(role: .destructive, action: {
+                            self.currentPenPal = penpal
+                            self.showDeleteAlert = true
+                        }) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+                        Button("Delete \(penpal.name)", role: .destructive) {
+                            Task {
+                                await penpal.delete()
                             }
                         }
                     }
