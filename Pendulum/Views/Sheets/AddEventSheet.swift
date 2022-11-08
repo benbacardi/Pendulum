@@ -112,7 +112,7 @@ struct AddEventSheet: View {
 
 struct AddEventSheet_Previews: PreviewProvider {
     static var previews: some View {
-        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil), event: Event(id: nil, _type: 2, date: Date(), penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
+        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil, notes: nil), event: Event(id: nil, _type: 2, date: Date(), penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
         }
     }
 }

@@ -165,16 +165,7 @@ struct PenPalView: View {
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
-            NavigationStack {
-                PenPalContactSheet(penpal: penpal)
-                    .toolbar {
-                        Button(action: {
-                            self.showingPenPalContactSheet = false
-                        }) {
-                            Text("Done")
-                        }
-                    }
-            }
+            PenPalContactSheet(penpal: penpal)
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
@@ -224,7 +215,7 @@ private extension PenPalView {
 struct PenPalView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date()))
+            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil))
         }
     }
 }

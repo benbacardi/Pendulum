@@ -109,9 +109,9 @@ struct PenPalListSection: View {
 struct PenPalListSection_Previews: PreviewProvider {
     static var previews: some View {
         PenPalListSection(type: .written, penpals: [
-            PenPal(id: "1", name: "Ben Cardy", initials: "BC", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
-            PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date()),
-            PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date())
+            PenPal(id: "1", name: "Ben Cardy", initials: "BC", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil),
+            PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil),
+            PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil)
         ])
     }
 }

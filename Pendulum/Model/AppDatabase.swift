@@ -56,6 +56,12 @@ final class AppDatabase {
             }
         }
         
+        migrator.registerMigration("addPenPalNotes") { db in
+            try db.alter(table: "penpal") { table in
+                table.add(column: "notes", .text)
+            }
+        }
+        
         return migrator
     }
     
