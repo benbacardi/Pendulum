@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var selectedTab: Int = Tab.settings.rawValue
+    @State private var selectedTab: Int = Tab.penPalList.rawValue
     
     var body: some View {
         TabView(selection: $selectedTab) {
