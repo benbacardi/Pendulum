@@ -12,13 +12,17 @@ struct ContentView: View {
     @State private var selectedTab: Int = Tab.penPalList.rawValue
     
     var body: some View {
-        TabView(selection: $selectedTab) {
+        if DeviceType.isPad() {
             PenPalList()
-                .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
-                .tag(Tab.penPalList.rawValue)
-            SettingsList()
-                .tabItem { Label("Settings", systemImage: "gear") }
-                .tag(Tab.settings.rawValue)
+        } else {
+            TabView(selection: $selectedTab) {
+                PenPalList()
+                    .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
+                    .tag(Tab.penPalList.rawValue)
+                SettingsList()
+                    .tabItem { Label("Settings", systemImage: "gear") }
+                    .tag(Tab.settings.rawValue)
+            }
         }
     }
 }

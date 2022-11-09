@@ -16,6 +16,7 @@ struct PenPalList: View {
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var iconWidth: CGFloat = .zero
+    @State private var presentingSettingsSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -54,6 +55,15 @@ struct PenPalList: View {
             }
             .navigationTitle("Pen Pals")
             .toolbar {
+                if DeviceType.isPad() {
+                    ToolbarItem(placement: .navigationBarLeading) {
+                        Button(action: {
+                            self.presentingSettingsSheet = true
+                        }) {
+                            Label("Settings", systemImage: "gear")
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         self.presentingAddPenPalSheet = true
@@ -65,6 +75,9 @@ struct PenPalList: View {
             }
             .sheet(isPresented: $presentingAddPenPalSheet) {
                 AddPenPalSheet(existingPenPals: penPalListController.penpals)
+            }
+            .sheet(isPresented: $presentingSettingsSheet) {
+                SettingsList()
             }
         }
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
