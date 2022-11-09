@@ -29,14 +29,6 @@ class PenPalListController: ObservableObject {
                 await self.refresh(with: penpals)
             }
         }
-        self.eventObservationCancellable = AppDatabase.shared.start(observation: self.eventObservation) { error in
-            dataLogger.error("Error observing events: \(error.localizedDescription)")
-        } onChange: { events in
-            dataLogger.debug("Events changed: \(events.count)")
-            Task {
-                await self.refresh()
-            }
-        }
     }
     
     private func refresh(with penpals: [PenPal]? = nil) async {

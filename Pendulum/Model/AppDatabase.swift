@@ -132,6 +132,10 @@ extension AppDatabase {
         ValueObservation.tracking(Event.fetchAll)
     }
     
+    func observeEventObservation(for penpal: PenPal) -> ValueObservation<ValueReducers.Fetch<[Event]>> {
+        ValueObservation.tracking(penpal.events.fetchAll)
+    }
+    
     func start<T: ValueReducer>(observation: ValueObservation<T>,
                                 scheduling scheduler: ValueObservationScheduler = .async(onQueue: .main),
                                 onError: @escaping (Error) -> Void,

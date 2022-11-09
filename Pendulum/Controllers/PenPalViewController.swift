@@ -18,11 +18,12 @@ class PenPalViewController: ObservableObject {
     
     private var penPalObservation = AppDatabase.shared.observePenPalObservation()
     private var penPalObservationCancellable: DatabaseCancellable?
-    private var eventObservation = AppDatabase.shared.observeEventObservation()
+    private var eventObservation: ValueObservation<ValueReducers.Fetch<[Event]>>
     private var eventObservationCancellable: DatabaseCancellable?
     
     init(penpal: PenPal) {
         self.penpal = penpal
+        self.eventObservation = AppDatabase.shared.observeEventObservation(for: penpal)
     }
     
     func start() {
