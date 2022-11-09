@@ -52,6 +52,10 @@ struct SettingsList: View {
                         Text("\(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
                             .foregroundColor(.secondary)
                     }
+                    Link(destination: URL(string: "mailto:pendulum@bencardy.co.uk")!) {
+                        Text("Send Feedback")
+                            .foregroundColor(.primary)
+                    }
                 }
             }
             
