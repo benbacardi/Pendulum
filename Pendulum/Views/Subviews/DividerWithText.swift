@@ -11,16 +11,20 @@ struct DividerWithText: View {
     
     let text: String
     let subText: Text?
+    let showDivider: Bool
     
-    init(_ text: String, subText: Text? = nil) {
+    init(_ text: String, subText: Text? = nil, showDivider: Bool = false) {
         self.text = text
         self.subText = subText
+        self.showDivider = showDivider
     }
     
     var body: some View {
         HStack {
-            VStack {
-                Divider()
+            if showDivider {
+                VStack {
+                    Divider()
+                }
             }
             VStack {
                 Text(text)
@@ -30,8 +34,10 @@ struct DividerWithText: View {
             }
             .font(.caption)
             .foregroundColor(.secondary)
-            VStack {
-                Divider()
+            if showDivider {
+                VStack {
+                    Divider()
+                }
             }
         }
     }

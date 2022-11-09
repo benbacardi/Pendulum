@@ -30,14 +30,55 @@ extension AppDatabase {
         }
     }
     
-    func updateLastEvent(for penpal: PenPal, with event: Event) async throws {
-        let _ = try await dbWriter.write { db in
-            try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: event._type), Column("lastEventDate").set(to: event.date))
+    func getLastEvent(ofType eventType: EventType, for penpal: PenPal) async throws -> Event? {
+        try await dbWriter.read { db in
+            try penpal.events.filter(Column("_type") == eventType.rawValue).order(Column("date").desc).fetchOne(db)
+        }
+    }
+    
+    func setLastEventType(for penpal: PenPal, to eventType: EventType, at date: Date?) async throws {
+        try await dbWriter.write { db in
+            let t = try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: eventType.rawValue), Column("lastEventDate").set(to: date))
+            print("BEN: \(type(of: t))")
         }
     }
     
     @discardableResult
+    func updateLastEventType(for penpal: PenPal, with event: Event? = nil) async throws -> EventType {
+        
+        var newEventType: EventType = .noEvent
+        var newEventDate: Date? = nil
+        
+        var readFromDb: Bool = true
+        
+        if let lastWritten = try await self.getLastEvent(ofType: .written, for: penpal) {
+            let lastSent = try await self.getLastEvent(ofType: .sent, for: penpal)
+            if lastSent?.date ?? Date.distantPast < lastWritten.date {
+                newEventType = .written
+                newEventDate = lastWritten.date
+                readFromDb = false
+            }
+        }
+        if readFromDb, let fetchedEvent = await penpal.fetchLatestEvent() {
+                newEventType = fetchedEvent.eventType
+                newEventDate = fetchedEvent.date
+        }
+        
+        dataLogger.debug("Setting the Last Event Type for \(penpal.name) to \(newEventType.description)")
+        try await self.setLastEventType(for: penpal, to: newEventType, at: newEventDate)
+        return newEventType
+        
+    }
+    
+    @discardableResult
     func updatePenPal(_ existing: PenPal, from new: PenPal) async throws -> Bool {
+        try await dbWriter.write { db in
+            try new.updateChanges(db, from: existing)
+        }
+    }
+    
+    @discardableResult
+    func updateEvent(_ existing: Event, from new: Event) async throws -> Bool {
         try await dbWriter.write { db in
             try new.updateChanges(db, from: existing)
         }
@@ -52,6 +93,26 @@ extension AppDatabase {
     func fetchAllEvents(for penpal: PenPal) async throws -> [Event] {
         try await dbWriter.read { db in
             try penpal.events.order(Column("date").desc).fetchAll(db)
+        }
+    }
+    
+    @discardableResult
+    func delete(_ penpal: PenPal) async throws -> Bool {
+        try await dbWriter.write { db in
+            try penpal.delete(db)
+        }
+    }
+    
+    @discardableResult
+    func delete(_ event: Event) async throws -> Bool {
+        try await dbWriter.write { db in
+            try event.delete(db)
+        }
+    }
+    
+    func penPalFor(event: Event) async throws -> PenPal? {
+        try await dbWriter.read { db in
+            try event.penpal.fetchOne(db)
         }
     }
     

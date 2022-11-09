@@ -83,14 +83,12 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "Get started!"
         case .written:
             return "You have letters to post!"
-        case .sent:
-            return "Waiting for a response..."
+        case .sent, .theyReceived:
+            return "You're waiting for a response"
         case .inbound:
             return "Post is on its way!"
         case .received:
             return "You have letters to reply to!"
-        case .theyReceived:
-            return "Waiting for a response..."
         }
     }
     
@@ -104,7 +102,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "paperplane"
         case .inbound:
-            return "square.and.arrow.down"
+            return "box.truck"
         case .received:
             return "pencil.line"
         case .theyReceived:
@@ -158,9 +156,9 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "Sent"
         case .inbound:
-            return "Incoming"
+            return "Replied"
         case .received:
-            return "Received"
+            return "It's here"
         case .theyReceived:
             return "Arrived"
         }
@@ -173,13 +171,30 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .written:
             return [.sent]
         case .sent:
-            return [.theyReceived]
+            return [.theyReceived, .inbound]
         case .inbound:
             return [.received]
         case .received:
             return [.written, .sent]
         case .theyReceived:
             return [.inbound, .received]
+        }
+    }
+    
+    var presentFullNotesSheetByDefault: Bool {
+        switch self {
+        case .noEvent:
+            return false
+        case .written:
+            return true
+        case .sent:
+            return true
+        case .inbound:
+            return false
+        case .received:
+            return false
+        case .theyReceived:
+            return false
         }
     }
     

@@ -28,33 +28,24 @@ struct PenPalView: View {
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
     
-    func eventIsMyAction(_ event: Event) -> Bool {
-        event.eventType == .written || event.eventType == .sent
-    }
-    
-    func eventIcon(_ event: Event) -> some View {
-        Image(systemName: event.eventType.icon)
-            .bold()
-            .padding(.top, 15)
-        //        ZStack {
-        //            Circle()
-        //                .fill(.gray)
-        //            Image(systemName: event.eventType.icon)
-        //                .fontWeight(.bold)
-        //                .foregroundColor(.white)
-        //        }
-        //        .frame(width: 40, height: 40)
-    }
-    
-    var body: some View {
-        // MARK: Action Buttons
-        
-        VStack {
+    @ViewBuilder
+    func headerAndButtons() -> some View {
+        Group {
+            
+            PenPalHeader(penpal: penpal)
+                .padding(.horizontal)
+            
+            if lastEventType != .noEvent {
+                Text(lastEventType.phrase)
+                    .font(.headline)
+                    .fullWidth()
+                    .padding(.horizontal)
+            }
             
             HStack(alignment: .top) {
                 ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
                     Button(action: {
-                        presentAddEventSheetForType = eventType
+                        self.userTappedAddEvent(ofType: eventType)
                     }) {
                         Label(eventType.actionableTextShort, systemImage: eventType.icon)
                             .fullWidth(alignment: .center)
@@ -69,7 +60,7 @@ struct PenPalView: View {
                 Menu {
                     ForEach(EventType.actionableCases, id: \.self) { eventType in
                         Button(action: {
-                            presentAddEventSheetForType = eventType
+                            self.userTappedAddEvent(ofType: eventType)
                         }) {
                             Label(eventType.actionableText, systemImage: eventType.icon)
                         }
@@ -82,6 +73,35 @@ struct PenPalView: View {
                 .buttonStyle(.bordered)
             }
             .padding(.horizontal)
+        }
+    }
+    
+    @ViewBuilder
+    func dateDivider(for date: Date, withDifference difference: Int, relativeToToday: Bool = false) -> some View {
+        let plural = difference > 1 ? "s" : ""
+        HStack {
+            if relativeToToday {
+                if difference == 0 {
+                    Text("Today")
+                } else {
+                    Text("\(difference) day\(plural) ago")
+                }
+            } else {
+                Text("\(difference) day\(plural) before")
+            }
+            Text("–")
+            Text(date, style: .date)
+        }
+        .font(.caption)
+        .foregroundColor(.secondary)
+    }
+    
+    var body: some View {
+        // MARK: Action Buttons
+        
+        VStack(spacing: 10) {
+            
+            self.headerAndButtons()
             
             // MARK: Timeline
             if penPalViewController.events.isEmpty {
@@ -107,59 +127,20 @@ struct PenPalView: View {
                     VStack(spacing: 0) {
                         
                         if let firstEvent = penPalViewController.events.first {
-                            let daysAgo = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
-                            if daysAgo == 0 {
-                                DividerWithText("Today", subText: Text(firstEvent.date, style: .date))
-                                    .padding(.bottom)
-                            }
+                            let difference = Calendar.current.numberOfDaysBetween(firstEvent.date, and: Date())
+                            dateDivider(for: firstEvent.date, withDifference: difference, relativeToToday: true)
+                                .padding(.bottom)
                         }
                         
                         ForEach(penPalViewController.eventsWithDifferences, id: \.0) { (event, difference) in
                             if difference > 0 {
-                                DividerWithText("\(difference) day\(difference > 1 ? "s" : "") before", subText: Text(event.date, style: .date))
+                                dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            HStack(alignment: .top) {
-                                if !eventIsMyAction(event) {
-                                    eventIcon(event)
-                                }
-                                GroupBox {
-                                    VStack {
-                                        //                                Text(event.date, style: .date)
-                                        //                                    .font(.caption)
-                                        //                                    .foregroundColor(.secondary)
-                                        //                                    .fullWidth(alignment: eventIsMyAction(event) ? .trailing : .leading)
-                                        Text(event.eventType.description)
-                                            .fullWidth()//alignment: eventIsMyAction(event) ? .trailing : .leading)
-                                    }
-                                    if event.hasNotes {
-                                        VStack(alignment: .leading, spacing: 2) {
-                                            if let notes = event.notes, !notes.isEmpty {
-                                                Text(notes)
-                                            }
-                                            if let pen = event.pen, !pen.isEmpty {
-                                                Label(pen, systemImage: "pencil")
-                                            }
-                                            if let ink = event.ink, !ink.isEmpty {
-                                                Label(ink, systemImage: "drop")
-                                            }
-                                            if let paper = event.paper, !paper.isEmpty {
-                                                Label(paper, systemImage: "doc.plaintext")
-                                            }
-                                        }
-                                        .fullWidth()
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                        .padding(.top, 1)
-                                    }
-                                    
-                                }
-                                if eventIsMyAction(event) {
-                                    eventIcon(event)
-                                }
-                            }
-                            .padding(.bottom)
+                            EventCell(event: event, penpal: penpal, lastEventTypeForPenPal: $lastEventType)
+                                .padding(.bottom)
                         }
+                        #if DEBUG
                         Button(action: {
                             Task {
                                 let now = Date()
@@ -172,38 +153,24 @@ struct PenPalView: View {
                         }) {
                             Text("Add Debug Data")
                         }
+                        #endif
                     }
                     .padding()
                 }
             }
         }
-        .navigationTitle(penpal.name)
+//        .navigationTitle(penpal.name)
         .onAppear {
             penPalViewController.start()
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
-            NavigationStack {
-                PenPalContactSheet(penpal: penpal)
-                    .toolbar {
-                        Button(action: {
-                            self.showingPenPalContactSheet = false
-                        }) {
-                            Text("Done")
-                        }
-                    }
-            }
+            PenPalContactSheet(penpal: penpal)
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            NavigationStack {
-                AddEventSheet(penpal: penpal, eventType: eventType) { newEvent in
-                    if let newEvent = newEvent {
-                        withAnimation {
-                            self.lastEventType = newEvent.eventType
-                        }
-                    }
-                    self.presentAddEventSheetForType = nil
-                }
+            AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
+                self.lastEventType = newEventType
+                self.presentAddEventSheetForType = nil
             }
         }
         .toolbar {
@@ -217,7 +184,25 @@ struct PenPalView: View {
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
             self.buttonHeight = $0
         }
+        .navigationBarTitleDisplayMode(.inline)
     }
+    
+    func userTappedAddEvent(ofType eventType: EventType) {
+        if eventType.presentFullNotesSheetByDefault {
+            self.presentAddEventSheetForType = eventType
+        } else {
+            Task {
+                await self.penpal.addEvent(ofType: eventType)
+                let latestEventType = await penpal.updateLastEventType()
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.lastEventType = latestEventType
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 private extension PenPalView {
@@ -232,7 +217,7 @@ private extension PenPalView {
 struct PenPalView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date()))
+            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil))
         }
     }
 }
