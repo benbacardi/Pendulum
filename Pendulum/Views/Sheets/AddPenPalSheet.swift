@@ -23,47 +23,75 @@ struct AddPenPalSheet: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(sortedContacts, id: \.identifier) { contact in
-                    if !existingPenPalIdentifiers.contains(contact.identifier) {
-                        Button(action: {
-                            Task {
-                                let newPenPal = PenPal(id: contact.identifier, name: contact.fullName ?? "Unknown Contact", initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil, notes: nil)
-                                do {
-                                    try await AppDatabase.shared.save(newPenPal)
-                                    presentationMode.wrappedValue.dismiss()
-                                } catch {
-                                    dataLogger.error("Could not save PenPal: \(error.localizedDescription)")
-                                }
-                            }
-                        }) {
-                            HStack {
-                                if let image = contact.image {
-                                    image
-                                        .clipShape(Circle())
-                                        .frame(width: 40, height: 40)
-                                } else {
-                                    ZStack {
-                                        Circle()
-                                            .fill(.gray)
-                                        Text(contact.initials)
-                                            .font(.system(.headline, design: .rounded))
-                                            .foregroundColor(.white)
+            Group {
+                if !contactDetails.isEmpty {
+                    List {
+                        ForEach(sortedContacts, id: \.identifier) { contact in
+                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+                                Button(action: {
+                                    Task {
+                                        let newPenPal = PenPal(id: contact.identifier, name: contact.fullName ?? "Unknown Contact", initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil, notes: nil)
+                                        do {
+                                            try await AppDatabase.shared.save(newPenPal)
+                                            presentationMode.wrappedValue.dismiss()
+                                        } catch {
+                                            dataLogger.error("Could not save PenPal: \(error.localizedDescription)")
+                                        }
                                     }
-                                    .frame(width: 40, height: 40)
-                                }
-                                if let name = contact.fullName {
-                                    Text(name)
-                                } else {
-                                    Text("Unknown Contact")
+                                }) {
+                                    HStack {
+                                        if let image = contact.image {
+                                            image
+                                                .clipShape(Circle())
+                                                .frame(width: 40, height: 40)
+                                        } else {
+                                            ZStack {
+                                                Circle()
+                                                    .fill(.gray)
+                                                Text(contact.initials)
+                                                    .font(.system(.headline, design: .rounded))
+                                                    .foregroundColor(.white)
+                                            }
+                                            .frame(width: 40, height: 40)
+                                        }
+                                        if let name = contact.fullName {
+                                            Text(name)
+                                        } else {
+                                            Text("Unknown Contact")
+                                        }
+                                    }
+                                    .foregroundColor(.primary)
                                 }
                             }
-                            .foregroundColor(.primary)
                         }
                     }
+                    .searchable(text: $searchText)
+                } else {
+                    VStack {
+                        Spacer()
+                        if contactsFetched {
+                            if let image = UIImage(named: "undraw_reading_list_re_bk72") {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: 200)
+                                    .padding(.bottom)
+                                if existingPenPals.isEmpty {
+                                    Text("You don't appear to have any contacts!")
+                                        .fullWidth(alignment: .center)
+                                } else {
+                                    Text("You've added all your contacts as Pen Pals already!")
+                                        .fullWidth(alignment: .center)
+                                }
+                            }
+                        } else {
+                            ProgressView()
+                        }
+                        Spacer()
+                    }
+                    .padding()
                 }
             }
-            .searchable(text: $searchText)
             .onAppear {
                 self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
                 Task {
@@ -96,10 +124,12 @@ struct AddPenPalSheet: View {
             .navigationBarTitle("Add Pen Pal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                Button(action: {
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Cancel")
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Text("Cancel")
+                    }
                 }
             }
             .onChange(of: contactsFetched) { _ in
