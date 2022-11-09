@@ -16,11 +16,12 @@ enum EventType: Int, CaseIterable, Identifiable {
     case theyReceived = 5
     
     case noEvent = 99
+    case archived = 100
     
     var id: Int { rawValue }
     
     static var actionableCases: [EventType] {
-        EventType.allCases.filter { $0 != .noEvent }
+        EventType.allCases.filter { $0 != .noEvent && $0 != .archived }
     }
     
     var description: String {
@@ -38,13 +39,15 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "You received something"
         case .theyReceived:
             return "They received your letter"
+        case .archived:
+            return "Archived"
         }
     }
     
     var color: Color {
         switch self {
         case .noEvent:
-            return .gray
+            return .pink
         case .written:
             return .teal
         case .sent:
@@ -55,6 +58,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return .green
         case .theyReceived:
             return .purple
+        case .archived:
+            return .gray
         }
     }
     
@@ -73,6 +78,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "envelope"
         case .theyReceived:
             return "airplane.arrival"
+        case .archived:
+            return "archivebox"
         }
     }
     
@@ -89,6 +96,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "Post is on its way!"
         case .received:
             return "You have letters to reply to!"
+        case .archived:
+            return "Archived"
         }
     }
     
@@ -107,6 +116,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "pencil.line"
         case .theyReceived:
             return "envelope"
+        case .archived:
+            return "archivebox"
         }
     }
     
@@ -125,6 +136,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "You received their letter"
         case .theyReceived:
             return "They received your letter"
+        case .archived:
+            return "Archived"
         }
     }
     
@@ -143,6 +156,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "I've received something"
         case .theyReceived:
             return "They received my letter"
+        case .archived:
+            return "Archive"
         }
     }
     
@@ -161,6 +176,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "It's here"
         case .theyReceived:
             return "Arrived"
+        case .archived:
+            return "Archive"
         }
     }
     
@@ -178,6 +195,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return [.written, .sent]
         case .theyReceived:
             return [.inbound, .received]
+        case .archived:
+            return [.written, .sent]
         }
     }
     
@@ -194,6 +213,8 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .received:
             return false
         case .theyReceived:
+            return false
+        case .archived:
             return false
         }
     }

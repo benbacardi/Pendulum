@@ -77,7 +77,7 @@ struct PenPalListSection: View {
                                         Text(penpal.name)
                                             .font(.headline)
                                             .fullWidth()
-                                        if penpal.lastEventDate != nil {
+                                        if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
                                             self.dateText(for: penpal)
                                                 .font(.caption)
                                                 .fullWidth()
@@ -99,6 +99,13 @@ struct PenPalListSection: View {
                                 }
                             }
                             Divider()
+                            Button(action: {
+                                Task {
+                                    await penpal.archive()
+                                }
+                            }) {
+                                Label("Archive", systemImage: "archivebox")
+                            }
                             Button(role: .destructive, action: {
                                 self.currentPenPal = penpal
                                 self.showDeleteAlert = true
@@ -126,6 +133,7 @@ struct PenPalListSection: View {
             .padding(.horizontal)
         }
         .padding(.top)
+        .opacity(type == .archived ? 0.5 : 1)
     }
 }
 

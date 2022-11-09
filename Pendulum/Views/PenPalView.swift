@@ -35,7 +35,7 @@ struct PenPalView: View {
             PenPalHeader(penpal: penpal)
                 .padding(.horizontal)
             
-            if lastEventType != .noEvent {
+            if lastEventType != .noEvent && lastEventType != .archived {
                 Text(lastEventType.phrase)
                     .fullWidth()
                     .padding(.horizontal)
