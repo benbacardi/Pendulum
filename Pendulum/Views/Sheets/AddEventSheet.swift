@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct TextOptions: Identifiable {
     let id = UUID()
@@ -44,6 +45,9 @@ struct AddEventSheet: View {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
         return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.date, and: Date())
     }
+
+    @State private var selectedPhoto: PhotosPickerItem? = nil
+    @State private var selectedImageData: Data? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -141,6 +145,33 @@ struct AddEventSheet: View {
                                 }
                             }
                         }
+                    }
+                }
+                Section {
+                    PhotosPicker(
+                                selection: $selectedPhoto,
+                                matching: .images,
+                                photoLibrary: .shared()) {
+                                    Text("Select a photo")
+                                }
+                                .onChange(of: selectedPhoto) { newItem in
+                                    Task {
+                                        appLogger.debug("Selected photo: \(newItem.debugDescription)")
+                                        do {
+                                            if let data = try await newItem?.loadTransferable(type: Data.self) {
+                                                selectedImageData = data
+                                            }
+                                        } catch {
+                                            appLogger.debug("Could not load transferable: \(error.localizedDescription)")
+                                        }
+                                    }
+                                }
+                    if let selectedImageData, let image = UIImage(data: selectedImageData) {
+                        Image(uiImage: image)
+                            .resizable()
+                            .scaledToFill()
+                            .frame(width: 100, height: 100)
+                            .cornerRadius(10)
                     }
                 }
                 Section(footer: Group {

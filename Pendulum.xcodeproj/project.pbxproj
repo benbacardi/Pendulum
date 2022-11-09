@@ -38,6 +38,7 @@
 		5E52C661291A503700BBD58D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C660291A503700BBD58D /* EventCell.swift */; };
 		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
+		5E90E91D291C0FF500B0BA38 /* CameraView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E90E91C291C0FF500B0BA38 /* CameraView.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
@@ -80,6 +81,7 @@
 		5E52C660291A503700BBD58D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
+		5E90E91C291C0FF500B0BA38 /* CameraView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraView.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
@@ -177,6 +179,7 @@
 				5EA81855291BB7AD0052F88E /* RoundedCorner.swift */,
 				5EA81857291BFE170052F88E /* DeviceType.swift */,
 				5EEF49FD291D1218000528C6 /* Orientation.swift */,
+				5E90E91C291C0FF500B0BA38 /* CameraView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -325,6 +328,7 @@
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
 				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
 				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
+				5E90E91D291C0FF500B0BA38 /* CameraView.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
 				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
@@ -487,6 +491,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pendulum/Info.plist;
 				INFOPLIST_KEY_NSContactsUsageDescription = "To choose your Pen Pals";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Adding photos to Events";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -531,6 +536,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pendulum/Info.plist;
 				INFOPLIST_KEY_NSContactsUsageDescription = "To choose your Pen Pals";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Adding photos to Events";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
