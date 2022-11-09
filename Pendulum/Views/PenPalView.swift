@@ -169,6 +169,7 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
+                self.lastEventType = newEventType
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -192,9 +193,10 @@ struct PenPalView: View {
         } else {
             Task {
                 await self.penpal.addEvent(ofType: eventType)
+                let latestEventType = await penpal.updateLastEventType()
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.lastEventType = eventType
+                        self.lastEventType = latestEventType
                     }
                 }
             }

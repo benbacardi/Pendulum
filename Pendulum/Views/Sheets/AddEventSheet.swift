@@ -16,7 +16,7 @@ struct AddEventSheet: View {
     let penpal: PenPal?
     let event: Event?
     let eventType: EventType
-    let done: (Event?, EventType?) -> ()
+    let done: (Event?, EventType) -> ()
     
     // MARK: State
     @State private var date: Date = Date()
@@ -82,11 +82,12 @@ struct AddEventSheet: View {
                                 if let event = event {
                                     let newEvent = Event(id: event.id, _type: event._type, date: date, penpalID: event.penpalID, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
                                     await event.update(from: newEvent)
-                                    let latestEvent = await penpal.updateLastEvent()
-                                    self.done(newEvent, latestEvent)
+                                    let latestEventType = await penpal.updateLastEventType()
+                                    self.done(newEvent, latestEventType)
                                 } else {
                                     let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
-                                    self.done(newEvent, newEvent?.eventType)
+                                    let latestEventType = await penpal.updateLastEventType()
+                                    self.done(newEvent, latestEventType)
                                 }
                             }
                         }

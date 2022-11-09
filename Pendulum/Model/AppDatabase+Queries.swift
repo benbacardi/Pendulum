@@ -30,26 +30,44 @@ extension AppDatabase {
         }
     }
     
+    func getLastEvent(ofType eventType: EventType, for penpal: PenPal) async throws -> Event? {
+        try await dbWriter.read { db in
+            try penpal.events.filter(Column("_type") == eventType.rawValue).order(Column("date").desc).fetchOne(db)
+        }
+    }
+    
+    func setLastEventType(for penpal: PenPal, to eventType: EventType, at date: Date?) async throws {
+        try await dbWriter.write { db in
+            let t = try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: eventType.rawValue), Column("lastEventDate").set(to: date))
+            print("BEN: \(type(of: t))")
+        }
+    }
+    
     @discardableResult
-    func updateLastEvent(for penpal: PenPal, with event: Event? = nil) async throws -> EventType {
-        let newEventType: Int
-        let newEventDate: Date?
-        if let event = event {
-            newEventType = event._type
-            newEventDate = event.date
-        } else {
-            if let fetchedEvent = await penpal.fetchLatestEvent() {
-                newEventType = fetchedEvent._type
-                newEventDate = fetchedEvent.date
-            } else {
-                newEventType = 0
-                newEventDate = nil
+    func updateLastEventType(for penpal: PenPal, with event: Event? = nil) async throws -> EventType {
+        
+        var newEventType: EventType = .noEvent
+        var newEventDate: Date? = nil
+        
+        var readFromDb: Bool = true
+        
+        if let lastWritten = try await self.getLastEvent(ofType: .written, for: penpal) {
+            let lastSent = try await self.getLastEvent(ofType: .sent, for: penpal)
+            if lastSent?.date ?? Date.distantPast < lastWritten.date {
+                newEventType = .written
+                newEventDate = lastWritten.date
+                readFromDb = false
             }
         }
-        let _ = try await dbWriter.write { db in
-            try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: newEventType), Column("lastEventDate").set(to: newEventDate))
+        if readFromDb, let fetchedEvent = await penpal.fetchLatestEvent() {
+                newEventType = fetchedEvent.eventType
+                newEventDate = fetchedEvent.date
         }
-        return EventType(rawValue: newEventType) ?? .noEvent
+        
+        dataLogger.debug("Setting the Last Event Type for \(penpal.name) to \(newEventType.description)")
+        try await self.setLastEventType(for: penpal, to: newEventType, at: newEventDate)
+        return newEventType
+        
     }
     
     @discardableResult

@@ -79,7 +79,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         let event = self.createEvent(ofType: type, notes: notes, pen: pen, ink: ink, paper: paper, forDate: forDate)
         do {
             try await AppDatabase.shared.save(event)
-            try await AppDatabase.shared.updateLastEvent(for: self, with: event)
+            try await AppDatabase.shared.updateLastEventType(for: self, with: event)
         } catch {
             dataLogger.error("Could not save event: \(error.localizedDescription)")
             return nil
@@ -88,9 +88,9 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     }
     
     @discardableResult
-    func updateLastEvent(with event: Event? = nil) async -> EventType {
+    func updateLastEventType(with event: Event? = nil) async -> EventType {
         do {
-            return try await AppDatabase.shared.updateLastEvent(for: self, with: event)
+            return try await AppDatabase.shared.updateLastEventType(for: self, with: event)
         } catch {
             dataLogger.error("Could not update last event: \(error.localizedDescription)")
             return .noEvent

@@ -127,7 +127,7 @@ struct EventCell: View {
         }
         .sheet(isPresented: $showEditEventSheet) {
             AddEventSheet(penpal: penpal, event: event, eventType: event.eventType) { _, lastEventTypeForPenPal in
-                self.lastEventTypeForPenPal = lastEventTypeForPenPal ?? .noEvent
+                self.lastEventTypeForPenPal = lastEventTypeForPenPal
                 self.showEditEventSheet = false
             }
         }

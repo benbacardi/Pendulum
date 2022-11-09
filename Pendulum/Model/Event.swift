@@ -63,7 +63,7 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
             do {
                 try await AppDatabase.shared.delete(self)
                 if let penpal = penpal {
-                    return try await AppDatabase.shared.updateLastEvent(for: penpal)
+                    return try await AppDatabase.shared.updateLastEventType(for: penpal)
                 }
             } catch {
                 dataLogger.error("Could not delete event: \(error.localizedDescription)")

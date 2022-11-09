@@ -24,7 +24,7 @@ class PenPalListController: ObservableObject {
         self.penPalObservationCancellable = AppDatabase.shared.start(observation: self.penPalObservation) { error in
             dataLogger.error("Error observing stored pen pals: \(error.localizedDescription)")
         } onChange: { penpals in
-            dataLogger.debug("Pen pals changed: \(penpals)")
+            dataLogger.debug("Pen pals changed: \(penpals.count)")
             Task {
                 await self.refresh(with: penpals)
             }
@@ -32,7 +32,7 @@ class PenPalListController: ObservableObject {
         self.eventObservationCancellable = AppDatabase.shared.start(observation: self.eventObservation) { error in
             dataLogger.error("Error observing events: \(error.localizedDescription)")
         } onChange: { events in
-            dataLogger.debug("Events changed")
+            dataLogger.debug("Events changed: \(events.count)")
             Task {
                 await self.refresh()
             }
