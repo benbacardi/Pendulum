@@ -15,22 +15,20 @@ struct SettingsList: View {
     // MARK: State
     @AppStorage(UserDefaults.Key.sendRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToWriteLetters: Bool = false
     @AppStorage(UserDefaults.Key.sendRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToPostLetters: Bool = false
+    @AppStorage(UserDefaults.Key.badgeRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToWriteLetters: Bool = false
+    @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
     
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
+    
+    var someNotificationAccessRequired: Bool {
+        sendRemindersToPostLetters || sendRemindersToWriteLetters || badgeRemindersToPostLetters || badgeRemindersToWriteLetters
+    }
     
     var body: some View {
         NavigationView {
             Form {
                 
-                Section(
-                    header: Text("Notifications"),
-                    footer: Text("Reminders will be sent seven days after you receive a letter, and three days after you've written back but not yet posted the response.")
-                ) {
-                    Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters)
-                    Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters)
-                }
-                
-                if notificationsAuthorizationStatus == .denied && (sendRemindersToPostLetters || sendRemindersToWriteLetters) {
+                if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
                     Section {
                         Button(role: .destructive, action: {
                             if let url = UIApplication.systemSettingsURL {
@@ -44,6 +42,19 @@ struct SettingsList: View {
                             }
                         }
                     }
+                }
+                
+                Section(
+                    header: Text("Notifications"),
+                    footer: Text("Reminders will be sent seven days after you receive a letter, and three days after you've written back but not yet posted the response.")
+                ) {
+                    Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
+                    Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
+                }
+                
+                Section(header: Text("Icon Badges")) {
+                    Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
+                    Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
                 }
                 
                 Section(
@@ -95,6 +106,16 @@ struct SettingsList: View {
                 }
             }
             .onChange(of: sendRemindersToPostLetters) { newValue in
+                if newValue {
+                    requestNotificationAccess()
+                }
+            }
+            .onChange(of: badgeRemindersToWriteLetters) { newValue in
+                if newValue {
+                    requestNotificationAccess()
+                }
+            }
+            .onChange(of: badgeRemindersToPostLetters) { newValue in
                 if newValue {
                     requestNotificationAccess()
                 }
