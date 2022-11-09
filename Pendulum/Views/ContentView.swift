@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var selectedTab: Int = Tab.penPalList.rawValue
+    @State private var selectedTab: Int = Tab.settings.rawValue
     
     var body: some View {
         TabView(selection: $selectedTab) {
@@ -17,7 +17,7 @@ struct ContentView: View {
                 .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                 .tag(Tab.penPalList.rawValue)
             SettingsList()
-                .tabItem { Label("Settings", systemImage: "tortoise") }
+                .tabItem { Label("Settings", systemImage: "gear") }
                 .tag(Tab.settings.rawValue)
         }
     }

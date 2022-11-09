@@ -16,4 +16,13 @@ extension UIApplication {
         return url
     }
     
+    func updateBadgeNumber() {
+        Task {
+            let fetchedBadgeNumber = await AppDatabase.shared.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters)
+            DispatchQueue.main.async {
+                self.applicationIconBadgeNumber = fetchedBadgeNumber
+            }
+        }
+    }
+    
 }

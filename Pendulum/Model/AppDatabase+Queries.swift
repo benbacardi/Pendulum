@@ -16,6 +16,12 @@ extension AppDatabase {
         }
     }
     
+    func fetchPenPals(withStatus eventType: EventType) async throws -> [PenPal] {
+        try await dbWriter.read { db in
+            try PenPal.filter(Column("_lastEventType") == eventType.rawValue).fetchAll(db)
+        }
+    }
+    
     @discardableResult
     func save(_ penPal: PenPal) async throws -> PenPal {
         try await dbWriter.write { db in
@@ -113,6 +119,22 @@ extension AppDatabase {
     func penPalFor(event: Event) async throws -> PenPal? {
         try await dbWriter.read { db in
             try event.penpal.fetchOne(db)
+        }
+    }
+    
+    func calculateBadgeNumber(toWrite: Bool, toPost: Bool) async -> Int {
+        do {
+            var count = 0
+            if toWrite {
+                count += try await self.fetchPenPals(withStatus: .received).count
+            }
+            if toPost {
+                count += try await self.fetchPenPals(withStatus: .written).count
+            }
+            return count
+        } catch {
+            dataLogger.error("Could not calculate badge number: \(error.localizedDescription)")
+            return 0
         }
     }
     
