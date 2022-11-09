@@ -10,15 +10,22 @@ import Foundation
 extension UserDefaults {
     
     enum Key: String {
-        case hasRequestedContactsAccess
+        case sendRemindersToPostLetters
+        case sendRemindersToWriteLetters
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
     
     @objc
-    var hasRequestedContactsAccess: Bool {
-        get { bool(forKey: Key.hasRequestedContactsAccess.rawValue) }
-        set { setValue(newValue, forKey: Key.hasRequestedContactsAccess.rawValue) }
+    var sendRemindersToPostLetters: Bool {
+        get { bool(forKey: Key.sendRemindersToPostLetters.rawValue) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLetters.rawValue) }
+    }
+    
+    @objc
+    var sendRemindersToWriteLetters: Bool {
+        get { bool(forKey: Key.sendRemindersToWriteLetters.rawValue) }
+        set { setValue(newValue, forKey: Key.sendRemindersToWriteLetters.rawValue) }
     }
     
 }
