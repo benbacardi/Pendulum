@@ -15,6 +15,7 @@ struct PenPalList: View {
     @StateObject private var penPalListController = PenPalListController()
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentingAddPenPalSheet: Bool = false
+    @State private var iconWidth: CGFloat = .zero
     
     var body: some View {
         NavigationStack {
@@ -44,9 +45,10 @@ struct PenPalList: View {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
                             if let penpals = penPalListController.groupedPenPals[eventType] {
-                                PenPalListSection(type: eventType, penpals: penpals)
+                                PenPalListSection(type: eventType, penpals: penpals, iconWidth: $iconWidth)
                             }
                         }
+                        Spacer()
                     }
                 }
             }
@@ -65,9 +67,19 @@ struct PenPalList: View {
                 AddPenPalSheet(existingPenPals: penPalListController.penpals)
             }
         }
+        .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
+            self.iconWidth = value
+        }
         .onAppear {
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
+    }
+}
+
+struct PenPalListIconWidthPreferenceKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
     }
 }
 

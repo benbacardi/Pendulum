@@ -127,4 +127,12 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
+    func archive() async {
+        do {
+            try await AppDatabase.shared.setLastEventType(for: self, to: .archived, at: Date())
+        } catch {
+            dataLogger.error("Could not archive penpal: \(error.localizedDescription)")
+        }
+    }
+    
 }
