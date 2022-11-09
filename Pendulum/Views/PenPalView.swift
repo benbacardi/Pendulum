@@ -37,7 +37,6 @@ struct PenPalView: View {
             
             if lastEventType != .noEvent {
                 Text(lastEventType.phrase)
-                    .font(.headline)
                     .fullWidth()
                     .padding(.horizontal)
             }

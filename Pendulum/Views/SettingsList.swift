@@ -22,7 +22,7 @@ struct SettingsList: View {
                     Toggle("Ellen", isOn: $enableEllen)
                 }
                 Section(
-                    footer: Text("\(Bundle.main.appName) \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))\n**A Faber & Cardy Production**\nFor Ellen, adequately ginger")
+                    footer: Text("\(Bundle.main.appName) \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))\n**A Faber & Cardy Production**\n\nFor Ellen, adequately ginger, but perfectly lovely")
                         .fullWidth(alignment: .center)
                 ){}
             }
