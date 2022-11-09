@@ -31,6 +31,12 @@ struct PenPalListSection: View {
             HStack {
                 Image(systemName: type.phraseIcon)
                     .font(.headline)
+                    .foregroundColor(.white)
+                    .padding(8)
+                    .background {
+                            Circle()
+                                .fill(type.color)
+                    }
                 Text(type.phrase)
                     .font(.headline)
                     .fullWidth()
