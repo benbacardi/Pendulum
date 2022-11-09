@@ -83,8 +83,13 @@ struct SettingsList: View {
                             .foregroundColor(.secondary)
                     }
                     Link(destination: URL(string: "mailto:pendulum@bencardy.co.uk")!) {
-                        Text("Send Feedback")
-                            .foregroundColor(.primary)
+                        HStack {
+                            Text("Send Feedback")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "paperplane")
+                                .foregroundColor(.secondary)
+                        }
                     }
                 }
             }
