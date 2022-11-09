@@ -29,7 +29,7 @@ struct SettingsList: View {
             Form {
                 
                 if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
-                    Section {
+                    Section(footer: Text("Without Notification permissions, Pendulum will be unable to send reminders or display an icon badge.")) {
                         Button(role: .destructive, action: {
                             if let url = UIApplication.systemSettingsURL {
                                 openURL(url)
@@ -37,7 +37,7 @@ struct SettingsList: View {
                         }) {
                             HStack {
                                 Image(systemName: "exclamationmark.octagon.fill")
-                                Text("Enable notifications in Settings")
+                                Text("Enable Notifications in Settings")
                                     .fullWidth()
                             }
                         }
