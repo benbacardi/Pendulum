@@ -80,7 +80,7 @@ struct AddPenPalSheet: View {
                                     Text("You don't appear to have any contacts!")
                                         .fullWidth(alignment: .center)
                                 } else {
-                                    Text("You've added all your contacts as Pen Pals already!")
+                                    Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
                                         .fullWidth(alignment: .center)
                                 }
                             }
