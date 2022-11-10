@@ -59,7 +59,7 @@ struct SettingsList: View {
                 
                 Section(
                     header: VStack {
-                        if let appIcon = UIImage(named: "AppIcon") {
+                        if let appIcon = UIImage(named: "pendulum") {
                             Image(uiImage: appIcon)
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
