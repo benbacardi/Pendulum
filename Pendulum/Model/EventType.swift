@@ -151,7 +151,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "I've posted a letter"
         case .inbound:
-            return "A letter's on its way"
+            return "A letter is on its way"
         case .received:
             return "I've received a letter"
         case .theyReceived:
