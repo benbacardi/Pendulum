@@ -20,6 +20,7 @@ struct PenPalList: View {
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
+    @State private var presentingStationerySheet: Bool = false
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     var body: some View {
@@ -68,6 +69,13 @@ struct PenPalList: View {
                         }
                     }
                 }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        self.presentingStationerySheet = true
+                    }) {
+                        Label("Stationery", systemImage: "pencil.and.ruler")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         self.presentingAddPenPalSheet = true
@@ -76,6 +84,9 @@ struct PenPalList: View {
                     }
                     .disabled(contactsAccessStatus != .authorized)
                 }
+            }
+            .sheet(isPresented: $presentingStationerySheet) {
+                EventPropertyDetailsSheet(penpal: nil)
             }
             .sheet(isPresented: $presentingAddPenPalSheet) {
                 AddPenPalSheet(existingPenPals: penPalListController.penpals)

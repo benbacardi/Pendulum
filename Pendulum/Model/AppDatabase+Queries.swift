@@ -167,38 +167,57 @@ extension AppDatabase {
         return await self.fetchDistinctEventNote(for: "paper")
     }
     
-    private func fetchDistinctEventNote(for column: String, by penpal: PenPal) async -> [(String, Int)] {
+    private func fetchDistinctEventNote(for column: String, by penpal: PenPal?) async -> [(String, Int)] {
+        
+        let request: QueryInterfaceRequest<Event>
+        if let penpal = penpal {
+            request = penpal.events
+        } else {
+            request = Event.all()
+        }
+        
         do {
-            let results = try await dbWriter.read { db in
-                try penpal.events.select(Column(column), as: String?.self).order(Column(column)).fetchAll(db)
-            }.compactMap { $0 }
-            var counts: [String: Int] = [:]
-            for value in results {
-                counts[value] = (counts[value] ?? 0) + 1
+            return try await dbWriter.read { db in
+                try request.select(Column(column), count(Column(column)), as: Row.self).filter(Column(column) != nil).group(Column(column)).fetchAll(db)
+            }.map { row in
+                (row[0] ?? "UNKNOWN", row[1] ?? 0)
             }
-            return Array(counts).sorted { $0.1 > $1.1 }
         } catch {
-            dataLogger.error("Could not fetch distinct \(column)s for \(penpal.name): \(error.localizedDescription)")
+            dataLogger.error("Could not fetch distinct \(column)s for \(penpal?.name ?? "all"): \(error.localizedDescription)")
             return []
         }
     }
     
-    func fetchDistinctPens(for penpal: PenPal) async -> [(String, Int)] {
+    func fetchDistinctPens(for penpal: PenPal?) async -> [(String, Int)] {
         return await self.fetchDistinctEventNote(for: "pen", by: penpal)
     }
     
-    func fetchDistinctInks(for penpal: PenPal) async -> [(String, Int)] {
+    func fetchDistinctInks(for penpal: PenPal?) async -> [(String, Int)] {
         return await self.fetchDistinctEventNote(for: "ink", by: penpal)
     }
     
-    func fetchDistinctPapers(for penpal: PenPal) async -> [(String, Int)] {
+    func fetchDistinctPapers(for penpal: PenPal?) async -> [(String, Int)] {
         return await self.fetchDistinctEventNote(for: "paper", by: penpal)
     }
     
     func test() async {
         do {
+            
+//            try await dbWriter.read { db in
+//                let rows = try Row.fetchCursor(db, sql: "SELECT pen, count(id) FROM event GROUP BY pen")
+//                while let row = try rows.next() {
+//                    print(row)
+//                }
+//            }
+            
+//            let rowType: [any SQLSelectable] = [
+            
+//            let penColumn = Column("pen", as: String?.self)
+            
             let results = try await dbWriter.read { db in
-                try Event.select(Column("pen"), count(Column("id"))).group(Column("pen")).fetchAll(db)
+                try Event.select(Column("pen"), count(Column("id")), as: Row.self).filter(Column("pen") != nil).group(Column("pen")).fetchAll(db)
+            }.map { row in
+                (row[0] ?? "UNKNOWN", row[1] ?? 0)
             }
             dataLogger.debug("Results: \(results)")
         } catch {

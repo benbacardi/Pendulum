@@ -13,7 +13,7 @@ struct EventPropertyDetailsSheet: View {
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: Properties
-    let penpal: PenPal
+    let penpal: PenPal?
     
     // MARK: State
     @State private var pens: [(String, Int)] = []
@@ -49,8 +49,13 @@ struct EventPropertyDetailsSheet: View {
                                 .frame(maxWidth: 200)
                                 .padding(.bottom)
                         }
-                        Text("You haven't recorded any of the stationery you've used to write to \(penpal.name) yet!")
-                            .fullWidth(alignment: .center)
+                        if let penpal = penpal {
+                            Text("You haven't recorded any of the stationery you've used to write to \(penpal.name) yet!")
+                                .fullWidth(alignment: .center)
+                        } else {
+                            Text("You haven't recorded any of the stationery you've used to write with yet!")
+                                .fullWidth(alignment: .center)
+                        }
                     }
                     .padding()
                 } else {

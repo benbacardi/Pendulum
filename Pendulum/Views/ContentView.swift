@@ -22,6 +22,14 @@ struct ContentView: View {
                 SettingsList()
                     .tabItem { Label("Settings", systemImage: "gear") }
                     .tag(Tab.settings.rawValue)
+//                Text("Debug")
+//                    .tabItem { Label("Debug", systemImage: "ladybug") }
+//                    .tag(3)
+//                    .onAppear {
+//                        Task {
+//                            await AppDatabase.shared.test()
+//                        }
+//                    }
             }
         }
     }
