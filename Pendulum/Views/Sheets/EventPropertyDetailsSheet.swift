@@ -16,21 +16,21 @@ struct EventPropertyDetailsSheet: View {
     let penpal: PenPal?
     
     // MARK: State
-    @State private var pens: [(String, Int)] = []
-    @State private var inks: [(String, Int)] = []
-    @State private var papers: [(String, Int)] = []
+    @State private var pens: [ParameterCount] = []
+    @State private var inks: [ParameterCount] = []
+    @State private var papers: [ParameterCount] = []
     
     @ViewBuilder
-    func section(for title: String, with options: [(String, Int)], icon: String) -> some View {
+    func section(for title: String, with options: [ParameterCount], icon: String) -> some View {
         Section(header: HStack {
             Image(systemName: icon)
             Text(title)
         }) {
-            ForEach(options, id: \.0) { (option, count) in
+            ForEach(options, id: \.name) { option in
                 HStack {
-                    Text(option)
+                    Text(option.name)
                         .fullWidth()
-                    Text("\(count)")
+                    Text("\(option.count)")
                         .foregroundColor(.secondary)
                 }
             }

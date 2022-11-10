@@ -167,7 +167,7 @@ extension AppDatabase {
         return await self.fetchDistinctEventNote(for: "paper")
     }
     
-    private func fetchDistinctEventNote(for column: String, by penpal: PenPal?) async -> [(String, Int)] {
+    private func fetchDistinctEventNote(for column: String, by penpal: PenPal?) async -> [ParameterCount] {
         
         let request: QueryInterfaceRequest<Event>
         if let penpal = penpal {
@@ -178,9 +178,9 @@ extension AppDatabase {
         
         do {
             return try await dbWriter.read { db in
-                try request.select(Column(column), count(Column(column)), as: Row.self).filter(Column(column) != nil).group(Column(column)).fetchAll(db)
-            }.map { row in
-                (row[0] ?? "UNKNOWN", row[1] ?? 0)
+                try request.select(Column(column).forKey("name"), count(Column(column)).forKey("count"), as: OptionalParameterCountRow.self).filter(Column(column) != nil).group(Column(column)).fetchAll(db)
+            }.filter { $0.name != nil }.map {
+                ParameterCount(name: $0.name ?? "UNKNOWN", count: $0.count)
             }
         } catch {
             dataLogger.error("Could not fetch distinct \(column)s for \(penpal?.name ?? "all"): \(error.localizedDescription)")
@@ -188,36 +188,23 @@ extension AppDatabase {
         }
     }
     
-    func fetchDistinctPens(for penpal: PenPal?) async -> [(String, Int)] {
+    func fetchDistinctPens(for penpal: PenPal?) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "pen", by: penpal)
     }
     
-    func fetchDistinctInks(for penpal: PenPal?) async -> [(String, Int)] {
+    func fetchDistinctInks(for penpal: PenPal?) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "ink", by: penpal)
     }
     
-    func fetchDistinctPapers(for penpal: PenPal?) async -> [(String, Int)] {
+    func fetchDistinctPapers(for penpal: PenPal?) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "paper", by: penpal)
     }
     
     func test() async {
         do {
-            
-//            try await dbWriter.read { db in
-//                let rows = try Row.fetchCursor(db, sql: "SELECT pen, count(id) FROM event GROUP BY pen")
-//                while let row = try rows.next() {
-//                    print(row)
-//                }
-//            }
-            
-//            let rowType: [any SQLSelectable] = [
-            
-//            let penColumn = Column("pen", as: String?.self)
-            
             let results = try await dbWriter.read { db in
-                try Event.select(Column("pen"), count(Column("id")), as: Row.self).filter(Column("pen") != nil).group(Column("pen")).fetchAll(db)
-            }.map { row in
-                (row[0] ?? "UNKNOWN", row[1] ?? 0)
+                try Event.select(Column("pen").forKey("name"), count(Column("id")).forKey("count"), as: OptionalParameterCountRow.self).filter(Column("pen") != nil).group(Column("pen")).fetchAll(db)
+                    .filter { $0.name != nil }
             }
             dataLogger.debug("Results: \(results)")
         } catch {
@@ -225,4 +212,14 @@ extension AppDatabase {
         }
     }
     
+}
+
+struct OptionalParameterCountRow: FetchableRecord, Decodable {
+    var name: String?
+    var count: Int
+}
+
+struct ParameterCount {
+    let name: String
+    let count: Int
 }
