@@ -34,9 +34,9 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "You sent a letter"
         case .inbound:
-            return "They sent something"
+            return "They sent a letter"
         case .received:
-            return "You received something"
+            return "You received a letter"
         case .theyReceived:
             return "They received your letter"
         case .archived:
@@ -151,9 +151,9 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             return "I've posted a letter"
         case .inbound:
-            return "Something's on its way"
+            return "A letter's on its way"
         case .received:
-            return "I've received something"
+            return "I've received a letter"
         case .theyReceived:
             return "They received my letter"
         case .archived:
