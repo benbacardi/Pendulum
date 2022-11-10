@@ -42,8 +42,9 @@
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
-		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
+		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
+		5EEF4A00291D8487000528C6 /* PenPal+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -84,8 +85,9 @@
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
-		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
+		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
+		5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PenPal+Notifications.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -187,6 +189,7 @@
 				5E40552229151CA600BD52BF /* AppDatabase.swift */,
 				5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */,
 				5E40552D291523A300BD52BF /* PenPal.swift */,
+				5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */,
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
 				5E40553729155C5F00BD52BF /* Event.swift */,
 			);
@@ -323,6 +326,7 @@
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
+				5EEF4A00291D8487000528C6 /* PenPal+Notifications.swift in Sources */,
 				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
 				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,

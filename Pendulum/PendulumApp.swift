@@ -22,6 +22,12 @@ struct PendulumApp: App {
             UITabBar.appearance().standardAppearance = appearance
             // When scrolled all the way up
             UITabBar.appearance().scrollEdgeAppearance = appearance
+        
+            UserDefaults.shared.register(defaults: [
+                UserDefaults.Key.sendRemindersToPostLettersAtHour.rawValue: 8,
+                UserDefaults.Key.sendRemindersToPostLettersAtMinute.rawValue: 0,
+            ])
+        
         }
     
     var body: some Scene {
@@ -30,7 +36,10 @@ struct PendulumApp: App {
                 .environmentObject(OrientationObserver.shared)
                 .onChange(of: scenePhase) { scenePhase in
                     if scenePhase == .background {
-                        UIApplication.shared.updateBadgeNumber()
+                        Task {
+                            await PenPal.scheduleShouldPostLettersNotification()
+                            await UIApplication.shared.updateBadgeNumber()
+                        }
                     }
                 }
         }

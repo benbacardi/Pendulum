@@ -83,12 +83,10 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
             }
-            .onAppear {
-                Task {
-                    pens = await AppDatabase.shared.fetchDistinctPens(for: penpal)
-                    inks = await AppDatabase.shared.fetchDistinctInks(for: penpal)
-                    papers = await AppDatabase.shared.fetchDistinctPapers(for: penpal)
-                }
+            .task {
+                pens = await AppDatabase.shared.fetchDistinctPens(for: penpal)
+                inks = await AppDatabase.shared.fetchDistinctInks(for: penpal)
+                papers = await AppDatabase.shared.fetchDistinctPapers(for: penpal)
             }
         }
     }

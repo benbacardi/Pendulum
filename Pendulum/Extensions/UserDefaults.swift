@@ -15,6 +15,8 @@ extension UserDefaults {
         case badgeRemindersToPostLetters
         case badgeRemindersToWriteLetters
         case enableQuickEntry
+        case sendRemindersToPostLettersAtHour
+        case sendRemindersToPostLettersAtMinute
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -47,6 +49,18 @@ extension UserDefaults {
     var enableQuickEntry: Bool {
         get { bool(forKey: Key.enableQuickEntry.rawValue) }
         set { setValue(newValue, forKey: Key.enableQuickEntry.rawValue) }
+    }
+    
+    @objc
+    var sendRemindersToPostLettersAtHour: Int {
+        get { integer(forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
+    }
+    
+    @objc
+    var sendRemindersToPostLettersAtMinute: Int {
+        get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
     }
     
 }

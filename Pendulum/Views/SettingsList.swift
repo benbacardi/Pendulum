@@ -19,6 +19,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
     @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     
+    @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
     
     var someNotificationAccessRequired: Bool {
@@ -47,10 +48,13 @@ struct SettingsList: View {
                 
                 Section(
                     header: Text("Notifications"),
-                    footer: Text("Reminders will be sent seven days after you receive a letter, and three days after you've written back but not yet posted the response.")
+                    footer: Text("Reminders will be sent seven days after you receive a letter, and daily at the specified time after you've written back but not yet posted the response.")
                 ) {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
+                    if sendRemindersToPostLetters {
+                        DatePicker("", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
+                    }
                 }
                 
                 Section(header: Text("Icon Badges")) {
@@ -99,25 +103,42 @@ struct SettingsList: View {
                 }
             }
             .navigationTitle(Text("Settings"))
-            .onAppear {
-                Task {
-                    let center = UNUserNotificationCenter.current()
-                    let notificationSettings = await center.notificationSettings()
-                    DispatchQueue.main.async {
-                        withAnimation {
-                            self.notificationsAuthorizationStatus = notificationSettings.authorizationStatus
-                        }
+            .task {
+                let center = UNUserNotificationCenter.current()
+                let notificationSettings = await center.notificationSettings()
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.notificationsAuthorizationStatus = notificationSettings.authorizationStatus
                     }
                 }
+            }
+            .onAppear {
+                var dateComponents = DateComponents()
+                dateComponents.hour = UserDefaults.shared.sendRemindersToPostLettersAtHour
+                dateComponents.minute = UserDefaults.shared.sendRemindersToPostLettersAtMinute
+                self.sendRemindersToPostLettersDate = Calendar.current.date(from: dateComponents) ?? Date()
+            }
+            .onChange(of: sendRemindersToPostLettersDate) { newValue in
+                UserDefaults.shared.sendRemindersToPostLettersAtHour = Calendar.current.component(.hour, from: newValue)
+                UserDefaults.shared.sendRemindersToPostLettersAtMinute = Calendar.current.component(.minute, from: newValue)
             }
             .onChange(of: sendRemindersToWriteLetters) { newValue in
                 if newValue {
                     requestNotificationAccess()
+                    Task {
+                        await PenPal.scheduleAllShouldWriteBackNotifications()
+                    }
+                } else {
+                    Task {
+                        await PenPal.cancelAllShouldWriteBackNotifications()
+                    }
                 }
             }
             .onChange(of: sendRemindersToPostLetters) { newValue in
                 if newValue {
                     requestNotificationAccess()
+                } else {
+                    PenPal.cancelAllShouldPostLettersNotifications()
                 }
             }
             .onChange(of: badgeRemindersToWriteLetters) { newValue in

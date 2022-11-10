@@ -78,6 +78,15 @@ extension AppDatabase {
         
         dataLogger.debug("Setting the Last Event Type for \(penpal.name) to \(newEventType.description) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
         try await self.setLastEventType(for: penpal, to: newEventType, at: newEventDate)
+        
+        if newEventType == .received {
+            /// Schedule notification
+            penpal.scheduleShouldWriteBackNotification(countingFrom: newEventDate)
+        } else {
+            /// Cancel notification
+            penpal.cancelShouldWriteBackNotification()
+        }
+        
         return newEventType
         
     }
