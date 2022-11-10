@@ -138,4 +138,27 @@ extension AppDatabase {
         }
     }
     
+    private func fetchDistinctEventNote(for column: String) async -> [String] {
+        do {
+            return try await dbWriter.read { db in
+                try Event.select(Column(column), as: String?.self).order(Column(column)).distinct().fetchAll(db)
+            }.compactMap { $0 }
+        } catch {
+            dataLogger.error("Could not fetch distinct \(column)s: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    func fetchDistinctPens() async -> [String] {
+        return await self.fetchDistinctEventNote(for: "pen")
+    }
+    
+    func fetchDistinctInks() async -> [String] {
+        return await self.fetchDistinctEventNote(for: "ink")
+    }
+    
+    func fetchDistinctPapers() async -> [String] {
+        return await self.fetchDistinctEventNote(for: "paper")
+    }
+    
 }

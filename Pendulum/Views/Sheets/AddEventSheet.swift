@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+struct TextOptions: Identifiable {
+    let id = UUID()
+    let text: Binding<String>
+    let options: [String]
+    let title: String
+}
+
 struct AddEventSheet: View {
     
     // MARK: Environment
@@ -24,6 +31,12 @@ struct AddEventSheet: View {
     @State private var pen: String = ""
     @State private var ink: String = ""
     @State private var paper: String = ""
+    
+    @State private var penSuggestions: [String] = []
+    @State private var inkSuggestions: [String] = []
+    @State private var paperSuggestions: [String] = []
+    
+    @State private var presentSuggestionSheetFor: TextOptions? = nil
     
     var body: some View {
         VStack(spacing: 0) {
@@ -53,17 +66,44 @@ struct AddEventSheet: View {
                         HStack {
                             Image(systemName: "pencil")
                                 .foregroundColor(.secondary)
-                            TextField("Pen", text: $pen)
+                            HStack {
+                                TextField("Pen", text: $pen)
+                                if !penSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
+                                    }) {
+                                        Image(systemName: "ellipsis")
+                                    }
+                                }
+                            }
                         }
                         HStack {
                             Image(systemName: "drop")
                                 .foregroundColor(.secondary)
-                            TextField("Ink", text: $ink)
+                            HStack {
+                                TextField("Ink", text: $ink)
+                                if !inkSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
+                                    }) {
+                                        Image(systemName: "ellipsis")
+                                    }
+                                }
+                            }
                         }
                         HStack {
                             Image(systemName: "doc.plaintext")
                                 .foregroundColor(.secondary)
-                            TextField("Paper", text: $paper)
+                            HStack {
+                                TextField("Paper", text: $paper)
+                                if !paperSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper}")
+                                    }) {
+                                        Image(systemName: "ellipsis")
+                                    }
+                                }
+                            }
                         }
                     }
                 }
@@ -99,6 +139,9 @@ struct AddEventSheet: View {
                 }
             }
         }
+        .sheet(item: $presentSuggestionSheetFor) { option in
+            ChooseTextSheet(text: option.text, options: option.options, title: option.title)
+        }
         .onAppear {
             if let event = event {
                 date = event.date
@@ -106,6 +149,11 @@ struct AddEventSheet: View {
                 pen = event.pen ?? ""
                 ink = event.ink ?? ""
                 paper = event.paper ?? ""
+            }
+            Task {
+                self.penSuggestions = await AppDatabase.shared.fetchDistinctPens()
+                self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks()
+                self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers()
             }
         }
     }
