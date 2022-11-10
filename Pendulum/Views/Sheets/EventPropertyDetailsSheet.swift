@@ -21,8 +21,11 @@ struct EventPropertyDetailsSheet: View {
     @State private var papers: [(String, Int)] = []
     
     @ViewBuilder
-    func section(for title: String, with options: [(String, Int)]) -> some View {
-        Section(header: Text(title)) {
+    func section(for title: String, with options: [(String, Int)], icon: String) -> some View {
+        Section(header: HStack {
+            Image(systemName: icon)
+            Text(title)
+        }) {
             ForEach(options, id: \.0) { (option, count) in
                 HStack {
                     Text(option)
@@ -53,13 +56,13 @@ struct EventPropertyDetailsSheet: View {
                 } else {
                     Form {
                         if !pens.isEmpty {
-                            section(for: "Pens", with: pens)
+                            section(for: "Pens", with: pens, icon: "pencil")
                         }
                         if !inks.isEmpty {
-                            section(for: "Inks", with: inks)
+                            section(for: "Inks", with: inks, icon: "drop")
                         }
                         if !papers.isEmpty {
-                            section(for: "Paper", with: papers)
+                            section(for: "Paper", with: papers, icon: "doc.plaintext")
                         }
                     }
                 }
