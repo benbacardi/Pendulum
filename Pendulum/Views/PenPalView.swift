@@ -15,6 +15,7 @@ struct PenPalView: View {
     @State private var showingPenPalContactSheet: Bool = false
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentAddEventSheetForType: EventType? = nil
+    @State private var presentPropertyDetailsSheet: Bool = false
     
     @State private var lastEventType: EventType
     @State private var buttonHeight: CGFloat?
@@ -161,6 +162,9 @@ struct PenPalView: View {
         .sheet(isPresented: $showingPenPalContactSheet) {
             PenPalContactSheet(penpal: penPalViewController.penpal)
         }
+        .sheet(isPresented: $presentPropertyDetailsSheet) {
+            EventPropertyDetailsSheet(penpal: penPalViewController.penpal)
+        }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penPalViewController.penpal, event: nil, eventType: eventType) { newEvent, newEventType in
                 self.lastEventType = newEventType
@@ -168,6 +172,11 @@ struct PenPalView: View {
             }
         }
         .toolbar {
+            Button(action: {
+                self.presentPropertyDetailsSheet = true
+            }) {
+                Label("Stationery", systemImage: "pencil.and.ruler")
+            }
             Button(action: {
                 self.showingPenPalContactSheet = true
             }){
