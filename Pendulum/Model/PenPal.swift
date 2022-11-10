@@ -70,6 +70,15 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
+    func fetchPriorEvent(to date: Date, ofType eventType: EventType) async -> Event? {
+        do {
+            return try await AppDatabase.shared.fetchPriorEvent(to: date, ofType: eventType, for: self)
+        } catch {
+            dataLogger.error("Could not fetch prior event: \(error.localizedDescription)")
+            return nil
+        }
+    }
+    
     func createEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, forDate: Date = Date()) -> Event {
         return Event(id: nil, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper)
     }

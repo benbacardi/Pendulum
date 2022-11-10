@@ -108,6 +108,12 @@ extension AppDatabase {
         }
     }
     
+    func fetchPriorEvent(to date: Date, ofType eventType: EventType, for penpal: PenPal) async throws -> Event? {
+        try await dbWriter.read { db in
+            try penpal.events.filter(Column("_type") == eventType.rawValue).filter(Column("date") < date).order(Column("date").desc).fetchOne(db)
+        }
+    }
+    
     @discardableResult
     func delete(_ penpal: PenPal) async throws -> Bool {
         try await dbWriter.write { db in

@@ -38,6 +38,13 @@ struct AddEventSheet: View {
     
     @State private var presentSuggestionSheetFor: TextOptions? = nil
     
+    @State private var priorWrittenEvent: Event? = nil
+    
+    var priorWrittenEventHeaderText: String {
+        guard let priorWrittenEvent = priorWrittenEvent else { return "" }
+        return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.date, and: Date())
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 4) {
@@ -84,12 +91,19 @@ struct AddEventSheet: View {
                     TextField("Notes", text: $notes, axis: .vertical)
                 }
                 if eventType == .written || eventType == .sent {
-                    Section {
+                    
+                    Section(header: Group {
+                        if priorWrittenEvent != nil {
+                            Text("You wrote the letter \(priorWrittenEventHeaderText).").textCase(nil)
+                        } else {
+                            EmptyView()
+                        }
+                    }) {
                         HStack {
                             Image(systemName: "pencil")
                                 .foregroundColor(.secondary)
                             HStack {
-                                TextField("Pen", text: $pen)
+                                TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen)
                                 if !penSuggestions.isEmpty {
                                     Button(action: {
                                         presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
@@ -103,7 +117,7 @@ struct AddEventSheet: View {
                             Image(systemName: "drop")
                                 .foregroundColor(.secondary)
                             HStack {
-                                TextField("Ink", text: $ink)
+                                TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink)
                                 if !inkSuggestions.isEmpty {
                                     Button(action: {
                                         presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
@@ -117,7 +131,7 @@ struct AddEventSheet: View {
                             Image(systemName: "doc.plaintext")
                                 .foregroundColor(.secondary)
                             HStack {
-                                TextField("Paper", text: $paper)
+                                TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
                                 if !paperSuggestions.isEmpty {
                                     Button(action: {
                                         presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper}")
@@ -174,6 +188,15 @@ struct AddEventSheet: View {
                 self.penSuggestions = await AppDatabase.shared.fetchDistinctPens()
                 self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks()
                 self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers()
+            }
+            if eventType == .sent && event == nil {
+                Task {
+                    let priorSentEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .sent)
+                    let priorWrittenEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .written)
+                    if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.date {
+                        self.priorWrittenEvent = priorWrittenEvent
+                    }
+                }
             }
         }
     }
