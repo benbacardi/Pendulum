@@ -47,7 +47,7 @@ struct AddEventSheet: View {
     }
 
     @State private var selectedPhoto: PhotosPickerItem? = nil
-    @State private var selectedImageData: Data? = nil
+    @State private var selectedImageData: [Data] = []
     
     var body: some View {
         VStack(spacing: 0) {
@@ -114,6 +114,7 @@ struct AddEventSheet: View {
                                     }) {
                                         Image(systemName: "ellipsis")
                                     }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -128,6 +129,7 @@ struct AddEventSheet: View {
                                     }) {
                                         Image(systemName: "ellipsis")
                                     }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -142,6 +144,7 @@ struct AddEventSheet: View {
                                     }) {
                                         Image(systemName: "ellipsis")
                                     }
+                                    .buttonStyle(.plain)
                                 }
                             }
                         }
@@ -152,26 +155,53 @@ struct AddEventSheet: View {
                                 selection: $selectedPhoto,
                                 matching: .images,
                                 photoLibrary: .shared()) {
-                                    Text("Select a photo")
+                                    Text("Add a photo…")
                                 }
                                 .onChange(of: selectedPhoto) { newItem in
                                     Task {
                                         appLogger.debug("Selected photo: \(newItem.debugDescription)")
                                         do {
                                             if let data = try await newItem?.loadTransferable(type: Data.self) {
-                                                selectedImageData = data
+                                                DispatchQueue.main.async {
+                                                    withAnimation {
+                                                        selectedImageData.append(data)
+                                                    }
+                                                }
                                             }
                                         } catch {
                                             appLogger.debug("Could not load transferable: \(error.localizedDescription)")
                                         }
                                     }
                                 }
-                    if let selectedImageData, let image = UIImage(data: selectedImageData) {
-                        Image(uiImage: image)
-                            .resizable()
-                            .scaledToFill()
-                            .frame(width: 100, height: 100)
-                            .cornerRadius(10)
+                    if !selectedImageData.isEmpty {
+                        ScrollView(.horizontal) {
+                            LazyHStack {
+                                ForEach(Array(zip(selectedImageData.indices, selectedImageData)), id: \.0) { index, imageData in
+                                    if let image = UIImage(data: imageData) {
+                                        ZStack(alignment: .topTrailing) {
+                                            Image(uiImage: image)
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 100, height: 100)
+                                                .cornerRadius(10)
+                                            Button(role: .destructive, action: {
+                                                let _ = withAnimation {
+                                                    selectedImageData.remove(at: index)
+                                                }
+                                            }) {
+                                                Label("Delete", systemImage: "x.circle.fill")
+                                                    .font(.headline)
+                                                    .labelStyle(.iconOnly)
+                                                    .foregroundColor(.red)
+                                            }
+                                            .buttonStyle(.plain)
+                                            .backgroundCircle(color: .white, multiplier: 1.0)
+                                            .offset(x: 5, y: -5)
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
                 Section(footer: Group {
