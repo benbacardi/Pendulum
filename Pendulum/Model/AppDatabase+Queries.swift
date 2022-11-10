@@ -178,7 +178,7 @@ extension AppDatabase {
         
         do {
             return try await dbWriter.read { db in
-                try request.select(Column(column).forKey("name"), count(Column(column)).forKey("count"), as: OptionalParameterCountRow.self).filter(Column(column) != nil).group(Column(column)).fetchAll(db)
+                try request.select(Column(column).forKey("name"), count(Column(column)).forKey("count"), as: OptionalParameterCountRow.self).filter(Column(column) != nil).group(Column(column)).order(Column("count").desc).fetchAll(db)
             }.filter { $0.name != nil }.map {
                 ParameterCount(name: $0.name ?? "UNKNOWN", count: $0.count)
             }
