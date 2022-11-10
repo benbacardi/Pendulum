@@ -48,10 +48,10 @@ extension AppDatabase {
         }
     }
     
-    func setLastEventType(for penpal: PenPal, to eventType: EventType, at date: Date?) async throws {
+    @discardableResult
+    func setLastEventType(for penpal: PenPal, to eventType: EventType, at date: Date?) async throws -> Int {
         try await dbWriter.write { db in
-            let t = try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: eventType.rawValue), Column("lastEventDate").set(to: date))
-            print("BEN: \(type(of: t))")
+            try PenPal.filter(Column("id") == penpal.id).updateAll(db, Column("_lastEventType").set(to: eventType.rawValue), Column("lastEventDate").set(to: date))
         }
     }
     
