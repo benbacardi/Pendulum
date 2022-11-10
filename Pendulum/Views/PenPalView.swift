@@ -10,9 +10,6 @@ import Contacts
 
 struct PenPalView: View {
     
-    // MARK: Parameters
-    let penpal: PenPal
-    
     // MARK: State
     @StateObject private var penPalViewController: PenPalViewController
     @State private var showingPenPalContactSheet: Bool = false
@@ -23,7 +20,6 @@ struct PenPalView: View {
     @State private var buttonHeight: CGFloat?
     
     init(penpal: PenPal) {
-        self.penpal = penpal
         self._lastEventType = State(wrappedValue: penpal.lastEventType)
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
@@ -32,7 +28,7 @@ struct PenPalView: View {
     func headerAndButtons() -> some View {
         Group {
             
-            PenPalHeader(penpal: penpal)
+            PenPalHeader(penpal: penPalViewController.penpal)
                 .padding(.horizontal)
             
             if lastEventType != .noEvent && lastEventType != .archived {
@@ -114,7 +110,7 @@ struct PenPalView: View {
                         .frame(maxWidth: 200)
                 }
                 
-                Text("It seems you haven't sent or received any letters with \(penpal.name) yet!")
+                Text("It seems you haven't sent or received any letters with \(penPalViewController.penpal.name) yet!")
                     .fullWidth(alignment: .center)
                     .padding()
                     .padding(.top)
@@ -136,18 +132,18 @@ struct PenPalView: View {
                                 dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            EventCell(event: event, penpal: penpal, lastEventTypeForPenPal: $lastEventType)
+                            EventCell(event: event, penpal: penPalViewController.penpal, lastEventTypeForPenPal: $lastEventType)
                                 .padding(.bottom)
                         }
                         #if DEBUG
                         Button(action: {
                             Task {
                                 let now = Date()
-                                await penpal.addEvent(ofType: .written, forDate: now.addingTimeInterval(-60 * 60 * 24 * 10))
-                                await penpal.addEvent(ofType: .sent, forDate: now.addingTimeInterval(-60 * 60 * 24 * 9))
-                                await penpal.addEvent(ofType: .theyReceived, forDate: now.addingTimeInterval(-60 * 60 * 24 * 6))
-                                await penpal.addEvent(ofType: .inbound, forDate: now.addingTimeInterval((-60 * 60 * 24 * 6) + (60 * 60)))
-                                await penpal.addEvent(ofType: .received, forDate: now.addingTimeInterval(-60 * 60 * 24 * 3))
+                                await penPalViewController.penpal.addEvent(ofType: .written, forDate: now.addingTimeInterval(-60 * 60 * 24 * 10))
+                                await penPalViewController.penpal.addEvent(ofType: .sent, forDate: now.addingTimeInterval(-60 * 60 * 24 * 9))
+                                await penPalViewController.penpal.addEvent(ofType: .theyReceived, forDate: now.addingTimeInterval(-60 * 60 * 24 * 6))
+                                await penPalViewController.penpal.addEvent(ofType: .inbound, forDate: now.addingTimeInterval((-60 * 60 * 24 * 6) + (60 * 60)))
+                                await penPalViewController.penpal.addEvent(ofType: .received, forDate: now.addingTimeInterval(-60 * 60 * 24 * 3))
                             }
                         }) {
                             Text("Add Debug Data")
@@ -158,16 +154,15 @@ struct PenPalView: View {
                 }
             }
         }
-//        .navigationTitle(penpal.name)
         .onAppear {
             penPalViewController.start()
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
-            PenPalContactSheet(penpal: penpal)
+            PenPalContactSheet(penpal: penPalViewController.penpal)
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
+            AddEventSheet(penpal: penPalViewController.penpal, event: nil, eventType: eventType) { newEvent, newEventType in
                 self.lastEventType = newEventType
                 self.presentAddEventSheetForType = nil
             }
@@ -191,8 +186,8 @@ struct PenPalView: View {
             self.presentAddEventSheetForType = eventType
         } else {
             Task {
-                await self.penpal.addEvent(ofType: eventType)
-                let latestEventType = await penpal.updateLastEventType()
+                await self.penPalViewController.penpal.addEvent(ofType: eventType)
+                let latestEventType = await penPalViewController.penpal.updateLastEventType()
                 DispatchQueue.main.async {
                     withAnimation {
                         self.lastEventType = latestEventType

@@ -20,7 +20,7 @@ struct AddEventSheet: View {
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: Parameters
-    let penpal: PenPal?
+    let penpal: PenPal
     let event: Event?
     let eventType: EventType
     let done: (Event?, EventType) -> ()
@@ -53,10 +53,32 @@ struct AddEventSheet: View {
             .padding(.vertical)
             .background(eventType.color)
             Form {
-                if event != nil {
+                if let event = event {
+                                        
+                    if event.eventType == .written && event.date == penpal.lastEventDate && penpal.lastEventType == .written {
+                        Section {
+                            Button(action: {
+                                Task {
+                                    let newEvent = await penpal.addEvent(ofType: .sent, notes: nil, pen: nil, ink: nil, paper: nil)
+                                    let latestEventType = await penpal.updateLastEventType()
+                                    self.done(newEvent, latestEventType)
+                                }
+                            }) {
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: EventType.sent.icon)
+                                    Text("I've posted this!")
+                                    Spacer()
+                                }
+                            }
+                            .foregroundColor(EventType.sent.color)
+                        }
+                    }
+                    
                     Section {
                         DatePicker("Date", selection: $date)
                     }
+                    
                 }
                 Section {
                     TextField("Notes", text: $notes, axis: .vertical)
@@ -118,17 +140,15 @@ struct AddEventSheet: View {
                 }) {
                     Button(action: {
                         Task {
-                            if let penpal = penpal {
-                                if let event = event {
-                                    let newEvent = Event(id: event.id, _type: event._type, date: date, penpalID: event.penpalID, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
-                                    await event.update(from: newEvent)
-                                    let latestEventType = await penpal.updateLastEventType()
-                                    self.done(newEvent, latestEventType)
-                                } else {
-                                    let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
-                                    let latestEventType = await penpal.updateLastEventType()
-                                    self.done(newEvent, latestEventType)
-                                }
+                            if let event = event {
+                                let newEvent = Event(id: event.id, _type: event._type, date: date, penpalID: event.penpalID, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                                await event.update(from: newEvent)
+                                let latestEventType = await penpal.updateLastEventType()
+                                self.done(newEvent, latestEventType)
+                            } else {
+                                let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                                let latestEventType = await penpal.updateLastEventType()
+                                self.done(newEvent, latestEventType)
                             }
                         }
                     }) {
@@ -160,8 +180,9 @@ struct AddEventSheet: View {
 }
 
 struct AddEventSheet_Previews: PreviewProvider {
+    static let date: Date = Date()
     static var previews: some View {
-        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: nil, lastEventDate: nil, notes: nil), event: Event(id: nil, _type: 2, date: Date(), penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
+        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: AddEventSheet_Previews.date, notes: nil), event: Event(id: nil, _type: EventType.written.rawValue, date: AddEventSheet_Previews.date, penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
         }
     }
 }

@@ -11,8 +11,7 @@ import SwiftUI
 
 class PenPalViewController: ObservableObject {
     
-    let penpal: PenPal
-    
+    @Published var penpal: PenPal
     @Published var events: [Event] = []
     @Published var eventsWithDifferences: [(Event, Int)] = []
     
@@ -46,7 +45,12 @@ class PenPalViewController: ObservableObject {
     }
     
     private func refresh() async {
-        let fetchedEvents = await penpal.fetchAllEvents()
+        if let refreshedPenpal = await self.penpal.refresh() {
+            DispatchQueue.main.async {
+                self.penpal = refreshedPenpal
+            }
+        }
+        let fetchedEvents = await self.penpal.fetchAllEvents()
         DispatchQueue.main.async {
             if self.events.isEmpty {
                 self.events = fetchedEvents
