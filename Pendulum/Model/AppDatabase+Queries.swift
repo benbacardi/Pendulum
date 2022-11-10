@@ -167,4 +167,43 @@ extension AppDatabase {
         return await self.fetchDistinctEventNote(for: "paper")
     }
     
+    private func fetchDistinctEventNote(for column: String, by penpal: PenPal) async -> [(String, Int)] {
+        do {
+            let results = try await dbWriter.read { db in
+                try penpal.events.select(Column(column), as: String?.self).order(Column(column)).fetchAll(db)
+            }.compactMap { $0 }
+            var counts: [String: Int] = [:]
+            for value in results {
+                counts[value] = (counts[value] ?? 0) + 1
+            }
+            return Array(counts).sorted { $0.1 > $1.1 }
+        } catch {
+            dataLogger.error("Could not fetch distinct \(column)s for \(penpal.name): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    func fetchDistinctPens(for penpal: PenPal) async -> [(String, Int)] {
+        return await self.fetchDistinctEventNote(for: "pen", by: penpal)
+    }
+    
+    func fetchDistinctInks(for penpal: PenPal) async -> [(String, Int)] {
+        return await self.fetchDistinctEventNote(for: "ink", by: penpal)
+    }
+    
+    func fetchDistinctPapers(for penpal: PenPal) async -> [(String, Int)] {
+        return await self.fetchDistinctEventNote(for: "paper", by: penpal)
+    }
+    
+    func test() async {
+        do {
+            let results = try await dbWriter.read { db in
+                try Event.select(Column("pen"), count(Column("id"))).group(Column("pen")).fetchAll(db)
+            }
+            dataLogger.debug("Results: \(results)")
+        } catch {
+            dataLogger.error("Could not run test: \(error.localizedDescription)")
+        }
+    }
+    
 }
