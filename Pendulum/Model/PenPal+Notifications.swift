@@ -12,11 +12,8 @@ extension PenPal {
     
     /// Delay before sending a notification to write back, in seconds
     /// 7 days = 7 * 24 * 60 * 60
-    static let sendWriteBackNotificationDelay: Double = 10
+    static let sendWriteBackNotificationDelay: Double = 7 * 24 * 60 * 60
     
-    /// Delay before sending a notification to write back, in seconds
-    /// 3 days = 3 * 24 * 60 * 60
-    static let sendPostLettersNotificationDelay: Double = 10
     static let shouldPostLettersNotificationIdentifier: String = "shouldPostLetters"
     
     static func cancelAllShouldPostLettersNotifications() {
