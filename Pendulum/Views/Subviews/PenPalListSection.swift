@@ -86,8 +86,14 @@ struct PenPalListSection: View {
                     .contextMenu {
                         ForEach(EventType.actionableCases, id: \.self) { eventType in
                             Button(action: {
-                                self.currentPenPal = penpal
-                                self.presentAddEventSheetForType = eventType
+                                if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
+                                    self.currentPenPal = penpal
+                                    self.presentAddEventSheetForType = eventType
+                                } else {
+                                    Task {
+                                        await penpal.addEvent(ofType: eventType)
+                                    }
+                                }
                             }) {
                                 Label(eventType.actionableText, systemImage: eventType.icon)
                             }
@@ -127,6 +133,7 @@ struct PenPalListSection: View {
         .padding([.horizontal, .top])
         .opacity(type == .archived ? 0.5 : 1)
     }
+    
 }
 
 struct PenPalListSection_Previews: PreviewProvider {

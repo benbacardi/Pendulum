@@ -14,6 +14,7 @@ extension UserDefaults {
         case sendRemindersToWriteLetters
         case badgeRemindersToPostLetters
         case badgeRemindersToWriteLetters
+        case enableQuickEntry
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -40,6 +41,12 @@ extension UserDefaults {
     var badgeRemindersToWriteLetters: Bool {
         get { bool(forKey: Key.badgeRemindersToWriteLetters.rawValue) }
         set { setValue(newValue, forKey: Key.badgeRemindersToWriteLetters.rawValue) }
+    }
+    
+    @objc
+    var enableQuickEntry: Bool {
+        get { bool(forKey: Key.enableQuickEntry.rawValue) }
+        set { setValue(newValue, forKey: Key.enableQuickEntry.rawValue) }
     }
     
 }

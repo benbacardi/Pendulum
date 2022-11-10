@@ -182,7 +182,7 @@ struct PenPalView: View {
     }
     
     func userTappedAddEvent(ofType eventType: EventType) {
-        if eventType.presentFullNotesSheetByDefault {
+        if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
             self.presentAddEventSheetForType = eventType
         } else {
             Task {

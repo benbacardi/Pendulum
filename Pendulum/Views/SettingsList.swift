@@ -17,6 +17,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.sendRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToPostLetters: Bool = false
     @AppStorage(UserDefaults.Key.badgeRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToWriteLetters: Bool = false
     @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
+    @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
     
@@ -55,6 +56,10 @@ struct SettingsList: View {
                 Section(header: Text("Icon Badges")) {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
+                }
+                
+                Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
+                    Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
                 
                 Section(
