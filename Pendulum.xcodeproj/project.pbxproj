@@ -40,8 +40,9 @@
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
-		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
+		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
+		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,8 +81,9 @@
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
-		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
+		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
+		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -172,6 +174,7 @@
 				5EA81851291BB0C50052F88E /* BackgroundCircle.swift */,
 				5EA81855291BB7AD0052F88E /* RoundedCorner.swift */,
 				5EA81857291BFE170052F88E /* DeviceType.swift */,
+				5EEF49FD291D1218000528C6 /* Orientation.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -342,6 +345,7 @@
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
+				5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */,
 				5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

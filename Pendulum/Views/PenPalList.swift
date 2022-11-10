@@ -11,15 +11,19 @@ import GRDB
 
 struct PenPalList: View {
     
+    // MARK: Environment
+    @EnvironmentObject internal var orientationObserver: OrientationObserver
+    
     // MARK: State
     @StateObject private var penPalListController = PenPalListController()
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
+    @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     var body: some View {
-        NavigationStack {
+        NavigationSplitView(columnVisibility: $columnVisibility) {
             Group {
                 if contactsAccessStatus == .notDetermined || (contactsAccessStatus != .authorized && penPalListController.penpals.isEmpty) {
                     /// Show contacts access required message if it hasn't been requested,
@@ -79,12 +83,21 @@ struct PenPalList: View {
             .sheet(isPresented: $presentingSettingsSheet) {
                 SettingsList()
             }
+        } detail: {
+            Text("Hello")
         }
+        .navigationSplitViewStyle(.balanced)
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
             self.iconWidth = value
         }
         .onAppear {
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
+            self.columnVisibility = .all
+        }
+        .onChange(of: orientationObserver.currentOrientation) { currentOrientation in
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                self.columnVisibility = .all
+            }
         }
     }
 }

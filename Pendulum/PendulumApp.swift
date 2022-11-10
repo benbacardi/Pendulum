@@ -27,6 +27,7 @@ struct PendulumApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(OrientationObserver.shared)
                 .onChange(of: scenePhase) { scenePhase in
                     if scenePhase == .background {
                         UIApplication.shared.updateBadgeNumber()
