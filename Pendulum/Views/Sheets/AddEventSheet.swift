@@ -134,7 +134,7 @@ struct AddEventSheet: View {
                                 TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
                                 if !paperSuggestions.isEmpty {
                                     Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper}")
+                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper")
                                     }) {
                                         Image(systemName: "ellipsis")
                                     }

@@ -40,12 +40,14 @@ struct PenPalList: View {
                 } else if penPalListController.penpals.isEmpty {
                     VStack {
                         Spacer()
-                        if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 200)
-                                .padding(.bottom)
+                        if !DeviceType.isPad() {
+                            if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: 200)
+                                    .padding(.bottom)
+                            }
                         }
                         Button(action: {
                             self.presentingAddPenPalSheet = true
@@ -54,6 +56,7 @@ struct PenPalList: View {
                         }
                         Spacer()
                     }
+                    .padding()
                 } else {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
@@ -93,7 +96,17 @@ struct PenPalList: View {
                 }
             }
         } detail: {
-            Text("Hello")
+            VStack {
+                Spacer()
+                if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 200)
+                        .padding(.bottom)
+                }
+                Spacer()
+            }
         }
         .sheet(isPresented: $presentingStationerySheet) {
             EventPropertyDetailsSheet(penpal: nil)
