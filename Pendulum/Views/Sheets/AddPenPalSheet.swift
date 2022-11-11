@@ -18,7 +18,7 @@ struct AddPenPalSheet: View {
     @State private var existingPenPalIdentifiers: Set<String> = []
     @State private var contactDetails: [CNContact] = []
     @State private var contactsFetched: Bool = false
-    @State private var sortedContacts: [CNContact] = []
+    @State private var filteredContacts: [CNContact] = []
     @State private var searchText: String = ""
     
     var body: some View {
@@ -26,7 +26,7 @@ struct AddPenPalSheet: View {
             Group {
                 if !contactDetails.isEmpty {
                     List {
-                        ForEach(sortedContacts, id: \.identifier) { contact in
+                        ForEach(filteredContacts, id: \.identifier) { contact in
                             if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
                                     Task {
@@ -99,11 +99,13 @@ struct AddPenPalSheet: View {
                 let store = CNContactStore()
                 let keys = [
                     CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                    CNContactFormatter.descriptorForRequiredKeysForNameOrder,
                     CNContactOrganizationNameKey,
                     CNContactImageDataAvailableKey,
                     CNContactThumbnailImageDataKey
                 ] as! [CNKeyDescriptor]
                 let request = CNContactFetchRequest(keysToFetch: keys)
+                request.sortOrder = CNContactsUserDefaults.shared().sortOrder
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         try store.enumerateContacts(with: request) { (contact, stop) in
@@ -133,18 +135,18 @@ struct AddPenPalSheet: View {
                 }
             }
             .onChange(of: contactsFetched) { _ in
-                self.sortAndFilterContacts()
+                self.filterContacts()
             }
             .onChange(of: searchText) { searchText in
-                self.sortAndFilterContacts(with: searchText)
+                self.filterContacts(with: searchText)
             }
         }
     }
     
-    func sortAndFilterContacts(with searchText: String = "") {
+    func filterContacts(with searchText: String = "") {
         let st = searchText.lowercased()
         withAnimation {
-            self.sortedContacts = contactDetails.filter { contact in
+            self.filteredContacts = contactDetails.filter { contact in
                 if contact.fullName == nil {
                     return false
                 }
@@ -152,8 +154,6 @@ struct AddPenPalSheet: View {
                     return true
                 }
                 return contact.matches(term: st)
-            }.sorted { c1, c2 in
-                return c1.sortKey < c2.sortKey
             }
         }
     }
