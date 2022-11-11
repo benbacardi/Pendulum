@@ -29,27 +29,6 @@ extension CNContact {
         return String(initialCandidates.filter { $0.isLetter || $0.isNumber })
     }
     
-    var sortKey: String {
-        let key: String
-        let familyName = self.familyName.trimmingCharacters(in: .whitespaces)
-        if familyName.isEmpty {
-            let givenName = self.givenName.trimmingCharacters(in: .whitespaces)
-            if givenName.isEmpty {
-                let org = self.organizationName.trimmingCharacters(in: .whitespaces)
-                if org.isEmpty {
-                    key = fullName ?? ""
-                } else {
-                    key = org
-                }
-            } else {
-                key = givenName
-            }
-        } else {
-            key = familyName
-        }
-        return key.filter { $0.isLetter || $0.isNumber }.lowercased()
-    }
-    
     func matches(term: String) -> Bool {
         self.fullName?.lowercased().contains(term) ?? false
     }

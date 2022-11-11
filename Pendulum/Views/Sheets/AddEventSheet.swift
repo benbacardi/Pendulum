@@ -82,11 +82,12 @@ struct AddEventSheet: View {
                         }
                     }
                     
-                    Section {
-                        DatePicker("Date", selection: $date)
-                    }
-                    
                 }
+                
+                Section {
+                    DatePicker("Date", selection: $date)
+                }
+                
                 Section {
                     TextField("Notes", text: $notes, axis: .vertical)
                 }
@@ -160,7 +161,7 @@ struct AddEventSheet: View {
                                 let latestEventType = await penpal.updateLastEventType()
                                 self.done(newEvent, latestEventType)
                             } else {
-                                let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                                let newEvent = await penpal.addEvent(ofType: eventType, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, forDate: date)
                                 let latestEventType = await penpal.updateLastEventType()
                                 self.done(newEvent, latestEventType)
                             }
