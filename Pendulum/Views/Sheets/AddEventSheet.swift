@@ -61,7 +61,7 @@ struct AddEventSheet: View {
             .background(eventType.color)
             Form {
                 if let event = event {
-                                        
+                    
                     if event.eventType == .written && event.date == penpal.lastEventDate && penpal.lastEventType == .written {
                         Section {
                             Button(action: {
@@ -184,18 +184,18 @@ struct AddEventSheet: View {
                 ink = event.ink ?? ""
                 paper = event.paper ?? ""
             }
-            Task {
-                self.penSuggestions = await AppDatabase.shared.fetchDistinctPens()
-                self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks()
-                self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers()
-            }
+        }
+        .task {
+            self.penSuggestions = await AppDatabase.shared.fetchDistinctPens()
+            self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks()
+            self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers()
+        }
+        .task {
             if eventType == .sent && event == nil {
-                Task {
-                    let priorSentEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .sent)
-                    let priorWrittenEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .written)
-                    if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.date {
-                        self.priorWrittenEvent = priorWrittenEvent
-                    }
+                let priorSentEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .sent)
+                let priorWrittenEvent = await penpal.fetchPriorEvent(to: Date(), ofType: .written)
+                if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.date {
+                    self.priorWrittenEvent = priorWrittenEvent
                 }
             }
         }

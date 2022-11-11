@@ -88,33 +88,33 @@ struct PenPalContactSheet: View {
             .padding()
             .onAppear {
                 notes = penpal.notes ?? ""
-                Task {
-                    let store = CNContactStore()
-                    let keys = [
-                        CNContactPostalAddressesKey,
-                    ] as! [CNKeyDescriptor]
-                    do {
-                        let contact = try store.unifiedContact(withIdentifier: penpal.id, keysToFetch: keys)
-                        self.addresses = contact.postalAddresses
-                        self.maps = self.addresses.map { _ in
-                            nil
-                        }
-                        let geocoder = CLGeocoder()
-                        for (index, address) in self.addresses.enumerated() {
-                            do {
-                                let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
-                                if let addr = placemarks.first {
-                                    withAnimation {
-                                        self.maps[index] = addr
-                                    }
-                                }
-                            } catch {
-                                dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
-                            }
-                        }
-                    } catch {
-                        dataLogger.error("Could not fetch contact with ID \(penpal.id): \(error.localizedDescription)")
+            }
+            .task {
+                let store = CNContactStore()
+                let keys = [
+                    CNContactPostalAddressesKey,
+                ] as! [CNKeyDescriptor]
+                do {
+                    let contact = try store.unifiedContact(withIdentifier: penpal.id, keysToFetch: keys)
+                    self.addresses = contact.postalAddresses
+                    self.maps = self.addresses.map { _ in
+                        nil
                     }
+                    let geocoder = CLGeocoder()
+                    for (index, address) in self.addresses.enumerated() {
+                        do {
+                            let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
+                            if let addr = placemarks.first {
+                                withAnimation {
+                                    self.maps[index] = addr
+                                }
+                            }
+                        } catch {
+                            dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                        }
+                    }
+                } catch {
+                    dataLogger.error("Could not fetch contact with ID \(penpal.id): \(error.localizedDescription)")
                 }
             }
             .toolbar {

@@ -94,30 +94,30 @@ struct AddPenPalSheet: View {
             }
             .onAppear {
                 self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
-                Task {
-                    let store = CNContactStore()
-                    let keys = [
-                        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                        CNContactOrganizationNameKey,
-                        CNContactImageDataAvailableKey,
-                        CNContactThumbnailImageDataKey
-                    ] as! [CNKeyDescriptor]
-                    let request = CNContactFetchRequest(keysToFetch: keys)
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        do {
-                            try store.enumerateContacts(with: request) { (contact, stop) in
-                                if !existingPenPalIdentifiers.contains(contact.identifier) {
-                                    DispatchQueue.main.async {
-                                        self.contactDetails.append(contact)
-                                    }
+            }
+            .task {
+                let store = CNContactStore()
+                let keys = [
+                    CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                    CNContactOrganizationNameKey,
+                    CNContactImageDataAvailableKey,
+                    CNContactThumbnailImageDataKey
+                ] as! [CNKeyDescriptor]
+                let request = CNContactFetchRequest(keysToFetch: keys)
+                DispatchQueue.global(qos: .userInitiated).async {
+                    do {
+                        try store.enumerateContacts(with: request) { (contact, stop) in
+                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+                                DispatchQueue.main.async {
+                                    self.contactDetails.append(contact)
                                 }
                             }
-                            DispatchQueue.main.async {
-                                self.contactsFetched = true
-                            }
-                        } catch {
-                            dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                         }
+                        DispatchQueue.main.async {
+                            self.contactsFetched = true
+                        }
+                    } catch {
+                        dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                     }
                 }
             }
