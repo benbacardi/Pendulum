@@ -9,6 +9,12 @@ import SwiftUI
 import Contacts
 import GRDB
 
+struct PresentAddEventSheet: Identifiable {
+    let id = UUID()
+    let penpal: PenPal
+    let eventType: EventType
+}
+
 struct PenPalList: View {
     
     // MARK: Environment
@@ -21,6 +27,7 @@ struct PenPalList: View {
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
+    @State private var presentAddEventSheetForType: PresentAddEventSheet? = nil
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
     
     var body: some View {
@@ -51,7 +58,7 @@ struct PenPalList: View {
                     ScrollView {
                         ForEach(EventType.allCases, id: \.self) { eventType in
                             if let penpals = penPalListController.groupedPenPals[eventType] {
-                                PenPalListSection(type: eventType, penpals: penpals, iconWidth: $iconWidth)
+                                PenPalListSection(type: eventType, penpals: penpals, iconWidth: $iconWidth, presentAddEventSheetForType: $presentAddEventSheetForType)
                             }
                         }
                         Spacer()
@@ -85,17 +92,22 @@ struct PenPalList: View {
                     .disabled(contactsAccessStatus != .authorized)
                 }
             }
-            .sheet(isPresented: $presentingStationerySheet) {
-                EventPropertyDetailsSheet(penpal: nil)
-            }
-            .sheet(isPresented: $presentingAddPenPalSheet) {
-                AddPenPalSheet(existingPenPals: penPalListController.penpals)
-            }
-            .sheet(isPresented: $presentingSettingsSheet) {
-                SettingsList()
-            }
         } detail: {
             Text("Hello")
+        }
+        .sheet(isPresented: $presentingStationerySheet) {
+            EventPropertyDetailsSheet(penpal: nil)
+        }
+        .sheet(isPresented: $presentingAddPenPalSheet) {
+            AddPenPalSheet(existingPenPals: penPalListController.penpals)
+        }
+        .sheet(isPresented: $presentingSettingsSheet) {
+            SettingsList()
+        }
+        .sheet(item: $presentAddEventSheetForType) { presentSheetData in
+            AddEventSheet(penpal: presentSheetData.penpal, event: nil, eventType: presentSheetData.eventType) { newEvent, newEventType in
+                self.presentAddEventSheetForType = nil
+            }
         }
         .navigationSplitViewStyle(.balanced)
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in

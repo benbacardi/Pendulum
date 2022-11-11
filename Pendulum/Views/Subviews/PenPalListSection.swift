@@ -15,11 +15,11 @@ struct PenPalListSection: View {
     
     // MARK: External State
     @Binding var iconWidth: CGFloat
+    @Binding var presentAddEventSheetForType: PresentAddEventSheet?
     
     // MARK: Internal State
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
-    @State private var presentAddEventSheetForType: EventType? = nil
     
     func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
@@ -87,8 +87,7 @@ struct PenPalListSection: View {
                         ForEach(EventType.actionableCases, id: \.self) { eventType in
                             Button(action: {
                                 if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
-                                    self.currentPenPal = penpal
-                                    self.presentAddEventSheetForType = eventType
+                                    self.presentAddEventSheetForType = PresentAddEventSheet(penpal: penpal, eventType: eventType)
                                 } else {
                                     Task {
                                         await penpal.addEvent(ofType: eventType)
@@ -123,13 +122,6 @@ struct PenPalListSection: View {
                 }
             }
         }
-        .sheet(item: $presentAddEventSheetForType) { eventType in
-            if let penpal = self.currentPenPal {
-                AddEventSheet(penpal: penpal, event: nil, eventType: eventType) { newEvent, newEventType in
-                    self.presentAddEventSheetForType = nil
-                }
-            }
-        }
         .padding([.horizontal, .top])
         .opacity(type == .archived ? 0.5 : 1)
     }
@@ -143,11 +135,11 @@ struct PenPalListSection_Previews: PreviewProvider {
                 PenPal(id: "1", name: "Ben Cardy", initials: "BC", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil),
                 PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil),
                 PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil)
-            ], iconWidth: .constant(20))
+            ], iconWidth: .constant(20), presentAddEventSheetForType: .constant(nil))
             PenPalListSection(type: .inbound, penpals: [
                 PenPal(id: "1", name: "Ben Cardy", initials: "BC", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil),
                 PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil)
-            ], iconWidth: .constant(20))
+            ], iconWidth: .constant(20), presentAddEventSheetForType: .constant(nil))
         }
     }
 }
