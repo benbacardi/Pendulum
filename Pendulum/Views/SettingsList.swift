@@ -81,7 +81,7 @@ struct SettingsList: View {
                     }
                         .padding(.vertical)
                         .fullWidth(alignment: .center),
-                    footer: Text("\nA **Faber & Cardy** Production\n\nFor Ellen, adequately ginger, but perfectly lovely")
+                    footer: Text("\nA **Faber & Cardy** Production\n\nFor Ellen; adequately ginger, but perfectly lovely")
                         .fullWidth(alignment: .center)
                 ) {
                     HStack {
@@ -151,6 +151,7 @@ struct SettingsList: View {
                     requestNotificationAccess()
                 }
             }
+            .tint(.adequatelyGinger)
         }
     }
     
