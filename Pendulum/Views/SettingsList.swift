@@ -53,7 +53,11 @@ struct SettingsList: View {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
                     if sendRemindersToPostLetters {
-                        DatePicker("", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
+                        HStack {
+                            Image(systemName: "arrow.turn.down.right")
+                            DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
+                        }
+                        .padding(.leading, 4)
                     }
                 }
                 
