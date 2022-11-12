@@ -100,10 +100,18 @@ struct PenPalListSection: View {
                         Divider()
                         Button(action: {
                             Task {
-                                await penpal.archive()
+                                if penpal.lastEventType != .archived {
+                                    await penpal.archive()
+                                } else {
+                                    await penpal.updateLastEventType()
+                                }
                             }
                         }) {
-                            Label("Archive", systemImage: "archivebox")
+                            if penpal.lastEventType != .archived {
+                                Label("Archive", systemImage: "archivebox")
+                            } else {
+                                Label("Unarchive", systemImage: "archivebox")
+                            }
                         }
                         Button(role: .destructive, action: {
                             self.currentPenPal = penpal
