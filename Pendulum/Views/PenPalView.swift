@@ -39,19 +39,41 @@ struct PenPalView: View {
             }
             
             HStack(alignment: .top) {
-                ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                if lastEventType == .archived {
                     Button(action: {
-                        self.userTappedAddEvent(ofType: eventType)
+                        Task {
+                            let latestEventType = await penPalViewController.penpal.updateLastEventType()
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    self.lastEventType = latestEventType
+                                }
+                            }
+                        }
                     }) {
-                        Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                        Label("Unarchive", systemImage: EventType.archived.icon)
                             .fullWidth(alignment: .center)
                             .font(.headline)
                             .background(GeometryReader { geometry in
                                 Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
                             })
                     }
-                    .tint(eventType.color)
+                    .tint(EventType.archived.color)
                     .buttonStyle(.borderedProminent)
+                } else {
+                    ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                        Button(action: {
+                            self.userTappedAddEvent(ofType: eventType)
+                        }) {
+                            Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                                .fullWidth(alignment: .center)
+                                .font(.headline)
+                                .background(GeometryReader { geometry in
+                                    Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
+                                })
+                        }
+                        .tint(eventType.color)
+                        .buttonStyle(.borderedProminent)
+                    }
                 }
                 Menu {
                     ForEach(EventType.actionableCases, id: \.self) { eventType in
