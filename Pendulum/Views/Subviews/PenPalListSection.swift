@@ -48,7 +48,7 @@ struct PenPalListSection: View {
                 Text(type.phrase)
                     .fullWidth()
             }
-            ForEach(penpals) { penpal in
+            ForEach(penpals, id: \.id) { penpal in
                 NavigationLink(destination: PenPalView(penpal: penpal)) {
                     GroupBox {
                         VStack {

@@ -15,6 +15,8 @@ class PenPalListController: ObservableObject {
     @Published var penpals: [PenPal] = []
     @Published var groupedPenPals: [EventType: [PenPal]] = [:]
     
+    @Published var penPalSections: [PenPalSection] = []
+    
     private var penPalObservation = AppDatabase.shared.observePenPalObservation()
     private var penPalObservationCancellable: DatabaseCancellable?
     private var eventObservation = AppDatabase.shared.observeEventObservation()
@@ -34,14 +36,17 @@ class PenPalListController: ObservableObject {
     private func refresh(with penpals: [PenPal]? = nil) async {
         if let penpals = penpals {
             let result = await self.groupPenPals(with: penpals)
+            let sectionResults = await self.sectionPenPals(from: result)
             DispatchQueue.main.async {
                 if self.penpals.isEmpty {
                     self.penpals = penpals
                     self.groupedPenPals = result
+                    self.penPalSections = sectionResults
                 } else {
                     withAnimation {
                         self.penpals = penpals
                         self.groupedPenPals = result
+                        self.penPalSections = sectionResults
                     }
                 }
             }
@@ -70,6 +75,14 @@ class PenPalListController: ObservableObject {
             groups[key]?.append(penpal)
         }
         return groups
+    }
+    
+    private func sectionPenPals(from groups: [EventType: [PenPal]]) async -> [PenPalSection] {
+        var results: [PenPalSection] = []
+        for (eventType, penpals) in groups {
+            results.append(PenPalSection(eventType: eventType, penpals: penpals))
+        }
+        return results
     }
     
     func syncWithContacts() async {
