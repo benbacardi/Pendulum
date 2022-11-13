@@ -75,33 +75,34 @@ struct PenPalList: View {
     func penPalNavigationLink(for penpal: PenPal) -> some View {
         NavigationLink(destination: PenPalView(penpal: penpal)) {
             GroupBox {
-                VStack {
-                    HStack {
-                        if let image = penpal.displayImage {
-                            image
-                                .clipShape(Circle())
-                                .frame(width: 40, height: 40)
-                        } else {
-                            ZStack {
-                                Circle()
-                                    .fill(.gray)
-                                Text(penpal.initials)
-                                    .font(.system(.headline, design: .rounded))
-                                    .foregroundColor(.white)
-                            }
+                HStack {
+                    if let image = penpal.displayImage {
+                        image
+                            .clipShape(Circle())
                             .frame(width: 40, height: 40)
+                    } else {
+                        ZStack {
+                            Circle()
+                                .fill(.gray)
+                            Text(penpal.initials)
+                                .font(.system(.headline, design: .rounded))
+                                .foregroundColor(.white)
                         }
-                        VStack {
-                            Text(penpal.name)
-                                .font(.headline)
+                        .frame(width: 40, height: 40)
+                    }
+                    VStack {
+                        Text(penpal.name)
+                            .font(.headline)
+                            .fullWidth()
+                        if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
+                            self.dateText(for: penpal)
+                                .font(.caption)
                                 .fullWidth()
-                            if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
-                                self.dateText(for: penpal)
-                                    .font(.caption)
-                                    .fullWidth()
-                            }
                         }
                     }
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.secondary)
                 }
                 .foregroundColor(.primary)
             }
@@ -111,8 +112,10 @@ struct PenPalList: View {
                         if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
                             self.presentAddEventSheetForType = PresentAddEventSheet(penpal: penpal, eventType: eventType)
                         } else {
-                            Task {
-                                await penpal.addEvent(ofType: eventType)
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                                Task {
+                                    await penpal.addEvent(ofType: eventType)
+                                }
                             }
                         }
                     }) {
@@ -121,11 +124,13 @@ struct PenPalList: View {
                 }
                 Divider()
                 Button(action: {
-                    Task {
-                        if penpal.lastEventType != .archived {
-                            await penpal.archive()
-                        } else {
-                            await penpal.updateLastEventType()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                        Task {
+                            if penpal.lastEventType != .archived {
+                                await penpal.archive()
+                            } else {
+                                await penpal.updateLastEventType()
+                            }
                         }
                     }
                 }) {
@@ -152,58 +157,54 @@ struct PenPalList: View {
         }
     }
     
+    @ViewBuilder
+    var navigationBody: some View {
+        if contactsAccessStatus == .notDetermined || (contactsAccessStatus != .authorized && penPalListController.penpals.isEmpty) {
+            /// Show contacts access required message if it hasn't been requested,
+            /// or it has been denied and the user hasn't added any pen pals yet
+            ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+        } else if penPalListController.penpals.isEmpty {
+            VStack {
+                Spacer()
+                if !DeviceType.isPad() {
+                    if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: 200)
+                            .padding(.bottom)
+                    }
+                }
+                Button(action: {
+                    self.presentingAddPenPalSheet = true
+                }) {
+                    Text("Add your first Pen Pal to get started!")
+                }
+                Spacer()
+            }
+            .padding()
+        } else {
+            ScrollView {
+                LazyVStack {
+                    ForEach(EventType.allCases, id: \.self.rawValue) { eventType in
+                        if let penpals = penPalListController.groupedPenPals[eventType] {
+                            sectionHeader(for: eventType)
+                            ForEach(penpals, id: \.id) { penpal in
+                                penPalNavigationLink(for: penpal)
+                            }
+                            Spacer()
+                                .frame(height: 20)
+                        }
+                    }
+                }
+                .padding()
+            }
+        }
+    }
+    
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            Group {
-                if contactsAccessStatus == .notDetermined || (contactsAccessStatus != .authorized && penPalListController.penpals.isEmpty) {
-                    /// Show contacts access required message if it hasn't been requested,
-                    /// or it has been denied and the user hasn't added any pen pals yet
-                    ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
-                } else if penPalListController.penpals.isEmpty {
-                    VStack {
-                        Spacer()
-                        if !DeviceType.isPad() {
-                            if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 200)
-                                    .padding(.bottom)
-                            }
-                        }
-                        Button(action: {
-                            self.presentingAddPenPalSheet = true
-                        }) {
-                            Text("Add your first Pen Pal to get started!")
-                        }
-                        Spacer()
-                    }
-                    .padding()
-                } else {
-                    List {
-                        ForEach(penPalListController.penPalSections, id: \.eventType.rawValue) { section in
-                            Section(header: sectionHeader(for: section.eventType)) {
-                                ForEach(section.penpals, id: \.id) { penpal in
-                                    penPalNavigationLink(for: penpal)
-                                }
-                            }
-//                            .headerProminence(.increased)
-                        }
-                        .listRowSeparator(.hidden)
-                    }
-                    .listStyle(.plain)
-//                    ScrollView {
-//                        LazyVStack {
-//                            ForEach(EventType.allCases, id: \.self.rawValue) { eventType in
-//                                if let penpals = penPalListController.groupedPenPals[eventType] {
-//                                    PenPalListSection(type: eventType, penpals: penpals, iconWidth: $iconWidth, presentAddEventSheetForType: $presentAddEventSheetForType)
-//                                }
-//                            }
-//                            Spacer()
-//                        }
-//                    }
-                }
-            }
+            navigationBody
             .navigationTitle("Pen Pals")
             .toolbar {
                 if DeviceType.isPad() {
