@@ -52,10 +52,9 @@ struct PenPalList: View {
     func sectionHeader(for type: EventType) -> some View {
         HStack {
             ZStack {
-                Rectangle()
+                Circle()
                     .fill(type.color)
-                    .frame(width: iconWidth * 1.2, height: iconWidth * 1.2)
-                    .cornerRadius(100, corners: .allCorners)
+                    .frame(width: iconWidth * 1.5, height: iconWidth * 1.5)
                 Image(systemName: type.phraseIcon)
                     .font(.caption)
                     .bold()
@@ -73,7 +72,12 @@ struct PenPalList: View {
     
     @ViewBuilder
     func penPalNavigationLink(for penpal: PenPal) -> some View {
-        NavigationLink(destination: PenPalView(penpal: penpal)) {
+        ZStack {
+            NavigationLink(destination: PenPalView(penpal: penpal)) {
+                EmptyView()
+            }
+            .opacity(0)
+            .buttonStyle(.plain)
             GroupBox {
                 HStack {
                     if let image = penpal.displayImage {
@@ -106,53 +110,32 @@ struct PenPalList: View {
                 }
                 .foregroundColor(.primary)
             }
-            .contextMenu {
-                ForEach(EventType.actionableCases, id: \.self) { eventType in
-                    Button(action: {
-                        if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
-                            self.presentAddEventSheetForType = PresentAddEventSheet(penpal: penpal, eventType: eventType)
+        }
+        .swipeActions {
+            Button(action: {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    Task {
+                        if penpal.lastEventType != .archived {
+                            await penpal.archive()
                         } else {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                                Task {
-                                    await penpal.addEvent(ofType: eventType)
-                                }
-                            }
-                        }
-                    }) {
-                        Label(eventType.actionableText, systemImage: eventType.icon)
-                    }
-                }
-                Divider()
-                Button(action: {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        Task {
-                            if penpal.lastEventType != .archived {
-                                await penpal.archive()
-                            } else {
-                                await penpal.updateLastEventType()
-                            }
+                            await penpal.updateLastEventType()
                         }
                     }
-                }) {
-                    if penpal.lastEventType != .archived {
-                        Label("Archive", systemImage: "archivebox")
-                    } else {
-                        Label("Unarchive", systemImage: "archivebox")
-                    }
                 }
-                Button(role: .destructive, action: {
-                    self.currentPenPal = penpal
-                    self.showDeleteAlert = true
-                }) {
-                    Label("Delete", systemImage: "trash")
+            }) {
+                if penpal.lastEventType != .archived {
+                    Label("Archive", systemImage: "archivebox")
+                } else {
+                    Label("Unarchive", systemImage: "archivebox")
                 }
             }
-            .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
-                Button("Delete \(penpal.name)", role: .destructive) {
-                    Task {
-                        await penpal.delete()
-                    }
-                }
+        }
+        .swipeActions(edge: .leading) {
+            Button(role: .destructive, action: {
+                self.currentPenPal = penpal
+                self.showDeleteAlert = true
+            }) {
+                Label("Delete", systemImage: "trash")
             }
         }
     }
@@ -184,21 +167,22 @@ struct PenPalList: View {
             }
             .padding()
         } else {
-            ScrollView {
-                LazyVStack {
-                    ForEach(EventType.allCases, id: \.self.rawValue) { eventType in
-                        if let penpals = penPalListController.groupedPenPals[eventType] {
-                            sectionHeader(for: eventType)
-                            ForEach(penpals, id: \.id) { penpal in
-                                penPalNavigationLink(for: penpal)
-                            }
-                            Spacer()
-                                .frame(height: 20)
+            List {
+                ForEach(EventType.allCases, id: \.self.rawValue) { eventType in
+                    if let penpals = penPalListController.groupedPenPals[eventType] {
+                        sectionHeader(for: eventType)
+                        ForEach(penpals, id: \.id) { penpal in
+                            penPalNavigationLink(for: penpal)
+                                .listRowBackground(Color.clear)
+                                .listRowInsets(EdgeInsets())
+                                .padding(.horizontal)
+                                .padding(.vertical, 5)
                         }
                     }
                 }
-                .padding()
+                .listRowSeparator(.hidden)
             }
+            .listStyle(.plain)
         }
     }
     
@@ -270,6 +254,13 @@ struct PenPalList: View {
         .onChange(of: orientationObserver.currentOrientation) { currentOrientation in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.columnVisibility = .all
+            }
+        }
+        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+            Button("Delete \(penpal.name)", role: .destructive) {
+                Task {
+                    await penpal.delete()
+                }
             }
         }
     }
