@@ -27,7 +27,6 @@
 		5E40553829155C5F00BD52BF /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553729155C5F00BD52BF /* Event.swift */; };
 		5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553A29155F9F00BD52BF /* PenPalListController.swift */; };
 		5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */; };
-		5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553F29166DA100BD52BF /* PenPalListSection.swift */; };
 		5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554129166EBE00BD52BF /* FullWidthText.swift */; };
 		5E4055452917051D00BD52BF /* PenPalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055442917051D00BD52BF /* PenPalView.swift */; };
 		5E4055472917065800BD52BF /* PenPalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055462917065800BD52BF /* PenPalViewController.swift */; };
@@ -71,7 +70,6 @@
 		5E40553729155C5F00BD52BF /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
 		5E40553A29155F9F00BD52BF /* PenPalListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListController.swift; sourceTree = "<group>"; };
 		5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsAccessRequiredView.swift; sourceTree = "<group>"; };
-		5E40553F29166DA100BD52BF /* PenPalListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection.swift; sourceTree = "<group>"; };
 		5E40554129166EBE00BD52BF /* FullWidthText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthText.swift; sourceTree = "<group>"; };
 		5E4055442917051D00BD52BF /* PenPalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalView.swift; sourceTree = "<group>"; };
 		5E4055462917065800BD52BF /* PenPalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalViewController.swift; sourceTree = "<group>"; };
@@ -228,7 +226,6 @@
 			isa = PBXGroup;
 			children = (
 				5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */,
-				5E40553F29166DA100BD52BF /* PenPalListSection.swift */,
 				5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */,
 				5E52C660291A503700BBD58D /* EventCell.swift */,
 			);
@@ -331,7 +328,6 @@
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
 				5EEF4A00291D8487000528C6 /* PenPal+Notifications.swift in Sources */,
-				5E40554029166DA100BD52BF /* PenPalListSection.swift in Sources */,
 				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,

@@ -43,7 +43,7 @@ fileprivate struct CircleSizePreferenceKey: PreferenceKey {
 }
 
 extension View {
-    func backgroundCircle(color: Color = .gray, multiplier: CGFloat = 1.5, minimumSize: CGFloat = 20) -> some View {
+    func backgroundCircle(color: Color = .gray, multiplier: CGFloat = 1.5, minimumSize: CGFloat = 30) -> some View {
         modifier(BackgroundCircle(color: color, circleSizeMultiplier: multiplier, minimumSize: minimumSize))
     }
 }
