@@ -15,14 +15,6 @@ struct PresentAddEventSheet: Identifiable {
     let eventType: EventType
 }
 
-struct PenPalSection: Identifiable, Hashable {
-    let eventType: EventType
-    let penpals: [PenPal]
-    var id: Int { eventType.rawValue }
-}
-
-
-
 struct PenPalList: View {
     
     // MARK: Environment
@@ -130,13 +122,14 @@ struct PenPalList: View {
                 }
             }
         }
-        .swipeActions(edge: .leading) {
-            Button(role: .destructive, action: {
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            Button(action: {
                 self.currentPenPal = penpal
                 self.showDeleteAlert = true
             }) {
                 Label("Delete", systemImage: "trash")
             }
+            .tint(.red)
         }
     }
     
