@@ -131,6 +131,13 @@ struct PenPalList: View {
             }
             .tint(.red)
         }
+        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+            Button("Delete \(penpal.name)", role: .destructive) {
+                Task {
+                    await penpal.delete()
+                }
+            }
+        }
     }
     
     @ViewBuilder
@@ -247,13 +254,6 @@ struct PenPalList: View {
         .onChange(of: orientationObserver.currentOrientation) { currentOrientation in
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.columnVisibility = .all
-            }
-        }
-        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
-            Button("Delete \(penpal.name)", role: .destructive) {
-                Task {
-                    await penpal.delete()
-                }
             }
         }
     }
