@@ -167,10 +167,12 @@ extension AppDatabase {
             }.filter { $0.name != nil }.map {
                 ParameterCount(name: $0.name ?? "UNKNOWN", count: $0.count)
             }
-            let unusedStationery = Set(await fetchUnusedStationery(for: column))
-            let setOfResults = Set(results.map { $0.name })
-            for diff in unusedStationery.subtracting(setOfResults) {
-                results.append(ParameterCount(name: diff, count: 0))
+            if penpal == nil {
+                let unusedStationery = Set(await fetchUnusedStationery(for: column))
+                let setOfResults = Set(results.map { $0.name })
+                for diff in unusedStationery.subtracting(setOfResults) {
+                    results.append(ParameterCount(name: diff, count: 0))
+                }
             }
             return results
         } catch {
