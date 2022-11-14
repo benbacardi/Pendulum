@@ -78,7 +78,7 @@ struct EventPropertyDetailsSheet: View {
     var body: some View {
         NavigationStack {
             Group {
-                if pens.isEmpty && inks.isEmpty && papers.isEmpty {
+                if pens.isEmpty && inks.isEmpty && papers.isEmpty && !allowAdding {
                     VStack {
                         if let image = UIImage(named: "undraw_monster_artist_2crm") {
                             Image(uiImage: image)
