@@ -29,16 +29,9 @@ extension AppDatabase {
     }
     
     @discardableResult
-    func save(_ penPal: PenPal) async throws -> PenPal {
+    func save<T: MutablePersistableRecord>(_ record: T) async throws -> T {
         try await dbWriter.write { db in
-            try penPal.saved(db)
-        }
-    }
-    
-    @discardableResult
-    func save(_ event: Event) async throws -> Event {
-        try await dbWriter.write { db in
-            try event.saved(db)
+            try record.saved(db)
         }
     }
     
@@ -159,30 +152,7 @@ extension AppDatabase {
         }
     }
     
-    private func fetchDistinctEventNote(for column: String) async -> [String] {
-        do {
-            return try await dbWriter.read { db in
-                try Event.select(Column(column), as: String?.self).order(Column(column)).distinct().fetchAll(db)
-            }.compactMap { $0 }
-        } catch {
-            dataLogger.error("Could not fetch distinct \(column)s: \(error.localizedDescription)")
-            return []
-        }
-    }
-    
-    func fetchDistinctPens() async -> [String] {
-        return await self.fetchDistinctEventNote(for: "pen")
-    }
-    
-    func fetchDistinctInks() async -> [String] {
-        return await self.fetchDistinctEventNote(for: "ink")
-    }
-    
-    func fetchDistinctPapers() async -> [String] {
-        return await self.fetchDistinctEventNote(for: "paper")
-    }
-    
-    private func fetchDistinctEventNote(for column: String, by penpal: PenPal?) async -> [ParameterCount] {
+    private func fetchDistinctEventNote(for column: String, by penpal: PenPal? = nil) async -> [ParameterCount] {
         
         let request: QueryInterfaceRequest<Event>
         if let penpal = penpal {
@@ -192,26 +162,43 @@ extension AppDatabase {
         }
         
         do {
-            return try await dbWriter.read { db in
+            var results = try await dbWriter.read { db in
                 try request.select(Column(column).forKey("name"), count(Column(column)).forKey("count"), as: OptionalParameterCountRow.self).filter(Column(column) != nil).group(Column(column)).order(Column("count").desc).fetchAll(db)
             }.filter { $0.name != nil }.map {
                 ParameterCount(name: $0.name ?? "UNKNOWN", count: $0.count)
             }
+            let unusedStationery = Set(await fetchUnusedStationery(for: column))
+            let setOfResults = Set(results.map { $0.name })
+            for diff in unusedStationery.subtracting(setOfResults) {
+                results.append(ParameterCount(name: diff, count: 0))
+            }
+            return results
         } catch {
             dataLogger.error("Could not fetch distinct \(column)s for \(penpal?.name ?? "all"): \(error.localizedDescription)")
             return []
         }
     }
     
-    func fetchDistinctPens(for penpal: PenPal?) async -> [ParameterCount] {
+    private func fetchUnusedStationery(for type: String) async -> [String] {
+        do {
+            return try await dbWriter.read { db in
+                try Stationery.select(Stationery.Columns.value).filter(Stationery.Columns.type == type).fetchAll(db)
+            }
+        } catch {
+            dataLogger.error("Could not fetch unused stationery for \(type): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    func fetchDistinctPens(for penpal: PenPal? = nil) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "pen", by: penpal)
     }
     
-    func fetchDistinctInks(for penpal: PenPal?) async -> [ParameterCount] {
+    func fetchDistinctInks(for penpal: PenPal? = nil) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "ink", by: penpal)
     }
     
-    func fetchDistinctPapers(for penpal: PenPal?) async -> [ParameterCount] {
+    func fetchDistinctPapers(for penpal: PenPal? = nil) async -> [ParameterCount] {
         return await self.fetchDistinctEventNote(for: "paper", by: penpal)
     }
     

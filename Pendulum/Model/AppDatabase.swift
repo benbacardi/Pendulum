@@ -62,6 +62,14 @@ final class AppDatabase {
             }
         }
         
+        migrator.registerMigration("addUnusedStationery") { db in
+            try db.create(table: "stationery") { table in
+                table.autoIncrementedPrimaryKey("id")
+                table.column("type", .text).notNull()
+                table.column("value", .text).notNull()
+            }
+        }
+        
         return migrator
     }
     

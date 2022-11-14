@@ -14,24 +14,62 @@ struct EventPropertyDetailsSheet: View {
     
     // MARK: Properties
     let penpal: PenPal?
+    var allowAdding: Bool = false
     
     // MARK: State
     @State private var pens: [ParameterCount] = []
     @State private var inks: [ParameterCount] = []
     @State private var papers: [ParameterCount] = []
     
+    @State private var newPenEntry: String = ""
+    @FocusState private var newPenEntryIsFocused: Bool
+    @State private var newInkEntry: String = ""
+    @FocusState private var newInkEntryIsFocused: Bool
+    @State private var newPaperEntry: String = ""
+    @FocusState private var newPaperEntryIsFocused: Bool
+    
     @ViewBuilder
-    func section(for title: String, with options: [ParameterCount], icon: String) -> some View {
+    func section(for title: String, with options: Binding<[ParameterCount]>, icon: String, newEntry: Binding<String>, focused: FocusState<Bool>.Binding, recordType: String) -> some View {
         Section(header: HStack {
             Image(systemName: icon)
             Text(title)
         }) {
-            ForEach(options, id: \.name) { option in
+            ForEach(options.wrappedValue, id: \.name) { option in
                 HStack {
                     Text(option.name)
                         .fullWidth()
-                    Text("\(option.count)")
-                        .foregroundColor(.secondary)
+                    if option.count > 0 {
+                        Text("\(option.count)")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            if allowAdding {
+                HStack {
+                    TextField("Add…", text: newEntry)
+                        .focused(focused)
+                    if focused.wrappedValue {
+                        Button(action: {
+                            Task {
+                                let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue)
+                                do {
+                                    try await AppDatabase.shared.save(record)
+                                    withAnimation {
+                                        options.wrappedValue.append(ParameterCount(name: record.value, count: 0))
+                                        focused.wrappedValue = false
+                                        newEntry.wrappedValue = ""
+                                    }
+                                } catch {
+                                    dataLogger.error("Could not save \(recordType)=\(newEntry.wrappedValue): \(error.localizedDescription)")
+                                }
+                            }
+                        }) {
+                            Text("Save")
+                                .foregroundColor(.accentColor)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || options.wrappedValue.map { $0.name }.contains(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)))
+                    }
                 }
             }
         }
@@ -60,15 +98,9 @@ struct EventPropertyDetailsSheet: View {
                     .padding()
                 } else {
                     Form {
-                        if !pens.isEmpty {
-                            section(for: "Pens", with: pens, icon: "pencil")
-                        }
-                        if !inks.isEmpty {
-                            section(for: "Inks", with: inks, icon: "drop")
-                        }
-                        if !papers.isEmpty {
-                            section(for: "Paper", with: papers, icon: "doc.plaintext")
-                        }
+                        section(for: "Pens", with: $pens, icon: "pencil", newEntry: $newPenEntry, focused: $newPenEntryIsFocused, recordType: "pen")
+                        section(for: "Inks", with: $inks, icon: "drop", newEntry: $newInkEntry, focused: $newInkEntryIsFocused, recordType: "ink")
+                        section(for: "Paper", with: $papers, icon: "doc.plaintext", newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused, recordType: "paper")
                     }
                 }
             }

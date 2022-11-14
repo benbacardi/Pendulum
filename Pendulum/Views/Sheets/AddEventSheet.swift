@@ -187,9 +187,9 @@ struct AddEventSheet: View {
             }
         }
         .task {
-            self.penSuggestions = await AppDatabase.shared.fetchDistinctPens()
-            self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks()
-            self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers()
+            self.penSuggestions = await AppDatabase.shared.fetchDistinctPens().map { $0.name }
+            self.inkSuggestions = await AppDatabase.shared.fetchDistinctInks().map { $0.name }
+            self.paperSuggestions = await AppDatabase.shared.fetchDistinctPapers().map { $0.name }
         }
         .task {
             if eventType == .sent && event == nil {
