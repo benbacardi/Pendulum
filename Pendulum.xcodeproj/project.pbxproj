@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
+		5E076A2B29223FD500028FC1 /* Stationery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E076A2A29223FD500028FC1 /* Stationery.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
@@ -50,6 +51,7 @@
 /* Begin PBXFileReference section */
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
+		5E076A2A29223FD500028FC1 /* Stationery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stationery.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 				5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */,
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
 				5E40553729155C5F00BD52BF /* Event.swift */,
+				5E076A2A29223FD500028FC1 /* Stationery.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -338,6 +341,7 @@
 				5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,
+				5E076A2B29223FD500028FC1 /* Stationery.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
