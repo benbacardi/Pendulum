@@ -33,6 +33,7 @@
 		5E4055492918184000BD52BF /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055482918184000BD52BF /* Calendar.swift */; };
 		5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
+		5E40639A292231EF00D41993 /* FieldChoiceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E406399292231EF00D41993 /* FieldChoiceView.swift */; };
 		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
 		5E52C661291A503700BBD58D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C660291A503700BBD58D /* EventCell.swift */; };
 		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
@@ -76,6 +77,7 @@
 		5E4055482918184000BD52BF /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactSheet.swift; sourceTree = "<group>"; };
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
+		5E406399292231EF00D41993 /* FieldChoiceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FieldChoiceView.swift; sourceTree = "<group>"; };
 		5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalHeader.swift; sourceTree = "<group>"; };
 		5E52C660291A503700BBD58D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 				5E40552729151FEC00BD52BF /* PenPalList.swift */,
 				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E4055442917051D00BD52BF /* PenPalView.swift */,
+				5E406399292231EF00D41993 /* FieldChoiceView.swift */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
 			);
@@ -336,6 +339,7 @@
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
 				5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */,
+				5E40639A292231EF00D41993 /* FieldChoiceView.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,

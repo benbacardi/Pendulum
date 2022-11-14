@@ -45,6 +45,13 @@ struct AddEventSheet: View {
         return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.date, and: Date())
     }
     
+    func showField(_ name: String) -> Bool {
+        if event != nil {
+            return true
+        }
+        return UserDefaults.shared.entryFields.contains(name)
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 4) {
@@ -84,13 +91,16 @@ struct AddEventSheet: View {
                     
                 }
                 
-                Section {
-                    DatePicker("Date", selection: $date)
+                if showField("Date") {
+                    Section {
+                        DatePicker("Date", selection: $date)
+                    }
                 }
                 
                 Section {
                     TextField("Notes", text: $notes, axis: .vertical)
                 }
+                
                 if eventType == .written || eventType == .sent {
                     
                     Section(header: Group {
@@ -100,44 +110,50 @@ struct AddEventSheet: View {
                             EmptyView()
                         }
                     }) {
-                        HStack {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.secondary)
+                        if showField("pen") {
                             HStack {
-                                TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen)
-                                if !penSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
-                                    }) {
-                                        Image(systemName: "ellipsis")
+                                Image(systemName: "pencil")
+                                    .foregroundColor(.secondary)
+                                HStack {
+                                    TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen)
+                                    if !penSuggestions.isEmpty {
+                                        Button(action: {
+                                            presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
+                                        }) {
+                                            Image(systemName: "ellipsis")
+                                        }
                                     }
                                 }
                             }
                         }
-                        HStack {
-                            Image(systemName: "drop")
-                                .foregroundColor(.secondary)
+                        if showField("ink") {
                             HStack {
-                                TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink)
-                                if !inkSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
-                                    }) {
-                                        Image(systemName: "ellipsis")
+                                Image(systemName: "drop")
+                                    .foregroundColor(.secondary)
+                                HStack {
+                                    TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink)
+                                    if !inkSuggestions.isEmpty {
+                                        Button(action: {
+                                            presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
+                                        }) {
+                                            Image(systemName: "ellipsis")
+                                        }
                                     }
                                 }
                             }
                         }
-                        HStack {
-                            Image(systemName: "doc.plaintext")
-                                .foregroundColor(.secondary)
+                        if showField("paper") {
                             HStack {
-                                TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
-                                if !paperSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper")
-                                    }) {
-                                        Image(systemName: "ellipsis")
+                                Image(systemName: "doc.plaintext")
+                                    .foregroundColor(.secondary)
+                                HStack {
+                                    TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
+                                    if !paperSuggestions.isEmpty {
+                                        Button(action: {
+                                            presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper")
+                                        }) {
+                                            Image(systemName: "ellipsis")
+                                        }
                                     }
                                 }
                             }

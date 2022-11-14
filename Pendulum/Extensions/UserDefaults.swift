@@ -17,6 +17,7 @@ extension UserDefaults {
         case enableQuickEntry
         case sendRemindersToPostLettersAtHour
         case sendRemindersToPostLettersAtMinute
+        case entryFields
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -61,6 +62,11 @@ extension UserDefaults {
     var sendRemindersToPostLettersAtMinute: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+    }
+    
+    var entryFields: Set<String> {
+        get { Set(array(forKey: Key.entryFields.rawValue) as? [String] ?? DEFAULT_ENTRY_FIELDS) }
+        set { setValue(Array(newValue), forKey: Key.entryFields.rawValue) }
     }
     
 }

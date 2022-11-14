@@ -269,5 +269,6 @@ struct PenPalListIconWidthPreferenceKey: PreferenceKey {
 struct PenPalList_Previews: PreviewProvider {
     static var previews: some View {
         PenPalList()
+            .environmentObject(OrientationObserver.shared)
     }
 }

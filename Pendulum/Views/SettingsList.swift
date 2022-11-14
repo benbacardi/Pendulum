@@ -67,6 +67,9 @@ struct SettingsList: View {
                 }
                 
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
+                    NavigationLink(destination: FieldChoiceView()) {
+                        Text("Entry Fields")
+                    }
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
                 

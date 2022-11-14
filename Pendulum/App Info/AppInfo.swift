@@ -18,3 +18,5 @@ enum Tab: Int {
 extension Color {
     static let adequatelyGinger = Color(UIColor(red: 251 / 255, green: 171 / 255, blue: 57 / 255, alpha: 1))
 }
+
+let DEFAULT_ENTRY_FIELDS = ["Date", "Pen", "Ink", "Paper"]
