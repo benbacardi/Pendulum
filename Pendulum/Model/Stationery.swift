@@ -78,7 +78,7 @@ extension Stationery: CloudKitSyncedModel {
         }
     }
     
-    var description: String { "\(self.type): \(self.value))" }
+    var description: String { "\(self.type): \(self.value)" }
     
     static func fetchUnsynced() async -> [Stationery] {
         do {
