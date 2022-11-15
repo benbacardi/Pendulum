@@ -10,6 +10,7 @@ import GRDB
 import SwiftUI
 import UIKit
 import Contacts
+import CloudKit
 
 struct PenPal: Identifiable, Hashable {
     let id: String
@@ -19,6 +20,60 @@ struct PenPal: Identifiable, Hashable {
     let _lastEventType: Int?
     let lastEventDate: Date?
     let notes: String?
+    let lastUpdated: Date?
+    let dateDeleted: Date?
+    let cloudKitID: String?
+}
+
+struct PenPalError: Error { }
+
+extension PenPal {
+    
+    static let cloudKitRecordType: String = "PenPal"
+    
+    func convertToCKRecord() -> CKRecord {
+        let record: CKRecord
+        if let cloudKitID = self.cloudKitID {
+            record = CKRecord(recordType: PenPal.cloudKitRecordType, recordID: CKRecord.ID(recordName: cloudKitID))
+        } else {
+            record = CKRecord(recordType: PenPal.cloudKitRecordType)
+        }
+        record[Columns.id.name] = self.id
+        record[Columns.name.name] = self.name
+        record[Columns.initials.name] = self.initials
+        record[Columns.image.name] = self.image ?? Data()
+        record[Columns.notes.name] = self.notes
+        record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
+        record[Columns.dateDeleted.name] = self.dateDeleted ?? .distantPast
+        return record
+    }
+    
+    init(from record: CKRecord, lastEventType: EventType? = nil, lastEventDate: Date? = nil) throws {
+        self.cloudKitID = record.recordID.recordName
+        guard let recordID = record[Columns.id.name] as? String else { cloudKitLogger.error("No id"); throw PenPalError() }
+        guard let recordName = record[Columns.name.name] as? String else { cloudKitLogger.error("No name"); throw PenPalError() }
+        guard let recordInitials = record[Columns.initials.name] as? String else { cloudKitLogger.error("No initials"); throw PenPalError() }
+        guard let recordImage = record[Columns.image.name] as? Data else { cloudKitLogger.error("No image"); throw PenPalError() }
+        guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
+        self.id = recordID
+        self.name = recordName
+        self.initials = recordInitials
+        self.image = recordImage
+        self.notes = record[Columns.notes.name]
+        self.lastUpdated = recordLastUpdated
+        self.dateDeleted = record[Columns.dateDeleted.name]
+        self._lastEventType = lastEventType?.rawValue
+        self.lastEventDate = lastEventDate
+    }
+    
+    func setCloudKitId(to cloudKitID: String) async {
+        do {
+            try await AppDatabase.shared.setCloudKitId(for: self, to: cloudKitID)
+        } catch {
+            dataLogger.error("Could not update CloudKit ID: \(error.localizedDescription)")
+        }
+    }
+    
 }
 
 extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
@@ -30,6 +85,9 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         static let _lastEventType = Column(CodingKeys._lastEventType)
         static let lastEventDate = Column(CodingKeys.lastEventDate)
         static let notes = Column(CodingKeys.notes)
+        static let lastUpdated = Column(CodingKeys.lastUpdated)
+        static let dateDeleted = Column(CodingKeys.dateDeleted)
+        static let cloudKitID = Column(CodingKeys.cloudKitID)
     }
     
     static let events = hasMany(Event.self)
@@ -108,18 +166,24 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     
     @discardableResult
     func update(from contact: CNContact) async -> Bool {
-        let newPenPal = PenPal(id: self.id, name: contact.fullName ?? self.name, initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: self.notes)
-        do {
-            return try await AppDatabase.shared.updatePenPal(self, from: newPenPal)
-        } catch {
-            dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
+        let image = contact.thumbnailImageData
+        let initials = contact.initials
+        let name = contact.fullName ?? self.name
+        if image != self.image || initials != self.initials || name != self.name {
+            let newPenPal = PenPal(id: self.id, name: name, initials: initials, image: image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: self.notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
+            do {
+                return try await AppDatabase.shared.updatePenPal(self, from: newPenPal)
+            } catch {
+                dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
+                return false
+            }
         }
-        return false
+        return true
     }
     
     @discardableResult
     func save(notes: String?) async -> Bool {
-        let newPenPal = PenPal(id: self.id, name: self.name, initials: self.initials, image: self.image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: notes)
+        let newPenPal = PenPal(id: self.id, name: self.name, initials: self.initials, image: self.image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
         do {
             return try await AppDatabase.shared.updatePenPal(self, from: newPenPal)
         } catch {

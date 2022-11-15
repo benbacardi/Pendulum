@@ -45,7 +45,6 @@ class PenPalListController: ObservableObject {
                     }
                 }
             }
-            await self.syncWithContacts()
         } else {
             do {
                 let newPenpals = try await AppDatabase.shared.fetchAllPenPals()

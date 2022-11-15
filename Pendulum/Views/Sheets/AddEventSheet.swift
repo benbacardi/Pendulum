@@ -206,7 +206,7 @@ struct AddEventSheet: View {
 struct AddEventSheet_Previews: PreviewProvider {
     static let date: Date = Date()
     static var previews: some View {
-        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: AddEventSheet_Previews.date, notes: nil), event: Event(id: nil, _type: EventType.written.rawValue, date: AddEventSheet_Previews.date, penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
+        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: AddEventSheet_Previews.date, notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), event: Event(id: nil, _type: EventType.written.rawValue, date: AddEventSheet_Previews.date, penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
         }
     }
 }

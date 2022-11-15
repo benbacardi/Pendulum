@@ -202,6 +202,15 @@ struct PenPalList: View {
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
+                        Task {
+                            await CloudKitController.shared.performFullSync()
+                        }
+                    }) {
+                        Label("Perform full sync!", systemImage: "tortoise")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
                         self.presentingStationerySheet = true
                     }) {
                         Label("Stationery", systemImage: "pencil.and.ruler")
@@ -255,6 +264,9 @@ struct PenPalList: View {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                 self.columnVisibility = .all
             }
+        }
+        .task {
+            await penPalListController.syncWithContacts()
         }
     }
 }

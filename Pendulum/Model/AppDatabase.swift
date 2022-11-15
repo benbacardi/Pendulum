@@ -70,6 +70,14 @@ final class AppDatabase {
             }
         }
         
+        migrator.registerMigration("sync") { db in
+            try db.alter(table: "penpal") { table in
+                table.add(column: "lastUpdated", .datetime)
+                table.add(column: "dateDeleted", .datetime)
+                table.add(column: "cloudKitID", .text)
+            }
+        }
+        
         return migrator
     }
     

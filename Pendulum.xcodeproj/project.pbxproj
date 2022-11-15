@@ -10,6 +10,7 @@
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
 		5E076A2B29223FD500028FC1 /* Stationery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E076A2A29223FD500028FC1 /* Stationery.swift */; };
+		5E3428552922F2400099F27B /* CloudKitController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3428542922F2400099F27B /* CloudKitController.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
@@ -52,6 +53,7 @@
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		5E076A2A29223FD500028FC1 /* Stationery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stationery.swift; sourceTree = "<group>"; };
+		5E3428542922F2400099F27B /* CloudKitController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitController.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -195,6 +197,7 @@
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
 				5E40553729155C5F00BD52BF /* Event.swift */,
 				5E076A2A29223FD500028FC1 /* Stationery.swift */,
+				5E3428542922F2400099F27B /* CloudKitController.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -334,6 +337,7 @@
 				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
 				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
+				5E3428552922F2400099F27B /* CloudKitController.swift in Sources */,
 				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,

@@ -227,3 +227,26 @@ struct ParameterCount {
     let name: String
     let count: Int
 }
+
+extension AppDatabase {
+    
+    @discardableResult
+    func setCloudKitId(for penpal: PenPal, to cloudKitID: String) async throws -> Int {
+        try await dbWriter.write { db in
+            try PenPal.filter(PenPal.Columns.id == penpal.id).updateAll(db, PenPal.Columns.cloudKitID.set(to: cloudKitID))
+        }
+    }
+    
+    func fetchUnsyncedPenPals() async throws -> [PenPal] {
+        try await dbWriter.read { db in
+            try PenPal.filter(PenPal.Columns.cloudKitID == nil).fetchAll(db)
+        }
+    }
+    
+    func fetchSyncedPenPals() async throws -> [PenPal] {
+        try await dbWriter.read { db in
+            try PenPal.filter(PenPal.Columns.cloudKitID != nil).fetchAll(db)
+        }
+    }
+    
+}

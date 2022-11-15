@@ -143,7 +143,7 @@ private extension EventCell {
     }
 }
 
-fileprivate let PENPAL = PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil)
+fileprivate let PENPAL = PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
 
 struct EventCell_Previews: PreviewProvider {
     static var previews: some View {

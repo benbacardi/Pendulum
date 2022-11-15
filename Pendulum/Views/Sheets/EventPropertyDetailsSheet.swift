@@ -126,6 +126,6 @@ struct EventPropertyDetailsSheet: View {
 
 struct EventPropertyDetailsSheet_Previews: PreviewProvider {
     static var previews: some View {
-        EventPropertyDetailsSheet(penpal: PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil))
+        EventPropertyDetailsSheet(penpal: PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
     }
 }

@@ -32,6 +32,21 @@ struct PenPalView: View {
             PenPalHeader(penpal: penPalViewController.penpal)
                 .padding(.horizontal)
             
+            if let lastUpdated = penPalViewController.penpal.lastUpdated {
+                Text(lastUpdated, style: .date)
+            }
+            
+            Text(penPalViewController.penpal.cloudKitID ?? "NO ID")
+            
+            Button(action: {
+                Task {
+                    await CloudKitController.shared.upload([penPalViewController.penpal])
+                }
+            }) {
+                Text("Save to CloudKit")
+            }
+            .buttonStyle(.bordered)
+            
             if lastEventType != .noEvent && lastEventType != .archived {
                 Text(lastEventType.phrase)
                     .fullWidth()
@@ -242,7 +257,7 @@ private extension PenPalView {
 struct PenPalView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil))
+            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
         }
     }
 }
