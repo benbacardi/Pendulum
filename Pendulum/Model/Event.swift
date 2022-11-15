@@ -17,6 +17,9 @@ struct Event: Identifiable, Hashable {
     let pen: String?
     let ink: String?
     let paper: String?
+    let lastUpdated: Date?
+    let dateDeleted: Date?
+    let cloudKitID: String?
     
     var eventType: EventType {
         EventType(rawValue: self._type) ?? .noEvent
@@ -41,6 +44,9 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
         static let pen = Column(CodingKeys.pen)
         static let ink = Column(CodingKeys.ink)
         static let paper = Column(CodingKeys.paper)
+        static let lastUpdated = Column(CodingKeys.lastUpdated)
+        static let dateDeleted = Column(CodingKeys.dateDeleted)
+        static let cloudKitID = Column(CodingKeys.cloudKitID)
     }
     static let penpal = belongsTo(PenPal.self)
     var penpal: QueryInterfaceRequest<PenPal> {
@@ -50,7 +56,7 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     @discardableResult
     func update(from newEvent: Event) async -> Bool {
         do {
-            return try await AppDatabase.shared.updateEvent(self, from: newEvent)
+            return try await AppDatabase.shared.update(self, from: newEvent)
         } catch {
             dataLogger.error("Could not update Event: \(error.localizedDescription)")
         }

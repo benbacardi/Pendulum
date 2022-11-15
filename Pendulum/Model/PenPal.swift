@@ -75,7 +75,7 @@ extension PenPal: CloudKitSyncedModel {
         var new = try PenPal(from: record)
         new._lastEventType = self._lastEventType
         new.lastEventDate = self.lastEventDate
-        try await AppDatabase.shared.updatePenPal(self, from: new)
+        try await AppDatabase.shared.update(self, from: new)
     }
     
     func setCloudKitID(to cloudKitID: String) async {
@@ -170,7 +170,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     }
     
     func createEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, forDate: Date = Date()) -> Event {
-        return Event(id: nil, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper)
+        return Event(id: nil, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
     }
     
     @discardableResult
@@ -204,7 +204,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         if image != self.image || initials != self.initials || name != self.name {
             let newPenPal = PenPal(id: self.id, name: name, initials: initials, image: image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: self.notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
             do {
-                return try await AppDatabase.shared.updatePenPal(self, from: newPenPal)
+                return try await AppDatabase.shared.update(self, from: newPenPal)
             } catch {
                 dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
                 return false
@@ -218,7 +218,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         if self.notes == notes { return true }
         let newPenPal = PenPal(id: self.id, name: self.name, initials: self.initials, image: self.image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
         do {
-            return try await AppDatabase.shared.updatePenPal(self, from: newPenPal)
+            return try await AppDatabase.shared.update(self, from: newPenPal)
         } catch {
             dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
         }

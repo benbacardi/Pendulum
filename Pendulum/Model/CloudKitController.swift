@@ -172,6 +172,7 @@ class CloudKitController {
     
     func performFullSync() async {
         await self.performSync(for: PenPal.self)
+        await self.performSync(for: Stationery.self)
     }
     
 }

@@ -85,14 +85,7 @@ extension AppDatabase {
     }
     
     @discardableResult
-    func updatePenPal(_ existing: PenPal, from new: PenPal) async throws -> Bool {
-        try await dbWriter.write { db in
-            try new.updateChanges(db, from: existing)
-        }
-    }
-    
-    @discardableResult
-    func updateEvent(_ existing: Event, from new: Event) async throws -> Bool {
+    func update<T: MutablePersistableRecord>(_ existing: T, from new: T) async throws -> Bool {
         try await dbWriter.write { db in
             try new.updateChanges(db, from: existing)
         }
@@ -237,6 +230,13 @@ extension AppDatabase {
         }
     }
     
+    @discardableResult
+    func setCloudKitId(for stationery: Stationery, to cloudKitID: String) async throws -> Int {
+        try await dbWriter.write { db in
+            try Stationery.filter(Stationery.Columns.id == stationery.id).updateAll(db, Stationery.Columns.cloudKitID.set(to: cloudKitID))
+        }
+    }
+    
     func fetchUnsyncedPenPals() async throws -> [PenPal] {
         try await dbWriter.read { db in
             try PenPal.filter(PenPal.Columns.cloudKitID == nil).fetchAll(db)
@@ -246,6 +246,18 @@ extension AppDatabase {
     func fetchSyncedPenPals() async throws -> [PenPal] {
         try await dbWriter.read { db in
             try PenPal.filter(PenPal.Columns.cloudKitID != nil).fetchAll(db)
+        }
+    }
+    
+    func fetchUnsyncedStationery() async throws -> [Stationery] {
+        try await dbWriter.read { db in
+            try Stationery.filter(Stationery.Columns.cloudKitID == nil).fetchAll(db)
+        }
+    }
+    
+    func fetchSyncedStationery() async throws -> [Stationery] {
+        try await dbWriter.read { db in
+            try Stationery.filter(Stationery.Columns.cloudKitID != nil).fetchAll(db)
         }
     }
     

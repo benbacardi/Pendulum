@@ -156,7 +156,7 @@ struct AddEventSheet: View {
                     Button(action: {
                         Task {
                             if let event = event {
-                                let newEvent = Event(id: event.id, _type: event._type, date: date, penpalID: event.penpalID, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                                let newEvent = Event(id: event.id, _type: event._type, date: date, penpalID: event.penpalID, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, lastUpdated: Date(), dateDeleted: nil, cloudKitID: event.cloudKitID)
                                 await event.update(from: newEvent)
                                 let latestEventType = await penpal.updateLastEventType()
                                 self.done(newEvent, latestEventType)
@@ -206,7 +206,7 @@ struct AddEventSheet: View {
 struct AddEventSheet_Previews: PreviewProvider {
     static let date: Date = Date()
     static var previews: some View {
-        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: AddEventSheet_Previews.date, notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), event: Event(id: nil, _type: EventType.written.rawValue, date: AddEventSheet_Previews.date, penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper"), eventType: .written) { newEvent, newEventType in
+        AddEventSheet(penpal: PenPal(id: "1", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: AddEventSheet_Previews.date, notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), event: Event(id: nil, _type: EventType.written.rawValue, date: AddEventSheet_Previews.date, penpalID: "1", notes: "Notes", pen: nil, ink: nil, paper: "Paper", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), eventType: .written) { newEvent, newEventType in
         }
     }
 }

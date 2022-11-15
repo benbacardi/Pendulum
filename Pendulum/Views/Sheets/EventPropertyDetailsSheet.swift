@@ -51,7 +51,7 @@ struct EventPropertyDetailsSheet: View {
                     if focused.wrappedValue {
                         Button(action: {
                             Task {
-                                let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue)
+                                let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
                                 do {
                                     try await AppDatabase.shared.save(record)
                                     withAnimation {

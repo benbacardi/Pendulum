@@ -148,17 +148,17 @@ fileprivate let PENPAL = PenPal(id: "3", name: "Madi Van Houten", initials: "MV"
 struct EventCell_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            EventCell(event: Event(id: nil, _type: 99, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: "TWSBI Eco Clear M", ink: "TWSBI 1791 Orange", paper: "Clairfontaine Triomphe A5 Plain"), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 99, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: "TWSBI Eco Clear M", ink: "TWSBI 1791 Orange", paper: "Clairfontaine Triomphe A5 Plain", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 1, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: "Paper"), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 1, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: "Paper", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 2, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 2, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 3, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: "A really long paper name like something ridiculous really silly"), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 3, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: "A really long paper name like something ridiculous really silly", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 4, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 4, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 5, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 5, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
                 .padding(.horizontal)
         }
     }
