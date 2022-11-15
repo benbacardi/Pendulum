@@ -8,6 +8,27 @@
 import Foundation
 import CloudKit
 
+protocol CloudKitSyncedModel {
+    
+    static var cloudKitRecordType: String { get }
+    
+    var cloudKitID: String? { get }
+    var lastUpdated: Date? { get }
+    var description: String { get }
+    
+    func convertToCKRecord() -> CKRecord
+    func setCloudKitID(to cloudKitID: String) async
+    
+    init(from record: CKRecord) throws
+    
+    static func fetchUnsynced() async -> [Self]
+    static func fetchSynced() async -> [Self]
+    
+    static func create(from record: CKRecord) async throws
+    func update(from record: CKRecord) async throws
+    
+}
+
 class CloudKitController {
     
     static let shared = CloudKitController()
@@ -19,21 +40,21 @@ class CloudKitController {
         container = CKContainer(identifier: containerIdentifier)
     }
     
-    func upload(_ penpals: [PenPal]) async {
+    func upload(_ models: [any CloudKitSyncedModel]) async {
         do {
-            let new = penpals.filter { $0.cloudKitID == nil }
-            let old = penpals.filter { $0.cloudKitID != nil }.map { $0.convertToCKRecord() }
-            for penpal in new {
-                cloudKitLogger.debug("[upload] Attempting to save \(penpal.name)")
-                let uploaded = try await container.privateCloudDatabase.save(penpal.convertToCKRecord())
-                await penpal.setCloudKitId(to: uploaded.recordID.recordName)
+            let new = models.filter { $0.cloudKitID == nil }
+            let old = models.filter { $0.cloudKitID != nil }.map { $0.convertToCKRecord() }
+            for model in new {
+                cloudKitLogger.debug("[upload] Attempting to save \(model.description)")
+                let uploaded = try await container.privateCloudDatabase.save(model.convertToCKRecord())
+                await model.setCloudKitID(to: uploaded.recordID.recordName)
             }
             if !old.isEmpty {
                 cloudKitLogger.debug("[upload] Attempting to modify \(old)")
                 let _ = try await container.privateCloudDatabase.modifyRecords(saving: old, deleting: [], savePolicy: .changedKeys)
             }
         } catch {
-            cloudKitLogger.error("[upload] Could not upload PenPal to CloudKit: \(error.localizedDescription)")
+            cloudKitLogger.error("[upload] Could not upload Model to CloudKit: \(error.localizedDescription)")
         }
     }
     
@@ -72,7 +93,7 @@ class CloudKitController {
         return []
     }
     
-    func performFullSync() async {
+    func performSync<Model: CloudKitSyncedModel>(for _: Model.Type) async {
         /// Sync the local GRDB database with CloudKit.
         ///
         /// Syncing process:
@@ -86,79 +107,71 @@ class CloudKitController {
         ///  - Updating the `lastUpdated` and `cloudKitRecordID` fields should *not* trigger anything that updates the `lastUpdated` field.
         ///  - Deleting model means setting `dateDeleted` instead of actually removing it. This should be treated like any other field as far as updates and
         ///    between CloudKit and GRDB are concerned.
+        let logPrefix = "[performSync:\(Model.cloudKitRecordType)]"
         
-        var unsyncedPenPals: [PenPal] = []
-        do {
-            unsyncedPenPals = try await AppDatabase.shared.fetchUnsyncedPenPals()
-        } catch {
-            dataLogger.error("[performFullSync] Could not fetch unsycned PenPals: \(error.localizedDescription)")
-            unsyncedPenPals = []
-        }
+        var unsynced = await Model.fetchUnsynced()
+        cloudKitLogger.debug("\(logPrefix) Unsynced: \(unsynced.count)")
         
-        cloudKitLogger.debug("[performFullSync] Unsynced Pen Pals: \(unsyncedPenPals.map { $0.name })")
+        let cloudKitRecords = await self.fetchAllRecords(ofType: Model.cloudKitRecordType)
+        cloudKitLogger.debug("\(logPrefix) From CloudKit: \(cloudKitRecords.count)")
         
-        let cloudPenPalRecords = await self.fetchAllRecords(ofType: PenPal.cloudKitRecordType)
-        cloudKitLogger.debug("[performFullSync] Fetched \(cloudPenPalRecords.count) CloudKit PenPals")
-        
-        var syncedPenPals: [String: PenPal] = [:]
-        do {
-            for penpal in try await AppDatabase.shared.fetchSyncedPenPals() {
-                guard let cloudKitID = penpal.cloudKitID else { continue }
-                syncedPenPals[cloudKitID] = penpal
-            }
-        } catch {
-            dataLogger.error("[performFullSync] Could not fetch synced PenPals: \(error.localizedDescription)")
+        var synced: [String: Model] = [:]
+        for syncedModel in await Model.fetchSynced() {
+            guard let cloudKitID = syncedModel.cloudKitID else { continue }
+            synced[cloudKitID] = syncedModel
         }
         
         var newLocalRecords: [CKRecord] = []
-        var updateLocalRecords: [CKRecord: PenPal] = [:]
+        var updateLocalRecords: [CKRecord: Model] = [:]
         
-        for record in cloudPenPalRecords {
-            if let localPenPal = syncedPenPals[record.recordID.recordName] {
-                cloudKitLogger.debug("[performFullSync] Comparing \(record) to \(localPenPal.name)")
-                let localLastUpdated = localPenPal.lastUpdated ?? .distantPast
+        for record in cloudKitRecords {
+            if let localModel = synced[record.recordID.recordName] {
+                cloudKitLogger.debug("\(logPrefix) Comparing \(record) to \(localModel.description)")
+                let localLastUpdated = localModel.lastUpdated ?? .distantPast
                 guard let cloudKitLastUpdated = record["lastUpdated"] as? Date else {
-                    cloudKitLogger.warning("[performFullSync] [\(localPenPal.name)] Malformed CloudKit record, ignoring.")
+                    cloudKitLogger.warning("\(logPrefix) [\(localModel.description)] Malformed CloudKit record, ignoring.")
                     continue
                 }
                 if localLastUpdated < cloudKitLastUpdated {
-                    cloudKitLogger.debug("[performFullSync] [\(localPenPal.name)] CloudKit is more recent (\(cloudKitLastUpdated) vs \(localLastUpdated))")
-                    updateLocalRecords[record] = localPenPal
+                    cloudKitLogger.debug("\(logPrefix) [\(localModel.description)] CloudKit is more recent (\(cloudKitLastUpdated) vs \(localLastUpdated))")
+                    updateLocalRecords[record] = localModel
                 } else if cloudKitLastUpdated < localLastUpdated {
-                    cloudKitLogger.debug("[performFullSync] [\(localPenPal.name)] Local is more recent (\(localLastUpdated) vs \(cloudKitLastUpdated))")
-                    unsyncedPenPals.append(localPenPal)
+                    cloudKitLogger.debug("\(logPrefix) [\(localModel.description)] Local is more recent (\(localLastUpdated) vs \(cloudKitLastUpdated))")
+                    unsynced.append(localModel)
                 } else {
-                    cloudKitLogger.debug("[performFullSync] [\(localPenPal.name)] Identical timestamps; no changes")
+                    cloudKitLogger.debug("\(logPrefix) [\(localModel.description)] Identical timestamps; no changes")
                 }
             } else {
-                cloudKitLogger.debug("[performFullSync] CloudKit record not found locally: \(record)")
+                cloudKitLogger.debug("\(logPrefix) CloudKit record not found locally: \(record)")
                 newLocalRecords.append(record)
             }
         }
         
-        cloudKitLogger.debug("[performFullSync] Uploading \(unsyncedPenPals.count): \(unsyncedPenPals.map { $0.name })")
-        await self.upload(unsyncedPenPals)
+        cloudKitLogger.debug("\(logPrefix) Uploading \(unsynced.count): \(unsynced.map { $0.description })")
+        await self.upload(unsynced)
         
-        cloudKitLogger.debug("[performFullSync] Saving \(newLocalRecords.count) locally: \(newLocalRecords)")
+        cloudKitLogger.debug("\(logPrefix) Saving \(newLocalRecords.count) locally: \(newLocalRecords)")
         for record in newLocalRecords {
             do {
-                let penpal = try PenPal(from: record)
-                try await AppDatabase.shared.save(penpal)
+                try await Model.create(from: record)
             } catch {
-                cloudKitLogger.error("[performFullSync] Could not save \(record.recordID.recordName): \(error.localizedDescription)")
+                cloudKitLogger.error("\(logPrefix) Could not save \(record.recordID.recordName): \(error.localizedDescription)")
             }
         }
         
-        cloudKitLogger.debug("[performFullSync] Updating \(updateLocalRecords.count) locally: \(updateLocalRecords)")
-        for (record, penpal) in updateLocalRecords {
+        cloudKitLogger.debug("\(logPrefix) Updating \(updateLocalRecords.count) locally: \(updateLocalRecords)")
+        for (record, obj) in updateLocalRecords {
             do {
-                let newPenpal = try PenPal(from: record, lastEventType: penpal.lastEventType, lastEventDate: penpal.lastEventDate)
-                try await AppDatabase.shared.updatePenPal(penpal, from: newPenpal)
+                try await obj.update(from: record)
             } catch {
-                cloudKitLogger.error("[performFullSync] Could not update \(record.recordID.recordName) for \(penpal.name): \(error.localizedDescription)")
+                cloudKitLogger.error("[performFullSync] Could not update \(record.recordID.recordName) for \(obj.description): \(error.localizedDescription)")
             }
         }
         
+    }
+    
+    func performFullSync() async {
+        await self.performSync(for: PenPal.self)
     }
     
 }
