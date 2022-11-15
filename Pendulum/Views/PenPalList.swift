@@ -187,7 +187,7 @@ struct PenPalList: View {
     }
     
     var body: some View {
-        NavigationSplitView(columnVisibility: $columnVisibility) {
+        NavigationView {
             navigationBody
             .navigationTitle("Pen Pals")
             .toolbar {
@@ -225,7 +225,6 @@ struct PenPalList: View {
                     .disabled(contactsAccessStatus != .authorized)
                 }
             }
-        } detail: {
             VStack {
                 Spacer()
                 if let image = UIImage(named: "undraw_directions_re_kjxs") {
