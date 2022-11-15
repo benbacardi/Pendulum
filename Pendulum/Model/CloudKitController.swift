@@ -173,6 +173,14 @@ class CloudKitController {
     func performFullSync() async {
         await self.performSync(for: PenPal.self)
         await self.performSync(for: Stationery.self)
+        await self.performSync(for: Event.self)
+        do {
+            for penpal in try await AppDatabase.shared.fetchAllPenPals() {
+                await penpal.updateLastEventType()
+            }
+        } catch {
+            dataLogger.error("Could not fetch penpals: \(error.localizedDescription)")
+        }
     }
     
 }

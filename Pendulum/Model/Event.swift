@@ -7,9 +7,10 @@
 
 import Foundation
 import GRDB
+import CloudKit
 
 struct Event: Identifiable, Hashable {
-    let id: Int64?
+    var id: Int64?
     let _type: Int
     let date: Date
     let penpalID: String
@@ -35,10 +36,92 @@ struct Event: Identifiable, Hashable {
     
 }
 
+extension Event: CloudKitSyncedModel {
+    static let cloudKitRecordType: String = "Event"
+    
+    func convertToCKRecord() -> CKRecord {
+        let record: CKRecord
+        if let cloudKitID = self.cloudKitID {
+            record = CKRecord(recordType: Event.cloudKitRecordType, recordID: CKRecord.ID(recordName: cloudKitID))
+        } else {
+            record = CKRecord(recordType: Event.cloudKitRecordType)
+        }
+        record["type"] = self._type
+        record[Columns.date.name] = self.date
+        record[Columns.penpalID.name] = self.penpalID
+        record[Columns.notes.name] = self.notes
+        record[Columns.pen.name] = self.pen
+        record[Columns.ink.name] = self.ink
+        record[Columns.paper.name] = self.paper
+        record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
+        record[Columns.dateDeleted.name] = self.dateDeleted ?? .distantPast
+        return record
+    }
+    
+    init(from record: CKRecord) throws {
+        self.cloudKitID = record.recordID.recordName
+        guard let recordType = record["type"] as? Int else { cloudKitLogger.error("No type"); throw PenPalError() }
+        guard let recordDate = record[Columns.date.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
+        guard let recordPenPalID = record[Columns.penpalID.name] as? String else { cloudKitLogger.error("No penpal ID"); throw PenPalError() }
+        guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
+        self.id = nil
+        self._type = recordType
+        self.date = recordDate
+        self.penpalID = recordPenPalID
+        self.notes = record[Columns.notes.name]
+        self.pen = record[Columns.pen.name]
+        self.ink = record[Columns.ink.name]
+        self.paper = record[Columns.paper.name]
+        self.lastUpdated = recordLastUpdated
+        self.dateDeleted = record[Columns.dateDeleted.name]
+    }
+    
+    static func create(from record: CKRecord) async throws {
+        let new = try Event(from: record)
+        try await AppDatabase.shared.save(new)
+    }
+    
+    func update(from record: CKRecord) async throws {
+        var new = try Event(from: record)
+        new.id = self.id
+        try await AppDatabase.shared.update(self, from: new)
+    }
+    
+    func setCloudKitID(to cloudKitID: String) async {
+        do {
+            try await AppDatabase.shared.setCloudKitId(for: self, to: cloudKitID)
+        } catch {
+            dataLogger.error("Could not update CloudKit ID: \(error.localizedDescription)")
+        }
+    }
+    
+    var description: String { "\(self.date): \(self.penpalID) \(self._type)" }
+    
+    static func fetchUnsynced() async -> [Event] {
+        do {
+            return try await AppDatabase.shared.fetchUnsyncedEvents()
+        } catch {
+            dataLogger.error("Could not fetch unsynced Event: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+    static func fetchSynced() async -> [Event] {
+        do {
+            return try await AppDatabase.shared.fetchSyncedEvents()
+        } catch {
+            dataLogger.error("Could not fetch synced Event: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
+}
+
 extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     enum Columns {
         static let id = Column(CodingKeys.id)
         static let _type = Column(CodingKeys._type)
+        static let penpalID = Column(CodingKeys.penpalID)
         static let date = Column(CodingKeys.date)
         static let notes = Column(CodingKeys.notes)
         static let pen = Column(CodingKeys.pen)

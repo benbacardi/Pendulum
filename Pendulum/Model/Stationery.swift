@@ -10,7 +10,7 @@ import GRDB
 import CloudKit
 
 struct Stationery: Identifiable, Hashable {
-    let id: Int64?
+    var id: Int64?
     let type: String
     let value: String
     let lastUpdated: Date?
@@ -39,7 +39,6 @@ extension Stationery: CloudKitSyncedModel {
         } else {
             record = CKRecord(recordType: Stationery.cloudKitRecordType)
         }
-        record[Columns.id.name] = self.id
         record[Columns.type.name] = self.type
         record[Columns.value.name] = self.value
         record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
@@ -49,11 +48,10 @@ extension Stationery: CloudKitSyncedModel {
     
     init(from record: CKRecord) throws {
         self.cloudKitID = record.recordID.recordName
-        guard let recordID = record[Columns.id.name] as? Int64 else { cloudKitLogger.error("No id"); throw PenPalError() }
         guard let recordType = record[Columns.type.name] as? String else { cloudKitLogger.error("No type"); throw PenPalError() }
         guard let recordValue = record[Columns.value.name] as? String else { cloudKitLogger.error("No value"); throw PenPalError() }
         guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
-        self.id = recordID
+        self.id = nil
         self.type = recordType
         self.value = recordValue
         self.lastUpdated = recordLastUpdated
@@ -66,7 +64,8 @@ extension Stationery: CloudKitSyncedModel {
     }
     
     func update(from record: CKRecord) async throws {
-        let new = try Stationery(from: record)
+        var new = try Stationery(from: record)
+        new.id = self.id
         try await AppDatabase.shared.update(self, from: new)
     }
     

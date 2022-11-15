@@ -237,6 +237,13 @@ extension AppDatabase {
         }
     }
     
+    @discardableResult
+    func setCloudKitId(for event: Event, to cloudKitID: String) async throws -> Int {
+        try await dbWriter.write { db in
+            try Event.filter(Event.Columns.id == event.id).updateAll(db, Event.Columns.cloudKitID.set(to: cloudKitID))
+        }
+    }
+    
     func fetchUnsyncedPenPals() async throws -> [PenPal] {
         try await dbWriter.read { db in
             try PenPal.filter(PenPal.Columns.cloudKitID == nil).fetchAll(db)
@@ -258,6 +265,18 @@ extension AppDatabase {
     func fetchSyncedStationery() async throws -> [Stationery] {
         try await dbWriter.read { db in
             try Stationery.filter(Stationery.Columns.cloudKitID != nil).fetchAll(db)
+        }
+    }
+    
+    func fetchUnsyncedEvents() async throws -> [Event] {
+        try await dbWriter.read { db in
+            try Event.filter(Event.Columns.cloudKitID == nil).fetchAll(db)
+        }
+    }
+    
+    func fetchSyncedEvents() async throws -> [Event] {
+        try await dbWriter.read { db in
+            try Event.filter(Event.Columns.cloudKitID != nil).fetchAll(db)
         }
     }
     
