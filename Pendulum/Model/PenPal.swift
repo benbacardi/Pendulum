@@ -29,25 +29,6 @@ struct PenPalError: Error { }
 
 extension PenPal: CloudKitSyncedModel {
     
-       
-    init(from record: CKRecord, updatingFrom: PenPal?) throws {
-        self.cloudKitID = record.recordID.recordName
-        guard let recordID = record[Columns.id.name] as? String else { cloudKitLogger.error("No id"); throw PenPalError() }
-        guard let recordName = record[Columns.name.name] as? String else { cloudKitLogger.error("No name"); throw PenPalError() }
-        guard let recordInitials = record[Columns.initials.name] as? String else { cloudKitLogger.error("No initials"); throw PenPalError() }
-        guard let recordImage = record[Columns.image.name] as? Data else { cloudKitLogger.error("No image"); throw PenPalError() }
-        guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
-        self.id = recordID
-        self.name = recordName
-        self.initials = recordInitials
-        self.image = recordImage
-        self.notes = record[Columns.notes.name]
-        self.lastUpdated = recordLastUpdated
-        self.dateDeleted = record[Columns.dateDeleted.name]
-        self._lastEventType = updatingFrom?.lastEventType.rawValue
-        self.lastEventDate = updatingFrom?.lastEventDate
-    }
-    
     static let cloudKitRecordType: String = "PenPal"
     
     func convertToCKRecord() -> CKRecord {
