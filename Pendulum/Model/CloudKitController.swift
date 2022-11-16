@@ -40,6 +40,26 @@ class CloudKitController {
         container = CKContainer(identifier: containerIdentifier)
     }
     
+    func subscribeToChanges() async {
+        let recordTypes = [
+            PenPal.cloudKitRecordType,
+            Event.cloudKitRecordType,
+            Stationery.cloudKitRecordType,
+        ]
+        for recordType in recordTypes {
+            let sub = CKQuerySubscription(recordType: recordType, predicate: NSPredicate(value: true), options: [.firesOnRecordCreation, .firesOnRecordUpdate])
+            let notification = CKSubscription.NotificationInfo()
+            notification.shouldSendContentAvailable = true
+            sub.notificationInfo = notification
+            do {
+                let savedSub = try await self.container.privateCloudDatabase.save(sub)
+                cloudKitLogger.info("Subscription created: \(savedSub)")
+            } catch {
+                cloudKitLogger.error("Error saving subscription for changes: \(error.localizedDescription)")
+            }
+        }
+    }
+    
     func upload(_ models: [any CloudKitSyncedModel]) async {
         do {
             let new = models.filter { $0.cloudKitID == nil }
@@ -93,7 +113,7 @@ class CloudKitController {
         return []
     }
     
-    func performSync<Model: CloudKitSyncedModel>(for _: Model.Type, since: Date? = nil) async {
+    func performSync<Model: CloudKitSyncedModel>(for _: Model.Type) async -> Bool {
         /// Sync the local GRDB database with CloudKit.
         ///
         /// Syncing process:
@@ -109,7 +129,8 @@ class CloudKitController {
         ///    between CloudKit and GRDB are concerned.
         let logPrefix = "[performSync:\(Model.cloudKitRecordType)]"
         
-        let modifiedSince = since ?? UserDefaults.shared.lastFullSync
+        let modifiedSince: Date = .distantPast
+        var syncSuccess = true
         
         var unsynced = await Model.fetchUnsynced()
         cloudKitLogger.debug("\(logPrefix) Unsynced: \(unsynced.count)")
@@ -162,6 +183,7 @@ class CloudKitController {
                 try await Model.create(from: record)
             } catch {
                 cloudKitLogger.error("\(logPrefix) Could not save \(record.recordID.recordName): \(error.localizedDescription)")
+                syncSuccess = false
             }
         }
         
@@ -171,15 +193,19 @@ class CloudKitController {
                 try await obj.update(from: record)
             } catch {
                 cloudKitLogger.error("[performFullSync] Could not update \(record.recordID.recordName) for \(obj.description): \(error.localizedDescription)")
+                syncSuccess = false
             }
         }
         
+        return syncSuccess
+        
     }
     
-    func performFullSync(since: Date? = nil) async {
-        await self.performSync(for: PenPal.self, since: since)
-        await self.performSync(for: Stationery.self, since: since)
-        await self.performSync(for: Event.self, since: since)
+    func performFullSync() async -> Bool {
+        let penpalSuccess = await self.performSync(for: PenPal.self)
+        let stationerySuccess = await self.performSync(for: Stationery.self)
+        let eventSuccess = await self.performSync(for: Event.self)
+        let syncSuccess = penpalSuccess && stationerySuccess && eventSuccess
         do {
             for penpal in try await AppDatabase.shared.fetchAllPenPals() {
                 await penpal.updateLastEventType()
@@ -187,6 +213,7 @@ class CloudKitController {
         } catch {
             dataLogger.error("Could not fetch penpals: \(error.localizedDescription)")
         }
+        return syncSuccess
     }
     
 }

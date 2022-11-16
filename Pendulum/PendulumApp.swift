@@ -6,9 +6,12 @@
 //
 
 import SwiftUI
+import CloudKit
 
 @main
 struct PendulumApp: App {
+    
+    @UIApplicationDelegateAdaptor private var appDelegate: AppDelegate
     
     // MARK: Environment
     @Environment(\.scenePhase) var scenePhase
@@ -42,6 +45,33 @@ struct PendulumApp: App {
                         }
                     }
                 }
+                .task {
+                    await CloudKitController.shared.subscribeToChanges()
+                }
         }
     }
+}
+
+class AppDelegate: NSObject, UIApplicationDelegate {
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UIApplication.shared.registerForRemoteNotifications()
+        return true
+    }
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        appLogger.debug("Remote notification received")
+        if let notification = CKNotification(fromRemoteNotificationDictionary: userInfo) {
+            cloudKitLogger.debug("CloudKit notification: \(notification)")
+            DispatchQueue.global(qos: .utility).asyncAfter(deadline: .now() + 3) {
+                Task {
+                    await CloudKitController.shared.performFullSync()
+                }
+            }
+            completionHandler(.newData)
+            return
+        }
+        completionHandler(.noData)
+    }
+    
 }
