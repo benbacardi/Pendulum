@@ -201,6 +201,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         do {
             try await AppDatabase.shared.save(event)
             try await AppDatabase.shared.updateLastEventType(for: self)
+            CloudKitController.triggerSyncRequiredNotification()
         } catch {
             dataLogger.error("Could not save event: \(error.localizedDescription)")
             return nil
@@ -265,6 +266,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         newPenPal.lastUpdated = Date()
         do {
             return try await AppDatabase.shared.update(self, from: newPenPal)
+            CloudKitController.triggerSyncRequiredNotification()
         } catch {
             dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
         }
@@ -282,6 +284,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         do {
             try await AppDatabase.shared.update(self, from: newPenPal)
             try await AppDatabase.shared.deleteEvents(for: newPenPal)
+            CloudKitController.triggerSyncRequiredNotification()
         } catch {
             dataLogger.error("Could not delete penpal: \(error.localizedDescription)")
         }

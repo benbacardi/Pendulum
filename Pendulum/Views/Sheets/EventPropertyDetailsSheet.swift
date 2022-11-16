@@ -55,6 +55,7 @@ struct EventPropertyDetailsSheet: View {
                                     let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
                                     do {
                                         try await AppDatabase.shared.save(record)
+                                        CloudKitController.triggerSyncRequiredNotification()
                                         withAnimation {
                                             options.wrappedValue.append(ParameterCount(name: record.value, count: 0))
                                             focused.wrappedValue = false

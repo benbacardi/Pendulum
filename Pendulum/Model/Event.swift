@@ -155,7 +155,9 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     @discardableResult
     func update(from newEvent: Event) async -> Bool {
         do {
-            return try await AppDatabase.shared.update(self, from: newEvent)
+            let response = try await AppDatabase.shared.update(self, from: newEvent)
+            CloudKitController.triggerSyncRequiredNotification()
+            return response
         } catch {
             dataLogger.error("Could not update Event: \(error.localizedDescription)")
         }
@@ -170,6 +172,7 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
             updatedEvent.lastUpdated = updatedEvent.dateDeleted
             do {
                 try await AppDatabase.shared.update(self, from: updatedEvent)
+                CloudKitController.triggerSyncRequiredNotification()
                 if let penpal = penpal {
                     return try await AppDatabase.shared.updateLastEventType(for: penpal)
                 }

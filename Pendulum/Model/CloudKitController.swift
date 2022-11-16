@@ -7,6 +7,9 @@
 
 import Foundation
 import CloudKit
+import NotificationCenter
+
+let SyncRequiredNotification = Notification.Name("syncRequired")
 
 protocol CloudKitSyncedModel {
     
@@ -38,6 +41,10 @@ class CloudKitController {
     
     init() {
         container = CKContainer(identifier: containerIdentifier)
+    }
+    
+    static func triggerSyncRequiredNotification() {
+        NotificationCenter.default.post(name: SyncRequiredNotification, object: nil)
     }
     
     func subscribeToChanges() async {

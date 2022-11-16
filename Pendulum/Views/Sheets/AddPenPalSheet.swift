@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Contacts
+import NotificationCenter
 
 struct AddPenPalSheet: View {
     
@@ -34,6 +35,7 @@ struct AddPenPalSheet: View {
                                         let newPenPal = PenPal(from: contact)
                                         do {
                                             try await AppDatabase.shared.save(newPenPal)
+                                            CloudKitController.triggerSyncRequiredNotification()
                                             presentationMode.wrappedValue.dismiss()
                                         } catch {
                                             dataLogger.error("Could not save PenPal: \(error.localizedDescription)")

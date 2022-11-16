@@ -7,6 +7,7 @@
 
 import SwiftUI
 import CloudKit
+import NotificationCenter
 
 @main
 struct PendulumApp: App {
@@ -61,6 +62,12 @@ struct PendulumApp: App {
                     await CloudKitController.shared.subscribeToChanges()
                 }
                 .onReceive(timer) { input in
+                    Task {
+                        await CloudKitController.shared.performFullSync()
+                    }
+                }
+                .onReceive(NotificationCenter.default.publisher(for: SyncRequiredNotification, object: nil)) { notification in
+                    appLogger.debug("Received syncRequested notification")
                     Task {
                         await CloudKitController.shared.performFullSync()
                     }
