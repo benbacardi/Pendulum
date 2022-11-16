@@ -37,6 +37,6 @@ struct PenPalHeader: View {
 
 struct PenPalHeader_Previews: PreviewProvider {
     static var previews: some View {
-        PenPalHeader(penpal: PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
+        PenPalHeader(penpal: PenPal(id: UUID().uuidString, name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
     }
 }

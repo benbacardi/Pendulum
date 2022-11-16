@@ -11,11 +11,11 @@ import CloudKit
 
 struct Stationery: Identifiable, Hashable {
     var id: Int64?
-    let type: String
-    let value: String
-    let lastUpdated: Date?
-    let dateDeleted: Date?
-    let cloudKitID: String?
+    var type: String
+    var value: String
+    var lastUpdated: Date?
+    var dateDeleted: Date?
+    var cloudKitID: String?
 }
 
 extension Stationery: Codable, FetchableRecord, MutablePersistableRecord {
@@ -41,8 +41,8 @@ extension Stationery: CloudKitSyncedModel {
         }
         record[Columns.type.name] = self.type
         record[Columns.value.name] = self.value
-        record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
-        record[Columns.dateDeleted.name] = self.dateDeleted ?? .distantPast
+        record[Columns.lastUpdated.name] = self.lastUpdated
+        record[Columns.dateDeleted.name] = self.dateDeleted
         return record
     }
     

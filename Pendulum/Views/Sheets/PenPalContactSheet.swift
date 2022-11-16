@@ -94,27 +94,31 @@ struct PenPalContactSheet: View {
                 let keys = [
                     CNContactPostalAddressesKey,
                 ] as! [CNKeyDescriptor]
-                do {
-                    let contact = try store.unifiedContact(withIdentifier: penpal.id, keysToFetch: keys)
-                    self.addresses = contact.postalAddresses
-                    self.maps = self.addresses.map { _ in
-                        nil
-                    }
-                    let geocoder = CLGeocoder()
-                    for (index, address) in self.addresses.enumerated() {
-                        do {
-                            let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
-                            if let addr = placemarks.first {
-                                withAnimation {
-                                    self.maps[index] = addr
-                                }
-                            }
-                        } catch {
-                            dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                if let contactID = penpal.contactID {
+                    do {
+                        let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                        self.addresses = contact.postalAddresses
+                        self.maps = self.addresses.map { _ in
+                            nil
                         }
+                        let geocoder = CLGeocoder()
+                        for (index, address) in self.addresses.enumerated() {
+                            do {
+                                let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
+                                if let addr = placemarks.first {
+                                    withAnimation {
+                                        self.maps[index] = addr
+                                    }
+                                }
+                            } catch {
+                                dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                            }
+                        }
+                    } catch {
+                        dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
                     }
-                } catch {
-                    dataLogger.error("Could not fetch contact with ID \(penpal.id): \(error.localizedDescription)")
+                } else {
+                    dataLogger.error("No contact associated with \(penpal.name)")
                 }
             }
             .toolbar {

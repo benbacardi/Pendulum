@@ -30,7 +30,7 @@ struct AddPenPalSheet: View {
                             if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
                                     Task {
-                                        let newPenPal = PenPal(id: contact.identifier, name: contact.fullName ?? "Unknown Contact", initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil, notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
+                                        let newPenPal = PenPal(from: contact)
                                         do {
                                             try await AppDatabase.shared.save(newPenPal)
                                             presentationMode.wrappedValue.dismiss()
@@ -93,7 +93,7 @@ struct AddPenPalSheet: View {
                 }
             }
             .onAppear {
-                self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
+                self.existingPenPalIdentifiers = Set(existingPenPals.compactMap { $0.contactID })
             }
             .task {
                 let store = CNContactStore()

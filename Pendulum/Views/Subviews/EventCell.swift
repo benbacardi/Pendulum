@@ -14,7 +14,6 @@ struct EventCell: View {
     let penpal: PenPal
     
     // MARK: External State
-    @Binding var lastEventTypeForPenPal: EventType
     
     // MARK: State
     @State private var iconWidth: CGFloat?
@@ -117,7 +116,7 @@ struct EventCell: View {
             .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert) {
                 Button("Delete Status", role: .destructive) {
                     Task {
-                        self.lastEventTypeForPenPal = await event.delete()
+                        await event.delete()
                     }
                 }
             }
@@ -127,7 +126,6 @@ struct EventCell: View {
         }
         .sheet(isPresented: $showEditEventSheet) {
             AddEventSheet(penpal: penpal, event: event, eventType: event.eventType) { _, lastEventTypeForPenPal in
-                self.lastEventTypeForPenPal = lastEventTypeForPenPal
                 self.showEditEventSheet = false
             }
         }
@@ -143,22 +141,22 @@ private extension EventCell {
     }
 }
 
-fileprivate let PENPAL = PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
+fileprivate let PENPAL = PenPal(id: UUID().uuidString, name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
 
 struct EventCell_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            EventCell(event: Event(id: nil, _type: 99, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: "TWSBI Eco Clear M", ink: "TWSBI 1791 Orange", paper: "Clairfontaine Triomphe A5 Plain", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 99, date: Date(), penpalID: PENPAL.id, notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: "TWSBI Eco Clear M", ink: "TWSBI 1791 Orange", paper: "Clairfontaine Triomphe A5 Plain", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 1, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: "Paper", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 1, date: Date(), penpalID: PENPAL.id, notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: "Paper", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 2, date: Date(), penpalID: "123", notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 2, date: Date(), penpalID: PENPAL.id, notes: "Relay FM / St Jude challenge coin, and a LEGO Benny", pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 3, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: "A really long paper name like something ridiculous really silly", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 3, date: Date(), penpalID: PENPAL.id, notes: nil, pen: nil, ink: "", paper: "A really long paper name like something ridiculous really silly", lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 4, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 4, date: Date(), penpalID: PENPAL.id, notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
-            EventCell(event: Event(id: nil, _type: 5, date: Date(), penpalID: "123", notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL, lastEventTypeForPenPal: .constant(.written))
+            EventCell(event: Event(id: nil, _type: 5, date: Date(), penpalID: PENPAL.id, notes: nil, pen: nil, ink: "", paper: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil), penpal: PENPAL)
                 .padding(.horizontal)
         }
     }

@@ -46,6 +46,7 @@ class PenPalViewController: ObservableObject {
     
     private func refresh() async {
         if let refreshedPenpal = await self.penpal.refresh() {
+            dataLogger.debug("Refreshed PenPal \(refreshedPenpal.name) - lastEventType: \(refreshedPenpal.lastEventType.description)")
             DispatchQueue.main.async {
                 self.penpal = refreshedPenpal
             }

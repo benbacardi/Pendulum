@@ -35,11 +35,13 @@ final class AppDatabase {
         migrator.registerMigration("createInitialTables") { db in
             try db.create(table: "penpal") { table in
                 table.column("id", .text).primaryKey()
+                table.column("contactID", .text)
                 table.column("name", .text)
                 table.column("initials", .text)
                 table.column("image", .blob)
                 table.column("_lastEventType", .integer)
                 table.column("lastEventDate", .date)
+                table.column("notes", .text)
             }
         }
         
@@ -53,12 +55,6 @@ final class AppDatabase {
                 table.column("pen", .text)
                 table.column("ink", .text)
                 table.column("paper", .text)
-            }
-        }
-        
-        migrator.registerMigration("addPenPalNotes") { db in
-            try db.alter(table: "penpal") { table in
-                table.add(column: "notes", .text)
             }
         }
         
@@ -151,15 +147,15 @@ extension AppDatabase {
 extension AppDatabase {
     
     func observePenPalObservation() -> ValueObservation<ValueReducers.Fetch<[PenPal]>> {
-        ValueObservation.tracking(PenPal.fetchAll)
+        ValueObservation.tracking(PenPal.filter(PenPal.Columns.dateDeleted == nil).fetchAll)
     }
     
     func observeEventObservation() -> ValueObservation<ValueReducers.Fetch<[Event]>> {
-        ValueObservation.tracking(Event.fetchAll)
+        ValueObservation.tracking(Event.filter(Event.Columns.dateDeleted == nil).fetchAll)
     }
     
     func observeEventObservation(for penpal: PenPal) -> ValueObservation<ValueReducers.Fetch<[Event]>> {
-        ValueObservation.tracking(penpal.events.fetchAll)
+        ValueObservation.tracking(penpal.events.filter(Event.Columns.dateDeleted == nil).fetchAll)
     }
     
     func start<T: ValueReducer>(observation: ValueObservation<T>,

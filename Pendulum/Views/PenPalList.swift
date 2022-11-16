@@ -90,6 +90,9 @@ struct PenPalList: View {
                         Text(penpal.name)
                             .font(.headline)
                             .fullWidth()
+                        if let dateDeleted = penpal.dateDeleted {
+                            Text(dateDeleted, style: .date)
+                        }
                         if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
                             self.dateText(for: penpal)
                                 .font(.caption)
@@ -142,7 +145,7 @@ struct PenPalList: View {
     
     @ViewBuilder
     var navigationBody: some View {
-        if contactsAccessStatus == .notDetermined || (contactsAccessStatus != .authorized && penPalListController.penpals.isEmpty) {
+        if (contactsAccessStatus == .notDetermined || contactsAccessStatus != .authorized) && penPalListController.penpals.isEmpty {
             /// Show contacts access required message if it hasn't been requested,
             /// or it has been denied and the user hasn't added any pen pals yet
             ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)

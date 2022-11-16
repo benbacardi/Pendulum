@@ -11,16 +11,16 @@ import CloudKit
 
 struct Event: Identifiable, Hashable {
     var id: Int64?
-    let _type: Int
-    let date: Date
-    let penpalID: String
-    let notes: String?
-    let pen: String?
-    let ink: String?
-    let paper: String?
-    let lastUpdated: Date?
-    let dateDeleted: Date?
-    let cloudKitID: String?
+    var _type: Int
+    var date: Date
+    var penpalID: String
+    var notes: String?
+    var pen: String?
+    var ink: String?
+    var paper: String?
+    var lastUpdated: Date?
+    var dateDeleted: Date?
+    var cloudKitID: String?
     
     var eventType: EventType {
         EventType(rawValue: self._type) ?? .noEvent
@@ -53,8 +53,8 @@ extension Event: CloudKitSyncedModel {
         record[Columns.pen.name] = self.pen
         record[Columns.ink.name] = self.ink
         record[Columns.paper.name] = self.paper
-        record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
-        record[Columns.dateDeleted.name] = self.dateDeleted ?? .distantPast
+        record[Columns.lastUpdated.name] = self.lastUpdated
+        record[Columns.dateDeleted.name] = self.dateDeleted
         return record
     }
     
@@ -136,6 +136,22 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
         request(for: Event.penpal)
     }
     
+    func clone() -> Event {
+        Event(
+            id: self.id,
+            _type: self._type,
+            date: self.date,
+            penpalID: self.penpalID,
+            notes: self.notes,
+            pen: self.pen,
+            ink: self.ink,
+            paper: self.paper,
+            lastUpdated: self.lastUpdated,
+            dateDeleted: self.dateDeleted,
+            cloudKitID: self.cloudKitID
+        )
+    }
+    
     @discardableResult
     func update(from newEvent: Event) async -> Bool {
         do {
@@ -149,8 +165,11 @@ extension Event: Codable, FetchableRecord, MutablePersistableRecord {
     func delete() async -> EventType {
         do {
             let penpal = try await AppDatabase.shared.penPalFor(event: self)
+            var updatedEvent = self.clone()
+            updatedEvent.dateDeleted = Date()
+            updatedEvent.lastUpdated = updatedEvent.dateDeleted
             do {
-                try await AppDatabase.shared.delete(self)
+                try await AppDatabase.shared.update(self, from: updatedEvent)
                 if let penpal = penpal {
                     return try await AppDatabase.shared.updateLastEventType(for: penpal)
                 }

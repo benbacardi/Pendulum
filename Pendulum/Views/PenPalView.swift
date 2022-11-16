@@ -17,11 +17,9 @@ struct PenPalView: View {
     @State private var presentAddEventSheetForType: EventType? = nil
     @State private var presentPropertyDetailsSheet: Bool = false
     
-    @State private var lastEventType: EventType
     @State private var buttonHeight: CGFloat?
     
     init(penpal: PenPal) {
-        self._lastEventType = State(wrappedValue: penpal.lastEventType)
         self._penPalViewController = StateObject(wrappedValue: PenPalViewController(penpal: penpal))
     }
     
@@ -32,37 +30,17 @@ struct PenPalView: View {
             PenPalHeader(penpal: penPalViewController.penpal)
                 .padding(.horizontal)
             
-            if let lastUpdated = penPalViewController.penpal.lastUpdated {
-                Text(lastUpdated, style: .date)
-            }
-            
-            Text(penPalViewController.penpal.cloudKitID ?? "NO ID")
-            
-            Button(action: {
-                Task {
-                    await CloudKitController.shared.upload([penPalViewController.penpal])
-                }
-            }) {
-                Text("Save to CloudKit")
-            }
-            .buttonStyle(.bordered)
-            
-            if lastEventType != .noEvent && lastEventType != .archived {
-                Text(lastEventType.phrase)
+            if penPalViewController.penpal.lastEventType != .noEvent && penPalViewController.penpal.lastEventType != .archived {
+                Text(penPalViewController.penpal.lastEventType.phrase)
                     .fullWidth()
                     .padding(.horizontal)
             }
             
             HStack(alignment: .top) {
-                if lastEventType == .archived {
+                if penPalViewController.penpal.lastEventType == .archived {
                     Button(action: {
                         Task {
-                            let latestEventType = await penPalViewController.penpal.updateLastEventType()
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    self.lastEventType = latestEventType
-                                }
-                            }
+                            await penPalViewController.penpal.updateLastEventType()
                         }
                     }) {
                         Label("Unarchive", systemImage: EventType.archived.icon)
@@ -75,7 +53,7 @@ struct PenPalView: View {
                     .tint(EventType.archived.color)
                     .buttonStyle(.borderedProminent)
                 } else {
-                    ForEach(lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                    ForEach(penPalViewController.penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
                         Button(action: {
                             self.userTappedAddEvent(ofType: eventType)
                         }) {
@@ -170,7 +148,7 @@ struct PenPalView: View {
                                 dateDivider(for: event.date, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            EventCell(event: event, penpal: penPalViewController.penpal, lastEventTypeForPenPal: $lastEventType)
+                            EventCell(event: event, penpal: penPalViewController.penpal)
                                 .padding(.bottom)
                         }
                         #if DEBUG
@@ -204,7 +182,6 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penPalViewController.penpal, event: nil, eventType: eventType) { newEvent, newEventType in
-                self.lastEventType = newEventType
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -233,12 +210,7 @@ struct PenPalView: View {
         } else {
             Task {
                 await self.penPalViewController.penpal.addEvent(ofType: eventType)
-                let latestEventType = await penPalViewController.penpal.updateLastEventType()
-                DispatchQueue.main.async {
-                    withAnimation {
-                        self.lastEventType = latestEventType
-                    }
-                }
+                await penPalViewController.penpal.updateLastEventType()
             }
         }
     }
@@ -257,7 +229,7 @@ private extension PenPalView {
 struct PenPalView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            PenPalView(penpal: PenPal(id: "2", name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
+            PenPalView(penpal: PenPal(id: UUID().uuidString, name: "Alex Faber", initials: "AF", image: nil, _lastEventType: EventType.noEvent.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
         }
     }
 }

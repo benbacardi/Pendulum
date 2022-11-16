@@ -80,11 +80,12 @@ class PenPalListController: ObservableObject {
             CNContactThumbnailImageDataKey
         ] as! [CNKeyDescriptor]
         for penpal in self.penpals {
+            guard let contactID = penpal.contactID else { continue }
             do {
-                let contact = try store.unifiedContact(withIdentifier: penpal.id, keysToFetch: keys)
+                let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
                 await penpal.update(from: contact)
             } catch {
-                dataLogger.error("Could not fetch contact with ID \(penpal.id) (\(penpal.name)): \(error.localizedDescription)")
+                dataLogger.error("Could not fetch contact with ID \(contactID) (\(penpal.name)): \(error.localizedDescription)")
             }
         }
     }

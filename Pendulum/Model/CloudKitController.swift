@@ -143,7 +143,11 @@ class CloudKitController {
                 }
             } else {
                 cloudKitLogger.debug("\(logPrefix) CloudKit record not found locally: \(record)")
-                newLocalRecords.append(record)
+                if let cloudKitDateDeleted = record["dateDeleted"] as? Date {
+                    cloudKitLogger.debug("\(logPrefix) Not saving locally, as deleted on \(cloudKitDateDeleted)")
+                } else {
+                    newLocalRecords.append(record)
+                }
             }
         }
         

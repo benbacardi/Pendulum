@@ -10,9 +10,13 @@ import GRDB
 
 extension AppDatabase {
     
-    func fetchAllPenPals() async throws -> [PenPal] {
+    func fetchAllPenPals(includingDeleted: Bool = false) async throws -> [PenPal] {
         try await dbWriter.read { db in
-            try PenPal.order(PenPal.Columns.lastEventDate.asc).fetchAll(db)
+            var result = PenPal.order(PenPal.Columns.lastEventDate.asc)
+            if !includingDeleted {
+                result = result.filter(PenPal.Columns.dateDeleted == nil)
+            }
+            return try result.fetchAll(db)
         }
     }
     
@@ -151,7 +155,7 @@ extension AppDatabase {
         if let penpal = penpal {
             request = penpal.events
         } else {
-            request = Event.all()
+            request = Event.filter(Event.Columns.dateDeleted == nil)
         }
         
         do {
@@ -177,7 +181,7 @@ extension AppDatabase {
     private func fetchUnusedStationery(for type: String) async -> [String] {
         do {
             return try await dbWriter.read { db in
-                try Stationery.select(Stationery.Columns.value).filter(Stationery.Columns.type == type).fetchAll(db)
+                try Stationery.filter(Stationery.Columns.dateDeleted == nil).select(Stationery.Columns.value).filter(Stationery.Columns.type == type).fetchAll(db)
             }
         } catch {
             dataLogger.error("Could not fetch unused stationery for \(type): \(error.localizedDescription)")

@@ -13,16 +13,17 @@ import Contacts
 import CloudKit
 
 struct PenPal: Identifiable, Hashable {
-    let id: String
-    let name: String
-    let initials: String
-    let image: Data?
+    var id: String
+    var contactID: String?
+    var name: String
+    var initials: String
+    var image: Data?
     var _lastEventType: Int?
     var lastEventDate: Date?
-    let notes: String?
-    let lastUpdated: Date?
-    let dateDeleted: Date?
-    let cloudKitID: String?
+    var notes: String?
+    var lastUpdated: Date?
+    var dateDeleted: Date?
+    var cloudKitID: String?
 }
 
 struct PenPalError: Error { }
@@ -41,10 +42,10 @@ extension PenPal: CloudKitSyncedModel {
         record[Columns.id.name] = self.id
         record[Columns.name.name] = self.name
         record[Columns.initials.name] = self.initials
-        record[Columns.image.name] = self.image ?? Data()
+        record[Columns.image.name] = self.image
         record[Columns.notes.name] = self.notes
-        record[Columns.lastUpdated.name] = self.lastUpdated ?? .distantPast
-        record[Columns.dateDeleted.name] = self.dateDeleted ?? .distantPast
+        record[Columns.lastUpdated.name] = self.lastUpdated
+        record[Columns.dateDeleted.name] = self.dateDeleted
         return record
     }
     
@@ -53,12 +54,12 @@ extension PenPal: CloudKitSyncedModel {
         guard let recordID = record[Columns.id.name] as? String else { cloudKitLogger.error("No id"); throw PenPalError() }
         guard let recordName = record[Columns.name.name] as? String else { cloudKitLogger.error("No name"); throw PenPalError() }
         guard let recordInitials = record[Columns.initials.name] as? String else { cloudKitLogger.error("No initials"); throw PenPalError() }
-        guard let recordImage = record[Columns.image.name] as? Data else { cloudKitLogger.error("No image"); throw PenPalError() }
         guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
         self.id = recordID
+        self.contactID = nil
         self.name = recordName
         self.initials = recordInitials
-        self.image = recordImage
+        self.image = record[Columns.image.name]
         self.notes = record[Columns.notes.name]
         self.lastUpdated = recordLastUpdated
         self.dateDeleted = record[Columns.dateDeleted.name]
@@ -111,6 +112,7 @@ extension PenPal: CloudKitSyncedModel {
 extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     enum Columns {
         static let id = Column(CodingKeys.id)
+        static let contactID = Column(CodingKeys.contactID)
         static let name = Column(CodingKeys.name)
         static let initials = Column(CodingKeys.initials)
         static let image = Column(CodingKeys.image)
@@ -124,6 +126,10 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     
     static let events = hasMany(Event.self)
     var events: QueryInterfaceRequest<Event> {
+        request(for: PenPal.events.filter(Event.Columns.dateDeleted == nil))
+    }
+    
+    var allEvents: QueryInterfaceRequest<Event> {
         request(for: PenPal.events)
     }
     
@@ -142,11 +148,27 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         return nil
     }
     
+    func clone() -> PenPal {
+        PenPal(
+            id: self.id,
+            contactID: self.contactID,
+            name: self.name,
+            initials: self.initials,
+            image: self.image,
+            _lastEventType: self._lastEventType,
+            lastEventDate: self.lastEventDate,
+            notes: self.notes,
+            lastUpdated: self.lastUpdated,
+            dateDeleted: self.dateDeleted,
+            cloudKitID: self.cloudKitID
+        )
+    }
+    
     func fetchLatestEvent() async -> Event? {
         do {
             return try await AppDatabase.shared.fetchLatestEvent(for: self)
         } catch {
-            dataLogger.error("Could not fetch latest event for \(id) \(name): \(error.localizedDescription)")
+            dataLogger.error("Could not fetch latest event for \(name): \(error.localizedDescription)")
             return nil
         }
     }
@@ -155,7 +177,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         do {
             return try await AppDatabase.shared.fetchAllEvents(for: self)
         } catch {
-            dataLogger.error("Could not fetch events for \(id) \(name): \(error.localizedDescription)")
+            dataLogger.error("Could not fetch events for \(name): \(error.localizedDescription)")
             return []
         }
     }
@@ -196,13 +218,33 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
+    init(from contact: CNContact) {
+        self.id = UUID().uuidString
+        self.contactID = contact.identifier
+        self.name = contact.fullName ?? "Unknown Contact"
+        self.initials = contact.initials
+        self.image = contact.thumbnailImageData
+        self._lastEventType = EventType.noEvent.rawValue
+        self.lastEventDate = nil
+        self.notes = nil
+        self.lastUpdated = Date()
+        self.dateDeleted = nil
+        self.cloudKitID = nil
+    }
+    
     @discardableResult
     func update(from contact: CNContact) async -> Bool {
         let image = contact.thumbnailImageData
         let initials = contact.initials
         let name = contact.fullName ?? self.name
-        if image != self.image || initials != self.initials || name != self.name {
-            let newPenPal = PenPal(id: self.id, name: name, initials: initials, image: image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: self.notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
+        let contactID = contact.identifier
+        if image != self.image || initials != self.initials || name != self.name || contactID != self.contactID {
+            var newPenPal = self.clone()
+            newPenPal.contactID = contactID
+            newPenPal.image = image
+            newPenPal.initials = initials
+            newPenPal.name = name
+            newPenPal.lastUpdated = Date()
             do {
                 return try await AppDatabase.shared.update(self, from: newPenPal)
             } catch {
@@ -216,7 +258,9 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     @discardableResult
     func save(notes: String?) async -> Bool {
         if self.notes == notes { return true }
-        let newPenPal = PenPal(id: self.id, name: self.name, initials: self.initials, image: self.image, _lastEventType: self._lastEventType, lastEventDate: self.lastEventDate, notes: notes, lastUpdated: Date(), dateDeleted: self.dateDeleted, cloudKitID: self.cloudKitID)
+        var newPenPal = self.clone()
+        newPenPal.notes = notes
+        newPenPal.lastUpdated = Date()
         do {
             return try await AppDatabase.shared.update(self, from: newPenPal)
         } catch {
@@ -230,8 +274,11 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     }
     
     func delete() async {
+        var newPenPal = self.clone()
+        newPenPal.dateDeleted = Date()
+        newPenPal.lastUpdated = newPenPal.dateDeleted
         do {
-            try await AppDatabase.shared.delete(self)
+            try await AppDatabase.shared.update(self, from: newPenPal)
         } catch {
             dataLogger.error("Could not delete penpal: \(error.localizedDescription)")
         }

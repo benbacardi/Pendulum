@@ -30,48 +30,52 @@ struct EventPropertyDetailsSheet: View {
     
     @ViewBuilder
     func section(for title: String, with options: Binding<[ParameterCount]>, icon: String, newEntry: Binding<String>, focused: FocusState<Bool>.Binding, recordType: String) -> some View {
-        Section(header: HStack {
-            Image(systemName: icon)
-            Text(title)
-        }) {
-            ForEach(options.wrappedValue, id: \.name) { option in
-                HStack {
-                    Text(option.name)
-                        .fullWidth()
-                    if option.count > 0 {
-                        Text("\(option.count)")
-                            .foregroundColor(.secondary)
-                    }
-                }
-            }
-            if allowAdding {
-                HStack {
-                    TextField("Add…", text: newEntry)
-                        .focused(focused)
-                    if focused.wrappedValue {
-                        Button(action: {
-                            Task {
-                                let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
-                                do {
-                                    try await AppDatabase.shared.save(record)
-                                    withAnimation {
-                                        options.wrappedValue.append(ParameterCount(name: record.value, count: 0))
-                                        focused.wrappedValue = false
-                                        newEntry.wrappedValue = ""
-                                    }
-                                } catch {
-                                    dataLogger.error("Could not save \(recordType)=\(newEntry.wrappedValue): \(error.localizedDescription)")
-                                }
-                            }
-                        }) {
-                            Text("Save")
-                                .foregroundColor(.accentColor)
+        if !options.isEmpty || allowAdding {
+            Section(header: HStack {
+                Image(systemName: icon)
+                Text(title)
+            }) {
+                ForEach(options.wrappedValue, id: \.name) { option in
+                    HStack {
+                        Text(option.name)
+                            .fullWidth()
+                        if option.count > 0 {
+                            Text("\(option.count)")
+                                .foregroundColor(.secondary)
                         }
-                        .buttonStyle(.plain)
-                        .disabled(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || options.wrappedValue.map { $0.name }.contains(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)))
+                    }
+                }
+                if allowAdding {
+                    HStack {
+                        TextField("Add…", text: newEntry)
+                            .focused(focused)
+                        if focused.wrappedValue {
+                            Button(action: {
+                                Task {
+                                    let record = Stationery(id: nil, type: recordType, value: newEntry.wrappedValue, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
+                                    do {
+                                        try await AppDatabase.shared.save(record)
+                                        withAnimation {
+                                            options.wrappedValue.append(ParameterCount(name: record.value, count: 0))
+                                            focused.wrappedValue = false
+                                            newEntry.wrappedValue = ""
+                                        }
+                                    } catch {
+                                        dataLogger.error("Could not save \(recordType)=\(newEntry.wrappedValue): \(error.localizedDescription)")
+                                    }
+                                }
+                            }) {
+                                Text("Save")
+                                    .foregroundColor(.accentColor)
+                            }
+                            .buttonStyle(.plain)
+                            .disabled(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || options.wrappedValue.map { $0.name }.contains(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)))
+                        }
                     }
                 }
             }
+        } else {
+            EmptyView()
         }
     }
     
@@ -126,6 +130,6 @@ struct EventPropertyDetailsSheet: View {
 
 struct EventPropertyDetailsSheet_Previews: PreviewProvider {
     static var previews: some View {
-        EventPropertyDetailsSheet(penpal: PenPal(id: "3", name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
+        EventPropertyDetailsSheet(penpal: PenPal(id: UUID().uuidString, name: "Madi Van Houten", initials: "MV", image: nil, _lastEventType: EventType.written.rawValue, lastEventDate: Date(), notes: nil, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil))
     }
 }
