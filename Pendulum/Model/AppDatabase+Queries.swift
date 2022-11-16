@@ -23,7 +23,7 @@ extension AppDatabase {
     
     func fetchPenPals(withStatus eventType: EventType) async throws -> [PenPal] {
         try await dbWriter.read { db in
-            try PenPal.filter(PenPal.Columns._lastEventType == eventType.rawValue).fetchAll(db)
+            try PenPal.filter(PenPal.Columns.dateDeleted == nil).filter(PenPal.Columns._lastEventType == eventType.rawValue).fetchAll(db)
         }
     }
     
