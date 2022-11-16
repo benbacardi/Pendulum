@@ -10,7 +10,7 @@ import GRDB
 import CloudKit
 
 struct Event: Identifiable, Hashable {
-    var id: Int64?
+    var id: String
     var _type: Int
     var date: Date
     var penpalID: String
@@ -47,6 +47,7 @@ extension Event: CloudKitSyncedModel {
             record = CKRecord(recordType: Event.cloudKitRecordType)
         }
         record["type"] = self._type
+        record[Columns.id.name] = self.id
         record[Columns.date.name] = self.date
         record[Columns.penpalID.name] = self.penpalID
         record[Columns.notes.name] = self.notes
@@ -60,11 +61,12 @@ extension Event: CloudKitSyncedModel {
     
     init(from record: CKRecord) throws {
         self.cloudKitID = record.recordID.recordName
+        guard let recordID = record["id"] as? String else { cloudKitLogger.error("No ID"); throw PenPalError() }
         guard let recordType = record["type"] as? Int else { cloudKitLogger.error("No type"); throw PenPalError() }
         guard let recordDate = record[Columns.date.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
         guard let recordPenPalID = record[Columns.penpalID.name] as? String else { cloudKitLogger.error("No penpal ID"); throw PenPalError() }
         guard let recordLastUpdated = record[Columns.lastUpdated.name] as? Date else { cloudKitLogger.error("No date"); throw PenPalError() }
-        self.id = nil
+        self.id = recordID
         self._type = recordType
         self.date = recordDate
         self.penpalID = recordPenPalID
@@ -82,8 +84,7 @@ extension Event: CloudKitSyncedModel {
     }
     
     func update(from record: CKRecord) async throws {
-        var new = try Event(from: record)
-        new.id = self.id
+        let new = try Event(from: record)
         try await AppDatabase.shared.update(self, from: new)
     }
     

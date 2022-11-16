@@ -46,6 +46,8 @@ extension PenPal: CloudKitSyncedModel {
         record[Columns.initials.name] = self.initials
         record[Columns.image.name] = self.image
         record[Columns.notes.name] = self.notes
+        record["lastEventType"] = self._lastEventType
+        record[Columns.lastEventDate.name] = self.lastEventDate
         record[Columns.lastUpdated.name] = self.lastUpdated
         record[Columns.dateDeleted.name] = self.dateDeleted
         return record
@@ -66,8 +68,8 @@ extension PenPal: CloudKitSyncedModel {
         self.archived = record[Columns.archived.name] as? Bool ?? false
         self.lastUpdated = recordLastUpdated
         self.dateDeleted = record[Columns.dateDeleted.name]
-        self._lastEventType = nil
-        self.lastEventDate = nil
+        self._lastEventType = record["lastEventType"] as? Int
+        self.lastEventDate = record[Columns.lastEventDate.name] as? Date
     }
     
     static func create(from record: CKRecord) async throws {
@@ -76,9 +78,7 @@ extension PenPal: CloudKitSyncedModel {
     }
     
     func update(from record: CKRecord) async throws {
-        var new = try PenPal(from: record)
-        new._lastEventType = self._lastEventType
-        new.lastEventDate = self.lastEventDate
+        let new = try PenPal(from: record)
         try await AppDatabase.shared.update(self, from: new)
     }
     
@@ -197,7 +197,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     }
     
     func createEvent(ofType type: EventType, notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, forDate: Date = Date()) -> Event {
-        return Event(id: nil, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
+        return Event(id: UUID().uuidString, _type: type.rawValue, date: forDate, penpalID: self.id, notes: notes, pen: pen, ink: ink, paper: paper, lastUpdated: Date(), dateDeleted: nil, cloudKitID: nil)
     }
     
     @discardableResult
@@ -217,7 +217,9 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
     @discardableResult
     func updateLastEventType(with event: Event? = nil) async -> EventType {
         do {
-            return try await AppDatabase.shared.updateLastEventType(for: self)
+            let result = try await AppDatabase.shared.updateLastEventType(for: self)
+            CloudKitController.triggerSyncRequiredNotification()
+            return result
         } catch {
             dataLogger.error("Could not update last event: \(error.localizedDescription)")
             return .noEvent
@@ -274,8 +276,8 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         newPenPal.notes = notes
         newPenPal.lastUpdated = Date()
         do {
-            return try await AppDatabase.shared.update(self, from: newPenPal)
             CloudKitController.triggerSyncRequiredNotification()
+            return try await AppDatabase.shared.update(self, from: newPenPal)
         } catch {
             dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
         }

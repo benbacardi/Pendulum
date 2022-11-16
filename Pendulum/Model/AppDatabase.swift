@@ -48,7 +48,7 @@ final class AppDatabase {
         
         migrator.registerMigration("createEventTables") { db in
             try db.create(table: "event") { table in
-                table.autoIncrementedPrimaryKey("id")
+                table.column("id", .text).primaryKey()
                 table.column("penpalId", .text).notNull().references("penpal", onDelete: .cascade)
                 table.column("_type", .integer).notNull()
                 table.column("date", .datetime).notNull()
@@ -110,7 +110,7 @@ extension AppDatabase {
             
             /// Connect to a database on disk
             /// See https://github.com/groue/GRDB.swift/blob/master/README.md#database-connections
-            let dbURL = folderURL.appendingPathComponent("db.sqlite")
+            let dbURL = folderURL.appendingPathComponent("db1.sqlite")
             var config = Configuration()
             #if DEBUG
             config.publicStatementArguments = true

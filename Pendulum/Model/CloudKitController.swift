@@ -214,13 +214,13 @@ class CloudKitController {
         let stationerySuccess = await self.performSync(for: Stationery.self)
         let eventSuccess = await self.performSync(for: Event.self)
         let syncSuccess = penpalSuccess && stationerySuccess && eventSuccess
-        do {
-            for penpal in try await AppDatabase.shared.fetchAllPenPals() {
-                await penpal.updateLastEventType()
-            }
-        } catch {
-            dataLogger.error("Could not fetch penpals: \(error.localizedDescription)")
-        }
+//        do {
+//            for penpal in try await AppDatabase.shared.fetchAllPenPals() {
+//                await penpal.updateLastEventType()
+//            }
+//        } catch {
+//            dataLogger.error("Could not fetch penpals: \(error.localizedDescription)")
+//        }
         return syncSuccess
     }
     
