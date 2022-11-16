@@ -147,15 +147,15 @@ extension AppDatabase {
 extension AppDatabase {
     
     func observePenPalObservation() -> ValueObservation<ValueReducers.Fetch<[PenPal]>> {
-        ValueObservation.tracking(PenPal.filter(PenPal.Columns.dateDeleted == nil).fetchAll)
+        ValueObservation.tracking(PenPal.fetchAll)
     }
     
     func observeEventObservation() -> ValueObservation<ValueReducers.Fetch<[Event]>> {
-        ValueObservation.tracking(Event.filter(Event.Columns.dateDeleted == nil).fetchAll)
+        ValueObservation.tracking(Event.fetchAll)
     }
     
     func observeEventObservation(for penpal: PenPal) -> ValueObservation<ValueReducers.Fetch<[Event]>> {
-        ValueObservation.tracking(penpal.events.filter(Event.Columns.dateDeleted == nil).fetchAll)
+        ValueObservation.tracking(penpal.events.fetchAll)
     }
     
     func start<T: ValueReducer>(observation: ValueObservation<T>,

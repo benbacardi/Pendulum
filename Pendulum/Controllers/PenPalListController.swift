@@ -33,7 +33,7 @@ class PenPalListController: ObservableObject {
     
     private func refresh(with penpals: [PenPal]? = nil) async {
         if let penpals = penpals {
-            let result = await self.groupPenPals(with: penpals)
+            let result = await self.groupPenPals(with: penpals.filter { $0.dateDeleted == nil })
             DispatchQueue.main.async {
                 if self.penpals.isEmpty {
                     self.penpals = penpals
