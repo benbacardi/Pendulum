@@ -93,7 +93,7 @@ struct PenPalList: View {
                         if let dateDeleted = penpal.dateDeleted {
                             Text(dateDeleted, style: .date)
                         }
-                        if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
+                        if penpal.lastEventDate != nil && !penpal.archived {
                             self.dateText(for: penpal)
                                 .font(.caption)
                                 .fullWidth()
@@ -110,15 +110,11 @@ struct PenPalList: View {
             Button(action: {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                     Task {
-                        if penpal.lastEventType != .archived {
-                            await penpal.archive()
-                        } else {
-                            await penpal.updateLastEventType()
-                        }
+                        await penpal.archive(!penpal.archived)
                     }
                 }
             }) {
-                if penpal.lastEventType != .archived {
+                if !penpal.archived {
                     Label("Archive", systemImage: "archivebox")
                 } else {
                     Label("Unarchive", systemImage: "archivebox")

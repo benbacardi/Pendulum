@@ -42,6 +42,7 @@ final class AppDatabase {
                 table.column("_lastEventType", .integer)
                 table.column("lastEventDate", .date)
                 table.column("notes", .text)
+                table.column("archived", .boolean).defaults(to: false)
             }
         }
         

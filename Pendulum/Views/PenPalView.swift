@@ -29,17 +29,17 @@ struct PenPalView: View {
             PenPalHeader(penpal: penPalViewController.penpal)
                 .padding(.horizontal)
             
-            if penPalViewController.penpal.lastEventType != .noEvent && penPalViewController.penpal.lastEventType != .archived {
+            if penPalViewController.penpal.lastEventType != .noEvent && !penPalViewController.penpal.archived {
                 Text(penPalViewController.penpal.lastEventType.phrase)
                     .fullWidth()
                     .padding(.horizontal)
             }
             
             HStack(alignment: .top) {
-                if penPalViewController.penpal.lastEventType == .archived {
+                if penPalViewController.penpal.archived {
                     Button(action: {
                         Task {
-                            await penPalViewController.penpal.updateLastEventType()
+                            await penPalViewController.penpal.unarchive()
                         }
                     }) {
                         Label("Unarchive", systemImage: EventType.archived.icon)

@@ -59,7 +59,9 @@ class PenPalListController: ObservableObject {
         var groups: [EventType: [PenPal]] = [:]
         for penpal in penpals {
             var key: EventType = penpal.lastEventType
-            if key == .theyReceived {
+            if penpal.archived {
+                key = .archived
+            } else if key == .theyReceived {
                 /// Group "they received" statuses with "you sent" statuses on the home page
                 key = .sent
             }

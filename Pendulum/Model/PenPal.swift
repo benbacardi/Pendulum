@@ -21,6 +21,7 @@ struct PenPal: Identifiable, Hashable {
     var _lastEventType: Int?
     var lastEventDate: Date?
     var notes: String?
+    var archived: Bool = false
     var lastUpdated: Date?
     var dateDeleted: Date?
     var cloudKitID: String?
@@ -41,6 +42,7 @@ extension PenPal: CloudKitSyncedModel {
         }
         record[Columns.id.name] = self.id
         record[Columns.name.name] = self.name
+        record[Columns.archived.name] = self.archived
         record[Columns.initials.name] = self.initials
         record[Columns.image.name] = self.image
         record[Columns.notes.name] = self.notes
@@ -61,6 +63,7 @@ extension PenPal: CloudKitSyncedModel {
         self.initials = recordInitials
         self.image = record[Columns.image.name]
         self.notes = record[Columns.notes.name]
+        self.archived = record[Columns.archived.name] as? Bool ?? false
         self.lastUpdated = recordLastUpdated
         self.dateDeleted = record[Columns.dateDeleted.name]
         self._lastEventType = nil
@@ -119,6 +122,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         static let _lastEventType = Column(CodingKeys._lastEventType)
         static let lastEventDate = Column(CodingKeys.lastEventDate)
         static let notes = Column(CodingKeys.notes)
+        static let archived = Column(CodingKeys.archived)
         static let lastUpdated = Column(CodingKeys.lastUpdated)
         static let dateDeleted = Column(CodingKeys.dateDeleted)
         static let cloudKitID = Column(CodingKeys.cloudKitID)
@@ -158,6 +162,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
             _lastEventType: self._lastEventType,
             lastEventDate: self.lastEventDate,
             notes: self.notes,
+            archived: self.archived,
             lastUpdated: self.lastUpdated,
             dateDeleted: self.dateDeleted,
             cloudKitID: self.cloudKitID
@@ -294,12 +299,20 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         }
     }
     
-    func archive() async {
+    func archive(_ value: Bool = true) async {
+        var newPenPal = self.clone()
+        newPenPal.archived = value
+        newPenPal.lastUpdated = Date()
         do {
-            try await AppDatabase.shared.setLastEventType(for: self, to: .archived, at: Date())
+            try await AppDatabase.shared.update(self, from: newPenPal)
+            CloudKitController.triggerSyncRequiredNotification()
         } catch {
-            dataLogger.error("Could not archive penpal: \(error.localizedDescription)")
+            dataLogger.error("Could not \(value ? "" : "un")archive penpal: \(error.localizedDescription)")
         }
+    }
+    
+    func unarchive() async {
+        await self.archive(false)
     }
     
     func refresh() async -> PenPal? {
