@@ -88,6 +88,28 @@ class PenPalListController: ObservableObject {
                 dataLogger.error("Could not fetch contact with ID \(contactID) (\(penpal.name)): \(error.localizedDescription)")
             }
         }
+        let penpalsWithNoContacts: [String: [PenPal]] = Dictionary(grouping: await AppDatabase.shared.fetchPenPalsWithoutContacts(), by: { $0.name })
+        if !penpalsWithNoContacts.isEmpty {
+            let request = CNContactFetchRequest(keysToFetch: keys)
+            request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+            var mappings: [PenPal: CNContact] = [:]
+            do {
+                try store.enumerateContacts(with: request) { (contact, stop) in
+                    if let matchingPenPals = penpalsWithNoContacts[contact.fullName ?? "UNKNOWN CONTACT"] {
+                        for penpal in matchingPenPals {
+                            mappings[penpal] = contact
+                        }
+                    }
+                }
+            } catch {
+                dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
+            }
+            if !mappings.isEmpty {
+                for (penpal, contact) in mappings {
+                    await penpal.update(from: contact)
+                }
+            }
+        }
     }
     
 }

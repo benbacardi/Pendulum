@@ -32,6 +32,17 @@ extension AppDatabase {
         }
     }
     
+    func fetchPenPalsWithoutContacts() async -> [PenPal] {
+        do {
+            return try await dbWriter.read { db in
+                try PenPal.filter(PenPal.Columns.dateDeleted == nil).filter(PenPal.Columns.contactID == nil).fetchAll(db)
+            }
+        } catch {
+            dataLogger.error("Could not fetch penpals with no contacts: \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     @discardableResult
     func save<T: MutablePersistableRecord>(_ record: T) async throws -> T {
         try await dbWriter.write { db in

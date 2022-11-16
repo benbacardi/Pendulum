@@ -16,6 +16,9 @@ struct ContactsAccessRequiredView: View {
     // MARK: External State
     @Binding var contactsAccessStatus: CNAuthorizationStatus
     
+    // MARK: Parameters
+    var reason: String = "so you can select your Pen Pals"
+    
     var body: some View {
         VStack {
             Spacer()
@@ -28,7 +31,7 @@ struct ContactsAccessRequiredView: View {
                         .padding(.bottom)
                 }
             }
-            Text("Pendulum needs access to your contacts so that you can select your Pen Pals!")
+            Text("Pendulum needs access to your contacts \(reason)")
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 30)

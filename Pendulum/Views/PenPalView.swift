@@ -13,7 +13,6 @@ struct PenPalView: View {
     // MARK: State
     @StateObject private var penPalViewController: PenPalViewController
     @State private var showingPenPalContactSheet: Bool = false
-    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentAddEventSheetForType: EventType? = nil
     @State private var presentPropertyDetailsSheet: Bool = false
     
@@ -172,7 +171,6 @@ struct PenPalView: View {
         }
         .onAppear {
             penPalViewController.start()
-            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
             PenPalContactSheet(penpal: penPalViewController.penpal)
@@ -196,7 +194,6 @@ struct PenPalView: View {
             }){
                 Label("Pen Pal Addresses", systemImage:"person.crop.circle")
             }
-            .disabled(contactsAccessStatus != .authorized)
         }
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
             self.buttonHeight = $0

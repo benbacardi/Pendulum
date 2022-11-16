@@ -32,6 +32,7 @@ struct PenPalContactSheet: View {
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
     @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     
     var body: some View {
         NavigationStack {
@@ -45,41 +46,56 @@ struct PenPalContactSheet: View {
                         TextField("Notes - postage cost, etc", text: $notes, axis: .vertical)
                     }
                     
-                    if addresses.isEmpty {
-                        Text("You have no addresses saved for \(penpal.name)!")
-                            .fullWidth(alignment: .center)
+                    if contactsAccessStatus == .notDetermined || contactsAccessStatus == .denied {
+                        
+                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses for \(penpal.name).")
+                        
                     } else {
-                        ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
-                            Button(action: {
-                                var urlComponents = URLComponents()
-                                urlComponents.scheme = "maps"
-                                urlComponents.host = ""
-                                urlComponents.path = ""
-                                urlComponents.queryItems = [URLQueryItem(name: "address", value: address.value.getFullAddress(separator: ", "))]
-                                if let url = urlComponents.url {
-                                    openURL(url)
-                                }
-                            }) {
-                                GroupBox {
-                                    Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
-                                        .font(.caption)
-                                    //                                    .bold()
-                                        .fullWidth()
-                                    Text(address.value.getFullAddress())
-                                        .fullWidth()
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color.black.opacity(0.05))
-                                            .frame(height: 100)
-                                        if let placemark = placemark, let location = placemark.location {
-                                            Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
-                                                MapMarker(coordinate: pin.location.coordinate, tint: .orange)
-                                            }
-                                            .frame(height: 100)
+                        
+                        if penpal.contactID == nil {
+                            
+                            Text("\(penpal.name) is not currently associated with one of your contacts.")
+                                .fullWidth(alignment: .center)
+                            
+                        } else {
+                            
+                            if addresses.isEmpty {
+                                Text("You have no addresses saved for \(penpal.name)!")
+                                    .fullWidth(alignment: .center)
+                                    .padding(.top)
+                            } else {
+                                ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
+                                    Button(action: {
+                                        var urlComponents = URLComponents()
+                                        urlComponents.scheme = "maps"
+                                        urlComponents.host = ""
+                                        urlComponents.path = ""
+                                        urlComponents.queryItems = [URLQueryItem(name: "address", value: address.value.getFullAddress(separator: ", "))]
+                                        if let url = urlComponents.url {
+                                            openURL(url)
                                         }
+                                    }) {
+                                        GroupBox {
+                                            Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
+                                                .font(.caption)
+                                                .fullWidth()
+                                            Text(address.value.getFullAddress())
+                                                .fullWidth()
+                                            ZStack {
+                                                Rectangle()
+                                                    .fill(Color.black.opacity(0.05))
+                                                    .frame(height: 100)
+                                                if let placemark = placemark, let location = placemark.location {
+                                                    Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
+                                                        MapMarker(coordinate: pin.location.coordinate, tint: .orange)
+                                                    }
+                                                    .frame(height: 100)
+                                                }
+                                            }
+                                        }
+                                        .foregroundColor(.primary)
                                     }
                                 }
-                                .foregroundColor(.primary)
                             }
                         }
                     }
@@ -87,38 +103,14 @@ struct PenPalContactSheet: View {
             }
             .padding()
             .onAppear {
-                notes = penpal.notes ?? ""
+                self.notes = penpal.notes ?? ""
+                self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
-                let store = CNContactStore()
-                let keys = [
-                    CNContactPostalAddressesKey,
-                ] as! [CNKeyDescriptor]
                 if let contactID = penpal.contactID {
-                    do {
-                        let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                        self.addresses = contact.postalAddresses
-                        self.maps = self.addresses.map { _ in
-                            nil
-                        }
-                        let geocoder = CLGeocoder()
-                        for (index, address) in self.addresses.enumerated() {
-                            do {
-                                let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
-                                if let addr = placemarks.first {
-                                    withAnimation {
-                                        self.maps[index] = addr
-                                    }
-                                }
-                            } catch {
-                                dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
-                            }
-                        }
-                    } catch {
-                        dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
-                    }
+                    await self.searchAddresses(for: contactID)
                 } else {
-                    dataLogger.error("No contact associated with \(penpal.name)")
+                    dataLogger.error("No contact associated with \(penpal.name).")
                 }
             }
             .toolbar {
@@ -133,6 +125,35 @@ struct PenPalContactSheet: View {
             }
             .navigationTitle("Contact Details")
             .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+    
+    func searchAddresses(for contactID: String) async {
+        let store = CNContactStore()
+        let keys = [
+            CNContactPostalAddressesKey,
+        ] as! [CNKeyDescriptor]
+        do {
+            let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+            self.addresses = contact.postalAddresses
+            self.maps = self.addresses.map { _ in
+                nil
+            }
+            let geocoder = CLGeocoder()
+            for (index, address) in self.addresses.enumerated() {
+                do {
+                    let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
+                    if let addr = placemarks.first {
+                        withAnimation {
+                            self.maps[index] = addr
+                        }
+                    }
+                } catch {
+                    dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                }
+            }
+        } catch {
+            dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
         }
     }
     
