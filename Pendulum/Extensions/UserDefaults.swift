@@ -17,6 +17,7 @@ extension UserDefaults {
         case enableQuickEntry
         case sendRemindersToPostLettersAtHour
         case sendRemindersToPostLettersAtMinute
+        case lastFullSync
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -61,6 +62,11 @@ extension UserDefaults {
     var sendRemindersToPostLettersAtMinute: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+    }
+    
+    var lastFullSync: Date {
+        get { Date(timeIntervalSince1970: double(forKey: Key.lastFullSync.rawValue)) }
+        set { setValue(newValue.timeIntervalSince1970, forKey: Key.lastFullSync.rawValue) }
     }
     
 }

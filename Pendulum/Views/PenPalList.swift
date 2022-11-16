@@ -206,7 +206,9 @@ struct PenPalList: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         Task {
-                            await CloudKitController.shared.performFullSync()
+                            let now = Date()
+                            await CloudKitController.shared.performFullSync(since: UserDefaults.shared.lastFullSync)
+                            UserDefaults.shared.lastFullSync = now
                         }
                     }) {
                         Label("Perform full sync!", systemImage: "tortoise")

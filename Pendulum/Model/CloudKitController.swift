@@ -70,9 +70,9 @@ class CloudKitController {
         return records
     }
     
-    func fetchAllRecords(ofType type: String) async -> [CKRecord] {
-        cloudKitLogger.debug("[fetchAllRecords] Fetching all records of type \(type)")
-        let predicate = NSPredicate(value: true)
+    func fetchAllRecords(ofType type: String, since: Date) async -> [CKRecord] {
+        cloudKitLogger.debug("[fetchAllRecords] Fetching all records of type \(type) since \(since)")
+        let predicate = NSPredicate(format: "lastUpdated >= %@", since as NSDate)
         let query = CKQuery(recordType: type, predicate: predicate)
         do {
             let results = try await self.container.privateCloudDatabase.records(matching: query, resultsLimit: 100)
@@ -93,7 +93,7 @@ class CloudKitController {
         return []
     }
     
-    func performSync<Model: CloudKitSyncedModel>(for _: Model.Type) async {
+    func performSync<Model: CloudKitSyncedModel>(for _: Model.Type, since: Date? = nil) async {
         /// Sync the local GRDB database with CloudKit.
         ///
         /// Syncing process:
@@ -109,10 +109,12 @@ class CloudKitController {
         ///    between CloudKit and GRDB are concerned.
         let logPrefix = "[performSync:\(Model.cloudKitRecordType)]"
         
+        let modifiedSince = since ?? UserDefaults.shared.lastFullSync
+        
         var unsynced = await Model.fetchUnsynced()
         cloudKitLogger.debug("\(logPrefix) Unsynced: \(unsynced.count)")
         
-        let cloudKitRecords = await self.fetchAllRecords(ofType: Model.cloudKitRecordType)
+        let cloudKitRecords = await self.fetchAllRecords(ofType: Model.cloudKitRecordType, since: modifiedSince)
         cloudKitLogger.debug("\(logPrefix) From CloudKit: \(cloudKitRecords.count)")
         
         var synced: [String: Model] = [:]
@@ -174,10 +176,10 @@ class CloudKitController {
         
     }
     
-    func performFullSync() async {
-        await self.performSync(for: PenPal.self)
-        await self.performSync(for: Stationery.self)
-        await self.performSync(for: Event.self)
+    func performFullSync(since: Date? = nil) async {
+        await self.performSync(for: PenPal.self, since: since)
+        await self.performSync(for: Stationery.self, since: since)
+        await self.performSync(for: Event.self, since: since)
         do {
             for penpal in try await AppDatabase.shared.fetchAllPenPals() {
                 await penpal.updateLastEventType()
