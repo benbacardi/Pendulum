@@ -203,7 +203,6 @@ struct PenPalList: View {
                         }
                     }
                 }
-                #if DEBUG
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         Task {
@@ -213,7 +212,6 @@ struct PenPalList: View {
                         Label("Perform full sync!", systemImage: "tortoise")
                     }
                 }
-                #endif
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         self.presentingStationerySheet = true
