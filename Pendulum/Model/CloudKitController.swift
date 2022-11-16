@@ -201,6 +201,7 @@ class CloudKitController {
         
     }
     
+    @discardableResult
     func performFullSync() async -> Bool {
         let penpalSuccess = await self.performSync(for: PenPal.self)
         let stationerySuccess = await self.performSync(for: Stationery.self)

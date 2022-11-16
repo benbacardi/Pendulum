@@ -138,6 +138,13 @@ extension AppDatabase {
         }
     }
     
+    @discardableResult
+    func deleteEvents(for penpal: PenPal) async throws -> Int {
+        try await dbWriter.write { db in
+            try penpal.allEvents.updateAll(db, Event.Columns.dateDeleted.set(to: Date()))
+        }
+    }
+    
     func penPalFor(event: Event) async throws -> PenPal? {
         try await dbWriter.read { db in
             try event.penpal.fetchOne(db)

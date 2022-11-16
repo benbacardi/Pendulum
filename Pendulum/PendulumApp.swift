@@ -16,6 +16,8 @@ struct PendulumApp: App {
     // MARK: Environment
     @Environment(\.scenePhase) var scenePhase
     
+    let timer = Timer.publish(every: 60, on: .main, in: .common).autoconnect()
+    
     init() {
             // This fixes a bug / feature introduced in iOS 15
             // where the TabBar in SwiftUI is transparent by default.
@@ -38,15 +40,30 @@ struct PendulumApp: App {
             ContentView()
                 .environmentObject(OrientationObserver.shared)
                 .onChange(of: scenePhase) { scenePhase in
+                    /// Set badges and notificaitons when we background
                     if scenePhase == .background {
                         Task {
                             await PenPal.scheduleShouldPostLettersNotification()
                             await UIApplication.shared.updateBadgeNumber()
                         }
+                        Task {
+                            await CloudKitController.shared.performFullSync()
+                        }
+                    }
+                    /// Run sync when we start
+                    if scenePhase == .active {
+                        Task {
+                            await CloudKitController.shared.performFullSync()
+                        }
                     }
                 }
                 .task {
                     await CloudKitController.shared.subscribeToChanges()
+                }
+                .onReceive(timer) { input in
+                    Task {
+                        await CloudKitController.shared.performFullSync()
+                    }
                 }
         }
     }

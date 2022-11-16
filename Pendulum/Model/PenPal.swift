@@ -244,7 +244,9 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
             newPenPal.image = image
             newPenPal.initials = initials
             newPenPal.name = name
-            newPenPal.lastUpdated = Date()
+            if image != self.image || initials != self.initials || name != self.name {
+                newPenPal.lastUpdated = Date()
+            }
             do {
                 return try await AppDatabase.shared.update(self, from: newPenPal)
             } catch {
@@ -279,6 +281,7 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         newPenPal.lastUpdated = newPenPal.dateDeleted
         do {
             try await AppDatabase.shared.update(self, from: newPenPal)
+            try await AppDatabase.shared.deleteEvents(for: newPenPal)
         } catch {
             dataLogger.error("Could not delete penpal: \(error.localizedDescription)")
         }
