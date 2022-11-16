@@ -249,7 +249,11 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
                 newPenPal.lastUpdated = Date()
             }
             do {
-                return try await AppDatabase.shared.update(self, from: newPenPal)
+                let response = try await AppDatabase.shared.update(self, from: newPenPal)
+                if newPenPal.lastUpdated != self.lastUpdated {
+                    CloudKitController.triggerSyncRequiredNotification()
+                }
+                return response
             } catch {
                 dataLogger.error("Could not update PenPal: \(error.localizedDescription)")
                 return false
