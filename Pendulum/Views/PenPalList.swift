@@ -225,7 +225,6 @@ struct PenPalList: View {
                     }) {
                         Label("Add Pen Pal", systemImage: "plus.circle")
                     }
-                    .disabled(contactsAccessStatus != .authorized)
                 }
             }
             VStack {

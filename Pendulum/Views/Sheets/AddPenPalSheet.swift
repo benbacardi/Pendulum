@@ -15,6 +15,7 @@ struct AddPenPalSheet: View {
     
     // MARK: State
     let existingPenPals: [PenPal]
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var existingPenPalIdentifiers: Set<String> = []
     @State private var contactDetails: [CNContact] = []
     @State private var contactsFetched: Bool = false
@@ -67,33 +68,38 @@ struct AddPenPalSheet: View {
                     }
                     .searchable(text: $searchText)
                 } else {
-                    VStack {
-                        Spacer()
-                        if contactsFetched {
-                            if let image = UIImage(named: "undraw_reading_list_re_bk72") {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 200)
-                                    .padding(.bottom)
-                                if existingPenPals.isEmpty {
-                                    Text("You don't appear to have any contacts!")
-                                        .fullWidth(alignment: .center)
-                                } else {
-                                    Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
-                                        .fullWidth(alignment: .center)
+                    if contactsAccessStatus == .notDetermined || contactsAccessStatus == .denied {
+                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+                    } else {
+                        VStack {
+                            Spacer()
+                            if contactsFetched {
+                                if let image = UIImage(named: "undraw_reading_list_re_bk72") {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: 200)
+                                        .padding(.bottom)
+                                    if existingPenPals.isEmpty {
+                                        Text("You don't appear to have any contacts!")
+                                            .fullWidth(alignment: .center)
+                                    } else {
+                                        Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
+                                            .fullWidth(alignment: .center)
+                                    }
                                 }
+                            } else {
+                                ProgressView()
                             }
-                        } else {
-                            ProgressView()
+                            Spacer()
                         }
-                        Spacer()
+                        .padding()
                     }
-                    .padding()
                 }
             }
             .onAppear {
                 self.existingPenPalIdentifiers = Set(existingPenPals.compactMap { $0.contactID })
+                self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
                 let store = CNContactStore()

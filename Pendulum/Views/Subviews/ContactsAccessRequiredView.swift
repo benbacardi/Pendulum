@@ -17,7 +17,7 @@ struct ContactsAccessRequiredView: View {
     @Binding var contactsAccessStatus: CNAuthorizationStatus
     
     // MARK: Parameters
-    var reason: String = "so you can select your Pen Pals"
+    var reason: String = "so you can select your Pen Pals!"
     
     var body: some View {
         VStack {
