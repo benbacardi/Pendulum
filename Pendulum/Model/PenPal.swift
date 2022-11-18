@@ -92,6 +92,15 @@ extension PenPal: CloudKitSyncedModel {
     
     var description: String { self.name }
     
+    static func deleteRecords(notMatchingCloudKitIDs ckRecords: [CKRecord]) async -> Int {
+        do {
+            return try await AppDatabase.shared.deleteOldPenPals(notMatchingCloudKitIDs: ckRecords.map { $0.recordID.recordName })
+        } catch {
+            dataLogger.error("Could not delete old PenPals with incorrect CloudKit IDs: \(error.localizedDescription)")
+            return 0
+        }
+    }
+    
     static func fetchUnsynced() async -> [PenPal] {
         do {
             return try await AppDatabase.shared.fetchUnsyncedPenPals()
@@ -323,6 +332,19 @@ extension PenPal: Codable, FetchableRecord, MutablePersistableRecord {
         } catch {
             dataLogger.error("Could not refresh PenPal")
             return nil
+        }
+    }
+    
+}
+
+extension PenPal {
+    
+    @ViewBuilder
+    func getPenPalListSubText() -> some View {
+        if let date = self.lastEventDate, self.archived == false {
+            Text("\(self.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
+        } else {
+            EmptyView()
         }
     }
     

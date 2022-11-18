@@ -98,6 +98,15 @@ extension Event: CloudKitSyncedModel {
     
     var description: String { "\(self.date): \(self.penpalID) \(self._type)" }
     
+    static func deleteRecords(notMatchingCloudKitIDs ckRecords: [CKRecord]) async -> Int {
+        do {
+            return try await AppDatabase.shared.deleteOldEvents(notMatchingCloudKitIDs: ckRecords.map { $0.recordID.recordName })
+        } catch {
+            dataLogger.error("Could not delete old Events with incorrect CloudKit IDs: \(error.localizedDescription)")
+            return 0
+        }
+    }
+    
     static func fetchUnsynced() async -> [Event] {
         do {
             return try await AppDatabase.shared.fetchUnsyncedEvents()

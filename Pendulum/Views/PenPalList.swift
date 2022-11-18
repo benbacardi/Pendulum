@@ -32,11 +32,12 @@ struct PenPalList: View {
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
     
-    func dateText(for penpal: PenPal) -> Text {
-        if let date = penpal.lastEventDate {
-            return Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
+    @ViewBuilder
+    func dateText(for penpal: PenPal) -> some View {
+        if let date = penpal.lastEventDate, penpal.archived == false {
+            Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
         } else {
-            return Text("")
+            EmptyView()
         }
     }
     
@@ -90,14 +91,10 @@ struct PenPalList: View {
                         Text(penpal.name)
                             .font(.headline)
                             .fullWidth()
-                        if let dateDeleted = penpal.dateDeleted {
-                            Text(dateDeleted, style: .date)
-                        }
-                        if penpal.lastEventDate != nil && !penpal.archived {
-                            self.dateText(for: penpal)
-                                .font(.caption)
-                                .fullWidth()
-                        }
+                        penpal.getPenPalListSubText()
+//                        self.dateText(for: penpal)
+                            .font(.caption)
+                            .fullWidth()
                     }
                     Spacer()
                     Image(systemName: "chevron.right")
@@ -182,6 +179,9 @@ struct PenPalList: View {
                 .listRowSeparator(.hidden)
             }
             .listStyle(.plain)
+            .refreshable {
+                await CloudKitController.shared.performFullSync()
+            }
         }
     }
     
@@ -208,7 +208,7 @@ struct PenPalList: View {
                         Label("Perform full sync!", systemImage: "tortoise")
                     }
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         self.presentingStationerySheet = true
                     }) {

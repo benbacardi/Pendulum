@@ -79,6 +79,15 @@ extension Stationery: CloudKitSyncedModel {
     
     var description: String { "\(self.type): \(self.value)" }
     
+    static func deleteRecords(notMatchingCloudKitIDs ckRecords: [CKRecord]) async -> Int {
+        do {
+            return try await AppDatabase.shared.deleteOldStationery(notMatchingCloudKitIDs: ckRecords.map { $0.recordID.recordName })
+        } catch {
+            dataLogger.error("Could not delete old Stationery with incorrect CloudKit IDs: \(error.localizedDescription)")
+            return 0
+        }
+    }
+    
     static func fetchUnsynced() async -> [Stationery] {
         do {
             return try await AppDatabase.shared.fetchUnsyncedStationery()

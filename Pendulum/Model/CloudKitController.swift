@@ -26,6 +26,7 @@ protocol CloudKitSyncedModel {
     
     static func fetchUnsynced() async -> [Self]
     static func fetchSynced() async -> [Self]
+    static func deleteRecords(notMatchingCloudKitIDs: [CKRecord]) async -> Int
     
     static func create(from record: CKRecord) async throws
     func update(from record: CKRecord) async throws
@@ -44,7 +45,9 @@ class CloudKitController {
     }
     
     static func triggerSyncRequiredNotification() {
-        NotificationCenter.default.post(name: SyncRequiredNotification, object: nil)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: SyncRequiredNotification, object: nil)
+        }
     }
     
     func subscribeToChanges() async {
@@ -204,6 +207,10 @@ class CloudKitController {
             }
         }
         
+        cloudKitLogger.debug("\(logPrefix) Deleting old records not matching CloudKit IDs...")
+        let numDeleted = await Model.deleteRecords(notMatchingCloudKitIDs: cloudKitRecords)
+        cloudKitLogger.debug("\(logPrefix) Deleted \(numDeleted) records")
+        
         return syncSuccess
         
     }
@@ -214,14 +221,25 @@ class CloudKitController {
         let stationerySuccess = await self.performSync(for: Stationery.self)
         let eventSuccess = await self.performSync(for: Event.self)
         let syncSuccess = penpalSuccess && stationerySuccess && eventSuccess
-//        do {
-//            for penpal in try await AppDatabase.shared.fetchAllPenPals() {
-//                await penpal.updateLastEventType()
-//            }
-//        } catch {
-//            dataLogger.error("Could not fetch penpals: \(error.localizedDescription)")
-//        }
         return syncSuccess
+    }
+    
+    func deleteAll() async {
+        var penpalRecords = await self.fetchAllRecords(ofType: PenPal.cloudKitRecordType, since: .distantPast)
+        var eventRecords = await self.fetchAllRecords(ofType: Event.cloudKitRecordType, since: .distantPast)
+        var stationeryRecords = await self.fetchAllRecords(ofType: Stationery.cloudKitRecordType, since: .distantPast)
+        let recordIdsToDelete = (penpalRecords + eventRecords + stationeryRecords).map { $0.recordID }
+        cloudKitLogger.info("[deleteAll] Deleting \(recordIdsToDelete.count) records")
+        var count = 1
+        for chunk in recordIdsToDelete.chunked(into: 100) {
+            cloudKitLogger.info("[deleteAll] Deleting \(count): \(chunk.count)")
+            do {
+                try await container.publicCloudDatabase.modifyRecords(saving: [], deleting: chunk)
+            } catch {
+                cloudKitLogger.error("[deleteAll] Could not delete records: \(error.localizedDescription)")
+            }
+            count += 1
+        }
     }
     
 }

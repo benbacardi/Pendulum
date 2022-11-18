@@ -105,6 +105,21 @@ struct SettingsList: View {
                         }
                     }
                 }
+                
+                Section {
+                    Button(role: .destructive, action: {
+                        Task {
+                            await AppDatabase.shared.deleteAll()
+                            await CloudKitController.shared.deleteAll()
+                        }
+                    }) {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle")
+                            Text("Delete All Data")
+                        }
+                    }
+                }
+                
             }
             .navigationTitle(Text("Settings"))
             .task {

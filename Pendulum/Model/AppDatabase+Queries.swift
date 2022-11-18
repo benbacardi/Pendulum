@@ -11,6 +11,21 @@ import NotificationCenter
 
 extension AppDatabase {
     
+    func deleteAll() async {
+        do {
+            try await dbWriter.write { db in
+                let penPalCount = try PenPal.deleteAll(db)
+                dataLogger.debug("Deleted \(penPalCount) PenPals")
+                let eventCount = try Event.deleteAll(db)
+                dataLogger.debug("Deleted \(eventCount) Events")
+                let stationeryCount = try Stationery.deleteAll(db)
+                dataLogger.debug("Deleted \(stationeryCount) Stationery")
+            }
+        } catch {
+            dataLogger.error("Could not delete all data: \(error.localizedDescription)")
+        }
+    }
+    
     func fetchAllPenPals(includingDeleted: Bool = false) async throws -> [PenPal] {
         try await dbWriter.read { db in
             var result = PenPal.order(PenPal.Columns.lastEventDate.asc)
@@ -300,6 +315,24 @@ extension AppDatabase {
     func fetchSyncedEvents() async throws -> [Event] {
         try await dbWriter.read { db in
             try Event.filter(Event.Columns.cloudKitID != nil).fetchAll(db)
+        }
+    }
+    
+    func deleteOldPenPals(notMatchingCloudKitIDs cloudKitIDs: [String]) async throws -> Int {
+        try await dbWriter.write { db in
+            try PenPal.filter(PenPal.Columns.cloudKitID != nil).filter(!cloudKitIDs.contains(PenPal.Columns.cloudKitID)).deleteAll(db)
+        }
+    }
+    
+    func deleteOldStationery(notMatchingCloudKitIDs cloudKitIDs: [String]) async throws -> Int {
+        try await dbWriter.write { db in
+            try Stationery.filter(Stationery.Columns.cloudKitID != nil).filter(!cloudKitIDs.contains(Stationery.Columns.cloudKitID)).deleteAll(db)
+        }
+    }
+    
+    func deleteOldEvents(notMatchingCloudKitIDs cloudKitIDs: [String]) async throws -> Int {
+        try await dbWriter.write { db in
+            try Event.filter(Event.Columns.cloudKitID != nil).filter(!cloudKitIDs.contains(Event.Columns.cloudKitID)).deleteAll(db)
         }
     }
     

@@ -26,7 +26,7 @@ class PenPalListController: ObservableObject {
         } onChange: { penpals in
             dataLogger.debug("Pen pals changed: \(penpals.count)")
             Task {
-                await self.refresh(with: penpals)
+                await self.refresh()
             }
         }
     }
