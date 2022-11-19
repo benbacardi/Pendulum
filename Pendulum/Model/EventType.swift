@@ -20,6 +20,10 @@ enum EventType: Int, CaseIterable, Identifiable {
     
     var id: Int { rawValue }
     
+    static func from(_ value: Int16) -> EventType {
+        EventType(rawValue: Int(value)) ?? .noEvent
+    }
+    
     static var actionableCases: [EventType] {
         EventType.allCases.filter { $0 != .noEvent && $0 != .archived }
     }
