@@ -16,7 +16,8 @@ struct ContentView: View {
             PenPalList()
         } else {
             TabView(selection: $selectedTab) {
-                PenPalList()
+//                PenPalList()
+                CDPenPalList()
                     .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                     .tag(Tab.penPalList.rawValue)
                 SettingsList()

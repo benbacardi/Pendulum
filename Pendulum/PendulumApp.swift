@@ -13,6 +13,8 @@ struct PendulumApp: App {
     // MARK: Environment
     @Environment(\.scenePhase) var scenePhase
     
+    let persistenceController = PersistenceController.shared
+    
     init() {
             // This fixes a bug / feature introduced in iOS 15
             // where the TabBar in SwiftUI is transparent by default.
@@ -34,8 +36,10 @@ struct PendulumApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(OrientationObserver.shared)
+                .environment(\.managedObjectContext, persistenceController.container.viewContext)
                 .onChange(of: scenePhase) { scenePhase in
                     if scenePhase == .background {
+                        persistenceController.save()
                         Task {
                             await PenPal.scheduleShouldPostLettersNotification()
                             await UIApplication.shared.updateBadgeNumber()

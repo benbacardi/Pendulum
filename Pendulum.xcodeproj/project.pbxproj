@@ -36,6 +36,10 @@
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
 		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
 		5E52C661291A503700BBD58D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C660291A503700BBD58D /* EventCell.swift */; };
+		5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */; };
+		5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252032927D83200A3EB86 /* PersistenceController.swift */; };
+		5E6252062927D94600A3EB86 /* CDPenPalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252052927D94600A3EB86 /* CDPenPalList.swift */; };
+		5E6252082928C20600A3EB86 /* CDPenPal+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252072928C20600A3EB86 /* CDPenPal+Extensions.swift */; };
 		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
@@ -80,6 +84,10 @@
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
 		5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalHeader.swift; sourceTree = "<group>"; };
 		5E52C660291A503700BBD58D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
+		5E6252012927D73900A3EB86 /* Pendulum.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Pendulum.xcdatamodel; sourceTree = "<group>"; };
+		5E6252032927D83200A3EB86 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
+		5E6252052927D94600A3EB86 /* CDPenPalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPenPalList.swift; sourceTree = "<group>"; };
+		5E6252072928C20600A3EB86 /* CDPenPal+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDPenPal+Extensions.swift"; sourceTree = "<group>"; };
 		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
@@ -123,6 +131,7 @@
 		5E4055072914205D00BD52BF /* Pendulum */ = {
 			isa = PBXGroup;
 			children = (
+				5E6251FF2927D72100A3EB86 /* Data */,
 				5E40551E29151C0200BD52BF /* Info.plist */,
 				5E40552429151E1600BD52BF /* App Info */,
 				5E40551B29151B8E00BD52BF /* Debug */,
@@ -152,6 +161,7 @@
 			children = (
 				5E4055292915202B00BD52BF /* ContentView.swift */,
 				5E40552729151FEC00BD52BF /* PenPalList.swift */,
+				5E6252052927D94600A3EB86 /* CDPenPalList.swift */,
 				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E4055442917051D00BD52BF /* PenPalView.swift */,
 				5E405543291671B800BD52BF /* Sheets */,
@@ -247,6 +257,16 @@
 			path = Sheets;
 			sourceTree = "<group>";
 		};
+		5E6251FF2927D72100A3EB86 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */,
+				5E6252032927D83200A3EB86 /* PersistenceController.swift */,
+				5E6252072928C20600A3EB86 /* CDPenPal+Extensions.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -338,6 +358,7 @@
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
+				5E6252062927D94600A3EB86 /* CDPenPalList.swift in Sources */,
 				5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,
@@ -351,14 +372,17 @@
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
 				5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */,
+				5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */,
 				5E52C661291A503700BBD58D /* EventCell.swift in Sources */,
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
+				5E6252082928C20600A3EB86 /* CDPenPal+Extensions.swift in Sources */,
 				5E4055452917051D00BD52BF /* PenPalView.swift in Sources */,
 				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
 				5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */,
 				5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */,
+				5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -607,6 +631,19 @@
 			productName = GRDB;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5E6252012927D73900A3EB86 /* Pendulum.xcdatamodel */,
+			);
+			currentVersion = 5E6252012927D73900A3EB86 /* Pendulum.xcdatamodel */;
+			path = Pendulum.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5E4054FD2914205D00BD52BF /* Project object */;
 }
