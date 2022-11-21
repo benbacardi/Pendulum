@@ -38,21 +38,13 @@ extension CDEvent {
         self.pen = pen
         self.ink = ink
         self.paper = paper
-        do {
-            try PersistenceController.shared.container.viewContext.save()
-        } catch {
-            dataLogger.error("Could not update event: \(error.localizedDescription)")
-        }
+        PersistenceController.shared.save()
     }
     
     func delete() {
         PersistenceController.shared.container.viewContext.delete(self)
         self.penpal?.updateLastEventType()
-        do {
-            try PersistenceController.shared.container.viewContext.save()
-        } catch {
-            dataLogger.error("Could not delete event: \(error.localizedDescription)")
-        }
+        PersistenceController.shared.save()
     }
     
 }

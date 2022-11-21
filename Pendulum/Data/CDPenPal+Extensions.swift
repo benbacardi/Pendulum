@@ -8,6 +8,7 @@
 import Foundation
 import SwiftUI
 import CoreData
+import Contacts
 
 extension CDPenPal {
     
@@ -46,8 +47,7 @@ extension CDPenPal {
     
     func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
-        let context = PersistenceController.shared.container.viewContext
-        let newEvent = CDEvent(context: context)
+        let newEvent = CDEvent(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
         newEvent.date = date
         newEvent.type = eventType
@@ -57,22 +57,14 @@ extension CDPenPal {
         newEvent.paper = paper
         self.addToEvents(newEvent)
         self.updateLastEventType()
-        do {
-            try context.save()
-        } catch {
-            dataLogger.error("Could not create event: \(error.localizedDescription)")
-        }
+        PersistenceController.shared.save()
     }
     
     func setLastEventType(to eventType: EventType, at date: Date?, saving: Bool = false) {
         self.lastEventType = eventType
         self.lastEventDate = date
         if saving {
-            do {
-                try PersistenceController.shared.container.viewContext.save()
-            } catch {
-                dataLogger.error("Could not set last event type for \(self.wrappedName): \(error.localizedDescription)")
-            }
+            PersistenceController.shared.save()
         }
     }
     
@@ -99,11 +91,11 @@ extension CDPenPal {
         dataLogger.debug("Setting the Last Event Type for \(self.wrappedName) to \(newEventType.description) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
         self.setLastEventType(to: newEventType, at: newEventDate, saving: saving)
         
-//        if newEventType == .received {
-//            self.scheduleShouldWriteBackNotification(countingFrom: newEventDate)
-//        } else {
-//            self.cancelShouldWriteBackNotification()
-//        }
+        if newEventType == .received {
+            self.scheduleShouldWriteBackNotification(countingFrom: newEventDate)
+        } else {
+            self.cancelShouldWriteBackNotification()
+        }
         
         return newEventType
         
@@ -186,22 +178,93 @@ extension CDPenPal {
         CDPenPal.fetchDistinctStationery(ofType: stationery, for: self)
     }
     
+    static func fetch(withStatus eventType: EventType? = nil) -> [CDPenPal] {
+        let fetchRequest = NSFetchRequest<CDPenPal>(entityName: CDPenPal.entityName)
+        if let eventType = eventType {
+            fetchRequest.predicate = NSPredicate(format: "lastEventTypeValue = %d", eventType.rawValue)
+        }
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch penpals with status \(eventType?.description ?? "all"): \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     func archive(_ value: Bool = true) {
         self.archived = value
-        do {
-            try PersistenceController.shared.container.viewContext.save()
-        } catch {
-            dataLogger.error("Could not archive=\(value) penpal: \(error.localizedDescription)")
-        }
+        PersistenceController.shared.save()
+    }
+    
+    func update(from contact: CNContact) {
+        self.image = contact.thumbnailImageData
+        self.initials = contact.initials
+        self.name = contact.fullName ?? self.name
+        PersistenceController.shared.save()
     }
     
     func delete() {
         PersistenceController.shared.container.viewContext.delete(self)
-        do {
-            try PersistenceController.shared.container.viewContext.save()
-        } catch {
-            dataLogger.error("Could not delete penpal: \(error.localizedDescription)")
+        PersistenceController.shared.save()
+    }
+    
+    static func syncWithContacts() async {
+
+        let store = CNContactStore()
+        let keys = [
+            CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+            CNContactOrganizationNameKey,
+            CNContactImageDataAvailableKey,
+            CNContactThumbnailImageDataKey
+        ] as! [CNKeyDescriptor]
+        
+        let fetchRequest = NSFetchRequest<CDPenPal>(entityName: CDPenPal.entityName)
+        let penpals = (try? PersistenceController.shared.container.viewContext.fetch(fetchRequest)) ?? []
+        let mapping = UserDefaults.shared.penpalContactMap
+        
+        for penpal in penpals {
+            guard let uuid = penpal.id, let contactID = mapping[uuid.uuidString] else { continue }
+            do {
+                let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                penpal.update(from: contact)
+            } catch {
+                appLogger.error("Could not fetch contact with ID \(contactID) \(penpal.wrappedName): \(error.localizedDescription)")
+            }
         }
+        
+        let penpalsWithNoContact: [String: [CDPenPal]] = Dictionary(grouping: penpals.filter {
+            guard let uuid = $0.id else { return false }
+            return mapping[uuid.uuidString] == nil
+        }, by: { $0.wrappedName })
+        
+        appLogger.debug("Trying to match \(penpalsWithNoContact.count) penpals")
+        if !penpalsWithNoContact.isEmpty {
+            let request = CNContactFetchRequest(keysToFetch: keys)
+            request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+            do {
+                try store.enumerateContacts(with: request) { (contact, stop) in
+                    if let matchingPenPals = penpalsWithNoContact[contact.fullName ?? "UNKNOWN CONTACT"] {
+                        for penpal in matchingPenPals {
+                            appLogger.debug("Setting \(penpal.wrappedName) to contact \(contact.identifier)")
+                            UserDefaults.shared.setContactID(for: penpal, to: contact.identifier)
+                        }
+                    }
+                }
+            } catch {
+                dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
+            }
+        }
+    }
+    
+    static func calculateBadgeNumber(toWrite: Bool, toPost: Bool) -> Int {
+        var count = 0
+        if toWrite {
+            count += Self.fetch(withStatus: .received).count
+        }
+        if toPost {
+            count += Self.fetch(withStatus: .written).count
+        }
+        return count
     }
     
 }

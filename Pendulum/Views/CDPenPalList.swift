@@ -100,6 +100,7 @@ struct CDPenPalList: View {
                 .foregroundColor(.primary)
             }
         }
+        .animation(.default, value: penpal)
         .swipeActions {
             Button(action: {
                 withAnimation {
@@ -171,6 +172,9 @@ struct CDPenPalList: View {
                 DispatchQueue.main.async {
                     self.refreshID = UUID()
                 }
+            }
+            .task {
+                await CDPenPal.syncWithContacts()
             }
         }
     }
