@@ -10,6 +10,15 @@ import Contacts
 import CoreLocation
 import MapKit
 
+struct IdentifiableLocation: Identifiable {
+    let id: UUID
+    let location: CLLocation
+    init(id: UUID = UUID(), location: CLLocation) {
+        self.id = id
+        self.location = location
+    }
+}
+
 struct CDPenPalContactSheet: View {
     
     // MARK: Environment

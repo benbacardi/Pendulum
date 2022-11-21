@@ -238,6 +238,13 @@ struct CDPenPalList: View {
     
 }
 
+struct PenPalListIconWidthPreferenceKey: PreferenceKey {
+    static let defaultValue: CGFloat = 0
+    static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+        value = max(value, nextValue())
+    }
+}
+
 struct CDPenPalList_Previews: PreviewProvider {
     static var previews: some View {
         CDPenPalList()

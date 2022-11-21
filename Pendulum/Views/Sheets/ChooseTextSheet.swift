@@ -7,6 +7,13 @@
 
 import SwiftUI
 
+struct TextOptions: Identifiable {
+    let id = UUID()
+    let text: Binding<String>
+    let options: [String]
+    let title: String
+}
+
 struct ChooseTextSheet: View {
     
     // MARK: Environment
