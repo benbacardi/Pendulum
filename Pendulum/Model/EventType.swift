@@ -28,6 +28,10 @@ enum EventType: Int, CaseIterable, Identifiable {
         EventType.allCases.filter { $0 != .noEvent && $0 != .archived }
     }
     
+    var predicate: NSPredicate {
+        NSPredicate(format: "typeValue = %d", self.rawValue)
+    }
+    
     var description: String {
         /// Displayed in places such as the list of historical events for a Pen Pal
         switch self {
