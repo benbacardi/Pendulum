@@ -53,6 +53,7 @@ struct CDPenPalContactSheet: View {
                             if addresses.isEmpty {
                                 Text("You have no addresses saved for \(penpal.wrappedName)!")
                                     .fullWidth(alignment: .center)
+                                    .padding()
                             } else {
                                 ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
                                     Button(action: {
@@ -131,11 +132,7 @@ struct CDPenPalContactSheet: View {
             .toolbar {
                 Button(action: {
                     penpal.notes = notes.isEmpty ? nil : notes
-                    do {
-                        try PersistenceController.shared.container.viewContext.save()
-                    } catch {
-                        dataLogger.error("Could not update notes: \(error.localizedDescription)")
-                    }
+                    PersistenceController.shared.save()
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Done")

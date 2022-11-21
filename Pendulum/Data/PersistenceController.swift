@@ -61,13 +61,13 @@ struct PersistenceController {
     }
     
     func save() {
-        let context = container.viewContext
-
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                dataLogger.error("[CoreData:save] Could not save context: \(error.localizedDescription)")
+        if container.viewContext.hasChanges {
+            DispatchQueue.main.async {
+                do {
+                    try container.viewContext.save()
+                } catch {
+                    dataLogger.error("[CoreData:save] Could not save context: \(error.localizedDescription)")
+                }
             }
         }
     }
