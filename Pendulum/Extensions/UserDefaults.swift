@@ -17,6 +17,7 @@ extension UserDefaults {
         case enableQuickEntry
         case sendRemindersToPostLettersAtHour
         case sendRemindersToPostLettersAtMinute
+        case penpalContactMap
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -61,6 +62,38 @@ extension UserDefaults {
     var sendRemindersToPostLettersAtMinute: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+    }
+    
+    var penpalContactMap: [String: String] {
+        get {
+            do {
+                return try JSONDecoder().decode([String: String].self, from: data(forKey: Key.penpalContactMap.rawValue) ?? Data())
+            } catch {
+                return [:]
+            }
+        }
+        set {
+            do {
+                setValue(try JSONEncoder().encode(newValue), forKey: Key.penpalContactMap.rawValue)
+            } catch {
+                appLogger.debug("Could not save penpalContactMap")
+            }
+        }
+    }
+    
+    func setContactID(for penpal: CDPenPal, to identifier: String) {
+        if let uuid = penpal.id {
+            var currentMap = self.penpalContactMap
+            currentMap[uuid.uuidString] = identifier
+            self.penpalContactMap = currentMap
+        }
+    }
+    
+    func getContactID(for penpal: CDPenPal) -> String? {
+        if let uuid = penpal.id {
+            return self.penpalContactMap[uuid.uuidString]
+        }
+        return nil
     }
     
 }

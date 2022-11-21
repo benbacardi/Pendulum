@@ -20,6 +20,8 @@ struct CDPenPalContactSheet: View {
     let penpal: CDPenPal
     
     // MARK: State
+    @State private var contactID: String? = nil
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
     @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
@@ -36,41 +38,55 @@ struct CDPenPalContactSheet: View {
                         TextField("Notes - postage cost, etc", text: $notes, axis: .vertical)
                     }
                     
-                    if addresses.isEmpty {
-                        Text("You have no addresses saved for \(penpal.wrappedName)!")
-                            .fullWidth(alignment: .center)
+                    if contactsAccessStatus != .authorized {
+                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses \(penpal.wrappedName).")
                     } else {
-                        ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
-                            Button(action: {
-                                var urlComponents = URLComponents()
-                                urlComponents.scheme = "maps"
-                                urlComponents.host = ""
-                                urlComponents.path = ""
-                                urlComponents.queryItems = [URLQueryItem(name: "address", value: address.value.getFullAddress(separator: ", "))]
-                                if let url = urlComponents.url {
-                                    openURL(url)
-                                }
-                            }) {
-                                GroupBox {
-                                    Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
-                                        .font(.caption)
-                                    //                                    .bold()
-                                        .fullWidth()
-                                    Text(address.value.getFullAddress())
-                                        .fullWidth()
-                                    ZStack {
-                                        Rectangle()
-                                            .fill(Color.black.opacity(0.05))
-                                            .frame(height: 100)
-                                        if let placemark = placemark, let location = placemark.location {
-                                            Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
-                                                MapMarker(coordinate: pin.location.coordinate, tint: .orange)
-                                            }
-                                            .frame(height: 100)
+                        
+                        if contactID == nil {
+                            
+                            Text("\(penpal.wrappedName) is not currently associated with one of your contacts.")
+                                .fullWidth(alignment: .center)
+                                .padding()
+                            
+                        } else {
+                            
+                            if addresses.isEmpty {
+                                Text("You have no addresses saved for \(penpal.wrappedName)!")
+                                    .fullWidth(alignment: .center)
+                            } else {
+                                ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
+                                    Button(action: {
+                                        var urlComponents = URLComponents()
+                                        urlComponents.scheme = "maps"
+                                        urlComponents.host = ""
+                                        urlComponents.path = ""
+                                        urlComponents.queryItems = [URLQueryItem(name: "address", value: address.value.getFullAddress(separator: ", "))]
+                                        if let url = urlComponents.url {
+                                            openURL(url)
                                         }
+                                    }) {
+                                        GroupBox {
+                                            Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
+                                                .font(.caption)
+                                            //                                    .bold()
+                                                .fullWidth()
+                                            Text(address.value.getFullAddress())
+                                                .fullWidth()
+                                            ZStack {
+                                                Rectangle()
+                                                    .fill(Color.black.opacity(0.05))
+                                                    .frame(height: 100)
+                                                if let placemark = placemark, let location = placemark.location {
+                                                    Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
+                                                        MapMarker(coordinate: pin.location.coordinate, tint: .orange)
+                                                    }
+                                                    .frame(height: 100)
+                                                }
+                                            }
+                                        }
+                                        .foregroundColor(.primary)
                                     }
                                 }
-                                .foregroundColor(.primary)
                             }
                         }
                     }
@@ -78,10 +94,12 @@ struct CDPenPalContactSheet: View {
             }
             .padding()
             .onAppear {
-                notes = penpal.notes ?? ""
+                self.notes = penpal.notes ?? ""
+                self.contactID = UserDefaults.shared.getContactID(for: penpal)
+                self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
-                if let contactID = penpal.contactID {
+                if let contactID = contactID {
                     let store = CNContactStore()
                     let keys = [
                         CNContactPostalAddressesKey,

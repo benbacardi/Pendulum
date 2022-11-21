@@ -12,7 +12,6 @@
     </entity>
     <entity name="CDPenPal" representedClassName="CDPenPal" syncable="YES" codeGenerationType="class">
         <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
-        <attribute name="contactID" optional="YES" attributeType="String"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="image" optional="YES" attributeType="Binary"/>
         <attribute name="initials" attributeType="String" defaultValueString="PP"/>

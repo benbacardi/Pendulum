@@ -44,16 +44,16 @@ struct PersistenceController {
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
         }
+        
+        //Setup auto merge of Cloudkit data
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Error: \(description): \(error.localizedDescription)")
             }
         }
-        
-        //Setup auto merge of Cloudkit data
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
         
         //Set the Query generation to .current. for dynamically updating views from Cloudkit
         try? container.viewContext.setQueryGenerationFrom(.current)

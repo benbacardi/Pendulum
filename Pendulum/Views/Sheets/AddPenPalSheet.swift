@@ -14,8 +14,11 @@ struct AddPenPalSheet: View {
     @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
     
+    // MARK: Parameters
+    let existingPenPals: FetchedResults<CDPenPal>
+    
     // MARK: State
-//    let existingPenPals: [PenPal]
+    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var existingPenPalIdentifiers: Set<String> = []
     @State private var contactDetails: [CNContact] = []
     @State private var contactsFetched: Bool = false
@@ -28,7 +31,7 @@ struct AddPenPalSheet: View {
                 if !contactDetails.isEmpty {
                     List {
                         ForEach(filteredContacts, id: \.identifier) { contact in
-//                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+                            if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
                                     Task {
                                         let newPenPal = CDPenPal(context: moc)
@@ -37,9 +40,9 @@ struct AddPenPalSheet: View {
                                         newPenPal.initials = contact.initials
                                         newPenPal.image = contact.thumbnailImageData
                                         newPenPal.lastEventType = EventType.noEvent
-                                        newPenPal.contactID = contact.identifier
                                         do {
                                             try moc.save()
+                                            UserDefaults.shared.setContactID(for: newPenPal, to: contact.identifier)
                                             presentationMode.wrappedValue.dismiss()
                                         } catch {
                                             dataLogger.error("Could not save PenPal: \(error.localizedDescription)")
@@ -69,38 +72,43 @@ struct AddPenPalSheet: View {
                                     }
                                     .foregroundColor(.primary)
                                 }
-//                            }
+                            }
                         }
                     }
                     .searchable(text: $searchText)
                 } else {
-                    VStack {
-                        Spacer()
-                        if contactsFetched {
-                            if let image = UIImage(named: "undraw_reading_list_re_bk72") {
-                                Image(uiImage: image)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                                    .frame(maxWidth: 200)
-                                    .padding(.bottom)
-//                                if existingPenPals.isEmpty {
-//                                    Text("You don't appear to have any contacts!")
-//                                        .fullWidth(alignment: .center)
-//                                } else {
-                                    Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
-                                        .fullWidth(alignment: .center)
-//                                }
+                    if contactsAccessStatus != .authorized {
+                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+                    } else {
+                        VStack {
+                            Spacer()
+                            if contactsFetched {
+                                if let image = UIImage(named: "undraw_reading_list_re_bk72") {
+                                    Image(uiImage: image)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fit)
+                                        .frame(maxWidth: 200)
+                                        .padding(.bottom)
+                                    if existingPenPals.isEmpty {
+                                        Text("You don't appear to have any contacts!")
+                                            .fullWidth(alignment: .center)
+                                    } else {
+                                        Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
+                                            .fullWidth(alignment: .center)
+                                    }
+                                }
+                            } else {
+                                ProgressView()
                             }
-                        } else {
-                            ProgressView()
+                            Spacer()
                         }
-                        Spacer()
+                        .padding()
                     }
-                    .padding()
                 }
             }
             .onAppear {
-//                self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
+                self.existingPenPalIdentifiers = Set(existingPenPals.compactMap { UserDefaults.shared.getContactID(for: $0) })
+                self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
                 let store = CNContactStore()
@@ -116,11 +124,11 @@ struct AddPenPalSheet: View {
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         try store.enumerateContacts(with: request) { (contact, stop) in
-//                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+                            if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 DispatchQueue.main.async {
                                     self.contactDetails.append(contact)
                                 }
-//                            }
+                            }
                         }
                         DispatchQueue.main.async {
                             self.contactsFetched = true

@@ -128,7 +128,7 @@ struct CDPenPalList: View {
     
     @ViewBuilder
     var navigationBody: some View {
-        if contactsAccessStatus == .notDetermined || (contactsAccessStatus != .authorized && penpals.isEmpty) {
+        if contactsAccessStatus != .authorized && penpals.isEmpty {
             /// Show contacts access required message if it hasn't been requested,
             /// or it has been denied and the user hasn't added any pen pals yet
             ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
@@ -202,7 +202,6 @@ struct CDPenPalList: View {
                         }) {
                             Label("Add Pen Pal", systemImage: "plus.circle")
                         }
-                        .disabled(contactsAccessStatus != .authorized)
                     }
                 }
         }
@@ -213,7 +212,7 @@ struct CDPenPalList: View {
             CDEventPropertyDetailsSheet(penpal: nil, allowAdding: true)
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
-            AddPenPalSheet()
+            AddPenPalSheet(existingPenPals: penpals)
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
