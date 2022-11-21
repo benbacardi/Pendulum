@@ -101,6 +101,7 @@ struct CDEventCell: View {
                 }
             }
             .buttonStyle(.plain)
+            .animation(.default, value: penpal)
             .contextMenu {
                 Button(action: {
                     self.showEditEventSheet = true
