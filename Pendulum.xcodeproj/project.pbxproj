@@ -9,33 +9,21 @@
 /* Begin PBXBuildFile section */
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
-		5E076A2B29223FD500028FC1 /* Stationery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E076A2A29223FD500028FC1 /* Stationery.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
 		5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40551C29151B9A00BD52BF /* Loggers.swift */; };
-		5E40552129151C8200BD52BF /* GRDB in Frameworks */ = {isa = PBXBuildFile; productRef = 5E40552029151C8200BD52BF /* GRDB */; };
-		5E40552329151CA600BD52BF /* AppDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552229151CA600BD52BF /* AppDatabase.swift */; };
 		5E40552629151E2200BD52BF /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552529151E2200BD52BF /* AppInfo.swift */; };
-		5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552729151FEC00BD52BF /* PenPalList.swift */; };
 		5E40552A2915202B00BD52BF /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055292915202B00BD52BF /* ContentView.swift */; };
-		5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */; };
-		5E40552E291523A300BD52BF /* PenPal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552D291523A300BD52BF /* PenPal.swift */; };
 		5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40552F291525AA00BD52BF /* UserDefaults.swift */; };
 		5E4055322915280C00BD52BF /* UIApplication.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055312915280C00BD52BF /* UIApplication.swift */; };
 		5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553329152C6100BD52BF /* AddPenPalSheet.swift */; };
 		5E40553629152DA000BD52BF /* CNContact.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553529152DA000BD52BF /* CNContact.swift */; };
-		5E40553829155C5F00BD52BF /* Event.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553729155C5F00BD52BF /* Event.swift */; };
-		5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553A29155F9F00BD52BF /* PenPalListController.swift */; };
 		5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */; };
 		5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554129166EBE00BD52BF /* FullWidthText.swift */; };
-		5E4055452917051D00BD52BF /* PenPalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055442917051D00BD52BF /* PenPalView.swift */; };
-		5E4055472917065800BD52BF /* PenPalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055462917065800BD52BF /* PenPalViewController.swift */; };
 		5E4055492918184000BD52BF /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055482918184000BD52BF /* Calendar.swift */; };
-		5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
-		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
-		5E52C661291A503700BBD58D /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C660291A503700BBD58D /* EventCell.swift */; };
+		5E52C65F2919B8A600BBD58D /* CDPenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* CDPenPalHeader.swift */; };
 		5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */; };
 		5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252032927D83200A3EB86 /* PersistenceController.swift */; };
 		5E6252062927D94600A3EB86 /* CDPenPalList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252052927D94600A3EB86 /* CDPenPalList.swift */; };
@@ -47,22 +35,19 @@
 		5E625212292B958D00A3EB86 /* CDPenPalContactSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E625211292B958D00A3EB86 /* CDPenPalContactSheet.swift */; };
 		5E625214292B999500A3EB86 /* CDStationery+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E625213292B999500A3EB86 /* CDStationery+Extensions.swift */; };
 		5E625217292BCFB800A3EB86 /* CDPenPal+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E625216292BCFB800A3EB86 /* CDPenPal+Notifications.swift */; };
-		5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
-		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
+		5EEF49FC291D0151000528C6 /* CDEventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* CDEventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
-		5EEF4A00291D8487000528C6 /* PenPal+Notifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */; };
 		5EEF4A02291E5B1E000528C6 /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5EEF4A01291E5B1E000528C6 /* Launch Screen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
-		5E076A2A29223FD500028FC1 /* Stationery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stationery.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -70,27 +55,17 @@
 		5E4055102914205F00BD52BF /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		5E40551C29151B9A00BD52BF /* Loggers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Loggers.swift; sourceTree = "<group>"; };
 		5E40551E29151C0200BD52BF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		5E40552229151CA600BD52BF /* AppDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDatabase.swift; sourceTree = "<group>"; };
 		5E40552529151E2200BD52BF /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
-		5E40552729151FEC00BD52BF /* PenPalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalList.swift; sourceTree = "<group>"; };
 		5E4055292915202B00BD52BF /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDatabase+Queries.swift"; sourceTree = "<group>"; };
-		5E40552D291523A300BD52BF /* PenPal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPal.swift; sourceTree = "<group>"; };
 		5E40552F291525AA00BD52BF /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		5E4055312915280C00BD52BF /* UIApplication.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIApplication.swift; sourceTree = "<group>"; };
 		5E40553329152C6100BD52BF /* AddPenPalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddPenPalSheet.swift; sourceTree = "<group>"; };
 		5E40553529152DA000BD52BF /* CNContact.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNContact.swift; sourceTree = "<group>"; };
-		5E40553729155C5F00BD52BF /* Event.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Event.swift; sourceTree = "<group>"; };
-		5E40553A29155F9F00BD52BF /* PenPalListController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListController.swift; sourceTree = "<group>"; };
 		5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsAccessRequiredView.swift; sourceTree = "<group>"; };
 		5E40554129166EBE00BD52BF /* FullWidthText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthText.swift; sourceTree = "<group>"; };
-		5E4055442917051D00BD52BF /* PenPalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalView.swift; sourceTree = "<group>"; };
-		5E4055462917065800BD52BF /* PenPalViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalViewController.swift; sourceTree = "<group>"; };
 		5E4055482918184000BD52BF /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
-		5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalContactSheet.swift; sourceTree = "<group>"; };
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
-		5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalHeader.swift; sourceTree = "<group>"; };
-		5E52C660291A503700BBD58D /* EventCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
+		5E52C65E2919B8A600BBD58D /* CDPenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPenPalHeader.swift; sourceTree = "<group>"; };
 		5E6252012927D73900A3EB86 /* Pendulum.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Pendulum.xcdatamodel; sourceTree = "<group>"; };
 		5E6252032927D83200A3EB86 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
 		5E6252052927D94600A3EB86 /* CDPenPalList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPenPalList.swift; sourceTree = "<group>"; };
@@ -102,15 +77,13 @@
 		5E625211292B958D00A3EB86 /* CDPenPalContactSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDPenPalContactSheet.swift; sourceTree = "<group>"; };
 		5E625213292B999500A3EB86 /* CDStationery+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDStationery+Extensions.swift"; sourceTree = "<group>"; };
 		5E625216292BCFB800A3EB86 /* CDPenPal+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CDPenPal+Notifications.swift"; sourceTree = "<group>"; };
-		5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddEventSheet.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
-		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
+		5EEF49FB291D0151000528C6 /* CDEventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CDEventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
-		5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PenPal+Notifications.swift"; sourceTree = "<group>"; };
 		5EEF4A01291E5B1E000528C6 /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,7 +92,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5E40552129151C8200BD52BF /* GRDB in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -153,7 +125,6 @@
 				5E40551829151B6500BD52BF /* Extensions */,
 				5E625215292BCFA900A3EB86 /* Notifications */,
 				5E40551729151B5F00BD52BF /* Views */,
-				5E40553929155F7A00BD52BF /* Controllers */,
 				5E40551A29151B7000BD52BF /* Model */,
 				5E4055082914205D00BD52BF /* PendulumApp.swift */,
 				5E40550C2914205F00BD52BF /* Assets.xcassets */,
@@ -175,10 +146,8 @@
 			isa = PBXGroup;
 			children = (
 				5E4055292915202B00BD52BF /* ContentView.swift */,
-				5E40552729151FEC00BD52BF /* PenPalList.swift */,
 				5E6252052927D94600A3EB86 /* CDPenPalList.swift */,
 				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
-				5E4055442917051D00BD52BF /* PenPalView.swift */,
 				5E625209292B76FA00A3EB86 /* CDPenPalView.swift */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
@@ -214,13 +183,7 @@
 		5E40551A29151B7000BD52BF /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				5E40552229151CA600BD52BF /* AppDatabase.swift */,
-				5E40552B2915237600BD52BF /* AppDatabase+Queries.swift */,
-				5E40552D291523A300BD52BF /* PenPal.swift */,
-				5EEF49FF291D8487000528C6 /* PenPal+Notifications.swift */,
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
-				5E40553729155C5F00BD52BF /* Event.swift */,
-				5E076A2A29223FD500028FC1 /* Stationery.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -242,21 +205,11 @@
 			path = "App Info";
 			sourceTree = "<group>";
 		};
-		5E40553929155F7A00BD52BF /* Controllers */ = {
-			isa = PBXGroup;
-			children = (
-				5E40553A29155F9F00BD52BF /* PenPalListController.swift */,
-				5E4055462917065800BD52BF /* PenPalViewController.swift */,
-			);
-			path = Controllers;
-			sourceTree = "<group>";
-		};
 		5E40553C29165ED500BD52BF /* Subviews */ = {
 			isa = PBXGroup;
 			children = (
 				5E40553D29165F1C00BD52BF /* ContactsAccessRequiredView.swift */,
-				5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */,
-				5E52C660291A503700BBD58D /* EventCell.swift */,
+				5E52C65E2919B8A600BBD58D /* CDPenPalHeader.swift */,
 				5E62520D292B889700A3EB86 /* CDEventCell.swift */,
 			);
 			path = Subviews;
@@ -266,12 +219,10 @@
 			isa = PBXGroup;
 			children = (
 				5E40553329152C6100BD52BF /* AddPenPalSheet.swift */,
-				5E40554C29181E7400BD52BF /* PenPalContactSheet.swift */,
 				5E625211292B958D00A3EB86 /* CDPenPalContactSheet.swift */,
-				5E8BA57729185BB50065FCC4 /* AddEventSheet.swift */,
 				5E62520F292B8CAA00A3EB86 /* CDAddEventSheet.swift */,
 				5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */,
-				5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */,
+				5EEF49FB291D0151000528C6 /* CDEventPropertyDetailsSheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -313,7 +264,6 @@
 			);
 			name = Pendulum;
 			packageProductDependencies = (
-				5E40552029151C8200BD52BF /* GRDB */,
 			);
 			productName = Pendulum;
 			productReference = 5E4055052914205D00BD52BF /* Pendulum.app */;
@@ -344,7 +294,6 @@
 			);
 			mainGroup = 5E4054FC2914205D00BD52BF;
 			packageReferences = (
-				5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */,
 			);
 			productRefGroup = 5E4055062914205D00BD52BF /* Products */;
 			projectDirPath = "";
@@ -373,46 +322,33 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
+				5EEF49FC291D0151000528C6 /* CDEventPropertyDetailsSheet.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
-				5EEF4A00291D8487000528C6 /* PenPal+Notifications.swift in Sources */,
-				5E40554D29181E7400BD52BF /* PenPalContactSheet.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
-				5E40552C2915237600BD52BF /* AppDatabase+Queries.swift in Sources */,
-				5E40552829151FEC00BD52BF /* PenPalList.swift in Sources */,
 				5E625214292B999500A3EB86 /* CDStationery+Extensions.swift in Sources */,
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
 				5E6252062927D94600A3EB86 /* CDPenPalList.swift in Sources */,
-				5E8BA57829185BB50065FCC4 /* AddEventSheet.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,
-				5E076A2B29223FD500028FC1 /* Stationery.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
-				5E40552329151CA600BD52BF /* AppDatabase.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
-				5E4055472917065800BD52BF /* PenPalViewController.swift in Sources */,
 				5E625210292B8CAA00A3EB86 /* CDAddEventSheet.swift in Sources */,
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
-				5E40553B29155F9F00BD52BF /* PenPalListController.swift in Sources */,
-				5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */,
+				5E52C65F2919B8A600BBD58D /* CDPenPalHeader.swift in Sources */,
 				5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */,
-				5E52C661291A503700BBD58D /* EventCell.swift in Sources */,
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E62520A292B76FA00A3EB86 /* CDPenPalView.swift in Sources */,
 				5E6252082928C20600A3EB86 /* CDPenPal+Extensions.swift in Sources */,
-				5E4055452917051D00BD52BF /* PenPalView.swift in Sources */,
-				5E40553829155C5F00BD52BF /* Event.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E625212292B958D00A3EB86 /* CDPenPalContactSheet.swift in Sources */,
-				5E40552E291523A300BD52BF /* PenPal.swift in Sources */,
 				5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */,
 				5E625217292BCFB800A3EB86 /* CDPenPal+Notifications.swift in Sources */,
 				5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */,
@@ -648,25 +584,6 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
-
-/* Begin XCRemoteSwiftPackageReference section */
-		5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/groue/GRDB.swift.git";
-			requirement = {
-				kind = exactVersion;
-				version = 6.2.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
-/* Begin XCSwiftPackageProductDependency section */
-		5E40552029151C8200BD52BF /* GRDB */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5E40551F29151C8200BD52BF /* XCRemoteSwiftPackageReference "GRDB.swift" */;
-			productName = GRDB;
-		};
-/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */ = {
