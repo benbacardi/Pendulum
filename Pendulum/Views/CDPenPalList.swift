@@ -27,6 +27,7 @@ struct CDPenPalList: View {
     @State private var presentingStationerySheet: Bool = false
     @State private var currentPenPal: CDPenPal? = nil
     @State private var showDeleteAlert = false
+    @State private var refreshID = UUID()
     
     func dateText(for penpal: CDPenPal) -> Text {
         if let date = penpal.lastEventDate {
@@ -165,6 +166,12 @@ struct CDPenPalList: View {
                 }
             }
             .listStyle(.plain)
+            .id(refreshID)
+            .refreshable {
+                DispatchQueue.main.async {
+                    self.refreshID = UUID()
+                }
+            }
         }
     }
     
