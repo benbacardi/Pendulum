@@ -25,6 +25,8 @@ struct CDPenPalList: View {
     @State private var presentingSettingsSheet: Bool = false
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
+    @State private var currentPenPal: CDPenPal? = nil
+    @State private var showDeleteAlert = false
     
     func dateText(for penpal: CDPenPal) -> Text {
         if let date = penpal.lastEventDate {
@@ -59,11 +61,11 @@ struct CDPenPalList: View {
     @ViewBuilder
     func penPalNavigationLink(for penpal: CDPenPal) -> some View {
         ZStack {
-//            NavigationLink(destination: PenPalView(penpal: penpal)) {
-//                EmptyView()
-//            }
-//            .opacity(0)
-//            .buttonStyle(.plain)
+            NavigationLink(destination: CDPenPalView(penpal: penpal)) {
+                EmptyView()
+            }
+            .opacity(0)
+            .buttonStyle(.plain)
             GroupBox {
                 HStack {
                     if let image = penpal.displayImage {
@@ -97,41 +99,30 @@ struct CDPenPalList: View {
                 .foregroundColor(.primary)
             }
         }
-//        .swipeActions {
-//            Button(action: {
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-//                    Task {
-//                        if penpal.lastEventType != .archived {
-//                            await penpal.archive()
-//                        } else {
-//                            await penpal.updateLastEventType()
-//                        }
-//                    }
-//                }
-//            }) {
-//                if penpal.lastEventType != .archived {
-//                    Label("Archive", systemImage: "archivebox")
-//                } else {
-//                    Label("Unarchive", systemImage: "archivebox")
-//                }
-//            }
-//        }
-//        .swipeActions(edge: .leading, allowsFullSwipe: false) {
-//            Button(action: {
-//                self.currentPenPal = penpal
-//                self.showDeleteAlert = true
-//            }) {
-//                Label("Delete", systemImage: "trash")
-//            }
-//            .tint(.red)
-//        }
-//        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
-//            Button("Delete \(penpal.name)", role: .destructive) {
-//                Task {
-//                    await penpal.delete()
-//                }
-//            }
-//        }
+        .swipeActions {
+            Button(action: {
+                withAnimation {
+                    penpal.archive(!penpal.archived)
+                }
+            }) {
+                Label(penpal.archived ? "Unarchive" : "Archive", systemImage: "archivebox")
+            }
+        }
+        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+            Button(action: {
+                self.currentPenPal = penpal
+                self.showDeleteAlert = true
+            }) {
+                Label("Delete", systemImage: "trash")
+            }
+            .tint(.red)
+        }
+        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+            Button("Delete \(penpal.wrappedName)", role: .destructive) {
+                penpal.delete()
+                self.currentPenPal = nil
+            }
+        }
     }
     
     @ViewBuilder
@@ -212,10 +203,10 @@ struct CDPenPalList: View {
             self.iconWidth = value
         }
         .sheet(isPresented: $presentingStationerySheet) {
-            EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
+            CDEventPropertyDetailsSheet(penpal: nil, allowAdding: true)
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
-//            AddPenPalSheet(existingPenPals: penPalListController.penpals)
+            AddPenPalSheet()
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
@@ -226,8 +217,13 @@ struct CDPenPalList: View {
     }
     
     func group(_ result: FetchedResults<CDPenPal>) -> [PenPalGroup] {
-        return Dictionary(grouping: result) { $0.lastEventTypeValue }
-            .map { PenPalGroup(eventType: EventType.from($0.key), penpals: $0.value) }
+        return Dictionary(grouping: result) {
+            $0.groupingEventType
+        }
+        .map { PenPalGroup(eventType: $0.key, penpals: $0.value) }
+        .sorted {
+            $0.eventType.rawValue < $1.eventType.rawValue
+        }
     }
     
 }

@@ -11,10 +11,11 @@ import Contacts
 struct AddPenPalSheet: View {
     
     // MARK: Environment
+    @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: State
-    let existingPenPals: [PenPal]
+//    let existingPenPals: [PenPal]
     @State private var existingPenPalIdentifiers: Set<String> = []
     @State private var contactDetails: [CNContact] = []
     @State private var contactsFetched: Bool = false
@@ -27,12 +28,18 @@ struct AddPenPalSheet: View {
                 if !contactDetails.isEmpty {
                     List {
                         ForEach(filteredContacts, id: \.identifier) { contact in
-                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+//                            if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
                                     Task {
-                                        let newPenPal = PenPal(id: contact.identifier, name: contact.fullName ?? "Unknown Contact", initials: contact.initials, image: contact.thumbnailImageData, _lastEventType: EventType.noEvent.rawValue, lastEventDate: nil, notes: nil)
+                                        let newPenPal = CDPenPal(context: moc)
+                                        newPenPal.id = UUID()
+                                        newPenPal.name = contact.fullName
+                                        newPenPal.initials = contact.initials
+                                        newPenPal.image = contact.thumbnailImageData
+                                        newPenPal.lastEventType = EventType.noEvent
+                                        newPenPal.contactID = contact.identifier
                                         do {
-                                            try await AppDatabase.shared.save(newPenPal)
+                                            try moc.save()
                                             presentationMode.wrappedValue.dismiss()
                                         } catch {
                                             dataLogger.error("Could not save PenPal: \(error.localizedDescription)")
@@ -62,7 +69,7 @@ struct AddPenPalSheet: View {
                                     }
                                     .foregroundColor(.primary)
                                 }
-                            }
+//                            }
                         }
                     }
                     .searchable(text: $searchText)
@@ -76,13 +83,13 @@ struct AddPenPalSheet: View {
                                     .aspectRatio(contentMode: .fit)
                                     .frame(maxWidth: 200)
                                     .padding(.bottom)
-                                if existingPenPals.isEmpty {
-                                    Text("You don't appear to have any contacts!")
-                                        .fullWidth(alignment: .center)
-                                } else {
+//                                if existingPenPals.isEmpty {
+//                                    Text("You don't appear to have any contacts!")
+//                                        .fullWidth(alignment: .center)
+//                                } else {
                                     Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
                                         .fullWidth(alignment: .center)
-                                }
+//                                }
                             }
                         } else {
                             ProgressView()
@@ -93,7 +100,7 @@ struct AddPenPalSheet: View {
                 }
             }
             .onAppear {
-                self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
+//                self.existingPenPalIdentifiers = Set(existingPenPals.map { $0.id })
             }
             .task {
                 let store = CNContactStore()
@@ -109,11 +116,11 @@ struct AddPenPalSheet: View {
                 DispatchQueue.global(qos: .userInitiated).async {
                     do {
                         try store.enumerateContacts(with: request) { (contact, stop) in
-                            if !existingPenPalIdentifiers.contains(contact.identifier) {
+//                            if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 DispatchQueue.main.async {
                                     self.contactDetails.append(contact)
                                 }
-                            }
+//                            }
                         }
                         DispatchQueue.main.async {
                             self.contactsFetched = true
@@ -158,10 +165,4 @@ struct AddPenPalSheet: View {
         }
     }
     
-}
-
-struct AddPenPalSheet_Previews: PreviewProvider {
-    static var previews: some View {
-        AddPenPalSheet(existingPenPals: [])
-    }
 }

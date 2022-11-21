@@ -13,20 +13,23 @@ struct PersistenceController {
     static let shared = PersistenceController()
 
     // Storage for Core Data
-    let container: NSPersistentCloudKitContainer
+    let container: NSPersistentContainer
 
     // A test configuration for SwiftUI previews
     static var preview: PersistenceController = {
         let controller = PersistenceController(inMemory: true)
 
-        // Create 10 example programming languages.
-        for i in 0..<10 {
-            let p1 = CDPenPal(context: controller.container.viewContext)
-            p1.id = UUID()
-            p1.initials = "B\(i)"
-            p1.name = "Ben Cardy \(i)"
-            p1.lastEventTypeValue = Int16(EventType.allCases.randomElement()?.rawValue ?? 0)
-        }
+        let p1 = CDPenPal(context: controller.container.viewContext)
+        p1.id = UUID()
+        p1.initials = "BC"
+        p1.name = "Ben Cardy"
+        p1.lastEventType = EventType.allCases.randomElement() ?? .noEvent
+        
+        let e1 = CDEvent(context: controller.container.viewContext)
+        e1.id = UUID()
+        e1.penpal = p1
+        e1.date = Date()
+        e1.type = EventType.written
 
         return controller
     }()
@@ -36,7 +39,7 @@ struct PersistenceController {
     init(inMemory: Bool = false) {
         // If you didn't name your model Main you'll need
         // to change this name below.
-        container = NSPersistentCloudKitContainer(name: "Pendulum")
+        container = NSPersistentContainer(name: "Pendulum")
 
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")

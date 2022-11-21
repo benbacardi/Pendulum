@@ -233,7 +233,7 @@ struct PenPalList: View {
             EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
-            AddPenPalSheet(existingPenPals: penPalListController.penpals)
+//            AddPenPalSheet(existingPenPals: penPalListController.penpals)
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
