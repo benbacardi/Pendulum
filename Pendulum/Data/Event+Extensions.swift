@@ -1,5 +1,5 @@
 //
-//  CDEvent+Extensions.swift
+//  Event+Extensions.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -7,9 +7,9 @@
 
 import Foundation
 
-extension CDEvent {
+extension Event {
     
-    static let entityName: String = "CDEvent"
+    static let entityName: String = "Event"
     
     var wrappedDate: Date {
         self.date ?? .distantPast
@@ -30,7 +30,7 @@ extension CDEvent {
     
 }
 
-extension CDEvent {
+extension Event {
     
     func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?) {
         self.date = date

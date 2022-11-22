@@ -1,5 +1,5 @@
 //
-//  CDEventCell.swift
+//  EventCell.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -7,11 +7,11 @@
 
 import SwiftUI
 
-struct CDEventCell: View {
+struct EventCell: View {
     
     // MARK: Parameters
-    let event: CDEvent
-    let penpal: CDPenPal
+    let event: Event
+    let penpal: PenPal
     
     // MARK: External State
 //    @Binding var lastEventTypeForPenPal: EventType
@@ -127,14 +127,14 @@ struct CDEventCell: View {
             }
         }
         .sheet(isPresented: $showEditEventSheet) {
-            CDAddEventSheet(penpal: penpal, event: event, eventType: event.type) {
+            AddEventSheet(penpal: penpal, event: event, eventType: event.type) {
                 self.showEditEventSheet = false
             }
         }
     }
 }
 
-private extension CDEventCell {
+private extension EventCell {
     struct IconWidthPreferenceKey: PreferenceKey {
         static let defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {

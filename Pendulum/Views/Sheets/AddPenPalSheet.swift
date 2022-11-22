@@ -15,7 +15,7 @@ struct AddPenPalSheet: View {
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: Parameters
-    let existingPenPals: FetchedResults<CDPenPal>
+    let existingPenPals: FetchedResults<PenPal>
     
     // MARK: State
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
@@ -34,7 +34,7 @@ struct AddPenPalSheet: View {
                             if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
                                     Task {
-                                        let newPenPal = CDPenPal(context: moc)
+                                        let newPenPal = PenPal(context: moc)
                                         newPenPal.id = UUID()
                                         newPenPal.name = contact.fullName
                                         newPenPal.initials = contact.initials

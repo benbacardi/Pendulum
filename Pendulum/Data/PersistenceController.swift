@@ -19,13 +19,13 @@ struct PersistenceController {
     static var preview: PersistenceController = {
         let controller = PersistenceController(inMemory: true)
 
-        let p1 = CDPenPal(context: controller.container.viewContext)
+        let p1 = PenPal(context: controller.container.viewContext)
         p1.id = UUID()
         p1.initials = "BC"
         p1.name = "Ben Cardy"
         p1.lastEventType = EventType.allCases.randomElement() ?? .noEvent
         
-        let e1 = CDEvent(context: controller.container.viewContext)
+        let e1 = Event(context: controller.container.viewContext)
         e1.id = UUID()
         e1.penpal = p1
         e1.date = Date()

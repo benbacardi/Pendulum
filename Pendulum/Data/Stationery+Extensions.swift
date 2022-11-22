@@ -1,5 +1,5 @@
 //
-//  CDStationery+Extensions.swift
+//  Stationery+Extensions.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -8,15 +8,15 @@
 import Foundation
 import CoreData
 
-extension CDStationery {
+extension Stationery {
     
-    static let entityName: String = "CDStationery"
+    static let entityName: String = "Stationery"
     
     var wrappedType: String { self.type ?? "type" }
     var wrappedValue: String { self.value ?? "value" }
     
     static func fetchUnused(for type: String) -> [String] {
-        let fetchRequest = NSFetchRequest<CDStationery>(entityName: CDStationery.entityName)
+        let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "value", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "type = %@", type)
         do {

@@ -1,5 +1,5 @@
 //
-//  CDPenPalList.swift
+//  PenPalList.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 18/11/2022.
@@ -10,26 +10,26 @@ import Contacts
 
 struct PenPalGroup: Identifiable {
     let eventType: EventType
-    let penpals: [CDPenPal]
+    let penpals: [PenPal]
     var id: Int { eventType.rawValue }
 }
 
-struct CDPenPalList: View {
+struct PenPalList: View {
     
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
-    @FetchRequest(sortDescriptors: []) var penpals: FetchedResults<CDPenPal>
+    @FetchRequest(sortDescriptors: []) var penpals: FetchedResults<PenPal>
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
-    @State private var currentPenPal: CDPenPal? = nil
+    @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
     @State private var refreshID = UUID()
     
-    func dateText(for penpal: CDPenPal) -> Text {
+    func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
             return Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
         } else {
@@ -60,9 +60,9 @@ struct CDPenPalList: View {
     }
     
     @ViewBuilder
-    func penPalNavigationLink(for penpal: CDPenPal) -> some View {
+    func penPalNavigationLink(for penpal: PenPal) -> some View {
         ZStack {
-            NavigationLink(destination: CDPenPalView(penpal: penpal)) {
+            NavigationLink(destination: PenPalView(penpal: penpal)) {
                 EmptyView()
             }
             .opacity(0)
@@ -176,7 +176,7 @@ struct CDPenPalList: View {
                 }
             }
             .task {
-                await CDPenPal.syncWithContacts()
+                await PenPal.syncWithContacts()
             }
         }
     }
@@ -215,7 +215,7 @@ struct CDPenPalList: View {
             self.iconWidth = value
         }
         .sheet(isPresented: $presentingStationerySheet) {
-            CDEventPropertyDetailsSheet(penpal: nil, allowAdding: true)
+            EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
             AddPenPalSheet(existingPenPals: penpals)
@@ -228,7 +228,7 @@ struct CDPenPalList: View {
         }
     }
     
-    func group(_ result: FetchedResults<CDPenPal>) -> [PenPalGroup] {
+    func group(_ result: FetchedResults<PenPal>) -> [PenPalGroup] {
         return Dictionary(grouping: result) {
             $0.groupingEventType
         }
@@ -247,9 +247,9 @@ struct PenPalListIconWidthPreferenceKey: PreferenceKey {
     }
 }
 
-struct CDPenPalList_Previews: PreviewProvider {
+struct PenPalList_Previews: PreviewProvider {
     static var previews: some View {
-        CDPenPalList()
+        PenPalList()
             .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

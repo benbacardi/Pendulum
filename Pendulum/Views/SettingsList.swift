@@ -130,11 +130,11 @@ struct SettingsList: View {
                 if newValue {
                     requestNotificationAccess()
                     Task {
-                        CDPenPal.scheduleAllShouldWriteBackNotifications()
+                        PenPal.scheduleAllShouldWriteBackNotifications()
                     }
                 } else {
                     Task {
-                        CDPenPal.cancelAllShouldWriteBackNotifications()
+                        PenPal.cancelAllShouldWriteBackNotifications()
                     }
                 }
             }
@@ -142,7 +142,7 @@ struct SettingsList: View {
                 if newValue {
                     requestNotificationAccess()
                 } else {
-                    CDPenPal.cancelAllShouldPostLettersNotifications()
+                    PenPal.cancelAllShouldPostLettersNotifications()
                 }
             }
             .onChange(of: badgeRemindersToWriteLetters) { newValue in

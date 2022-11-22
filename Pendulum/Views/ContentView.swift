@@ -13,11 +13,10 @@ struct ContentView: View {
     
     var body: some View {
         if DeviceType.isPad() {
-            CDPenPalList()
+            PenPalList()
         } else {
             TabView(selection: $selectedTab) {
-//                PenPalList()
-                CDPenPalList()
+                PenPalList()
                     .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                     .tag(Tab.penPalList.rawValue)
                 SettingsList()
