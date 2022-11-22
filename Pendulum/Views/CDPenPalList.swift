@@ -121,8 +121,10 @@ struct CDPenPalList: View {
         }
         .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
             Button("Delete \(penpal.wrappedName)", role: .destructive) {
-                penpal.delete()
-                self.currentPenPal = nil
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                    penpal.delete()
+                    self.currentPenPal = nil
+                }
             }
         }
     }
