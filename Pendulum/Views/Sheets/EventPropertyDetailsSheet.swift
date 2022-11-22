@@ -59,15 +59,11 @@ struct EventPropertyDetailsSheet: View {
                             stationery.id = UUID()
                             stationery.value = newEntry.wrappedValue
                             stationery.type = recordType
-                            do {
-                                try withAnimation {
-                                    try PersistenceController.shared.container.viewContext.save()
-                                    options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0))
-                                    focused.wrappedValue = false
-                                    newEntry.wrappedValue = ""
-                                }
-                            } catch {
-                                dataLogger.error("Could not save Stationery: \(error.localizedDescription)")
+                            withAnimation {
+                                PersistenceController.shared.save()
+                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0))
+                                focused.wrappedValue = false
+                                newEntry.wrappedValue = ""
                             }
                         }) {
                             Text("Save")
@@ -122,9 +118,9 @@ struct EventPropertyDetailsSheet: View {
                 }
             }
             .task {
-                pens = PenPal.fetchDistinctStationery(ofType: "pen", for: penpal)
-                inks = PenPal.fetchDistinctStationery(ofType: "ink", for: penpal)
-                papers = PenPal.fetchDistinctStationery(ofType: "paper", for: penpal)
+                pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal)
+                inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal)
+                papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal)
             }
         }
     }
