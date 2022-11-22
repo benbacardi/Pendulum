@@ -170,9 +170,9 @@ struct AddEventSheet: View {
             }
         }
         .task {
-            self.penSuggestions = PenPal.fetchDistinctStationery(ofType: "pen").map { $0.name }
-            self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: "ink").map { $0.name }
-            self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: "paper").map { $0.name }
+            self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen).map { $0.name }
+            self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink).map { $0.name }
+            self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper).map { $0.name }
         }
         .task {
             if eventType == .sent && event == nil {

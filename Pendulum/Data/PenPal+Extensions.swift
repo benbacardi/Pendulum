@@ -138,9 +138,9 @@ extension PenPal {
         return nil
     }
     
-    static func fetchDistinctStationery(ofType stationery: String, for penpal: PenPal? = nil) -> [ParameterCount] {
+    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil) -> [ParameterCount] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery, ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery.rawValue, ascending: true)]
         if let penpal = penpal {
             fetchRequest.predicate = penpal.ownEventsPredicate
         }
@@ -148,14 +148,12 @@ extension PenPal {
             let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
             var intermediate = Dictionary(grouping: results) {
                 switch stationery {
-                case "pen":
+                case .pen:
                     return $0.pen ?? ""
-                case "ink":
+                case .ink:
                     return $0.ink ?? ""
-                case "paper":
+                case .paper:
                     return $0.paper ?? ""
-                default:
-                    return ""
                 }
             }.filter { $0.key != "" }.map { ParameterCount(name: $0.key, count: $0.value.count) }
             if penpal == nil {
@@ -174,7 +172,7 @@ extension PenPal {
         return []
     }
     
-    func fetchDistinctStationery(ofType stationery: String) -> [ParameterCount] {
+    func fetchDistinctStationery(ofType stationery: StationeryType) -> [ParameterCount] {
         PenPal.fetchDistinctStationery(ofType: stationery, for: self)
     }
     
