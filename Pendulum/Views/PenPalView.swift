@@ -32,7 +32,8 @@ struct PenPalView: View {
             sortDescriptors: [
                 NSSortDescriptor(key: "date", ascending: false)
             ],
-            predicate: NSPredicate(format: "penpal = %@", penpal)
+            predicate: NSPredicate(format: "penpal = %@", penpal),
+            animation: .default
         )
     }
     
