@@ -45,8 +45,7 @@ struct PenPalList: View {
                     .fill(type.color)
                     .frame(width: iconWidth * 1.5, height: iconWidth * 1.5)
                 Image(systemName: type.phraseIcon)
-                    .font(.caption)
-                    .bold()
+                    .font(Font.caption.weight(.bold))
                     .foregroundColor(.white)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: PenPalListIconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
