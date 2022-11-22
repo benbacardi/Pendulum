@@ -207,49 +207,52 @@ extension PenPal {
     }
     
     static func syncWithContacts() async {
-
-        let store = CNContactStore()
-        let keys = [
-            CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-            CNContactOrganizationNameKey,
-            CNContactImageDataAvailableKey,
-            CNContactThumbnailImageDataKey
-        ] as! [CNKeyDescriptor]
         
-        let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
-        let penpals = (try? PersistenceController.shared.container.viewContext.fetch(fetchRequest)) ?? []
-        let mapping = UserDefaults.shared.penpalContactMap
-        
-        for penpal in penpals {
-            guard let uuid = penpal.id, let contactID = mapping[uuid.uuidString] else { continue }
-            do {
-                let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                penpal.update(from: contact)
-            } catch {
-                appLogger.error("Could not fetch contact with ID \(contactID) \(penpal.wrappedName): \(error.localizedDescription)")
+        await PersistenceController.shared.container.performBackgroundTask { context in
+            
+            let store = CNContactStore()
+            let keys = [
+                CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                CNContactOrganizationNameKey,
+                CNContactImageDataAvailableKey,
+                CNContactThumbnailImageDataKey
+            ] as! [CNKeyDescriptor]
+            
+            let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
+            let penpals = (try? context.fetch(fetchRequest)) ?? []
+            let mapping = UserDefaults.shared.penpalContactMap
+            
+            for penpal in penpals {
+                guard let uuid = penpal.id, let contactID = mapping[uuid.uuidString] else { continue }
+                do {
+                    let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                    penpal.update(from: contact)
+                } catch {
+                    appLogger.error("Could not fetch contact with ID \(contactID) \(penpal.wrappedName): \(error.localizedDescription)")
+                }
             }
-        }
-        
-        let penpalsWithNoContact: [String: [PenPal]] = Dictionary(grouping: penpals.filter {
-            guard let uuid = $0.id else { return false }
-            return mapping[uuid.uuidString] == nil
-        }, by: { $0.wrappedName })
-        
-        appLogger.debug("Trying to match \(penpalsWithNoContact.count) penpals")
-        if !penpalsWithNoContact.isEmpty {
-            let request = CNContactFetchRequest(keysToFetch: keys)
-            request.sortOrder = CNContactsUserDefaults.shared().sortOrder
-            do {
-                try store.enumerateContacts(with: request) { (contact, stop) in
-                    if let matchingPenPals = penpalsWithNoContact[contact.fullName ?? "UNKNOWN CONTACT"] {
-                        for penpal in matchingPenPals {
-                            appLogger.debug("Setting \(penpal.wrappedName) to contact \(contact.identifier)")
-                            UserDefaults.shared.setContactID(for: penpal, to: contact.identifier)
+            
+            let penpalsWithNoContact: [String: [PenPal]] = Dictionary(grouping: penpals.filter {
+                guard let uuid = $0.id else { return false }
+                return mapping[uuid.uuidString] == nil
+            }, by: { $0.wrappedName })
+            
+            appLogger.debug("Trying to match \(penpalsWithNoContact.count) penpals")
+            if !penpalsWithNoContact.isEmpty {
+                let request = CNContactFetchRequest(keysToFetch: keys)
+                request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                do {
+                    try store.enumerateContacts(with: request) { (contact, stop) in
+                        if let matchingPenPals = penpalsWithNoContact[contact.fullName ?? "UNKNOWN CONTACT"] {
+                            for penpal in matchingPenPals {
+                                appLogger.debug("Setting \(penpal.wrappedName) to contact \(contact.identifier)")
+                                UserDefaults.shared.setContactID(for: penpal, to: contact.identifier)
+                            }
                         }
                     }
+                } catch {
+                    dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                 }
-            } catch {
-                dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
             }
         }
     }
