@@ -81,7 +81,7 @@ extension UserDefaults {
         }
     }
     
-    func setContactID(for penpal: CDPenPal, to identifier: String) {
+    func setContactID(for penpal: PenPal, to identifier: String) {
         if let uuid = penpal.id {
             var currentMap = self.penpalContactMap
             currentMap[uuid.uuidString] = identifier
@@ -89,7 +89,7 @@ extension UserDefaults {
         }
     }
     
-    func getContactID(for penpal: CDPenPal) -> String? {
+    func getContactID(for penpal: PenPal) -> String? {
         if let uuid = penpal.id {
             return self.penpalContactMap[uuid.uuidString]
         }

@@ -41,7 +41,7 @@ struct PendulumApp: App {
                     if scenePhase == .background {
                         persistenceController.save()
                         Task {
-                            await CDPenPal.scheduleShouldPostLettersNotification()
+                            await PenPal.scheduleShouldPostLettersNotification()
                             UIApplication.shared.updateBadgeNumber()
                         }
                     }

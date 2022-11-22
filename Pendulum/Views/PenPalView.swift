@@ -1,5 +1,5 @@
 //
-//  CDPenPalView.swift
+//  PenPalView.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -8,17 +8,17 @@
 import SwiftUI
 import Contacts
 
-struct CDPenPalView: View {
+struct PenPalView: View {
     
     // MARK: Environment
     @Environment(\.managedObjectContext) var moc
     
     // MARK: Parameters
-    let penpal: CDPenPal
+    let penpal: PenPal
     let didSave =  NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
     
     // MARK: State
-    @FetchRequest var events: FetchedResults<CDEvent>
+    @FetchRequest var events: FetchedResults<Event>
     @State private var buttonHeight: CGFloat?
     @State private var presentAddEventSheetForType: EventType? = nil
     @State private var refreshID = UUID()
@@ -26,9 +26,9 @@ struct CDPenPalView: View {
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentPropertyDetailsSheet: Bool = false
     
-    init(penpal: CDPenPal) {
+    init(penpal: PenPal) {
         self.penpal = penpal
-        self._events = FetchRequest<CDEvent>(
+        self._events = FetchRequest<Event>(
             sortDescriptors: [
                 NSSortDescriptor(key: "date", ascending: false)
             ],
@@ -40,7 +40,7 @@ struct CDPenPalView: View {
     func headerAndButtons() -> some View {
         Group {
             
-            CDPenPalHeader(penpal: penpal)
+            PenPalHeader(penpal: penpal)
                 .padding(.horizontal)
             
             if penpal.lastEventType != .noEvent && penpal.lastEventType != .archived {
@@ -156,7 +156,7 @@ struct CDPenPalView: View {
                                 dateDivider(for: event.wrappedDate, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            CDEventCell(event: event, penpal: penpal)
+                            EventCell(event: event, penpal: penpal)
                                 .padding(.bottom)
                         }
                     }
@@ -166,13 +166,13 @@ struct CDPenPalView: View {
             }
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
-            CDPenPalContactSheet(penpal: penpal)
+            PenPalContactSheet(penpal: penpal)
         }
         .sheet(isPresented: $presentPropertyDetailsSheet) {
-            CDEventPropertyDetailsSheet(penpal: penpal)
+            EventPropertyDetailsSheet(penpal: penpal)
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            CDAddEventSheet(penpal: penpal, event: nil, eventType: eventType) {
+            AddEventSheet(penpal: penpal, event: nil, eventType: eventType) {
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -213,8 +213,8 @@ struct CDPenPalView: View {
         }
     }
     
-    private func eventsWithDifferences(for events: FetchedResults<CDEvent>) -> [(CDEvent, Int)] {
-        var intermediate: [(CDEvent, Int)] = []
+    private func eventsWithDifferences(for events: FetchedResults<Event>) -> [(Event, Int)] {
+        var intermediate: [(Event, Int)] = []
         let calendar = Calendar.current
         for (index, item) in events.enumerated() {
             if index == 0 {
@@ -230,7 +230,7 @@ struct CDPenPalView: View {
     
 }
 
-private extension CDPenPalView {
+private extension PenPalView {
     struct ButtonHeightPreferenceKey: PreferenceKey {
         static let defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {

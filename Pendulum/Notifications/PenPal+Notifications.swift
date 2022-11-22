@@ -1,5 +1,5 @@
 //
-//  CDPenPal+Notifications.swift
+//  PenPal+Notifications.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -8,7 +8,7 @@
 import Foundation
 import UserNotifications
 
-extension CDPenPal {
+extension PenPal {
     
     /// Delay before sending a notification to write back, in seconds
     /// 7 days = 7 * 24 * 60 * 60
@@ -17,19 +17,19 @@ extension CDPenPal {
     static let shouldPostLettersNotificationIdentifier: String = "shouldPostLetters"
     
     static func cancelAllShouldPostLettersNotifications() {
-        appLogger.debug("Removing any pending notifications for \(CDPenPal.shouldPostLettersNotificationIdentifier)")
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [CDPenPal.shouldPostLettersNotificationIdentifier])
+        appLogger.debug("Removing any pending notifications for \(PenPal.shouldPostLettersNotificationIdentifier)")
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [PenPal.shouldPostLettersNotificationIdentifier])
     }
     
     static func scheduleShouldPostLettersNotification() async {
-        CDPenPal.cancelAllShouldPostLettersNotifications()
+        PenPal.cancelAllShouldPostLettersNotifications()
         if UserDefaults.shared.sendRemindersToPostLetters == false {
             return
         }
         
         do {
             
-            let count = CDPenPal.fetch(withStatus: .written).count
+            let count = PenPal.fetch(withStatus: .written).count
             if count == 0 {
                 return
             }
@@ -44,9 +44,9 @@ extension CDPenPal {
             content.body = "Get on down to the post box…"
             content.sound = UNNotificationSound.default
             
-            appLogger.debug("Scheduling notification: \(CDPenPal.shouldPostLettersNotificationIdentifier) for \(dateComponents)")
+            appLogger.debug("Scheduling notification: \(PenPal.shouldPostLettersNotificationIdentifier) for \(dateComponents)")
             
-            let request = UNNotificationRequest(identifier: CDPenPal.shouldPostLettersNotificationIdentifier, content: content, trigger: trigger)
+            let request = UNNotificationRequest(identifier: PenPal.shouldPostLettersNotificationIdentifier, content: content, trigger: trigger)
             try await UNUserNotificationCenter.current().add(request)
             
         } catch {
@@ -56,13 +56,13 @@ extension CDPenPal {
     }
     
     static func cancelAllShouldWriteBackNotifications() {
-        let notificationIdentifiers = CDPenPal.fetch().map { $0.shouldWriteBackNotificationIdentifier }
+        let notificationIdentifiers = PenPal.fetch().map { $0.shouldWriteBackNotificationIdentifier }
         appLogger.debug("Removing pending notifications for \(notificationIdentifiers)")
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIdentifiers)
     }
     
     static func scheduleAllShouldWriteBackNotifications() {
-        for penpal in CDPenPal.fetch(withStatus: .received) {
+        for penpal in PenPal.fetch(withStatus: .received) {
             penpal.scheduleShouldWriteBackNotification()
         }
     }
@@ -75,7 +75,7 @@ extension CDPenPal {
         }
         
         /// Don't schedule the notification if it's going to be in the past
-        let sendDate = (countingFrom ?? (self.lastEventDate ?? Date())).addingTimeInterval(CDPenPal.sendWriteBackNotificationDelay)
+        let sendDate = (countingFrom ?? (self.lastEventDate ?? Date())).addingTimeInterval(PenPal.sendWriteBackNotificationDelay)
         let now = Date()
         let scheduleInterval = sendDate.timeIntervalSince(now)
         

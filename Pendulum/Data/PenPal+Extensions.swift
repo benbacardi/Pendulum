@@ -1,5 +1,5 @@
 //
-//  CDPenPal+Extensions.swift
+//  PenPal+Extensions.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 19/11/2022.
@@ -10,15 +10,15 @@ import SwiftUI
 import CoreData
 import Contacts
 
-extension CDPenPal {
+extension PenPal {
     
-    static let entityName: String = "CDPenPal"
+    static let entityName: String = "PenPal"
     
     var wrappedName: String {
         self.name ?? "Unknown Pen Pal"
     }
     var wrappedInitials: String {
-        self.initials ?? "UP"
+        self.initials ?? "?"
     }
  
     var lastEventType: EventType {
@@ -39,7 +39,7 @@ extension CDPenPal {
     
 }
 
-extension CDPenPal {
+extension PenPal {
     
     var ownEventsPredicate: NSPredicate {
         NSPredicate(format: "penpal = %@", self)
@@ -47,7 +47,7 @@ extension CDPenPal {
     
     func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
-        let newEvent = CDEvent(context: PersistenceController.shared.container.viewContext)
+        let newEvent = Event(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
         newEvent.date = date
         newEvent.type = eventType
@@ -101,8 +101,8 @@ extension CDPenPal {
         
     }
     
-    func getLastEvent(ofType eventType: EventType? = nil) -> CDEvent? {
-        let fetchRequest = NSFetchRequest<CDEvent>(entityName: CDEvent.entityName)
+    func getLastEvent(ofType eventType: EventType? = nil) -> Event? {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         if let eventType = eventType {
@@ -121,8 +121,8 @@ extension CDPenPal {
         return nil
     }
     
-    func fetchPriorEvent(to date: Date, ofType eventType: EventType) -> CDEvent? {
-        let fetchRequest = NSFetchRequest<CDEvent>(entityName: CDEvent.entityName)
+    func fetchPriorEvent(to date: Date, ofType eventType: EventType) -> Event? {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
@@ -138,8 +138,8 @@ extension CDPenPal {
         return nil
     }
     
-    static func fetchDistinctStationery(ofType stationery: String, for penpal: CDPenPal? = nil) -> [ParameterCount] {
-        let fetchRequest = NSFetchRequest<CDEvent>(entityName: CDEvent.entityName)
+    static func fetchDistinctStationery(ofType stationery: String, for penpal: PenPal? = nil) -> [ParameterCount] {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery, ascending: true)]
         if let penpal = penpal {
             fetchRequest.predicate = penpal.ownEventsPredicate
@@ -159,7 +159,7 @@ extension CDPenPal {
                 }
             }.filter { $0.key != "" }.map { ParameterCount(name: $0.key, count: $0.value.count) }
             if penpal == nil {
-                let unusedStationery = CDStationery.fetchUnused(for: stationery)
+                let unusedStationery = Stationery.fetchUnused(for: stationery)
                 let setOfResults = Set(intermediate.map { $0.name })
                 for item in unusedStationery {
                     if !setOfResults.contains(item) {
@@ -175,11 +175,11 @@ extension CDPenPal {
     }
     
     func fetchDistinctStationery(ofType stationery: String) -> [ParameterCount] {
-        CDPenPal.fetchDistinctStationery(ofType: stationery, for: self)
+        PenPal.fetchDistinctStationery(ofType: stationery, for: self)
     }
     
-    static func fetch(withStatus eventType: EventType? = nil) -> [CDPenPal] {
-        let fetchRequest = NSFetchRequest<CDPenPal>(entityName: CDPenPal.entityName)
+    static func fetch(withStatus eventType: EventType? = nil) -> [PenPal] {
+        let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
         if let eventType = eventType {
             fetchRequest.predicate = NSPredicate(format: "lastEventTypeValue = %d", eventType.rawValue)
         }
@@ -218,7 +218,7 @@ extension CDPenPal {
             CNContactThumbnailImageDataKey
         ] as! [CNKeyDescriptor]
         
-        let fetchRequest = NSFetchRequest<CDPenPal>(entityName: CDPenPal.entityName)
+        let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
         let penpals = (try? PersistenceController.shared.container.viewContext.fetch(fetchRequest)) ?? []
         let mapping = UserDefaults.shared.penpalContactMap
         
@@ -232,7 +232,7 @@ extension CDPenPal {
             }
         }
         
-        let penpalsWithNoContact: [String: [CDPenPal]] = Dictionary(grouping: penpals.filter {
+        let penpalsWithNoContact: [String: [PenPal]] = Dictionary(grouping: penpals.filter {
             guard let uuid = $0.id else { return false }
             return mapping[uuid.uuidString] == nil
         }, by: { $0.wrappedName })

@@ -12,13 +12,13 @@ struct ParameterCount {
     let count: Int
 }
 
-struct CDEventPropertyDetailsSheet: View {
+struct EventPropertyDetailsSheet: View {
     
     // MARK: Environment
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: Properties
-    let penpal: CDPenPal?
+    let penpal: PenPal?
     var allowAdding: Bool = false
     
     // MARK: State
@@ -55,7 +55,7 @@ struct CDEventPropertyDetailsSheet: View {
                         .focused(focused)
                     if focused.wrappedValue {
                         Button(action: {
-                            let stationery = CDStationery(context: PersistenceController.shared.container.viewContext)
+                            let stationery = Stationery(context: PersistenceController.shared.container.viewContext)
                             stationery.id = UUID()
                             stationery.value = newEntry.wrappedValue
                             stationery.type = recordType
@@ -122,9 +122,9 @@ struct CDEventPropertyDetailsSheet: View {
                 }
             }
             .task {
-                pens = CDPenPal.fetchDistinctStationery(ofType: "pen", for: penpal)
-                inks = CDPenPal.fetchDistinctStationery(ofType: "ink", for: penpal)
-                papers = CDPenPal.fetchDistinctStationery(ofType: "paper", for: penpal)
+                pens = PenPal.fetchDistinctStationery(ofType: "pen", for: penpal)
+                inks = PenPal.fetchDistinctStationery(ofType: "ink", for: penpal)
+                papers = PenPal.fetchDistinctStationery(ofType: "paper", for: penpal)
             }
         }
     }

@@ -17,7 +17,7 @@ extension UIApplication {
     }
     
     func updateBadgeNumber() {
-        let fetchedBadgeNumber = CDPenPal.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters)
+        let fetchedBadgeNumber = PenPal.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters)
         DispatchQueue.main.async {
             self.applicationIconBadgeNumber = fetchedBadgeNumber
         }

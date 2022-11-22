@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="21512" systemVersion="21G217" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
-    <entity name="CDEvent" representedClassName="CDEvent" syncable="YES" codeGenerationType="class">
+    <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ink" optional="YES" attributeType="String"/>
@@ -8,9 +8,9 @@
         <attribute name="paper" optional="YES" attributeType="String"/>
         <attribute name="pen" optional="YES" attributeType="String"/>
         <attribute name="typeValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
-        <relationship name="penpal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="CDPenPal" inverseName="events" inverseEntity="CDPenPal"/>
+        <relationship name="penpal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PenPal" inverseName="events" inverseEntity="PenPal"/>
     </entity>
-    <entity name="CDPenPal" representedClassName="CDPenPal" syncable="YES" codeGenerationType="class">
+    <entity name="PenPal" representedClassName="PenPal" syncable="YES" codeGenerationType="class">
         <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="image" optional="YES" attributeType="Binary"/>
@@ -19,9 +19,9 @@
         <attribute name="lastEventTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String" defaultValueString="Pen Pal"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
-        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CDEvent" inverseName="penpal" inverseEntity="CDEvent"/>
+        <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="penpal" inverseEntity="Event"/>
     </entity>
-    <entity name="CDStationery" representedClassName="CDStationery" syncable="YES" codeGenerationType="class">
+    <entity name="Stationery" representedClassName="Stationery" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="type" optional="YES" attributeType="String"/>
         <attribute name="value" optional="YES" attributeType="String"/>

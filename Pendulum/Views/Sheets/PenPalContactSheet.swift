@@ -1,5 +1,5 @@
 //
-//  CDPenPalContactSheet.swift
+//  PenPalContactSheet.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -19,14 +19,14 @@ struct IdentifiableLocation: Identifiable {
     }
 }
 
-struct CDPenPalContactSheet: View {
+struct PenPalContactSheet: View {
     
     // MARK: Environment
     @Environment(\.openURL) private var openURL
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: Parameters
-    let penpal: CDPenPal
+    let penpal: PenPal
     
     // MARK: State
     @State private var contactID: String? = nil
@@ -39,7 +39,7 @@ struct CDPenPalContactSheet: View {
         NavigationStack {
             VStack {
                 
-                CDPenPalHeader(penpal: penpal)
+                PenPalHeader(penpal: penpal)
                 
                 ScrollView {
                     

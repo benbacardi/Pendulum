@@ -1,5 +1,5 @@
 //
-//  CDAddEventSheet.swift
+//  AddEventSheet.swift
 //  Pendulum
 //
 //  Created by Ben Cardy on 21/11/2022.
@@ -7,14 +7,11 @@
 
 import SwiftUI
 
-struct CDAddEventSheet: View {
-    
-    // MARK: Environment
-//    @Environment(\.presentationMode) var presentationMode
-    
+struct AddEventSheet: View {
+        
     // MARK: Parameters
-    let penpal: CDPenPal
-    let event: CDEvent?
+    let penpal: PenPal
+    let event: Event?
     let eventType: EventType
     let done: () -> ()
     
@@ -31,7 +28,7 @@ struct CDAddEventSheet: View {
     
     @State private var presentSuggestionSheetFor: TextOptions? = nil
     
-    @State private var priorWrittenEvent: CDEvent? = nil
+    @State private var priorWrittenEvent: Event? = nil
     
     var priorWrittenEventHeaderText: String {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
@@ -173,9 +170,9 @@ struct CDAddEventSheet: View {
             }
         }
         .task {
-            self.penSuggestions = CDPenPal.fetchDistinctStationery(ofType: "pen").map { $0.name }
-            self.inkSuggestions = CDPenPal.fetchDistinctStationery(ofType: "ink").map { $0.name }
-            self.paperSuggestions = CDPenPal.fetchDistinctStationery(ofType: "paper").map { $0.name }
+            self.penSuggestions = PenPal.fetchDistinctStationery(ofType: "pen").map { $0.name }
+            self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: "ink").map { $0.name }
+            self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: "paper").map { $0.name }
         }
         .task {
             if eventType == .sent && event == nil {

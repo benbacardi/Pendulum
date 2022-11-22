@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct CDPenPalHeader: View {
+struct PenPalHeader: View {
     
-    let penpal: CDPenPal
+    let penpal: PenPal
     
     var body: some View {
         HStack {
