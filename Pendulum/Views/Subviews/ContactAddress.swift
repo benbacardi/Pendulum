@@ -42,7 +42,6 @@ struct ContactAddress: View {
             GroupBox {
                 Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
                     .font(.caption)
-                //                                    .bold()
                     .fullWidth()
                 Text(address.value.getFullAddress())
                     .fullWidth()

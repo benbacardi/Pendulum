@@ -19,7 +19,7 @@ struct PenPalList: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
-    @FetchRequest(sortDescriptors: []) var penpals: FetchedResults<PenPal>
+    @FetchRequest(sortDescriptors: [], animation: .default) var penpals: FetchedResults<PenPal>
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
