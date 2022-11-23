@@ -72,4 +72,29 @@ struct PersistenceController {
         }
     }
     
+    func export() -> Data? {
+        let encoder = JSONEncoder()
+        let penpals = PenPal.fetchAll()
+        let stationery = Stationery.fetchAll()
+        do {
+            return try encoder.encode(Export(penpals: penpals, stationery: stationery))
+        } catch {
+            dataLogger.error("Could not generate export: \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
+    func exportToFile() -> URL? {
+        guard let data = self.export() else { return nil }
+        let documentsDirectoryURL = try! FileManager().url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+        let file2ShareURL = documentsDirectoryURL.appendingPathComponent("pendulum-export.json")
+        do {
+            try data.write(to: file2ShareURL)
+            return file2ShareURL
+        } catch {
+            appLogger.error("Could not save export file: \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
 }

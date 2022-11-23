@@ -29,11 +29,15 @@ extension Calendar {
     }
     func verboseNumberOfDaysBetween(_ from: Date, and to: Date) -> String {
         let days = numberOfDaysBetween(from, and: to)
-        if days == 0 {
+        switch days {
+        case 0:
             return "today"
+        case 1:
+            return "yesterday"
+        default:
+            let verboseDays = VERBOSE_NUMBER_MAPPINGS[days] ?? "\(days)"
+            let plural = days > 1 ? "s" : ""
+            return "\(verboseDays) day\(plural) ago"
         }
-        let verboseDays = VERBOSE_NUMBER_MAPPINGS[days] ?? "\(days)"
-        let plural = days > 1 ? "s" : ""
-        return "\(verboseDays) day\(plural) ago"
     }
 }

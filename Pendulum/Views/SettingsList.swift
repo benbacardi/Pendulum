@@ -22,6 +22,10 @@ struct SettingsList: View {
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
     
+    @State private var generatingExport: Bool = false
+    @State private var exportFileURL: URL? = nil
+    @State private var showExportFileShareSheet: Bool = false
+    
     var someNotificationAccessRequired: Bool {
         sendRemindersToPostLetters || sendRemindersToWriteLetters || badgeRemindersToPostLetters || badgeRemindersToWriteLetters
     }
@@ -68,6 +72,37 @@ struct SettingsList: View {
                 
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
+                }
+                
+                Section {
+                    Button(action: {
+                        self.generatingExport = true
+                        Task {
+                            if let url = PersistenceController.shared.exportToFile() {
+                                DispatchQueue.main.async {
+                                    self.exportFileURL = url
+                                    self.showExportFileShareSheet = true
+                                }
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                                    self.generatingExport = false
+                                }
+                            }
+                        }
+                    }) {
+                        HStack {
+                            Text("Export Data")
+                            Spacer()
+                            if self.generatingExport {
+                                ProgressView()
+                            }
+                        }
+                    }
+                    .disabled(self.generatingExport)
+                }
+                .sheet(isPresented: $showExportFileShareSheet) {
+                    if let exportFileURL = self.exportFileURL {
+                        ShareSheetView(activityItems: [exportFileURL])
+                    }
                 }
                 
                 Section(

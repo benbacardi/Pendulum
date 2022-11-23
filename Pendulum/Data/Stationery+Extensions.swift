@@ -21,6 +21,16 @@ extension Stationery {
     var wrappedType: String { self.type ?? "type" }
     var wrappedValue: String { self.value ?? "value" }
     
+    static func fetchAll() -> [Stationery] {
+        let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch all Stationery: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     static func fetchUnused(for type: StationeryType) -> [String] {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "value", ascending: true)]

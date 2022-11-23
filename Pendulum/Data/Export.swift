@@ -36,15 +36,39 @@ struct ExportedPenPal: Codable {
     let notes: String?
     let archived: Bool
     let events: [ExportedEvent]
+    
+    init(from: PenPal) {
+        self.id = from.id ?? UUID()
+        self.name = from.wrappedName
+        self.initials = from.wrappedInitials
+        self.image = from.image
+        self.notes = from.notes
+        self.archived = from.archived
+        self.events = from.allEvents.map { ExportedEvent(from: $0) }
+    }
+    
 }
 
 struct ExportedStationery: Codable {
     let id: UUID
     let type: String
     let value: String
+    
+    init(from: Stationery) {
+        self.id = from.id ?? UUID()
+        self.type = from.wrappedType
+        self.value = from.wrappedValue
+    }
+    
 }
 
 struct Export: Codable {
     let penpals: [ExportedPenPal]
     let stationery: [ExportedStationery]
+    
+    init(penpals: [PenPal], stationery: [Stationery]) {
+        self.penpals = penpals.map { ExportedPenPal(from: $0) }
+        self.stationery = stationery.map { ExportedStationery(from: $0) }
+    }
+    
 }

@@ -45,6 +45,28 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
+    static func fetchAll() -> [PenPal] {
+        let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch all PenPals: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
+    var allEvents: [Event] {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        fetchRequest.predicate = self.ownEventsPredicate
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch all for \(self.wrappedName): \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: PersistenceController.shared.container.viewContext)
