@@ -64,12 +64,12 @@ struct PenPalContactSheet: View {
             }
             .padding()
             .onAppear {
-                self.notes = penpal.notes ?? ""
-                self.contactID = UserDefaults.shared.getContactID(for: penpal)
                 self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
-                if let contactID = contactID {
+                self.notes = penpal.notes ?? ""
+                self.contactID = UserDefaults.shared.getContactID(for: penpal)
+                if let contactID = self.contactID {
                     let store = CNContactStore()
                     let keys = [
                         CNContactPostalAddressesKey,

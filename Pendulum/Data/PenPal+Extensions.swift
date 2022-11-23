@@ -200,6 +200,7 @@ extension PenPal {
         self.initials = contact.initials
         self.name = contact.fullName ?? self.name
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
+        self.updateLastEventType()
         if saving {
             PersistenceController.shared.save()
         }
@@ -241,10 +242,12 @@ extension PenPal {
             
             if context.hasChanges {
                 dataLogger.debug("Saving changes in context")
-                do {
-                    try context.save()
-                } catch {
-                    dataLogger.error("Could not save context: \(error.localizedDescription)")
+                DispatchQueue.main.async {
+                    do {
+                        try context.save()
+                    } catch {
+                        dataLogger.error("Could not save context: \(error.localizedDescription)")
+                    }
                 }
             }
             
