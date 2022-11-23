@@ -10,7 +10,7 @@ import SwiftUI
 struct AddEventSheet: View {
         
     // MARK: Parameters
-    let penpal: PenPal
+    @ObservedObject var penpal: PenPal
     let event: Event?
     let eventType: EventType
     let done: () -> ()

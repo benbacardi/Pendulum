@@ -30,14 +30,6 @@ struct PenPalList: View {
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
     
-    func dateText(for penpal: PenPal) -> Text {
-        if let date = penpal.lastEventDate {
-            return Text("\(penpal.lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(date, and: Date()))")
-        } else {
-            return Text("")
-        }
-    }
-    
     @ViewBuilder
     func sectionHeader(for type: EventType) -> some View {
         HStack {
@@ -67,38 +59,7 @@ struct PenPalList: View {
             }
             .opacity(0)
             .buttonStyle(.plain)
-            GroupBox {
-                HStack {
-                    if let image = penpal.displayImage {
-                        image
-                            .clipShape(Circle())
-                            .frame(width: 40, height: 40)
-                    } else {
-                        ZStack {
-                            Circle()
-                                .fill(.gray)
-                            Text(penpal.wrappedInitials)
-                                .font(.system(.headline, design: .rounded))
-                                .foregroundColor(.white)
-                        }
-                        .frame(width: 40, height: 40)
-                    }
-                    VStack {
-                        Text(penpal.wrappedName)
-                            .font(.headline)
-                            .fullWidth()
-                        if penpal.lastEventDate != nil && penpal.lastEventType != .archived {
-                            self.dateText(for: penpal)
-                                .font(.caption)
-                                .fullWidth()
-                        }
-                    }
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .foregroundColor(.secondary)
-                }
-                .foregroundColor(.primary)
-            }
+            PenPalListItem(penpal: penpal)
         }
         .animation(.default, value: penpal)
         .swipeActions {
@@ -224,7 +185,7 @@ struct PenPalList: View {
     
     func group(_ result: FetchedResults<PenPal>) -> [PenPalGroup] {
         return Dictionary(grouping: result) {
-            $0.groupingEventType
+            $0.archived ? .archived : $0.lastEventType
         }
         .map { PenPalGroup(eventType: $0.key, penpals: $0.value) }
         .sorted {

@@ -61,8 +61,8 @@ extension PenPal {
     }
     
     func setLastEventType(to eventType: EventType, at date: Date?, saving: Bool = false) {
-        self.lastEventType = eventType
-        self.lastEventDate = date
+        if self.lastEventType != eventType { self.lastEventType = eventType }
+        if self.lastEventDate != date { self.lastEventDate = date }
         if saving {
             PersistenceController.shared.save()
         }
@@ -196,9 +196,9 @@ extension PenPal {
     
     func update(from contact: CNContact, saving: Bool = true) {
         dataLogger.debug("Updating \(self.wrappedName) using \(contact.fullName ?? "UNKNOWN CONTACT")")
-        self.image = contact.thumbnailImageData
-        self.initials = contact.initials
-        self.name = contact.fullName ?? self.name
+        if self.image != contact.thumbnailImageData { self.image = contact.thumbnailImageData }
+        if self.initials != contact.initials { self.initials = contact.initials }
+        if self.name != contact.fullName { self.name = contact.fullName }
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
         self.updateLastEventType()
         if saving {
@@ -213,8 +213,10 @@ extension PenPal {
     
     static func syncWithContacts() async {
         
-        await PersistenceController.shared.container.performBackgroundTask { context in
+        let context = PersistenceController.shared.container.viewContext
             
+        if true {
+        
             let store = CNContactStore()
             let keys = [
                 CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -242,12 +244,10 @@ extension PenPal {
             
             if context.hasChanges {
                 dataLogger.debug("Saving changes in context")
-                DispatchQueue.main.async {
-                    do {
-                        try context.save()
-                    } catch {
-                        dataLogger.error("Could not save context: \(error.localizedDescription)")
-                    }
+                do {
+                    try context.save()
+                } catch {
+                    dataLogger.error("Could not save context: \(error.localizedDescription)")
                 }
             }
             

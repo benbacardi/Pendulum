@@ -14,7 +14,7 @@ struct PenPalView: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: Parameters
-    let penpal: PenPal
+    @ObservedObject var penpal: PenPal
     let didSave =  NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
     
     // MARK: State
