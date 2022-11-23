@@ -194,11 +194,15 @@ extension PenPal {
         PersistenceController.shared.save()
     }
     
-    func update(from contact: CNContact) {
+    func update(from contact: CNContact, saving: Bool = true) {
+        dataLogger.debug("Updating \(self.wrappedName) using \(contact.fullName ?? "UNKNOWN CONTACT")")
         self.image = contact.thumbnailImageData
         self.initials = contact.initials
         self.name = contact.fullName ?? self.name
-        PersistenceController.shared.save()
+        dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
+        if saving {
+            PersistenceController.shared.save()
+        }
     }
     
     func delete() {
@@ -222,13 +226,25 @@ extension PenPal {
             let penpals = (try? context.fetch(fetchRequest)) ?? []
             let mapping = UserDefaults.shared.penpalContactMap
             
+            appLogger.debug("Current Pen Pal mappings: \(mapping)")
+            
             for penpal in penpals {
                 guard let uuid = penpal.id, let contactID = mapping[uuid.uuidString] else { continue }
+                appLogger.debug("Mapping for \(penpal.wrappedName) to \(contactID)")
                 do {
                     let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                    penpal.update(from: contact)
+                    penpal.update(from: contact, saving: false)
                 } catch {
                     appLogger.error("Could not fetch contact with ID \(contactID) \(penpal.wrappedName): \(error.localizedDescription)")
+                }
+            }
+            
+            if context.hasChanges {
+                dataLogger.debug("Saving changes in context")
+                do {
+                    try context.save()
+                } catch {
+                    dataLogger.error("Could not save context: \(error.localizedDescription)")
                 }
             }
             
