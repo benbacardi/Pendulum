@@ -38,6 +38,7 @@ extension Event {
         self.pen = pen
         self.ink = ink
         self.paper = paper
+        self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
     }
     
