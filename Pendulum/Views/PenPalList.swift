@@ -19,7 +19,9 @@ struct PenPalList: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
-    @FetchRequest(sortDescriptors: [], animation: .default) var penpals: FetchedResults<PenPal>
+    @FetchRequest(sortDescriptors: [
+        NSSortDescriptor(key: "lastEventDate", ascending: false),
+    ], animation: .default) var penpals: FetchedResults<PenPal>
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
@@ -27,7 +29,6 @@ struct PenPalList: View {
     @State private var presentingStationerySheet: Bool = false
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
-    @State private var refreshID = UUID()
     
     func dateText(for penpal: PenPal) -> Text {
         if let date = penpal.lastEventDate {
@@ -168,12 +169,6 @@ struct PenPalList: View {
                 }
             }
             .listStyle(.plain)
-            .id(refreshID)
-            .refreshable {
-                DispatchQueue.main.async {
-                    self.refreshID = UUID()
-                }
-            }
             .task {
                 await PenPal.syncWithContacts()
             }

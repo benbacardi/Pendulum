@@ -160,8 +160,9 @@ struct AddEventSheet: View {
         .sheet(item: $presentSuggestionSheetFor) { option in
             ChooseTextSheet(text: option.text, options: option.options, title: option.title)
         }
-        .onAppear {
+        .task {
             if let event = event {
+                dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription)")
                 self.date = event.wrappedDate
                 self.notes = event.notes ?? ""
                 self.pen = event.pen ?? ""
