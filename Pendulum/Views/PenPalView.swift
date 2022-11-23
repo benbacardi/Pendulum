@@ -44,22 +44,17 @@ struct PenPalView: View {
             PenPalHeader(penpal: penpal)
                 .padding(.horizontal)
             
-            if penpal.lastEventType != .noEvent && penpal.lastEventType != .archived {
+            if penpal.lastEventType != .noEvent && !penpal.archived {
                 Text(penpal.lastEventType.phrase)
                     .fullWidth()
                     .padding(.horizontal)
             }
             
             HStack(alignment: .top) {
-                if penpal.lastEventType == .archived {
+                if penpal.archived {
                     Button(action: {
-                        Task {
-//                            let latestEventType = await penPalViewController.penpal.updateLastEventType()
-//                            DispatchQueue.main.async {
-//                                withAnimation {
-//                                    self.lastEventType = latestEventType
-//                                }
-//                            }
+                        withAnimation {
+                            penpal.archive(false)
                         }
                     }) {
                         Label("Unarchive", systemImage: EventType.archived.icon)
