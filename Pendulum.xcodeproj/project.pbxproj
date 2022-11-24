@@ -39,6 +39,7 @@
 		5E62521B292CDE8000A3EB86 /* ContactAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62521A292CDE8000A3EB86 /* ContactAddress.swift */; };
 		5E62521F292E75E000A3EB86 /* PenPalListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62521E292E75E000A3EB86 /* PenPalListItem.swift */; };
 		5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252242932058B00A3EB86 /* ManualAddPenPalSheet.swift */; };
+		5E625223292F730200A3EB86 /* LetterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E625222292F730200A3EB86 /* LetterType.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
@@ -85,6 +86,7 @@
 		5E62521A292CDE8000A3EB86 /* ContactAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactAddress.swift; sourceTree = "<group>"; };
 		5E62521E292E75E000A3EB86 /* PenPalListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListItem.swift; sourceTree = "<group>"; };
 		5E6252242932058B00A3EB86 /* ManualAddPenPalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualAddPenPalSheet.swift; sourceTree = "<group>"; };
+		5E625222292F730200A3EB86 /* LetterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterType.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 			isa = PBXGroup;
 			children = (
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
+				5E625222292F730200A3EB86 /* LetterType.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
 				5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */,
 				5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */,
+				5E625223292F730200A3EB86 /* LetterType.swift in Sources */,
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E62520A292B76FA00A3EB86 /* PenPalView.swift in Sources */,
 				5E6252082928C20600A3EB86 /* PenPal+Extensions.swift in Sources */,

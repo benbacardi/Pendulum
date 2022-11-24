@@ -4,6 +4,7 @@
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
         <attribute name="ink" optional="YES" attributeType="String"/>
+        <attribute name="letterTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <attribute name="paper" optional="YES" attributeType="String"/>
         <attribute name="pen" optional="YES" attributeType="String"/>
@@ -16,6 +17,7 @@
         <attribute name="image" optional="YES" attributeType="Binary"/>
         <attribute name="initials" attributeType="String" defaultValueString="PP"/>
         <attribute name="lastEventDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="lastEventLetterTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="lastEventTypeValue" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="name" attributeType="String" defaultValueString="Pen Pal"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
