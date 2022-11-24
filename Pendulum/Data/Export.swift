@@ -66,6 +66,8 @@ struct Export: Codable {
     let penpals: [ExportedPenPal]
     let stationery: [ExportedStationery]
     
+    let version: Int = 1
+    
     init(penpals: [PenPal], stationery: [Stationery]) {
         self.penpals = penpals.map { ExportedPenPal(from: $0) }
         self.stationery = stationery.map { ExportedStationery(from: $0) }

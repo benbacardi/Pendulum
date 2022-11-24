@@ -98,11 +98,22 @@ struct SettingsList: View {
                         }
                     }
                     .disabled(self.generatingExport)
+                    Button(action: {
+                        
+                    }) {
+                        Text("Import…")
+                    }
                 }
                 .sheet(isPresented: $showExportFileShareSheet) {
                     if let exportFileURL = self.exportFileURL {
                         ShareSheetView(activityItems: [exportFileURL])
                     }
+                }
+                
+                Button(role: .destructive, action: {
+                    
+                }) {
+                    Text("Erase All Data")
                 }
                 
                 Section(
@@ -122,6 +133,7 @@ struct SettingsList: View {
                         .fullWidth(alignment: .center),
                     footer: Text("\nA **Faber & Cardy** Production\n\nFor Ellen; adequately ginger, but perfectly lovely")
                         .fullWidth(alignment: .center)
+                        .padding(.bottom)
                 ) {
                     HStack {
                         Text("App Version")
