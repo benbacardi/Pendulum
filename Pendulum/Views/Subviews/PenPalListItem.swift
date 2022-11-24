@@ -34,7 +34,7 @@ struct PenPalListItem: View {
                         .font(.headline)
                         .fullWidth()
                     if !penpal.archived, let lastEventDate = penpal.lastEventDate, let lastEventType = penpal.lastEventType {
-                        Text("\(lastEventType.datePrefix) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))")
+                        Text("\(lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))")
                             .font(.caption)
                             .fullWidth()
                     }

@@ -26,6 +26,11 @@ extension PenPal {
         set { self.lastEventTypeValue = Int16(newValue.rawValue) }
     }
     
+    var lastEventLetterType: LetterType {
+        get { return LetterType.from(self.lastEventLetterTypeValue) }
+        set { self.lastEventLetterTypeValue = Int16(newValue.rawValue) }
+    }
+    
     var groupingEventType: EventType {
         self.archived ? .archived : self.lastEventType
     }
@@ -49,7 +54,7 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil) {
+    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
@@ -59,14 +64,16 @@ extension PenPal {
         newEvent.pen = pen
         newEvent.ink = ink
         newEvent.paper = paper
+        newEvent.letterType = letterType
         self.addToEvents(newEvent)
         self.updateLastEventType()
         PersistenceController.shared.save()
     }
     
-    func setLastEventType(to eventType: EventType, at date: Date?, saving: Bool = false) {
+    func setLastEventType(to eventType: EventType, letterType: LetterType, at date: Date?, saving: Bool = false) {
         if self.lastEventType != eventType { self.lastEventType = eventType }
         if self.lastEventDate != date { self.lastEventDate = date }
+        if self.lastEventLetterType != letterType { self.lastEventLetterType = letterType }
         if saving {
             PersistenceController.shared.save()
         }
@@ -76,6 +83,7 @@ extension PenPal {
     func updateLastEventType(saving: Bool = false) -> EventType {
         var newEventType: EventType = .noEvent
         var newEventDate: Date? = nil
+        var newEventLetterType: LetterType = .letter
         
         var updateFromDb: Bool = true
         if let lastWritten = self.getLastEvent(ofType: .written) {
@@ -83,6 +91,7 @@ extension PenPal {
             if lastSent?.date ?? .distantPast < lastWritten.date ?? .distantPast {
                 newEventType = .written
                 newEventDate = lastWritten.date
+                newEventLetterType = lastWritten.letterType
                 updateFromDb = false
             }
         }
@@ -90,10 +99,11 @@ extension PenPal {
         if updateFromDb, let lastEvent = self.getLastEvent() {
             newEventType = lastEvent.type
             newEventDate = lastEvent.date
+            newEventLetterType = lastEvent.letterType
         }
         
-        dataLogger.debug("Setting the Last Event Type for \(self.wrappedName) to \(newEventType.description) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
-        self.setLastEventType(to: newEventType, at: newEventDate, saving: saving)
+        dataLogger.debug("Setting the Last Event Type for \(self.wrappedName) to \(newEventType.description(for: newEventLetterType)) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
+        self.setLastEventType(to: newEventType, letterType: newEventLetterType, at: newEventDate, saving: saving)
         
         if newEventType == .received {
             self.scheduleShouldWriteBackNotification(countingFrom: newEventDate)

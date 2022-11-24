@@ -32,24 +32,32 @@ enum EventType: Int, CaseIterable, Identifiable {
         NSPredicate(format: "typeValue = %d", self.rawValue)
     }
     
+    func replace(_ value: String, for type: LetterType) -> String {
+        return value.replacingOccurrences(of: "%TYPE%", with: type.description)
+    }
+    
     var description: String {
         /// Displayed in places such as the list of historical events for a Pen Pal
         switch self {
         case .noEvent:
             return "Nothing yet"
         case .written:
-            return "You wrote a letter"
+            return "You wrote a %TYPE%"
         case .sent:
-            return "You sent a letter"
+            return "You sent a %TYPE%"
         case .inbound:
-            return "They sent a letter"
+            return "They sent a %TYPE%"
         case .received:
-            return "You received a letter"
+            return "You received a %TYPE%"
         case .theyReceived:
-            return "They received your letter"
+            return "They received your %TYPE%"
         case .archived:
             return "Archived"
         }
+    }
+    
+    func description(for type: LetterType) -> String {
+        return self.replace(self.description, for: type)
     }
     
     var color: Color {
@@ -137,16 +145,20 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .written:
             return "You wrote to them"
         case .sent:
-            return "You posted their letter"
+            return "You posted their %TYPE%"
         case .inbound:
-            return "They posted their letter"
+            return "They posted their %TYPE%"
         case .received:
-            return "You received their letter"
+            return "You received their %TYPE%"
         case .theyReceived:
-            return "They received your letter"
+            return "They received your %TYPE%"
         case .archived:
             return "Archived"
         }
+    }
+    
+    func datePrefix(for type: LetterType) -> String {
+        return self.replace(self.datePrefix, for: type)
     }
     
     var actionableText: String {

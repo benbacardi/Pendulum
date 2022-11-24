@@ -21,6 +21,7 @@ struct AddEventSheet: View {
     @State private var pen: String = ""
     @State private var ink: String = ""
     @State private var paper: String = ""
+    @State private var letterType: LetterType = .letter
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
@@ -40,7 +41,7 @@ struct AddEventSheet: View {
             VStack(spacing: 4) {
                 Image(systemName: eventType.icon)
                     .font(.largeTitle)
-                Text("\(eventType.description)!")
+                Text("\(eventType.description(for: letterType))!")
                     .font(.largeTitle)
                     .bold()
                     .fullWidth(alignment: .center)
@@ -75,6 +76,13 @@ struct AddEventSheet: View {
                 
                 Section {
                     DatePicker("Date", selection: $date)
+                    Picker(selection: $letterType) {
+                        ForEach(LetterType.allCases) { letterType in
+                            Text(letterType.properNoun).tag(letterType)
+                        }
+                    } label: {
+                        Text("Type")
+                    }
                 }
                 
                 Section {
@@ -83,8 +91,8 @@ struct AddEventSheet: View {
                 if eventType == .written || eventType == .sent {
                     
                     Section(header: Group {
-                        if priorWrittenEvent != nil {
-                            Text("You wrote the letter \(priorWrittenEventHeaderText).").textCase(nil)
+                        if let priorWrittenEvent = priorWrittenEvent {
+                            Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
                         } else {
                             EmptyView()
                         }
@@ -144,9 +152,9 @@ struct AddEventSheet: View {
                 }) {
                     Button(action: {
                         if let event = event {
-                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType)
                         } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper)
+                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType)
                         }
                         done()
                     }) {
@@ -168,6 +176,7 @@ struct AddEventSheet: View {
                 self.pen = event.pen ?? ""
                 self.ink = event.ink ?? ""
                 self.paper = event.paper ?? ""
+                self.letterType = event.letterType
             }
         }
         .task {
@@ -181,6 +190,7 @@ struct AddEventSheet: View {
                 let priorWrittenEvent = penpal.fetchPriorEvent(to: Date(), ofType: .written)
                 if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.wrappedDate {
                     self.priorWrittenEvent = priorWrittenEvent
+                    self.letterType = priorWrittenEvent.letterType
                 }
             }
         }

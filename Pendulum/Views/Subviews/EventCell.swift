@@ -51,7 +51,7 @@ struct EventCell: View {
             }) {
                 GroupBox {
                     VStack(spacing: 10) {
-                        Text(event.type.description)
+                        Text(event.type.description(for: event.letterType))
                             .fullWidth()
                         
                         if event.hasNotes {

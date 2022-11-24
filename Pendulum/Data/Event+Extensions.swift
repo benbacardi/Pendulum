@@ -20,6 +20,11 @@ extension Event {
         set { self.typeValue = Int16(newValue.rawValue) }
     }
     
+    var letterType: LetterType {
+        get { return LetterType.from(self.letterTypeValue) }
+        set { self.letterTypeValue = Int16(newValue.rawValue) }
+    }
+    
     var hasNotes: Bool {
         !(self.notes?.isEmpty ?? true) || self.hasAttributes
     }
@@ -32,12 +37,13 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?) {
+    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType) {
         self.date = date
         self.notes = notes
         self.pen = pen
         self.ink = ink
         self.paper = paper
+        self.letterType = letterType
         self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
     }
