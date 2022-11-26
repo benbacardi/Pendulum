@@ -45,4 +45,17 @@ enum LetterType: Int, CaseIterable, Identifiable {
         }
     }
     
+    var icon: String {
+        switch self {
+        case .letter:
+            return "envelope"
+        case .postcard:
+            return "photo"
+        case .greetingscard:
+            return "greetingcard"
+        case .package:
+            return "shippingbox"
+        }
+    }
+    
 }
