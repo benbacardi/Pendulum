@@ -18,6 +18,7 @@ extension UserDefaults {
         case sendRemindersToPostLettersAtHour
         case sendRemindersToPostLettersAtMinute
         case penpalContactMap
+        case stopAskingAboutContacts
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -62,6 +63,12 @@ extension UserDefaults {
     var sendRemindersToPostLettersAtMinute: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+    }
+    
+    @objc
+    var stopAskingAboutContacts: Bool {
+        get { bool(forKey: Key.stopAskingAboutContacts.rawValue) }
+        set { setValue(newValue, forKey: Key.stopAskingAboutContacts.rawValue) }
     }
     
     var penpalContactMap: [String: String] {

@@ -23,7 +23,6 @@ struct PenPalView: View {
     @State private var presentAddEventSheetForType: EventType? = nil
     @State private var refreshID = UUID()
     @State private var showingPenPalContactSheet: Bool = false
-    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var presentPropertyDetailsSheet: Bool = false
     
     init(penpal: PenPal) {
@@ -183,7 +182,6 @@ struct PenPalView: View {
             }){
                 Label("Pen Pal Addresses", systemImage:"person.crop.circle")
             }
-            .disabled(contactsAccessStatus != .authorized)
         }
         .onReceive(self.didSave) { _ in
             withAnimation {
@@ -192,9 +190,6 @@ struct PenPalView: View {
         }
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
             self.buttonHeight = $0
-        }
-        .onAppear {
-            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .navigationBarTitleDisplayMode(.inline)
     }

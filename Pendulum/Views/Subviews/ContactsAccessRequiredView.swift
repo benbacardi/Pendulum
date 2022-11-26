@@ -17,11 +17,10 @@ struct ContactsAccessRequiredView: View {
     @Binding var contactsAccessStatus: CNAuthorizationStatus
     
     // MARK: Parameters
-    var reason: String = "so you can select your Pen Pals!"
+    var reason: String = "so you can choose your Pen Pals and quickly pull up their addresses when you need them."
     
     var body: some View {
-        VStack {
-            Spacer()
+        Group {
             if !DeviceType.isPad() {
                 if let image = UIImage(named: "undraw_directions_re_kjxs") {
                     Image(uiImage: image)
@@ -31,7 +30,7 @@ struct ContactsAccessRequiredView: View {
                         .padding(.bottom)
                 }
             }
-            Text("Pendulum needs access to your contacts \(reason)")
+            Text("Pendulum works best if you allow access to your contacts \(reason)")
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 20)
                 .padding(.bottom, 30)
@@ -58,9 +57,7 @@ struct ContactsAccessRequiredView: View {
                     Text("Grant contacts access")
                 }
             }
-            Spacer()
         }
-        .padding()
     }
 }
 

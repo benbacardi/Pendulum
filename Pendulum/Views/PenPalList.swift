@@ -19,6 +19,8 @@ struct PenPalList: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    
     @FetchRequest(sortDescriptors: [
         NSSortDescriptor(key: "lastEventDate", ascending: false),
     ], animation: .default) var penpals: FetchedResults<PenPal>
@@ -26,6 +28,7 @@ struct PenPalList: View {
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
     @State private var presentingAddPenPalSheet: Bool = false
+    @State private var presentingManualAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
@@ -95,7 +98,28 @@ struct PenPalList: View {
         if contactsAccessStatus != .authorized && penpals.isEmpty {
             /// Show contacts access required message if it hasn't been requested,
             /// or it has been denied and the user hasn't added any pen pals yet
-            ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+            VStack {
+                Spacer()
+                if self.stopAskingAboutContacts {
+                    if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .frame(maxWidth: 200)
+                            .padding(.bottom)
+                    }
+                    Text("Add a Pen Pal to get started!")
+                } else {
+                    ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+                }
+                Spacer()
+                Button(action: {
+                    self.presentingManualAddPenPalSheet = true
+                }) {
+                    Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                }
+                Spacer()
+            }
         } else if penpals.isEmpty {
             VStack {
                 Spacer()
@@ -131,7 +155,9 @@ struct PenPalList: View {
             }
             .listStyle(.plain)
             .task {
-                await PenPal.syncWithContacts()
+                if !self.stopAskingAboutContacts {
+                    await PenPal.syncWithContacts()
+                }
             }
         }
     }
@@ -159,7 +185,11 @@ struct PenPalList: View {
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
-                            self.presentingAddPenPalSheet = true
+                            if self.stopAskingAboutContacts {
+                                self.presentingManualAddPenPalSheet = true
+                            } else {
+                                self.presentingAddPenPalSheet = true
+                            }
                         }) {
                             Label("Add Pen Pal", systemImage: "plus.circle")
                         }
@@ -174,6 +204,9 @@ struct PenPalList: View {
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
             AddPenPalSheet(existingPenPals: penpals)
+        }
+        .sheet(isPresented: $presentingManualAddPenPalSheet) {
+            ManualAddPenPalSheet()
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()

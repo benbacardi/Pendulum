@@ -24,12 +24,18 @@ struct AddPenPalSheet: View {
     @State private var contactsFetched: Bool = false
     @State private var filteredContacts: [CNContact] = []
     @State private var searchText: String = ""
+    @State private var presentingManualAddPenPalSheet: Bool = false
     
     var body: some View {
         NavigationStack {
             Group {
                 if !contactDetails.isEmpty {
                     List {
+                        Button(action: {
+                            self.presentingManualAddPenPalSheet = true
+                        }) {
+                            Text("Add Pen Pal Manually…")
+                        }
                         ForEach(filteredContacts, id: \.identifier) { contact in
                             if !existingPenPalIdentifiers.contains(contact.identifier) {
                                 Button(action: {
@@ -77,11 +83,11 @@ struct AddPenPalSheet: View {
                     }
                     .searchable(text: $searchText)
                 } else {
-                    if contactsAccessStatus != .authorized {
-                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
-                    } else {
-                        VStack {
-                            Spacer()
+                    VStack {
+                        Spacer()
+                        if contactsAccessStatus != .authorized {
+                            ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+                        } else {
                             if contactsFetched {
                                 if let image = UIImage(named: "undraw_reading_list_re_bk72") {
                                     Image(uiImage: image)
@@ -100,10 +106,16 @@ struct AddPenPalSheet: View {
                             } else {
                                 ProgressView()
                             }
-                            Spacer()
                         }
-                        .padding()
+                        Spacer()
+                        Button(action: {
+                            self.presentingManualAddPenPalSheet = true
+                        }) {
+                            Text("Add Pen Pal Manually")
+                        }
+                        Spacer()
                     }
+                    .padding()
                 }
             }
             .onAppear {
@@ -111,30 +123,32 @@ struct AddPenPalSheet: View {
                 self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
-                let store = CNContactStore()
-                let keys = [
-                    CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                    CNContactFormatter.descriptorForRequiredKeysForNameOrder,
-                    CNContactOrganizationNameKey,
-                    CNContactImageDataAvailableKey,
-                    CNContactThumbnailImageDataKey
-                ] as! [CNKeyDescriptor]
-                let request = CNContactFetchRequest(keysToFetch: keys)
-                request.sortOrder = CNContactsUserDefaults.shared().sortOrder
-                DispatchQueue.global(qos: .userInitiated).async {
-                    do {
-                        try store.enumerateContacts(with: request) { (contact, stop) in
-                            if !existingPenPalIdentifiers.contains(contact.identifier) {
-                                DispatchQueue.main.async {
-                                    self.contactDetails.append(contact)
+                if self.contactsAccessStatus == .authorized {
+                    let store = CNContactStore()
+                    let keys = [
+                        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                        CNContactFormatter.descriptorForRequiredKeysForNameOrder,
+                        CNContactOrganizationNameKey,
+                        CNContactImageDataAvailableKey,
+                        CNContactThumbnailImageDataKey
+                    ] as! [CNKeyDescriptor]
+                    let request = CNContactFetchRequest(keysToFetch: keys)
+                    request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        do {
+                            try store.enumerateContacts(with: request) { (contact, stop) in
+                                if !existingPenPalIdentifiers.contains(contact.identifier) {
+                                    DispatchQueue.main.async {
+                                        self.contactDetails.append(contact)
+                                    }
                                 }
                             }
+                            DispatchQueue.main.async {
+                                self.contactsFetched = true
+                            }
+                        } catch {
+                            dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                         }
-                        DispatchQueue.main.async {
-                            self.contactsFetched = true
-                        }
-                    } catch {
-                        dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                     }
                 }
             }
@@ -154,6 +168,12 @@ struct AddPenPalSheet: View {
             }
             .onChange(of: searchText) { searchText in
                 self.filterContacts(with: searchText)
+            }
+        }
+        .sheet(isPresented: $presentingManualAddPenPalSheet) {
+            ManualAddPenPalSheet() {
+                self.presentingManualAddPenPalSheet = false
+                self.presentationMode.wrappedValue.dismiss()
             }
         }
     }
