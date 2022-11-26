@@ -169,7 +169,7 @@ extension PenPal {
                     }
                 }
             }
-            return intermediate.sorted { $0.count > $1.count }
+            return intermediate.sorted().reversed()
         } catch {
             dataLogger.error("Could not fetch distinct stationery: \(error.localizedDescription)")
         }
