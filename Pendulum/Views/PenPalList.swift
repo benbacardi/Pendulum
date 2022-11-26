@@ -30,6 +30,7 @@ struct PenPalList: View {
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var presentingManualAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
+    @State private var presentingEditPenPalSheetFor: PenPal? = nil
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
     
@@ -83,6 +84,15 @@ struct PenPalList: View {
             }
             .tint(.red)
         }
+        .contextMenu {
+            if penpal.contactID == nil {
+                Button(action: {
+                    self.presentingEditPenPalSheetFor = penpal
+                }) {
+                    Label("Edit", systemImage: "pencil")
+                }
+            }
+        }
         .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
             Button("Delete \(penpal.wrappedName)", role: .destructive) {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
@@ -101,7 +111,7 @@ struct PenPalList: View {
             VStack {
                 Spacer()
                 if self.stopAskingAboutContacts {
-                    if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                    if !DeviceType.isPad(), let image = UIImage(named: "undraw_directions_re_kjxs") {
                         Image(uiImage: image)
                             .resizable()
                             .aspectRatio(contentMode: .fit)
@@ -112,11 +122,13 @@ struct PenPalList: View {
                 } else {
                     ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
                 }
-                Spacer()
-                Button(action: {
-                    self.presentingManualAddPenPalSheet = true
-                }) {
-                    Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                if !DeviceType.isPad() {
+                    Spacer()
+                    Button(action: {
+                        self.presentingManualAddPenPalSheet = true
+                    }) {
+                        Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                    }
                 }
                 Spacer()
             }
@@ -195,6 +207,22 @@ struct PenPalList: View {
                         }
                     }
                 }
+            VStack {
+                Spacer()
+                if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                    Image(uiImage: image)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(maxWidth: 200)
+                        .padding(.bottom)
+                }
+                Button(action: {
+                    self.presentingManualAddPenPalSheet = true
+                }) {
+                    Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                }
+                Spacer()
+            }
         }
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
             self.iconWidth = value
@@ -207,6 +235,9 @@ struct PenPalList: View {
         }
         .sheet(isPresented: $presentingManualAddPenPalSheet) {
             ManualAddPenPalSheet()
+        }
+        .sheet(item: $presentingEditPenPalSheetFor) { penpal in
+            ManualAddPenPalSheet(penpal: penpal)
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
