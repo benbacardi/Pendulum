@@ -71,7 +71,7 @@ struct SettingsList: View {
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
                 
-                Section(footer: Text("If you don't store your pen pal information, Pendulum can stop prompting for Contacts access and rely on manual pen pal entry.")) {
+                Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
                 }
                 

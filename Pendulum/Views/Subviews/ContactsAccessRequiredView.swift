@@ -18,10 +18,11 @@ struct ContactsAccessRequiredView: View {
     
     // MARK: Parameters
     var reason: String = "so you can choose your Pen Pals and quickly pull up their addresses when you need them."
+    var alwaysShowImage: Bool = false
     
     var body: some View {
         Group {
-            if !DeviceType.isPad() {
+            if !DeviceType.isPad() || alwaysShowImage {
                 if let image = UIImage(named: "undraw_directions_re_kjxs") {
                     Image(uiImage: image)
                         .resizable()

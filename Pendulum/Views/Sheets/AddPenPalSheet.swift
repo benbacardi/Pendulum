@@ -86,7 +86,7 @@ struct AddPenPalSheet: View {
                     VStack {
                         Spacer()
                         if contactsAccessStatus != .authorized {
-                            ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
+                            ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, alwaysShowImage: true)
                         } else {
                             if contactsFetched {
                                 if let image = UIImage(named: "undraw_reading_list_re_bk72") {

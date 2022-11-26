@@ -37,6 +37,10 @@ extension PenPal {
         return nil
     }
     
+    var contactID: String? {
+        UserDefaults.shared.penpalContactMap[self.id?.uuidString ?? ""]
+    }
+    
 }
 
 extension PenPal {
@@ -204,6 +208,13 @@ extension PenPal {
         if saving {
             PersistenceController.shared.save()
         }
+    }
+    
+    func update(name: String, initials: String, image: Data?) {
+        if self.name != name { self.name = name }
+        if self.initials != initials { self.initials = initials }
+        if self.image != image { self.image = image }
+        PersistenceController.shared.save()
     }
     
     func delete() {
