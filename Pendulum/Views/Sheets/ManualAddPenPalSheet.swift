@@ -21,6 +21,7 @@ struct ManualAddPenPalSheet: View {
     @State private var name: String = ""
     @State private var imageData: Data? = nil
     @State private var selectedPhoto: PhotosPickerItem? = nil
+    @State private var imageLoading: Bool = false
     
     // MARK: Parameters
     var done: (() -> ())? = nil
@@ -46,9 +47,14 @@ struct ManualAddPenPalSheet: View {
             VStack {
                 if let imageData = self.imageData, let image = UIImage(data: imageData) {
                     ZStack(alignment: .topTrailing) {
-                        Image(uiImage: image).resizable()
+                        Image(uiImage: image)
+                            .resizable()
+                            .aspectRatio(contentMode: .fill)
                             .clipShape(Circle())
                             .frame(width: 80, height: 80)
+                        if imageLoading {
+                            ProgressView()
+                        }
                         Button(role: .destructive, action: {
                             let _ = withAnimation {
                                 self.imageData = nil
@@ -69,10 +75,14 @@ struct ManualAddPenPalSheet: View {
                     ZStack {
                         Circle()
                             .fill(.gray)
-                        Text(initials)
-                            .font(.system(.title, design: .rounded))
-                            .bold()
-                            .foregroundColor(.white)
+                        if imageLoading {
+                            ProgressView()
+                        } else {
+                            Text(initials)
+                                .font(.system(.title, design: .rounded))
+                                .bold()
+                                .foregroundColor(.white)
+                        }
                     }
                     .frame(width: 80, height: 80)
                 }
@@ -85,13 +95,16 @@ struct ManualAddPenPalSheet: View {
                         .font(.caption)
                 }
                 .onChange(of: selectedPhoto) { newItem in
+                    self.imageLoading = true
+                    self.imageData = nil
                     Task {
                         appLogger.debug("Selected photo: \(newItem.debugDescription)")
                         do {
                             if let data = try await newItem?.loadTransferable(type: Data.self) {
                                 DispatchQueue.main.async {
                                     withAnimation {
-                                        imageData = data
+                                        self.imageData = data
+                                        self.imageLoading = false
                                     }
                                 }
                             }
