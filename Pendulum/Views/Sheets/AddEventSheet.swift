@@ -78,10 +78,11 @@ struct AddEventSheet: View {
                     DatePicker("Date", selection: $date)
                     Picker(selection: $letterType) {
                         ForEach(LetterType.allCases) { letterType in
-                            Text(letterType.properNoun).tag(letterType)
+                            Label(letterType.properNoun, systemImage: letterType.icon).tag(letterType)
                         }
                     } label: {
                         Text("Type")
+                            .layoutPriority(0)
                     }
                 }
                 
