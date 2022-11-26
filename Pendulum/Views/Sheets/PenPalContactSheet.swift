@@ -24,6 +24,7 @@ struct PenPalContactSheet: View {
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
     @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -37,14 +38,16 @@ struct PenPalContactSheet: View {
                         TextField("Notes - postage cost, etc", text: $notes, axis: .vertical)
                     }
                     
-                    if contactsAccessStatus != .authorized {
+                    if contactsAccessStatus != .authorized && !self.stopAskingAboutContacts {
                         ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses \(penpal.wrappedName).")
-                    } else {
+                            .padding(.top)
+                    } else if !self.stopAskingAboutContacts {
                         
                         if contactID == nil {
                             
-                            Text("\(penpal.wrappedName) is not currently associated with one of your contacts.")
+                            Text("\(penpal.wrappedName) is not currently associated with one of your contacts, so Pendulum cannot fetch any addresses.")
                                 .fullWidth(alignment: .center)
+                                .foregroundColor(.secondary)
                                 .padding()
                             
                         } else {
@@ -68,33 +71,35 @@ struct PenPalContactSheet: View {
             }
             .task {
                 self.notes = penpal.notes ?? ""
-                self.contactID = UserDefaults.shared.getContactID(for: penpal)
-                if let contactID = self.contactID {
-                    let store = CNContactStore()
-                    let keys = [
-                        CNContactPostalAddressesKey,
-                    ] as! [CNKeyDescriptor]
-                    do {
-                        let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                        self.addresses = contact.postalAddresses
-                        self.maps = self.addresses.map { _ in
-                            nil
-                        }
-                        let geocoder = CLGeocoder()
-                        for (index, address) in self.addresses.enumerated() {
-                            do {
-                                let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
-                                if let addr = placemarks.first {
-                                    withAnimation {
-                                        self.maps[index] = addr
-                                    }
-                                }
-                            } catch {
-                                dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                if !self.stopAskingAboutContacts {
+                    self.contactID = UserDefaults.shared.getContactID(for: penpal)
+                    if let contactID = self.contactID {
+                        let store = CNContactStore()
+                        let keys = [
+                            CNContactPostalAddressesKey,
+                        ] as! [CNKeyDescriptor]
+                        do {
+                            let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                            self.addresses = contact.postalAddresses
+                            self.maps = self.addresses.map { _ in
+                                nil
                             }
+                            let geocoder = CLGeocoder()
+                            for (index, address) in self.addresses.enumerated() {
+                                do {
+                                    let placemarks = try await geocoder.geocodeAddressString(address.value.getFullAddress(separator: ", "))
+                                    if let addr = placemarks.first {
+                                        withAnimation {
+                                            self.maps[index] = addr
+                                        }
+                                    }
+                                } catch {
+                                    dataLogger.warning("Could not find map for \(address.value.getFullAddress(separator: ", "))")
+                                }
+                            }
+                        } catch {
+                            dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
                         }
-                    } catch {
-                        dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
                     }
                 }
             }
