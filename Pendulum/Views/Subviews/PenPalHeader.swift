@@ -9,7 +9,7 @@ import SwiftUI
 
 struct PenPalHeader: View {
     
-    let penpal: PenPal
+    @ObservedObject var penpal: PenPal
     
     var body: some View {
         HStack {

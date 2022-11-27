@@ -30,7 +30,6 @@ struct PenPalList: View {
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var presentingManualAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
-    @State private var presentingEditPenPalSheetFor: PenPal? = nil
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
     
@@ -83,15 +82,6 @@ struct PenPalList: View {
                 Label("Delete", systemImage: "trash")
             }
             .tint(.red)
-        }
-        .contextMenu {
-            if penpal.contactID == nil {
-                Button(action: {
-                    self.presentingEditPenPalSheetFor = penpal
-                }) {
-                    Label("Edit", systemImage: "pencil")
-                }
-            }
         }
         .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
             Button("Delete \(penpal.wrappedName)", role: .destructive) {
@@ -235,9 +225,6 @@ struct PenPalList: View {
         }
         .sheet(isPresented: $presentingManualAddPenPalSheet) {
             ManualAddPenPalSheet()
-        }
-        .sheet(item: $presentingEditPenPalSheetFor) { penpal in
-            ManualAddPenPalSheet(penpal: penpal)
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
