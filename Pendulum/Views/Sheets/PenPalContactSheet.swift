@@ -15,16 +15,15 @@ struct PenPalContactSheet: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.presentationMode) var presentationMode
     
-    // MARK: Parameters
-    let penpal: PenPal
-    
     // MARK: State
+    @ObservedObject var penpal: PenPal
     @State private var contactID: String? = nil
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
     @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @State private var presentingEditSheet: Bool = false
     
     var body: some View {
         NavigationStack {
@@ -50,6 +49,12 @@ struct PenPalContactSheet: View {
                                 .foregroundColor(.secondary)
                                 .padding()
                             
+                            Button(action: {
+                                self.presentingEditSheet = true
+                            }) {
+                                Text("Edit Name and Photo")
+                            }
+                            
                         } else {
                             
                             if addresses.isEmpty {
@@ -61,6 +66,13 @@ struct PenPalContactSheet: View {
                                     ContactAddress(address: address, placemark: placemark)
                                 }
                             }
+                            
+                            Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
+                                .fullWidth(alignment: .center)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding()
+                            
                         }
                     }
                 }
@@ -114,6 +126,12 @@ struct PenPalContactSheet: View {
             }
             .navigationTitle("Contact Details")
             .navigationBarTitleDisplayMode(.inline)
+        }
+        .sheet(isPresented: $presentingEditSheet) {
+            ManualAddPenPalSheet(penpal: penpal) {
+                self.presentingEditSheet = false
+                print("BEN: \(penpal.wrappedName)")
+            }
         }
     }
     
