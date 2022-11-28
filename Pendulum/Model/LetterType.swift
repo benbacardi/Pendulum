@@ -28,7 +28,7 @@ enum LetterType: Int, CaseIterable, Identifiable {
         case .greetingscard:
             return "greetings card"
         case .package:
-            return "package"
+            return "parcel"
         }
     }
     
@@ -41,7 +41,7 @@ enum LetterType: Int, CaseIterable, Identifiable {
         case .greetingscard:
             return "Greetings Card"
         case .package:
-            return "Package"
+            return "Parcel"
         }
     }
     
