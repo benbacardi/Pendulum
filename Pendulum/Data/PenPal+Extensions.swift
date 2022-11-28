@@ -140,16 +140,19 @@ extension PenPal {
         return nil
     }
     
-    func fetchPriorEvent(to date: Date, ofType eventType: EventType) -> Event? {
+    func fetchPriorEvent(to date: Date, ofType eventType: EventType, ignore: Bool = true) -> Event? {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+        var predicates = [
             self.ownEventsPredicate,
             eventType.predicate,
             NSPredicate(format: "date < %@", date as NSDate),
-            NSPredicate(format: "ignore == %@", NSNumber(value: false))
-        ])
+        ]
+        if ignore {
+            predicates.append(NSPredicate(format: "ignore == %@", NSNumber(value: false)))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first
         } catch {
