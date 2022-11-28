@@ -144,7 +144,7 @@ struct AddEventSheet: View {
                     }
                 }
                 
-                Section(footer: Text("\(eventType == .written || eventType == .sent || eventType == .theyReceived ? "They" : "You") won't be prompted to respond to this \(letterType.description).")) {
+                Section(footer: Text("\(eventType == .written || eventType == .sent || eventType == .theyReceived ? "They" : "You") \(ignore ? "won't" : "will") be prompted to respond to this \(letterType.description).")) {
                     Toggle("No response needed", isOn: $ignore)
                 }
                 
