@@ -130,7 +130,6 @@ struct PenPalContactSheet: View {
         .sheet(isPresented: $presentingEditSheet) {
             ManualAddPenPalSheet(penpal: penpal) {
                 self.presentingEditSheet = false
-                print("BEN: \(penpal.wrappedName)")
             }
         }
     }
