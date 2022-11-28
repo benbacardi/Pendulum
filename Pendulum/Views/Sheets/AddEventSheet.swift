@@ -197,11 +197,12 @@ struct AddEventSheet: View {
         }
         .task {
             if eventType == .sent && event == nil {
-                let priorSentEvent = penpal.fetchPriorEvent(to: Date(), ofType: .sent)
-                let priorWrittenEvent = penpal.fetchPriorEvent(to: Date(), ofType: .written)
+                let priorSentEvent = penpal.fetchPriorEvent(to: Date(), ofType: .sent, ignore: false)
+                let priorWrittenEvent = penpal.fetchPriorEvent(to: Date(), ofType: .written, ignore: false)
                 if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.wrappedDate {
                     self.priorWrittenEvent = priorWrittenEvent
                     self.letterType = priorWrittenEvent.letterType
+                    self.ignore = priorWrittenEvent.ignore
                 }
             }
         }
