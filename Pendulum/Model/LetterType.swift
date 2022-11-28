@@ -58,4 +58,13 @@ enum LetterType: Int, CaseIterable, Identifiable {
         }
     }
     
+    var defaultIgnore: Bool {
+        switch self {
+        case .letter:
+            return false
+        default:
+            return true
+        }
+    }
+    
 }

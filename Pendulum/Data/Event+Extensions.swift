@@ -37,13 +37,14 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType) {
+    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool) {
         self.date = date
         self.notes = notes
         self.pen = pen
         self.ink = ink
         self.paper = paper
         self.letterType = letterType
+        self.ignore = ignore
         self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
     }

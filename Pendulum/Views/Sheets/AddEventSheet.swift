@@ -22,6 +22,7 @@ struct AddEventSheet: View {
     @State private var ink: String = ""
     @State private var paper: String = ""
     @State private var letterType: LetterType = .letter
+    @State private var ignore: Bool = false
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
@@ -78,7 +79,7 @@ struct AddEventSheet: View {
                     DatePicker("Date", selection: $date)
                     Picker(selection: $letterType) {
                         ForEach(LetterType.allCases) { letterType in
-                            Label(letterType.properNoun, systemImage: letterType.icon).tag(letterType)
+                            Text(letterType.properNoun).tag(letterType)
                         }
                     } label: {
                         Text("Type")
@@ -142,6 +143,11 @@ struct AddEventSheet: View {
                         }
                     }
                 }
+                
+                Section(footer: Text("\(eventType == .written || eventType == .sent || eventType == .theyReceived ? "They" : "You") won't be prompted to respond to this \(letterType.description).")) {
+                    Toggle("No response needed", isOn: $ignore)
+                }
+                
                 Section(footer: Group {
                     Button(action: {
                         done()
@@ -153,9 +159,9 @@ struct AddEventSheet: View {
                 }) {
                     Button(action: {
                         if let event = event {
-                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType)
+                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
                         } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType)
+                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
                         }
                         done()
                     }) {
@@ -169,6 +175,9 @@ struct AddEventSheet: View {
         .sheet(item: $presentSuggestionSheetFor) { option in
             ChooseTextSheet(text: option.text, options: option.options, title: option.title)
         }
+        .onChange(of: letterType) { newValue in
+            self.ignore = newValue.defaultIgnore
+        }
         .task {
             if let event = event {
                 dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription)")
@@ -178,6 +187,7 @@ struct AddEventSheet: View {
                 self.ink = event.ink ?? ""
                 self.paper = event.paper ?? ""
                 self.letterType = event.letterType
+                self.ignore = event.ignore
             }
         }
         .task {
