@@ -245,7 +245,7 @@ extension PenPal {
         
         let context = PersistenceController.shared.container.viewContext
             
-        if true {
+        if CNContactStore.authorizationStatus(for: .contacts) == .authorized && !UserDefaults.shared.stopAskingAboutContacts {
         
             let store = CNContactStore()
             let keys = [
