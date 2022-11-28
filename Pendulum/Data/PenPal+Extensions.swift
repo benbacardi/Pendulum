@@ -54,7 +54,7 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter) {
+    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
@@ -65,6 +65,7 @@ extension PenPal {
         newEvent.ink = ink
         newEvent.paper = paper
         newEvent.letterType = letterType
+        newEvent.ignore = ignore
         self.addToEvents(newEvent)
         self.updateLastEventType()
         PersistenceController.shared.save()
@@ -123,9 +124,13 @@ extension PenPal {
             fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
                 self.ownEventsPredicate,
                 eventType.predicate,
+                NSPredicate(format: "ignore == %@", NSNumber(value: false))
             ])
         } else {
-            fetchRequest.predicate = self.ownEventsPredicate
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+                self.ownEventsPredicate,
+                NSPredicate(format: "ignore == %@", NSNumber(value: false))
+            ])
         }
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first
@@ -142,7 +147,8 @@ extension PenPal {
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             self.ownEventsPredicate,
             eventType.predicate,
-            NSPredicate(format: "date < %@", date as NSDate)
+            NSPredicate(format: "date < %@", date as NSDate),
+            NSPredicate(format: "ignore == %@", NSNumber(value: false))
         ])
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first

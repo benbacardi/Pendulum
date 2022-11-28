@@ -51,8 +51,20 @@ struct EventCell: View {
             }) {
                 GroupBox {
                     VStack(spacing: 10) {
-                        Text(event.type.description(for: event.letterType))
-                            .fullWidth()
+                        
+                        HStack {
+                            Text(event.type.description(for: event.letterType))
+                                .fullWidth()
+                            if event.ignore {
+                                Spacer()
+                                ZStack {
+                                    Image(systemName: "arrowshape.turn.up.left")
+                                        .font(.caption)
+                                    Image(systemName: "line.diagonal")
+                                }
+                                .foregroundColor(.secondary)
+                            }
+                        }
                         
                         if event.hasNotes {
                             
