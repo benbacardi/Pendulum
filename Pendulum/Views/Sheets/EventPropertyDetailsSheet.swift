@@ -13,7 +13,7 @@ struct ParameterCount: Comparable {
     
     static func < (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
         if lhs.count != rhs.count {
-            return lhs.count < rhs.count
+            return lhs.count > rhs.count
         } else {
             return lhs.name < rhs.name
         }
