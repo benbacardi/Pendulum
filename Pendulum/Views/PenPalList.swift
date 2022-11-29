@@ -235,13 +235,13 @@ struct PenPalList: View {
     }
     
     func group(_ result: FetchedResults<PenPal>) -> [PenPalGroup] {
-        return Dictionary(grouping: result) {
-            $0.archived ? .archived : $0.lastEventType
+        let dict: [EventType: [PenPal]] = Dictionary(grouping: result) { penpal in
+            penpal.groupingEventType
         }
-        .map { PenPalGroup(eventType: $0.key, penpals: $0.value) }
-        .sorted {
-            $0.eventType.rawValue < $1.eventType.rawValue
-        }
+        return dict.map { PenPalGroup(eventType: $0.key, penpals: $0.value) }
+            .sorted {
+                $0.eventType.rawValue < $1.eventType.rawValue
+            }
     }
     
 }

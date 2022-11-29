@@ -15,6 +15,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     case sent = 4
     case theyReceived = 5
     
+    case nothingToDo = 90
     case noEvent = 99
     case archived = 100
     
@@ -25,7 +26,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     }
     
     static var actionableCases: [EventType] {
-        EventType.allCases.filter { $0 != .noEvent && $0 != .archived }
+        EventType.allCases.filter { $0 != .noEvent && $0 != .archived && $0 != .nothingToDo }
     }
     
     var predicate: NSPredicate {
@@ -53,6 +54,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "They received your %TYPE%"
         case .archived:
             return "Archived"
+        case .nothingToDo:
+            return "Nothing to do"
         }
     }
     
@@ -76,6 +79,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return .purple
         case .archived:
             return .gray
+        case .nothingToDo:
+            return .cyan
         }
     }
     
@@ -96,6 +101,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "airplane.arrival"
         case .archived:
             return "archivebox"
+        case .nothingToDo:
+            return "face.smiling.fill"
         }
     }
     
@@ -114,6 +121,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "You have letters to reply to!"
         case .archived:
             return "Archived"
+        case .nothingToDo:
+            return "No actions pending"
         }
     }
     
@@ -134,6 +143,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "envelope"
         case .archived:
             return "archivebox"
+        case .nothingToDo:
+            return "face.smiling.fill"
         }
     }
     
@@ -154,6 +165,8 @@ enum EventType: Int, CaseIterable, Identifiable {
             return "They received your %TYPE%"
         case .archived:
             return "Archived"
+        case .nothingToDo:
+            return "Nothing to do"
         }
     }
     
@@ -164,7 +177,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     var actionableText: String {
         /// Displayed on buttons that register an event of this type
         switch self {
-        case .noEvent:
+        case .noEvent, .nothingToDo:
             return ""
         case .written:
             return "I've written a letter"
@@ -184,7 +197,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     var actionableTextShort: String {
         /// Displayed on buttons that register an event of this type
         switch self {
-        case .noEvent:
+        case .noEvent, .nothingToDo:
             return ""
         case .written:
             return "Written"
@@ -203,7 +216,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     
     var nextLogicalEventTypes: [EventType] {
         switch self {
-        case .noEvent:
+        case .noEvent, .nothingToDo:
             return [.written, .sent]
         case .written:
             return [.sent]
@@ -222,7 +235,7 @@ enum EventType: Int, CaseIterable, Identifiable {
     
     var presentFullNotesSheetByDefault: Bool {
         switch self {
-        case .noEvent:
+        case .noEvent, .nothingToDo:
             return false
         case .written:
             return true
