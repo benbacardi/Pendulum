@@ -207,9 +207,13 @@ extension PenPal {
     
     static func fetch(withStatus eventType: EventType? = nil) -> [PenPal] {
         let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
+        var predicates: [NSPredicate] = [
+            NSPredicate(format: "archived = %@", NSNumber(value: false))
+        ]
         if let eventType = eventType {
-            fetchRequest.predicate = NSPredicate(format: "lastEventTypeValue = %d", eventType.rawValue)
+            predicates.append(NSPredicate(format: "lastEventTypeValue = %d", eventType.rawValue))
         }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
         } catch {
