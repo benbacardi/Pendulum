@@ -32,7 +32,15 @@ extension PenPal {
     }
     
     var groupingEventType: EventType {
-        self.archived ? .archived : self.lastEventType
+        if self.archived {
+            return EventType.archived
+        } else {
+            if self.lastEventType == .noEvent {
+                return (self.events?.count ?? 0) == 0 ? EventType.noEvent : EventType.nothingToDo
+            } else {
+                return self.lastEventType
+            }
+        }
     }
     
     var displayImage: Image? {
@@ -116,22 +124,20 @@ extension PenPal {
         
     }
     
-    func getLastEvent(ofType eventType: EventType? = nil) -> Event? {
+    func getLastEvent(ofType eventType: EventType? = nil, includingIgnoredEvents: Bool = false) -> Event? {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        var predicates: [NSPredicate] = [
+            self.ownEventsPredicate,
+        ]
         if let eventType = eventType {
-            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                self.ownEventsPredicate,
-                eventType.predicate,
-                NSPredicate(format: "ignore == %@", NSNumber(value: false))
-            ])
-        } else {
-            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                self.ownEventsPredicate,
-                NSPredicate(format: "ignore == %@", NSNumber(value: false))
-            ])
+            predicates.append(eventType.predicate)
         }
+        if !includingIgnoredEvents {
+            predicates.append(NSPredicate(format: "ignore == %@", NSNumber(value: false)))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
             return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first
         } catch {

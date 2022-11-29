@@ -14,7 +14,7 @@ struct AddEventSheet: View {
     let event: Event?
     let eventType: EventType
     let done: () -> ()
-    
+        
     // MARK: State
     @State private var date: Date = Date()
     @State private var notes: String = ""
@@ -23,6 +23,7 @@ struct AddEventSheet: View {
     @State private var paper: String = ""
     @State private var letterType: LetterType = .letter
     @State private var ignore: Bool = false
+    @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
@@ -178,11 +179,18 @@ struct AddEventSheet: View {
             ChooseTextSheet(text: option.text, options: option.options, title: option.title)
         }
         .onChange(of: letterType) { newValue in
-            self.ignore = newValue.defaultIgnore
+            if self.setToDefaultIgnoreWhenChangingLetterType {
+                self.ignore = newValue.defaultIgnore
+            }
+        }
+        .onAppear {
+            if event == nil {
+                self.setToDefaultIgnoreWhenChangingLetterType = true
+            }
         }
         .task {
             if let event = event {
-                dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription)")
+                dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription) ignore=\(event.ignore)")
                 self.date = event.wrappedDate
                 self.notes = event.notes ?? ""
                 self.pen = event.pen ?? ""
