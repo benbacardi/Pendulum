@@ -53,5 +53,6 @@ struct PenPalListItem: View {
             }
             .foregroundColor(.primary)
         }
+        .opacity(penpal.archived ? 0.5 : 1)
     }
 }
