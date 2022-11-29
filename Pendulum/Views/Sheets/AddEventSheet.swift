@@ -79,7 +79,9 @@ struct AddEventSheet: View {
                     DatePicker("Date", selection: $date)
                     Picker(selection: $letterType) {
                         ForEach(LetterType.allCases) { letterType in
-                            Text(letterType.properNoun).tag(letterType)
+                            /// This stupid space is necessary because iOS puts the icon
+                            /// RIGHT UP IN THE POOR LABEL'S FACE in the picker view
+                            Label(" \(letterType.properNoun)", systemImage: letterType.icon).tag(letterType)
                         }
                     } label: {
                         Text("Type")
