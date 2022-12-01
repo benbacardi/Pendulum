@@ -18,6 +18,10 @@ struct PenPalList: View {
     
     @Environment(\.managedObjectContext) var moc
     
+    // MARK: Bindings
+    @Binding var showImageViewer: Bool
+    @Binding var image: Image?
+    
     // MARK: State
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     
@@ -57,7 +61,7 @@ struct PenPalList: View {
     @ViewBuilder
     func penPalNavigationLink(for penpal: PenPal) -> some View {
         ZStack {
-            NavigationLink(destination: PenPalView(penpal: penpal)) {
+            NavigationLink(destination: PenPalView(penpal: penpal, showImageViewer: $showImageViewer, image: $image)) {
                 EmptyView()
             }
             .opacity(0)
@@ -255,7 +259,7 @@ struct PenPalListIconWidthPreferenceKey: PreferenceKey {
 
 struct PenPalList_Previews: PreviewProvider {
     static var previews: some View {
-        PenPalList()
+        PenPalList(showImageViewer: .constant(false), image: .constant(nil))
             .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

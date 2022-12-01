@@ -6,17 +6,21 @@
 //
 
 import SwiftUI
+import ImageViewer
 
 struct ContentView: View {
     
     @State private var selectedTab: Int = Tab.penPalList.rawValue
+    @State private var showImageViewer: Bool = false
+    @State private var image: Image? = nil
     
     var body: some View {
         if DeviceType.isPad() {
-            PenPalList()
+            PenPalList(showImageViewer: $showImageViewer, image: $image)
+                .overlay(ImageViewer(image: $image, viewerShown: $showImageViewer, closeButtonTopRight: true))
         } else {
             TabView(selection: $selectedTab) {
-                PenPalList()
+                PenPalList(showImageViewer: $showImageViewer, image: $image)
                     .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                     .tag(Tab.penPalList.rawValue)
                 SettingsList()
@@ -31,6 +35,7 @@ struct ContentView: View {
 //                        }
 //                    }
             }
+            .overlay(ImageViewer(image: $image, viewerShown: $showImageViewer, closeButtonTopRight: true))
         }
     }
 }

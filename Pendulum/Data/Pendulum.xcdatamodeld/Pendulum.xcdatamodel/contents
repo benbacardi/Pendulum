@@ -11,6 +11,7 @@
         <attribute name="pen" optional="YES" attributeType="String"/>
         <attribute name="typeValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="penpal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PenPal" inverseName="events" inverseEntity="PenPal"/>
+        <relationship name="pictures" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Picture" inverseName="event" inverseEntity="Picture"/>
     </entity>
     <entity name="PenPal" representedClassName="PenPal" syncable="YES" codeGenerationType="class">
         <attribute name="archived" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES"/>
@@ -23,6 +24,11 @@
         <attribute name="name" attributeType="String" defaultValueString="Pen Pal"/>
         <attribute name="notes" optional="YES" attributeType="String"/>
         <relationship name="events" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Event" inverseName="penpal" inverseEntity="Event"/>
+    </entity>
+    <entity name="Picture" representedClassName="Picture" syncable="YES" codeGenerationType="class">
+        <attribute name="data" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="pictures" inverseEntity="Event"/>
     </entity>
     <entity name="Stationery" representedClassName="Stationery" syncable="YES" codeGenerationType="class">
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>

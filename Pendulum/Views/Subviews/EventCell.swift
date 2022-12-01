@@ -15,6 +15,8 @@ struct EventCell: View {
     
     // MARK: External State
 //    @Binding var lastEventTypeForPenPal: EventType
+    @Binding var showImageViewer: Bool
+    @Binding var previewImage: Image?
     
     // MARK: State
     @State private var iconWidth: CGFloat?
@@ -40,6 +42,36 @@ struct EventCell: View {
         .padding(.top, 10)
     }
     
+    @ViewBuilder
+    func image(from picture: Picture) -> some View {
+        if let image = picture.image() {
+            image
+                .resizable()
+                .scaledToFill()
+                .frame(width: 60, height: 60)
+                .cornerRadius(5)
+        } else {
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    func imageHStack(from pictures: [Picture]) -> some View {
+        HStack {
+            ForEach(pictures) { picture in
+                Button(action: {
+                    if let image = picture.image() {
+                        self.previewImage = image
+                        self.showImageViewer = true
+                    }
+                }) {
+                    self.image(from: picture)
+                }
+            }
+            Spacer()
+        }
+    }
+    
     // MARK: Body
     var body: some View {
         HStack(alignment: .top) {
@@ -63,6 +95,15 @@ struct EventCell: View {
                                     Image(systemName: "line.diagonal")
                                 }
                                 .foregroundColor(.secondary)
+                            }
+                        }
+                        
+                        if !event.allPictures().isEmpty {
+                            ViewThatFits {
+                                imageHStack(from: event.allPictures())
+                                ScrollView(.horizontal) {
+                                    imageHStack(from: event.allPictures())
+                                }
                             }
                         }
                         

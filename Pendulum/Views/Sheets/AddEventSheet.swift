@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AddEventSheet: View {
         
@@ -33,6 +34,9 @@ struct AddEventSheet: View {
     
     @State private var priorWrittenEvent: Event? = nil
     
+    @State private var selectedPhoto: PhotosPickerItem? = nil
+    @State private var selectedPictures: [Picture] = []
+    
     var priorWrittenEventHeaderText: String {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
         return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.wrappedDate, and: Date())
@@ -54,7 +58,6 @@ struct AddEventSheet: View {
             .background(eventType.color)
             Form {
                 if let event = event {
-                    
                     if event.type == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
                         Section {
                             Button(action: {
@@ -73,7 +76,6 @@ struct AddEventSheet: View {
                             .foregroundColor(EventType.sent.color)
                         }
                     }
-                    
                 }
                 
                 Section {
@@ -151,6 +153,68 @@ struct AddEventSheet: View {
                     Toggle("No response needed", isOn: $ignore)
                 }
                 
+
+                Section {
+                    PhotosPicker(
+                                selection: $selectedPhoto,
+                                matching: .images,
+                                photoLibrary: .shared()) {
+                                    Text("Add a photo…")
+                                }
+                                .onChange(of: selectedPhoto) { newItem in
+                                    Task {
+                                        appLogger.debug("Selected photo: \(newItem.debugDescription)")
+                                        do {
+                                            if let data = try await newItem?.loadTransferable(type: Data.self) {
+                                                let newPicture = Picture(context: PersistenceController.shared.container.viewContext)
+                                                newPicture.id = UUID()
+                                                newPicture.data = data
+                                                DispatchQueue.main.async {
+                                                    withAnimation {
+                                                        selectedPictures.append(newPicture)
+                                                    }
+                                                }
+                                            }
+                                        } catch {
+                                            appLogger.debug("Could not load transferable: \(error.localizedDescription)")
+                                        }
+                                    }
+                                }
+                                .listRowSeparator(.hidden)
+                    if !selectedPictures.isEmpty {
+                        ScrollView(.horizontal) {
+                            LazyHStack {
+                                ForEach(selectedPictures) { imageData in
+                                    if let image = imageData.image() {
+                                        ZStack(alignment: .topTrailing) {
+                                            image
+                                                .resizable()
+                                                .scaledToFill()
+                                                .frame(width: 100, height: 100)
+                                                .cornerRadius(10)
+                                            Button(role: .destructive, action: {
+                                                let _ = withAnimation {
+                                                    self.selectedPictures = self.selectedPictures.filter { $0.id != imageData.id }
+                                                }
+                                            }) {
+                                                Label("Delete", systemImage: "x.circle.fill")
+                                                    .font(.headline)
+                                                    .labelStyle(.iconOnly)
+                                                    .foregroundColor(.red)
+                                            }
+                                            .buttonStyle(.plain)
+                                            .backgroundCircle(color: .white, multiplier: 1.0)
+                                            .offset(x: 5, y: -5)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding([.horizontal, .bottom])
+                        }
+                        .listRowInsets(EdgeInsets())
+                    }
+                }
+                
                 Section(footer: Group {
                     Button(action: {
                         done()
@@ -162,9 +226,9 @@ struct AddEventSheet: View {
                 }) {
                     Button(action: {
                         if let event = event {
-                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
+                            event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPictures: selectedPictures)
                         } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
+                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPictures: selectedPictures)
                         }
                         done()
                     }) {
@@ -198,6 +262,7 @@ struct AddEventSheet: View {
                 self.paper = event.paper ?? ""
                 self.letterType = event.letterType
                 self.ignore = event.ignore
+                self.selectedPictures = event.allPictures()
             }
         }
         .task {

@@ -15,6 +15,8 @@ struct PenPalView: View {
     
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
+    @Binding var showImageViewer: Bool
+    @Binding var image: Image?
     let didSave =  NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
     
     // MARK: State
@@ -25,7 +27,7 @@ struct PenPalView: View {
     @State private var showingPenPalContactSheet: Bool = false
     @State private var presentPropertyDetailsSheet: Bool = false
     
-    init(penpal: PenPal) {
+    init(penpal: PenPal, showImageViewer: Binding<Bool>, image: Binding<Image?>) {
         self.penpal = penpal
         self._events = FetchRequest<Event>(
             sortDescriptors: [
@@ -34,6 +36,8 @@ struct PenPalView: View {
             predicate: NSPredicate(format: "penpal = %@", penpal),
             animation: .default
         )
+        self._showImageViewer = showImageViewer
+        self._image = image
     }
     
     @ViewBuilder
@@ -151,7 +155,7 @@ struct PenPalView: View {
                                 dateDivider(for: event.wrappedDate, withDifference: difference)
                                     .padding(.bottom)
                             }
-                            EventCell(event: event, penpal: penpal)
+                            EventCell(event: event, penpal: penpal, showImageViewer: $showImageViewer, previewImage: $image)
                                 .padding(.bottom)
                         }
                     }

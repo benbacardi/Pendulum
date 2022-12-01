@@ -62,7 +62,7 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false) {
+    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, withPictures pictures: [Picture]? = nil) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
@@ -75,6 +75,12 @@ extension PenPal {
         newEvent.letterType = letterType
         newEvent.ignore = ignore
         self.addToEvents(newEvent)
+        if let pictures = pictures {
+            dataLogger.debug("There are pictures for the event: \(pictures.count)")
+            for picture in pictures {
+                newEvent.addToPictures(picture)
+            }
+        }
         self.updateLastEventType()
         PersistenceController.shared.save()
     }
