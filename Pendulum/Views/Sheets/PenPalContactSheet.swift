@@ -40,38 +40,52 @@ struct PenPalContactSheet: View {
                     if contactsAccessStatus != .authorized && !self.stopAskingAboutContacts {
                         ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses \(penpal.wrappedName).")
                             .padding(.top)
-                    } else if !self.stopAskingAboutContacts {
+                    } else {
                         
-                        if contactID == nil {
-                            
-                            Text("\(penpal.wrappedName) is not currently associated with one of your contacts, so Pendulum cannot fetch any addresses.")
-                                .fullWidth(alignment: .center)
-                                .foregroundColor(.secondary)
-                                .padding()
+                        if self.stopAskingAboutContacts {
                             
                             Button(action: {
                                 self.presentingEditSheet = true
                             }) {
                                 Text("Edit Name and Photo")
                             }
+                            .padding()
                             
                         } else {
                             
-                            if addresses.isEmpty {
-                                Text("You have no addresses saved for \(penpal.wrappedName)!")
+                            if contactID == nil {
+                                
+                                Text("\(penpal.wrappedName) is not currently associated with one of your contacts, so Pendulum cannot fetch any addresses.")
                                     .fullWidth(alignment: .center)
+                                    .foregroundColor(.secondary)
                                     .padding()
-                            } else {
-                                ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
-                                    ContactAddress(address: address, placemark: placemark)
+                                
+                                Button(action: {
+                                    self.presentingEditSheet = true
+                                }) {
+                                    Text("Edit Name and Photo")
                                 }
-                            }
-                            
-                            Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
-                                .fullWidth(alignment: .center)
-                                .font(.caption)
-                                .foregroundColor(.secondary)
                                 .padding()
+                                
+                            } else {
+                                
+                                if addresses.isEmpty {
+                                    Text("You have no addresses saved for \(penpal.wrappedName)!")
+                                        .fullWidth(alignment: .center)
+                                        .padding()
+                                } else {
+                                    ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
+                                        ContactAddress(address: address, placemark: placemark)
+                                    }
+                                }
+                                
+                                Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
+                                    .fullWidth(alignment: .center)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .padding()
+                                
+                            }
                             
                         }
                     }

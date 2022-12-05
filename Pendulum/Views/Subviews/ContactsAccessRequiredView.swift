@@ -49,9 +49,16 @@ struct ContactsAccessRequiredView: View {
                         let store = CNContactStore()
                         do {
                             let result = try await store.requestAccess(for: .contacts)
-                            self.contactsAccessStatus = result ? .authorized : .denied
+                            if result {
+                                self.contactsAccessStatus = .authorized
+                            } else {
+                                self.contactsAccessStatus = .denied
+                                UserDefaults.shared.stopAskingAboutContacts = true
+                            }
                         } catch {
-                            print("Could not request contacts access: \(error.localizedDescription)")
+                            appLogger.debug("Could not request contacts access: \(error.localizedDescription)")
+                            self.contactsAccessStatus = .denied
+                            UserDefaults.shared.stopAskingAboutContacts = true
                         }
                     }
                 }) {
