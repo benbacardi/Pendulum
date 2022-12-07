@@ -35,9 +35,12 @@ extension PenPal {
         if self.archived {
             return EventType.archived
         } else {
-            if self.lastEventType == .noEvent {
+            switch self.lastEventType {
+            case .noEvent:
                 return (self.events?.count ?? 0) == 0 ? EventType.noEvent : EventType.nothingToDo
-            } else {
+            case .theyReceived:
+                return .sent
+            default:
                 return self.lastEventType
             }
         }
