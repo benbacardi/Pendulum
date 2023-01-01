@@ -38,6 +38,14 @@ struct AddEventSheet: View {
         return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.wrappedDate, and: Date())
     }
     
+    var ignoreFooterText: String {
+        if eventType == .written || eventType == .sent || eventType == .theyReceived {
+            return "If enabled, Pendulum won't indicate that you are waiting for a response to this \(letterType.description)."
+        } else {
+            return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             VStack(spacing: 4) {
@@ -147,7 +155,7 @@ struct AddEventSheet: View {
                     }
                 }
                 
-                Section(footer: Text("\(eventType == .written || eventType == .sent || eventType == .theyReceived ? "They" : "You") \(ignore ? "won't" : "will") be prompted to respond to this \(letterType.description).")) {
+                Section(footer: Text(ignoreFooterText)) {
                     Toggle("No response needed", isOn: $ignore)
                 }
                 
