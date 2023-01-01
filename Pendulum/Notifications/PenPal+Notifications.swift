@@ -12,7 +12,11 @@ extension PenPal {
     
     /// Delay before sending a notification to write back, in seconds
     /// 7 days = 7 * 24 * 60 * 60
+    #if DEBUG
     static let sendWriteBackNotificationDelay: Double = 120
+    #else
+    static let sendWriteBackNotificationDelay: Double = 7 * 24 * 60 * 60
+    #endif
     
     static let shouldPostLettersNotificationIdentifier: String = "shouldPostLetters"
     
