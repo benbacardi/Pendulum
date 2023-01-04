@@ -254,12 +254,14 @@ extension PenPal {
         PersistenceController.shared.save()
     }
     
-    static func syncWithContacts() async {
+    func syncWithContact() {
         
-        let context = PersistenceController.shared.container.viewContext
-            
+        appLogger.debug("Syncing \(self.wrappedName) with contacts")
+        
         if CNContactStore.authorizationStatus(for: .contacts) == .authorized && !UserDefaults.shared.stopAskingAboutContacts {
-        
+            
+            appLogger.debug("Authorisation")
+            
             let store = CNContactStore()
             let keys = [
                 CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
@@ -268,55 +270,34 @@ extension PenPal {
                 CNContactThumbnailImageDataKey
             ] as! [CNKeyDescriptor]
             
-            let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
-            let penpals = (try? context.fetch(fetchRequest)) ?? []
-            let mapping = UserDefaults.shared.penpalContactMap
-            
-            appLogger.debug("Current Pen Pal mappings: \(mapping)")
-            
-            for penpal in penpals {
-                guard let uuid = penpal.id, let contactID = mapping[uuid.uuidString] else { continue }
-                appLogger.debug("Mapping for \(penpal.wrappedName) to \(contactID)")
-                do {
-                    let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                    penpal.update(from: contact, saving: false)
-                } catch {
-                    appLogger.error("Could not fetch contact with ID \(contactID) \(penpal.wrappedName): \(error.localizedDescription)")
+            if let uuid = self.id {
+                let mapping = UserDefaults.shared.penpalContactMap
+                if let contactID = mapping[uuid.uuidString] {
+                    do {
+                        appLogger.debug("Fetching contact \(contactID) for \(self.wrappedName)")
+                        let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                        self.update(from: contact)
+                    } catch {
+                        appLogger.error("Could not fetch contact with ID \(contactID) \(self.wrappedName): \(error.localizedDescription)")
+                    }
                 }
-            }
-            
-            if context.hasChanges {
-                dataLogger.debug("Saving changes in context")
-                do {
-                    try context.save()
-                } catch {
-                    dataLogger.error("Could not save context: \(error.localizedDescription)")
-                }
-            }
-            
-            let penpalsWithNoContact: [String: [PenPal]] = Dictionary(grouping: penpals.filter {
-                guard let uuid = $0.id else { return false }
-                return mapping[uuid.uuidString] == nil
-            }, by: { $0.wrappedName })
-            
-            appLogger.debug("Trying to match \(penpalsWithNoContact.count) penpals")
-            if !penpalsWithNoContact.isEmpty {
+            } else {
                 let request = CNContactFetchRequest(keysToFetch: keys)
                 request.sortOrder = CNContactsUserDefaults.shared().sortOrder
                 do {
                     try store.enumerateContacts(with: request) { (contact, stop) in
-                        if let matchingPenPals = penpalsWithNoContact[contact.fullName ?? "UNKNOWN CONTACT"] {
-                            for penpal in matchingPenPals {
-                                appLogger.debug("Setting \(penpal.wrappedName) to contact \(contact.identifier)")
-                                UserDefaults.shared.setContactID(for: penpal, to: contact.identifier)
-                            }
+                        if contact.fullName == self.wrappedName {
+                            appLogger.debug("Setting \(self.wrappedName) to contact \(contact.identifier)")
+                            UserDefaults.shared.setContactID(for: self, to: contact.identifier)
                         }
                     }
                 } catch {
-                    dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
+                    appLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                 }
             }
+            
         }
+        
     }
     
     static func calculateBadgeNumber(toWrite: Bool, toPost: Bool) -> Int {

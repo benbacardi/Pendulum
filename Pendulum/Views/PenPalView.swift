@@ -192,6 +192,9 @@ struct PenPalView: View {
             self.buttonHeight = $0
         }
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            penpal.syncWithContact()
+        }
     }
     
     func userTappedAddEvent(ofType eventType: EventType) {

@@ -156,11 +156,6 @@ struct PenPalList: View {
                 }
             }
             .listStyle(.plain)
-            .task {
-                if !self.stopAskingAboutContacts {
-                    await PenPal.syncWithContacts()
-                }
-            }
         }
     }
     
