@@ -32,6 +32,7 @@ struct PenPalList: View {
     @State private var presentingStationerySheet: Bool = false
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
+    @State private var selectedPenPal: PenPal? = nil
     
     @ViewBuilder
     func sectionHeader(for type: EventType) -> some View {
@@ -57,7 +58,7 @@ struct PenPalList: View {
     @ViewBuilder
     func penPalNavigationLink(for penpal: PenPal) -> some View {
         ZStack {
-            NavigationLink(destination: PenPalView(penpal: penpal)) {
+            NavigationLink(destination: PenPalView(penpal: penpal), tag: penpal, selection: $selectedPenPal) {
                 EmptyView()
             }
             .opacity(0)
@@ -216,10 +217,16 @@ struct PenPalList: View {
             EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
         }
         .sheet(isPresented: $presentingAddPenPalSheet) {
-            AddPenPalSheet(existingPenPals: penpals)
+            AddPenPalSheet(existingPenPals: penpals) { newPenPal in
+                presentingAddPenPalSheet = false
+                selectedPenPal = newPenPal
+            }
         }
         .sheet(isPresented: $presentingManualAddPenPalSheet) {
-            ManualAddPenPalSheet()
+            ManualAddPenPalSheet() { newPenPal in
+                presentingManualAddPenPalSheet = false
+                selectedPenPal = newPenPal
+            }
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()

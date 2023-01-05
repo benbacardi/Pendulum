@@ -16,15 +16,13 @@ struct ManualAddPenPalSheet: View {
     
     // MARK: Parameters
     var penpal: PenPal? = nil
+    let done: (PenPal) -> ()
     
     // MARK: State
     @State private var name: String = ""
     @State private var imageData: Data? = nil
     @State private var selectedPhoto: PhotosPickerItem? = nil
     @State private var imageLoading: Bool = false
-    
-    // MARK: Parameters
-    var done: (() -> ())? = nil
     
     var initials: String {
         if name.isEmpty {
@@ -142,11 +140,7 @@ struct ManualAddPenPalSheet: View {
                         Task {
                             if let penpal = penpal {
                                 penpal.update(name: name, initials: initials, image: imageData)
-                                if let done = done {
-                                    done()
-                                } else {
-                                    presentationMode.wrappedValue.dismiss()
-                                }
+                                done(penpal)
                             } else {
                                 let newPenPal = PenPal(context: moc)
                                 newPenPal.id = UUID()
@@ -156,11 +150,7 @@ struct ManualAddPenPalSheet: View {
                                 newPenPal.lastEventType = EventType.noEvent
                                 do {
                                     try moc.save()
-                                    if let done = done {
-                                        done()
-                                    } else {
-                                        presentationMode.wrappedValue.dismiss()
-                                    }
+                                    done(newPenPal)
                                 } catch {
                                     dataLogger.error("Could not save manual PenPal: \(error.localizedDescription)")
                                 }
@@ -184,7 +174,9 @@ struct ManualAddPenPalSheet: View {
 
 struct ManualAddPenPalSheet_Previews: PreviewProvider {
     static var previews: some View {
-        ManualAddPenPalSheet()
-            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+        ManualAddPenPalSheet() { newPenPal in
+            
+        }
+        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

@@ -142,7 +142,7 @@ struct PenPalContactSheet: View {
             .navigationBarTitleDisplayMode(.inline)
         }
         .sheet(isPresented: $presentingEditSheet) {
-            ManualAddPenPalSheet(penpal: penpal) {
+            ManualAddPenPalSheet(penpal: penpal) { _ in
                 self.presentingEditSheet = false
             }
         }

@@ -16,6 +16,7 @@ struct AddPenPalSheet: View {
     
     // MARK: Parameters
     let existingPenPals: FetchedResults<PenPal>
+    let done: (PenPal) -> ()
     
     // MARK: State
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
@@ -49,7 +50,7 @@ struct AddPenPalSheet: View {
                                         do {
                                             try moc.save()
                                             UserDefaults.shared.setContactID(for: newPenPal, to: contact.identifier)
-                                            presentationMode.wrappedValue.dismiss()
+                                            done(newPenPal)
                                         } catch {
                                             dataLogger.error("Could not save PenPal: \(error.localizedDescription)")
                                         }
@@ -171,9 +172,9 @@ struct AddPenPalSheet: View {
             }
         }
         .sheet(isPresented: $presentingManualAddPenPalSheet) {
-            ManualAddPenPalSheet() {
+            ManualAddPenPalSheet(penpal: nil) { newPenPal in
                 self.presentingManualAddPenPalSheet = false
-                self.presentationMode.wrappedValue.dismiss()
+                done(newPenPal)
             }
         }
     }
