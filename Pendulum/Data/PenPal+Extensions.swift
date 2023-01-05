@@ -123,6 +123,12 @@ extension PenPal {
             self.cancelShouldWriteBackNotification()
         }
         
+        UIApplication.shared.updateBadgeNumber()
+        
+        Task {
+            await Self.scheduleShouldPostLettersNotification()
+        }
+        
         return newEventType
         
     }

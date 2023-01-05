@@ -154,11 +154,13 @@ struct SettingsList: View {
                 if newValue {
                     requestNotificationAccess()
                 }
+                UIApplication.shared.updateBadgeNumber()
             }
             .onChange(of: badgeRemindersToPostLetters) { newValue in
                 if newValue {
                     requestNotificationAccess()
                 }
+                UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
         }

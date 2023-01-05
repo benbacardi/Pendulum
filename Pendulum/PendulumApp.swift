@@ -37,15 +37,6 @@ struct PendulumApp: App {
             ContentView()
                 .environmentObject(OrientationObserver.shared)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
-                .onChange(of: scenePhase) { scenePhase in
-                    if scenePhase == .background {
-                        persistenceController.save()
-                        Task {
-                            await PenPal.scheduleShouldPostLettersNotification()
-                            UIApplication.shared.updateBadgeNumber()
-                        }
-                    }
-                }
         }
     }
 }
