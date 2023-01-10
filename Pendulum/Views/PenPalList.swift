@@ -58,7 +58,7 @@ struct PenPalList: View {
     @ViewBuilder
     func penPalNavigationLink(for penpal: PenPal) -> some View {
         ZStack {
-            NavigationLink(destination: PenPalView(penpal: penpal), tag: penpal, selection: $selectedPenPal) {
+            NavigationLink(destination: PenPalView(penpal: penpal)) {
                 EmptyView()
             }
             .opacity(0)
