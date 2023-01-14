@@ -53,7 +53,7 @@ struct PendulumWidgetEntryView : View {
     
     var entry: Provider.Entry
     
-    @State private var iconWidth: CGFloat = .zero
+    @State private var iconWidth: CGFloat = 20
     
     var maxListLength: Int {
         switch widgetFamily {
@@ -197,33 +197,34 @@ struct PendulumWidgetEntryView : View {
                 } else {
                     
                     VStack(spacing: 0) {
-                        if !data.toWriteBack.isEmpty {
-                            HStack(spacing: 0) {
-                                toReplyIcon(data: data)
-                                Spacer()
-                                toSendIcon(data: data)
-                            }
-                            if widgetFamily != .systemLarge {
-                                Spacer()
-                            } else {
-                                Spacer()
-                                    .frame(height: 8)
-                            }
-                            repliesTitle
-                            if widgetFamily ==  .systemLarge {
-                                Rectangle()
-                                    .frame(minHeight: 2, maxHeight: 2)
-                                    .padding(.vertical, 8)
-                                    .opacity(0.2)
-                            }
+                        HStack(spacing: 0) {
+                            toReplyIcon(data: data)
                             Spacer()
-                                .frame(height: 5)
-                            penPalList(data: data)
-                            if widgetFamily == .systemLarge {
-                                Spacer()
-                            }
+                            toSendIcon(data: data)
+                        }
+                        if widgetFamily != .systemLarge {
+                            Spacer()
                         } else {
-                            Text("All done!")
+                            Spacer()
+                                .frame(height: 8)
+                        }
+                        repliesTitle
+                        if widgetFamily ==  .systemLarge {
+                            Rectangle()
+                                .frame(minHeight: 2, maxHeight: 2)
+                                .padding(.vertical, 8)
+                                .opacity(0.2)
+                        }
+                        Spacer()
+                            .frame(height: 5)
+                        if data.toWriteBack.isEmpty {
+                            Text("All caught up!")
+                                .fullWidth()
+                        } else {
+                            penPalList(data: data)
+                        }
+                        if widgetFamily == .systemLarge {
+                            Spacer()
                         }
                     }
                     .padding()
@@ -241,7 +242,7 @@ struct PendulumWidgetEntryView : View {
     }
     
     struct WidgetIconWidthPreferenceKey: PreferenceKey {
-        static let defaultValue: CGFloat = 0
+        static let defaultValue: CGFloat = 20
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
             value = max(value, nextValue())
         }
