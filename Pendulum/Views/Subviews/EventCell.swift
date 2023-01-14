@@ -81,22 +81,31 @@ struct EventCell: View {
                                     if let pen = event.pen, !pen.isEmpty {
                                         GridRow {
                                             Image(systemName: "pencil")
-                                            Text(pen)
-                                                .fullWidth()
+                                            VStack(spacing: 2) {
+                                                ForEach(event.pens, id: \.self) { pen in
+                                                    Text(pen).fullWidth()
+                                                }
+                                            }
                                         }
                                     }
                                     if let ink = event.ink, !ink.isEmpty {
                                         GridRow {
                                             Image(systemName: "drop")
-                                            Text(ink)
-                                                .fullWidth()
+                                            VStack(spacing: 2) {
+                                                ForEach(event.inks, id: \.self) { ink in
+                                                    Text(ink).fullWidth()
+                                                }
+                                            }
                                         }
                                     }
                                     if let paper = event.paper, !paper.isEmpty {
                                         GridRow {
                                             Image(systemName: "doc.plaintext")
-                                            Text(paper)
-                                                .fullWidth()
+                                            VStack(spacing: 2) {
+                                                ForEach(event.papers, id: \.self) { paper in
+                                                    Text(paper).fullWidth()
+                                                }
+                                            }
                                         }
                                     }
                                 }
