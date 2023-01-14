@@ -184,16 +184,26 @@ extension PenPal {
         }
         do {
             let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
-            var intermediate = Dictionary(grouping: results) {
+            
+            var pending: [String: Int] = [:]
+            
+            for event in results {
+                let keys: [String]
                 switch stationery {
                 case .pen:
-                    return $0.pen ?? ""
+                    keys = event.pens
                 case .ink:
-                    return $0.ink ?? ""
+                    keys = event.inks
                 case .paper:
-                    return $0.paper ?? ""
+                    keys = event.papers
                 }
-            }.filter { $0.key != "" }.map { ParameterCount(name: $0.key, count: $0.value.count) }
+                for key in keys {
+                    pending[key] = (pending[key] ?? 0) + 1
+                }
+            }
+            
+            var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value) }
+            
             if penpal == nil {
                 let unusedStationery = Stationery.fetchUnused(for: stationery)
                 let setOfResults = Set(intermediate.map { $0.name })

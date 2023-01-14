@@ -31,7 +31,11 @@ struct ChooseTextSheet: View {
             List {
                 ForEach(options, id: \.self) { option in
                     Button(action: {
-                        self.text = option
+                        if self.text.trimmingCharacters(in: .whitespaces) != "" {
+                            self.text = "\(self.text); \(option)"
+                        } else {
+                            self.text = option
+                        }
                         presentationMode.wrappedValue.dismiss()
                     }) {
                         Text(option)

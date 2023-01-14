@@ -33,6 +33,21 @@ extension Event {
         !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true)
     }
     
+    var inks: [String] {
+        guard let inks = self.ink else { return [] }
+        return inks.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+    }
+    
+    var pens: [String] {
+        guard let pens = self.pen else { return [] }
+        return pens.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+    }
+    
+    var papers: [String] {
+        guard let papers = self.paper else { return [] }
+        return papers.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+    }
+    
 }
 
 extension Event {
