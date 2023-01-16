@@ -17,7 +17,7 @@ extension UIApplication {
     }
     
     func updateBadgeNumber() {
-        let fetchedBadgeNumber = PenPal.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters && !UserDefaults.shared.ignoreSendStatus)
+        let fetchedBadgeNumber = PenPal.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters && UserDefaults.shared.trackPostingLetters)
         appLogger.debug("Setting applicationIconBadgeNumber to \(fetchedBadgeNumber)")
         DispatchQueue.main.async {
             self.applicationIconBadgeNumber = fetchedBadgeNumber

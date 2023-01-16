@@ -19,15 +19,15 @@ extension UserDefaults {
         case sendRemindersToPostLettersAtMinute
         case penpalContactMap
         case stopAskingAboutContacts
-        case ignoreSendStatus
+        case trackPostingLetters
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
     
     @objc
-    var ignoreSendStatus: Bool {
-        get { bool(forKey: Key.ignoreSendStatus.rawValue) }
-        set { setValue(newValue, forKey: Key.ignoreSendStatus.rawValue) }
+    var trackPostingLetters: Bool {
+        get { bool(forKey: Key.trackPostingLetters.rawValue) }
+        set { setValue(newValue, forKey: Key.trackPostingLetters.rawValue) }
     }
     
     @objc

@@ -27,7 +27,7 @@ extension PenPal {
     
     static func scheduleShouldPostLettersNotification() async {
         PenPal.cancelAllShouldPostLettersNotifications()
-        if UserDefaults.shared.sendRemindersToPostLetters == false || UserDefaults.shared.ignoreSendStatus {
+        if UserDefaults.shared.sendRemindersToPostLetters == false || !UserDefaults.shared.trackPostingLetters {
             return
         }
         
