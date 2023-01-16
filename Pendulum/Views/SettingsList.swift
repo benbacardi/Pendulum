@@ -6,11 +6,14 @@
 //
 
 import SwiftUI
+import CoreMotion
 
 struct SettingsList: View {
     
     // MARK: Environment
     @Environment(\.openURL) private var openURL
+    
+    let motionManager = CMMotionManager()
     
     // MARK: State
     @AppStorage(UserDefaults.Key.sendRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToWriteLetters: Bool = false
@@ -23,6 +26,18 @@ struct SettingsList: View {
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
+    
+    @State private var angle: Double = 0
+    
+    var rotationAngle: Double {
+        if angle < -9 {
+            return -9
+        }
+        if angle > 9 {
+            return 9
+        }
+        return angle
+    }
     
     var someNotificationAccessRequired: Bool {
         sendRemindersToPostLetters || sendRemindersToWriteLetters || badgeRemindersToPostLetters || badgeRemindersToWriteLetters
@@ -49,12 +64,17 @@ struct SettingsList: View {
                 }
                 
                 Section(
-                    header: Text("Notifications"),
+                    header: HStack {
+                        Image(systemName: "bell")
+                        Text("Notifications")
+                        Spacer()
+                    },
                     footer: Text("Reminders will be sent seven days after you receive a letter, and daily at the specified time after you've written back but not yet posted the response.")
                 ) {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
@@ -62,32 +82,46 @@ struct SettingsList: View {
                                 .disabled(!trackPostingLetters)
                         }
                         .padding(.leading, 4)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                     }
                 }
                 
-                Section(header: Text("Icon Badges")) {
+                Section(header: HStack {
+                    Image(systemName: "app.badge")
+                    Text("Icon Badges")
+                    Spacer()
+                }) {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                 }
-                
+
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
                     Toggle("Track posting letters", isOn: $trackPostingLetters)
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
-                
+
                 Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
                 }
                 
                 Section(
                     header: VStack {
-                        if let appIcon = UIImage(named: "pendulum") {
-                            Image(uiImage: appIcon)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(width: 50, height: 50)
-                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        if let appIcon = UIImage(named: "no-pendulum") {
+                            ZStack(alignment: .top) {
+                                Image(uiImage: appIcon)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 50, height: 50)
+                                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                                Image("just-pendulum")
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 20, height: 32, alignment: .top)
+                                    .offset(y: 2)
+                                    .rotationEffect(.degrees(-rotationAngle), anchor: .top)
+                            }
                         }
                         Text(Bundle.main.appName)
                             .textCase(nil)
@@ -171,6 +205,23 @@ struct SettingsList: View {
                 UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
+            .onAppear {
+                Task {
+                    if motionManager.isDeviceMotionAvailable {
+                        motionManager.deviceMotionUpdateInterval = 0.1
+                        let queue = OperationQueue()
+                        motionManager.startDeviceMotionUpdates(to: queue, withHandler: { motion, error in
+                            if let attitude = motion?.attitude {
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        self.angle = attitude.roll * 180.0/Double.pi
+                                    }
+                                }
+                            }
+                        })
+                    }
+                }
+            }
         }
     }
     
