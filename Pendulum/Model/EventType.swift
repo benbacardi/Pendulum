@@ -112,6 +112,9 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .noEvent:
             return "Get started!"
         case .written:
+            if UserDefaults.shared.ignoreSendStatus {
+                return "You're waiting for a response"
+            }
             return "You have letters to post!"
         case .sent, .theyReceived:
             return "You're waiting for a response"
@@ -217,18 +220,30 @@ enum EventType: Int, CaseIterable, Identifiable {
     var nextLogicalEventTypes: [EventType] {
         switch self {
         case .noEvent, .nothingToDo:
+            if UserDefaults.shared.ignoreSendStatus {
+                return [.written]
+            }
             return [.written, .sent]
         case .written:
+            if UserDefaults.shared.ignoreSendStatus {
+                return [.inbound, .received]
+            }
             return [.sent]
         case .sent:
-            return [.theyReceived, .inbound]
+            return [.inbound, .received]
         case .inbound:
             return [.received]
         case .received:
+            if UserDefaults.shared.ignoreSendStatus {
+                return [.written]
+            }
             return [.written, .sent]
         case .theyReceived:
             return [.inbound, .received]
         case .archived:
+            if UserDefaults.shared.ignoreSendStatus {
+                return [.written]
+            }
             return [.written, .sent]
         }
     }

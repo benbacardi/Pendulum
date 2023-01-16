@@ -19,6 +19,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
     @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.ignoreSendStatus.rawValue, store: UserDefaults.shared) private var ignoreSendStatus: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
@@ -53,10 +54,12 @@ struct SettingsList: View {
                 ) {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
+                        .disabled(ignoreSendStatus)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
                             DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
+                                .disabled(ignoreSendStatus)
                         }
                         .padding(.leading, 4)
                     }
@@ -65,9 +68,11 @@ struct SettingsList: View {
                 Section(header: Text("Icon Badges")) {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
+                        .disabled(ignoreSendStatus)
                 }
                 
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
+                    Toggle("Skip posting letters", isOn: $ignoreSendStatus)
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
                 
@@ -160,6 +165,9 @@ struct SettingsList: View {
                 if newValue {
                     requestNotificationAccess()
                 }
+                UIApplication.shared.updateBadgeNumber()
+            }
+            .onChange(of: ignoreSendStatus) { newValue in
                 UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
