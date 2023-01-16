@@ -41,7 +41,7 @@ extension PenPal {
             case .theyReceived:
                 return .sent
             case .written:
-                if UserDefaults.shared.ignoreSendStatus {
+                if !UserDefaults.shared.trackPostingLetters {
                     return .sent
                 }
                 return self.lastEventType

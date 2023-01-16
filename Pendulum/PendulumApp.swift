@@ -28,6 +28,7 @@ struct PendulumApp: App {
             UserDefaults.shared.register(defaults: [
                 UserDefaults.Key.sendRemindersToPostLettersAtHour.rawValue: 8,
                 UserDefaults.Key.sendRemindersToPostLettersAtMinute.rawValue: 0,
+                UserDefaults.Key.trackPostingLetters.rawValue: true,
             ])
         
         }
