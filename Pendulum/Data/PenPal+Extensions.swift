@@ -40,6 +40,11 @@ extension PenPal {
                 return (self.events?.count ?? 0) == 0 ? EventType.noEvent : EventType.nothingToDo
             case .theyReceived:
                 return .sent
+            case .written:
+                if UserDefaults.shared.ignoreSendStatus {
+                    return .sent
+                }
+                return self.lastEventType
             default:
                 return self.lastEventType
             }
@@ -317,6 +322,7 @@ extension PenPal {
     }
     
     static func calculateBadgeNumber(toWrite: Bool, toPost: Bool) -> Int {
+        appLogger.debug("Calcuating badge - showing to reply? \(toWrite) - showing to post? \(toPost)")
         var count = 0
         if toWrite {
             count += Self.fetch(withStatus: .received).count
