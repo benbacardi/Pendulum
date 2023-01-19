@@ -7,9 +7,11 @@
 
 import SwiftUI
 
-struct ParameterCount: Comparable {
+struct ParameterCount: Comparable, Identifiable {
+    let id = UUID()
     let name: String
     let count: Int
+    let type: StationeryType
     
     static func < (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
         if lhs.count != rhs.count {
@@ -47,10 +49,10 @@ struct EventPropertyDetailsSheet: View {
     @FocusState private var newPaperEntryIsFocused: Bool
     
     @ViewBuilder
-    func section(for title: String, with options: Binding<[ParameterCount]>, icon: String, newEntry: Binding<String>, focused: FocusState<Bool>.Binding, recordType: String) -> some View {
+    func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
         Section(header: HStack {
-            Image(systemName: icon)
-            Text(title)
+            Image(systemName: type.icon)
+            Text(type.namePlural)
         }) {
             ForEach(options.wrappedValue, id: \.name) { option in
                 HStack {
@@ -71,10 +73,10 @@ struct EventPropertyDetailsSheet: View {
                             let stationery = Stationery(context: PersistenceController.shared.container.viewContext)
                             stationery.id = UUID()
                             stationery.value = newEntry.wrappedValue
-                            stationery.type = recordType
+                            stationery.type = type.recordType
                             withAnimation {
                                 PersistenceController.shared.save()
-                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0))
+                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0, type: type))
                                 focused.wrappedValue = false
                                 newEntry.wrappedValue = ""
                             }
@@ -113,9 +115,9 @@ struct EventPropertyDetailsSheet: View {
                     .padding()
                 } else {
                     Form {
-                        section(for: "Pens", with: $pens, icon: "pencil", newEntry: $newPenEntry, focused: $newPenEntryIsFocused, recordType: "pen")
-                        section(for: "Inks", with: $inks, icon: "drop", newEntry: $newInkEntry, focused: $newInkEntryIsFocused, recordType: "ink")
-                        section(for: "Paper", with: $papers, icon: "doc.plaintext", newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused, recordType: "paper")
+                        section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
+                        section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
+                        section(for: .paper, with: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused)
                     }
                 }
             }

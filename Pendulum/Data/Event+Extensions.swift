@@ -5,6 +5,7 @@
 //  Created by Ben Cardy on 21/11/2022.
 //
 
+import CoreData
 import Foundation
 
 extension Event {
@@ -68,6 +69,27 @@ extension Event {
         PersistenceController.shared.container.viewContext.delete(self)
         self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
+    }
+    
+}
+
+extension Event {
+    
+    static func fetch(withStatus eventTypes: [EventType]? = nil) -> [Event] {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        var predicates: [NSPredicate] = []
+        if let eventTypes = eventTypes {
+            predicates.append(
+                NSCompoundPredicate(orPredicateWithSubpredicates: eventTypes.map { NSPredicate(format: "typeValue = %d", $0.rawValue) })
+            )
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch events: \(error.localizedDescription)")
+        }
+        return []
     }
     
 }
