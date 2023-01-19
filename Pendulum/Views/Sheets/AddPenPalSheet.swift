@@ -27,6 +27,32 @@ struct AddPenPalSheet: View {
     @State private var searchText: String = ""
     @State private var presentingManualAddPenPalSheet: Bool = false
     
+    @ViewBuilder
+    func contactEntry(for contact: CNContact) -> some View {
+        HStack {
+            if let image = contact.image {
+                image
+                    .clipShape(Circle())
+                    .frame(width: 40, height: 40)
+            } else {
+                ZStack {
+                    Circle()
+                        .fill(.gray)
+                    Text(contact.initials)
+                        .font(.system(.headline, design: .rounded))
+                        .foregroundColor(.white)
+                }
+                .frame(width: 40, height: 40)
+            }
+            if let name = contact.fullName {
+                Text(name)
+            } else {
+                Text("Unknown Contact")
+            }
+        }
+        .foregroundColor(.primary)
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -56,28 +82,7 @@ struct AddPenPalSheet: View {
                                         }
                                     }
                                 }) {
-                                    HStack {
-                                        if let image = contact.image {
-                                            image
-                                                .clipShape(Circle())
-                                                .frame(width: 40, height: 40)
-                                        } else {
-                                            ZStack {
-                                                Circle()
-                                                    .fill(.gray)
-                                                Text(contact.initials)
-                                                    .font(.system(.headline, design: .rounded))
-                                                    .foregroundColor(.white)
-                                            }
-                                            .frame(width: 40, height: 40)
-                                        }
-                                        if let name = contact.fullName {
-                                            Text(name)
-                                        } else {
-                                            Text("Unknown Contact")
-                                        }
-                                    }
-                                    .foregroundColor(.primary)
+                                    contactEntry(for: contact)
                                 }
                             }
                         }

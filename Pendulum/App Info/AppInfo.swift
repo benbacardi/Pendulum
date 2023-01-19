@@ -13,6 +13,7 @@ let APP_GROUP = "group.uk.co.bencardy.Pendulum"
 enum Tab: Int {
     case penPalList
     case settings
+    case stats
 }
 
 extension Color {

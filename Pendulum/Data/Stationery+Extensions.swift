@@ -12,6 +12,51 @@ enum StationeryType: String {
     case pen
     case ink
     case paper
+    
+    var name: String {
+        switch self {
+        case .pen:
+            return "Pen"
+        case .ink:
+            return "Ink"
+        case .paper:
+            return "Paper"
+        }
+    }
+    
+    var namePlural: String {
+        switch self {
+        case .pen:
+            return "Pens"
+        case .ink:
+            return "Inks"
+        case .paper:
+            return "Paper"
+        }
+    }
+    
+    var recordType: String {
+        switch self {
+        case .pen:
+            return "pen"
+        case .ink:
+            return "ink"
+        case .paper:
+            return "paper"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .pen:
+            return "pencil"
+        case .ink:
+            return "drop"
+        case .paper:
+            return "doc.plaintext"
+        }
+    }
+    
 }
 
 extension Stationery {

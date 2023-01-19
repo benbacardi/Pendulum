@@ -207,14 +207,14 @@ extension PenPal {
                 }
             }
             
-            var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value) }
+            var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value, type: stationery) }
             
             if penpal == nil {
                 let unusedStationery = Stationery.fetchUnused(for: stationery)
                 let setOfResults = Set(intermediate.map { $0.name })
                 for item in unusedStationery {
                     if !setOfResults.contains(item) {
-                        intermediate.append(ParameterCount(name: item, count: 0))
+                        intermediate.append(ParameterCount(name: item, count: 0, type: stationery))
                     }
                 }
             }
@@ -331,6 +331,59 @@ extension PenPal {
             count += Self.fetch(withStatus: .written).count
         }
         return count
+    }
+    
+    func events(withStatus eventTypes: [EventType]? = nil) -> [Event] {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        var predicates: [NSPredicate] = [
+            self.ownEventsPredicate
+        ]
+        if let eventTypes = eventTypes {
+            predicates.append(
+                NSCompoundPredicate(orPredicateWithSubpredicates: eventTypes.map { NSPredicate(format: "typeValue = %d", $0.rawValue) })
+            )
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        do {
+            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch events: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
+    static func averageTimeToRespond() -> Double {
+        
+        var durations: [Int] = []
+        
+        for penpal in PenPal.fetch() {
+            dataLogger.debug("Fetching events for \(penpal.wrappedName)")
+            var fromEvent: Event? = nil
+            for event in penpal.events(withStatus: [.received, .written, .sent]) {
+                if !event.ignore {
+                    dataLogger.debug("Handling event: \(event.type.actionableTextShort) - \(event.wrappedDate)")
+                    if event.type == .received {
+                        fromEvent = event
+                        continue
+                    }
+                    if let calcFromEvent = fromEvent, event.type == .sent || event.type == .written {
+                        dataLogger.debug("Counting days to \(event.type.actionableTextShort) - \(event.wrappedDate)")
+                        durations.append(Calendar.current.numberOfDaysBetween(calcFromEvent.wrappedDate, and: event.wrappedDate))
+                        fromEvent = nil
+                        continue
+                    }
+                }
+            }
+        }
+        
+        if durations.isEmpty {
+            return 0
+        }
+        
+        let average = Double(durations.reduce(0, +)) / Double(durations.count)
+        dataLogger.debug("Durations: \(durations) - Average: \(average)")
+        return average
     }
     
 }
