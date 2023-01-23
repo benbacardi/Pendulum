@@ -62,27 +62,25 @@ struct StatsView: View {
                     GroupBox {
                         HStack {
                             VStack {
-                                HStack {
-                                    Image(systemName: (UserDefaults.shared.trackPostingLetters ? EventType.sent : EventType.written).icon)
-                                    Text(UserDefaults.shared.trackPostingLetters ? "Sent" : "Written")
-                                        .font(.headline)
-                                }
+                                Text(UserDefaults.shared.trackPostingLetters ? "Sent" : "Written")
+                                    .font(.headline)
                                 .foregroundColor((UserDefaults.shared.trackPostingLetters ? EventType.sent : EventType.written).color)
                                 
                                 Text("\(numberSent)")
                                     .font(.system(size: 40, design: .rounded))
+                                    .bold()
+                                    .padding(.top, 1)
                             }
                             .fullWidth(alignment: .center)
                             Divider()
                             VStack {
-                                HStack {
-                                    Image(systemName: EventType.received.icon)
-                                    Text("Received")
-                                        .font(.headline)
-                                }
+                                Text("Received")
+                                    .font(.headline)
                                 .foregroundColor(EventType.received.color)
                                 Text("\(numberReceived)")
                                     .font(.system(size: 40, design: .rounded))
+                                    .bold()
+                                    .padding(.top, 1)
                             }
                             .fullWidth(alignment: .center)
                         }
@@ -92,9 +90,11 @@ struct StatsView: View {
                         Text("Average time to respond to a letter")
                             .fullWidth(alignment: .center)
                             .font(.headline)
-                        Text("\(averageTimeToReply.roundToDecimalPlaces(1)) days")
+                        Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply > 1 ? "s" : "")")
                             .fullWidth(alignment: .center)
                             .font(.system(size: 40, design: .rounded))
+                            .bold()
+                            .padding(.top, 1)
                     }
                     
                     GroupBox {
