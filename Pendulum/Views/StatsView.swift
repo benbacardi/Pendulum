@@ -19,8 +19,12 @@ struct StatsView: View {
     @State private var averageTimeToReply: Double = 0
     @State private var numberReceived: Int = 0
     @State private var numberSent: Int = 0
-    @State private var mostReceived: (PenPal?, Int)? = nil
-    @State private var mostSent: (PenPal?, Int)? = nil
+    
+    @State private var mostCommonRecipients: [PenPal] = []
+    @State private var mostProlificPenPals: [PenPal] = []
+    @State private var mostCommonRecipientCount: Int = 0
+    @State private var mostProlificPenPalCount: Int = 0
+    
     @State private var sentTypes: [LetterType: Int] = [:]
     @State private var receivedTypes: [LetterType: Int] = [:]
     
@@ -99,16 +103,36 @@ struct StatsView: View {
                             .font(.headline)
                         Chart {
                             ForEach(LetterType.allCases) { type in
+                                let sentCount = sentTypes[type] ?? 0
                                 BarMark(
                                     x: .value("Type", type),
-                                    y: .value("Count", sentTypes[type] ?? 0)
+                                    y: .value("Count", sentCount)
                                 )
+                                .annotation(position: .top, alignment: .top) {
+                                    if sentCount != 0 {
+                                        Text("\(sentCount)")
+                                            .font(.footnote)
+                                            .bold()
+                                            .foregroundColor(EventType.sent.color)
+                                            .opacity(0.5)
+                                    }
+                                }
                                 .foregroundStyle(by: .value("type", EventType.sent))
                                 .position(by: .value("type", EventType.sent))
+                                let receivedCount = receivedTypes[type] ?? 0
                                 BarMark(
                                     x: .value("Type", type),
-                                    y: .value("Count", receivedTypes[type] ?? 0)
+                                    y: .value("Count", receivedCount)
                                 )
+                                .annotation(position: .top, alignment: .top) {
+                                    if receivedCount != 0 {
+                                        Text("\(receivedCount)")
+                                            .font(.footnote)
+                                            .bold()
+                                            .foregroundColor(EventType.received.color)
+                                            .opacity(0.5)
+                                    }
+                                }
                                 .foregroundStyle(by: .value("type", EventType.received))
                                 .position(by: .value("type", EventType.received))
                             }
@@ -149,21 +173,25 @@ struct StatsView: View {
                         }
                     }
                     
-                    if let mostSent = mostSent, let penpalSent = mostSent.0 {
+                    if !mostCommonRecipients.isEmpty {
                         GroupBox {
                             Text("Most common recipient")
                                 .font(.headline)
                                 .fullWidth()
-                            PenPalListItem(penpal: penpalSent, asListItem: false, subText: "You've sent them \(mostSent.1) items")
+                            ForEach(mostCommonRecipients) { penpal in
+                                PenPalListItem(penpal: penpal, asListItem: false, subText: "You've sent them \(mostCommonRecipientCount) item\(mostCommonRecipientCount > 1 ? "s" : "")")
+                            }
                         }
                     }
                     
-                    if let mostReceived = mostReceived, let penpalReceived = mostReceived.0 {
+                    if !mostProlificPenPals.isEmpty {
                         GroupBox {
                             Text("Most prolific Pen Pal")
                                 .font(.headline)
                                 .fullWidth()
-                            PenPalListItem(penpal: penpalReceived, asListItem: false, subText: "They've sent you \(mostReceived.1) items")
+                            ForEach(mostProlificPenPals) { penpal in
+                                PenPalListItem(penpal: penpal, asListItem: false, subText: "They've sent you \(mostProlificPenPalCount) item\(mostProlificPenPalCount > 1 ? "s" : "")")
+                            }
                         }
                     }
                     
@@ -175,6 +203,8 @@ struct StatsView: View {
             }
             .navigationTitle("Statistics")
             .task {
+                
+                // Calculate stationery stats
                 
                 let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen).filter { $0.count != 0 }.first
                 let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink).filter { $0.count != 0 }.first
@@ -188,6 +218,8 @@ struct StatsView: View {
                     }
                 }
                 
+                // Calculate reply stats
+                
                 let averageTimeToReply = PenPal.averageTimeToRespond()
                 
                 DispatchQueue.main.async {
@@ -195,6 +227,8 @@ struct StatsView: View {
                         self.averageTimeToReply = averageTimeToReply
                     }
                 }
+                
+                // Calculate Sent/Received stats
                         
                 let allSent: [Event]
                 if UserDefaults.shared.trackPostingLetters {
@@ -213,30 +247,54 @@ struct StatsView: View {
                     }
                 }
                 
+                // Calculate most common recipients
+                                
                 let mostSent = allSent.reduce(into: [PenPal: Int]()) {
                     $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
-                }.sorted {
-                    $0.value > $1.value
-                }.first
+                }
+                
+                var mostCommonRecipients: [PenPal] = []
+                var mostCommonRecipientCount: Int = 0
+                if let highest = mostSent.values.max(), highest > 0 {
+                    mostCommonRecipientCount = highest
+                    mostCommonRecipients = mostSent.filter { $0.value == highest }.compactMap { $0.key }.sorted {
+                        $0.wrappedName < $1.wrappedName
+                    }
+                }
+                
+                // Calculate most prolific pen pals
+                
+                let mostReceived = allReceived.reduce(into: [PenPal: Int]()) {
+                    $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
+                }
+                
+                var mostProlificPenPals: [PenPal] = []
+                var mostProlificPenPalCount: Int = 0
+                if let highest = mostReceived.values.max(), highest > 0 {
+                    mostProlificPenPalCount = highest
+                    mostProlificPenPals = mostReceived.filter { $0.value == highest }.compactMap { $0.key }.sorted {
+                        $0.wrappedName < $1.wrappedName
+                    }
+                }
+                
+                // Calculate letter type stats
                 
                 let sentTypes = allSent.reduce(into: [LetterType: Int]()) {
                     $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
                 }
                 
-                let mostReceived = allReceived.reduce(into: [PenPal: Int]()) {
-                    $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
-                }.sorted {
-                    $0.value > $1.value
-                }.first
-                
                 let receivedTypes = allReceived.reduce(into: [LetterType: Int]()) {
                     $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
                 }
                 
+                // Update UI
+                
                 DispatchQueue.main.async {
                     withAnimation {
-                        self.mostSent = mostSent
-                        self.mostReceived = mostReceived
+                        self.mostCommonRecipients = mostCommonRecipients
+                        self.mostProlificPenPals = mostProlificPenPals
+                        self.mostCommonRecipientCount = mostCommonRecipientCount
+                        self.mostProlificPenPalCount = mostProlificPenPalCount
                         self.sentTypes = sentTypes
                         self.receivedTypes = receivedTypes
                     }
