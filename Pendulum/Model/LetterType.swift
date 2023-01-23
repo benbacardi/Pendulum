@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Charts
 
 enum LetterType: Int, CaseIterable, Identifiable {
     case letter = 0
@@ -67,4 +68,13 @@ enum LetterType: Int, CaseIterable, Identifiable {
         }
     }
     
+}
+
+extension LetterType: Plottable {
+    var primitivePlottable: String {
+        properNoun
+    }
+    init?(primitivePlottable: String) {
+        nil
+    }
 }

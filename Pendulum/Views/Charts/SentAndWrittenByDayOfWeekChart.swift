@@ -53,7 +53,7 @@ struct SentAndWrittenByDayOfWeekChart: View {
     
     var body: some View {
         GroupBox {
-            Text("Letters written and sent per day of the week")
+            Text("Items written and sent per day of the week")
                 .fullWidth()
                 .font(.headline)
             Chart(data) { data in
