@@ -272,7 +272,12 @@ enum EventType: Int, CaseIterable, Identifiable {
 
 extension EventType: Plottable {
     var primitivePlottable: String {
-        actionableTextShort
+        switch self {
+        case .received:
+            return "Received"
+        default:
+            return actionableTextShort
+        }
     }
     init?(primitivePlottable: String) {
         nil
