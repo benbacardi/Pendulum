@@ -70,12 +70,12 @@ struct SentAndWrittenByDayOfWeekChart: View {
                             .opacity(0.5)
                     }
                 }
-                .foregroundStyle(by: .value("Event", data.status.actionableTextShort))
-                .position(by: .value("event", data.status.actionableTextShort))
+                .foregroundStyle(by: .value("Event", data.status))
+                .position(by: .value("event", data.status))
             }
             .chartForegroundStyleScale([
-                EventType.sent.actionableTextShort: EventType.sent.color,
-                EventType.written.actionableTextShort: EventType.written.color,
+                EventType.sent: EventType.sent.color,
+                EventType.written: EventType.written.color,
             ])
             .frame(height: 200)
         }

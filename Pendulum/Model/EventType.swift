@@ -269,3 +269,12 @@ enum EventType: Int, CaseIterable, Identifiable {
     }
     
 }
+
+extension EventType: Plottable {
+    var primitivePlottable: String {
+        actionableTextShort
+    }
+    init?(primitivePlottable: String) {
+        nil
+    }
+}
