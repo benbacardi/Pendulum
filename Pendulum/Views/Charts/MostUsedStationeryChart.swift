@@ -13,12 +13,12 @@ struct MostUsedStationeryChart: View {
     let stationeryType: StationeryType
     
     @State private var data: [ParameterCount] = [
-        ParameterCount(name: "Lamy Safari Pink B", count: 3, type: .pen),
-        ParameterCount(name: "TWSBI Eco Clear M", count: 3, type: .pen),
-        ParameterCount(name: "Jinhao Shark", count: 2, type: .pen),
-        ParameterCount(name: "Lamy AL Star Azure B", count: 1, type: .pen),
-        ParameterCount(name: "Just Turnings Erriapus Kirinite Arctic Blue B", count: 0, type: .pen),
-        ParameterCount(name: "Kaweco Skyline Sport Fox B", count: 0, type: .pen),
+//        ParameterCount(name: "Lamy Safari Pink B", count: 3, type: .pen),
+//        ParameterCount(name: "TWSBI Eco Clear M", count: 3, type: .pen),
+//        ParameterCount(name: "Jinhao Shark", count: 2, type: .pen),
+//        ParameterCount(name: "Lamy AL Star Azure B", count: 1, type: .pen),
+//        ParameterCount(name: "Just Turnings Erriapus Kirinite Arctic Blue B", count: 0, type: .pen),
+//        ParameterCount(name: "Kaweco Skyline Sport Fox B", count: 0, type: .pen),
 //        ParameterCount(name: "Lamy Amazonite", count: 3, type: .ink),
 //        ParameterCount(name: "Krishna Shamrock", count: 2, type: .ink),
 //        ParameterCount(name: "Robert Oster Signature Hot Pink", count: 2, type: .ink),
