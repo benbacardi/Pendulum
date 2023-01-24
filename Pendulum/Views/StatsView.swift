@@ -90,7 +90,7 @@ struct StatsView: View {
                         Text("Average time to respond to a letter")
                             .fullWidth(alignment: .center)
                             .font(.headline)
-                        Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply > 1 ? "s" : "")")
+                        Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply == 1 ? "s" : "")")
                             .fullWidth(alignment: .center)
                             .font(.system(size: 40, design: .rounded))
                             .bold()
@@ -179,7 +179,7 @@ struct StatsView: View {
                                 .font(.headline)
                                 .fullWidth()
                             ForEach(mostCommonRecipients) { penpal in
-                                PenPalListItem(penpal: penpal, asListItem: false, subText: "You've sent them \(mostCommonRecipientCount) item\(mostCommonRecipientCount > 1 ? "s" : "")")
+                                PenPalListItem(penpal: penpal, asListItem: false, subText: "You've sent them \(mostCommonRecipientCount) item\(mostCommonRecipientCount == 1 ? "s" : "")")
                             }
                         }
                     }
@@ -190,7 +190,7 @@ struct StatsView: View {
                                 .font(.headline)
                                 .fullWidth()
                             ForEach(mostProlificPenPals) { penpal in
-                                PenPalListItem(penpal: penpal, asListItem: false, subText: "They've sent you \(mostProlificPenPalCount) item\(mostProlificPenPalCount > 1 ? "s" : "")")
+                                PenPalListItem(penpal: penpal, asListItem: false, subText: "They've sent you \(mostProlificPenPalCount) item\(mostProlificPenPalCount == 1 ? "s" : "")")
                             }
                         }
                     }
