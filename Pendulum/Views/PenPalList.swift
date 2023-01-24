@@ -27,6 +27,7 @@ struct PenPalList: View {
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var iconWidth: CGFloat = .zero
     @State private var presentingSettingsSheet: Bool = false
+    @State private var presentingStatsSheet: Bool = false
     @State private var presentingAddPenPalSheet: Bool = false
     @State private var presentingManualAddPenPalSheet: Bool = false
     @State private var presentingStationerySheet: Bool = false
@@ -173,6 +174,13 @@ struct PenPalList: View {
                                 Label("Settings", systemImage: "gear")
                             }
                         }
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.presentingStatsSheet = true
+                            }) {
+                                Label("Statistics", systemImage: "chart.xyaxis.line")
+                            }
+                        }
                     }
                     ToolbarItem(placement: .navigationBarTrailing) {
                         Button(action: {
@@ -230,6 +238,9 @@ struct PenPalList: View {
         }
         .sheet(isPresented: $presentingSettingsSheet) {
             SettingsList()
+        }
+        .sheet(isPresented: $presentingStatsSheet) {
+            StatsView()
         }
         .onAppear {
             self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
