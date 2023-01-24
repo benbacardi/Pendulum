@@ -16,6 +16,8 @@ struct ContactsAccessRequiredView: View {
     // MARK: External State
     @Binding var contactsAccessStatus: CNAuthorizationStatus
     
+    @State private var presentInfoSheet: Bool = false
+    
     // MARK: Parameters
     var reason: String = "so you can choose your Pen Pals and quickly pull up their addresses when you need them."
     var alwaysShowImage: Bool = false
@@ -65,7 +67,41 @@ struct ContactsAccessRequiredView: View {
                     Text("Grant contacts access")
                 }
             }
+            
+            Button(action: {
+                self.presentInfoSheet = true
+            }) {
+                Text("What does Pendulum do with my contacts information?")
+                    .foregroundColor(.secondary)
+                    .font(.caption)
+            }
+            .padding([.top, .horizontal])
+            
         }
+        .sheet(isPresented: $presentInfoSheet) {
+            ScrollView {
+                GroupBox {
+                    Text("Contacts Access")
+                        .fullWidth()
+                        .font(.headline)
+                        .padding(.bottom, 8)
+                    VStack(spacing: 10) {
+                        Text("Pendulum does not collect any data about you or your device.")
+                            .fullWidth()
+                        Text("Synced data uses private Apple-provided services that we have no access to, and only the name and profile picture of each contact you add is synced in this way. This data is not accessible to anybody other than you.")
+                            .fullWidth()
+                        Text("All other information about your contacts stays local to your device, and **no** data is available to anybody other than you.")
+                            .fullWidth()
+                    }
+                    .foregroundColor(.secondary)
+                }
+                .padding()
+            }
+            .presentationDetents([.medium])
+            .presentationDragIndicator(.visible)
+        }
+        
+        
     }
 }
 
