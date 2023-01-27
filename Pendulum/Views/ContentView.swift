@@ -20,9 +20,6 @@ struct ContentView: View {
                 PenPalList(appPreferences: appPreferences)
                     .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                     .tag(Tab.penPalList.rawValue)
-                StatsView()
-                    .tabItem { Label("Statistics", systemImage: "chart.xyaxis.line") }
-                    .tag(Tab.stats.rawValue)
                 SettingsList(appPreferences: appPreferences)
                     .tabItem { Label("Settings", systemImage: "gear") }
                     .tag(Tab.settings.rawValue)

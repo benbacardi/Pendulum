@@ -10,6 +10,8 @@ import Charts
 
 struct SentByTypeChart: View {
     
+    @Binding var showInbound: Bool
+    
     @Binding var sentTypes: [LetterType: Int]
     @Binding var receivedTypes: [LetterType: Int]
     
@@ -33,13 +35,16 @@ struct SentByTypeChart: View {
     
     var body: some View {
         GroupBox {
-            Text("Items sent by type")
+            Text("By type")
                 .fullWidth()
                 .font(.headline)
             Chart {
                 ForEach(LetterType.allCases) { type in
-                    barMark(for: type, count: sentTypes[type] ?? 0, ofType: .sent)
-                    barMark(for: type, count: receivedTypes[type] ?? 0, ofType: .received)
+                    if !showInbound {
+                        barMark(for: type, count: sentTypes[type] ?? 0, ofType: .sent)
+                    } else {
+                        barMark(for: type, count: receivedTypes[type] ?? 0, ofType: .received)
+                    }
                 }
             }
             .chartForegroundStyleScale([
@@ -53,6 +58,6 @@ struct SentByTypeChart: View {
 
 struct SentByTypeChart_Previews: PreviewProvider {
     static var previews: some View {
-        SentByTypeChart(sentTypes: .constant([.postcard: 2]), receivedTypes: .constant([.postcard: 3, .package: 5]))
+        SentByTypeChart(showInbound: .constant(false), sentTypes: .constant([.postcard: 2]), receivedTypes: .constant([.postcard: 3, .package: 5]))
     }
 }

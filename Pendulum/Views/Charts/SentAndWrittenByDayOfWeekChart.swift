@@ -32,31 +32,26 @@ let SENT_AND_WRITTEN_BY_DAY_OF_WEEK_DATA = [
     StatusCountByDay(status: .written, day: .sun, count: 3)
 ]
 
+let EMPTY_STATUS_COUNTS_BY_DAY: [StatusCountByDay] = Weekday.orderedCases.map { StatusCountByDay(status: .written, day: $0, count: 0) }
+
 struct SentAndWrittenByDayOfWeekChart: View {
     
-    @State private var data: [StatusCountByDay] = [
-        StatusCountByDay(status: .sent, day: .sun, count: 0),
-        StatusCountByDay(status: .sent, day: .mon, count: 0),
-        StatusCountByDay(status: .sent, day: .tue, count: 0),
-        StatusCountByDay(status: .sent, day: .wed, count: 0),
-        StatusCountByDay(status: .sent, day: .thu, count: 0),
-        StatusCountByDay(status: .sent, day: .fri, count: 0),
-        StatusCountByDay(status: .sent, day: .sat, count: 0),
-        StatusCountByDay(status: .written, day: .mon, count: 0),
-        StatusCountByDay(status: .written, day: .tue, count: 0),
-        StatusCountByDay(status: .written, day: .wed, count: 0),
-        StatusCountByDay(status: .written, day: .thu, count: 0),
-        StatusCountByDay(status: .written, day: .fri, count: 0),
-        StatusCountByDay(status: .written, day: .sat, count: 0),
-        StatusCountByDay(status: .written, day: .sun, count: 0)
-    ]
+    @Binding var events: [Event]
+    @Binding var showInbound: Bool
+    
+    @State private var outboundData: [StatusCountByDay] = EMPTY_STATUS_COUNTS_BY_DAY
+    @State private var inboundData: [StatusCountByDay] = EMPTY_STATUS_COUNTS_BY_DAY
+    
+    var chartData: [StatusCountByDay] {
+        showInbound ? inboundData : outboundData
+    }
     
     var body: some View {
         GroupBox {
-            Text("Items written and sent per day of the week")
+            Text("By day of the week")
                 .fullWidth()
                 .font(.headline)
-            Chart(data) { data in
+            Chart(chartData) { data in
                 BarMark(
                     x: .value("Day", data.day.shortName),
                     y: .value("Count", data.count)
@@ -76,41 +71,41 @@ struct SentAndWrittenByDayOfWeekChart: View {
             .chartForegroundStyleScale([
                 EventType.sent: EventType.sent.color,
                 EventType.written: EventType.written.color,
+                EventType.received: EventType.received.color,
             ])
-            .frame(height: 200)
+            .frame(height: 150)
         }
-        .task {
-            
+        .onChange(of: events) { _ in
             var days: [Weekday: [Event]] = [:]
-            
-            for event in Event.fetch(withStatus: [.written, .sent]) {
+            for event in events {
                 if !days.keys.contains(event.wrappedDate.weekday) {
                     days[event.wrappedDate.weekday] = []
                 }
                 days[event.wrappedDate.weekday]?.append(event)
             }
-            
-            var results: [StatusCountByDay] = []
-            for eventType in [EventType.written, EventType.sent] {
+            var outboundResults: [StatusCountByDay] = []
+            var inboundResults: [StatusCountByDay] = []
+            for eventType in [EventType.written, EventType.sent, EventType.received] {
                 for day in Weekday.orderedCases {
-                    let count = (days[day] ?? []).filter { $0.type == eventType }.count
-                    results.append(StatusCountByDay(status: eventType, day: day, count: count))
+                    let result = StatusCountByDay(status: eventType, day: day, count: (days[day] ?? []).filter { $0.type == eventType }.count)
+                    if eventType == .received {
+                        inboundResults.append(result)
+                    } else {
+                        outboundResults.append(result)
+                    }
                 }
             }
-            
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.data = results
-                }
+            withAnimation {
+                self.outboundData = outboundResults
+                self.inboundData = inboundResults
             }
-            
         }
     }
 }
 
 struct SentAndWrittenByDayOfWeekChart_Previews: PreviewProvider {
     static var previews: some View {
-        SentAndWrittenByDayOfWeekChart()
+        SentAndWrittenByDayOfWeekChart(events: .constant([]), showInbound: .constant(false))
             .padding()
     }
 }

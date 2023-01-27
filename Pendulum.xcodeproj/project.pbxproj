@@ -10,6 +10,7 @@
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
 		5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461EF2983BF6700BBD038 /* AppPreferences.swift */; };
+		5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
 		5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E40550C2914205F00BD52BF /* Assets.xcassets */; };
 		5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5E4055102914205F00BD52BF /* Preview Assets.xcassets */; };
@@ -62,6 +63,7 @@
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		5E3461EF2983BF6700BBD038 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
+		5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByMonthChart.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5E4055082914205D00BD52BF /* PendulumApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PendulumApp.swift; sourceTree = "<group>"; };
 		5E40550C2914205F00BD52BF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -288,6 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */,
+				5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */,
 				5E7EC41E29801FD400C24189 /* SentByTypeChart.swift */,
 				5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */,
 			);
@@ -370,6 +373,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
+				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,

@@ -92,4 +92,15 @@ extension Event {
         return []
     }
     
+    static func count() -> Int {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        fetchRequest.resultType = NSFetchRequestResultType.countResultType
+        do {
+            return try PersistenceController.shared.container.viewContext.count(for: fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch events: \(error.localizedDescription)")
+        }
+        return 0
+    }
+    
 }
