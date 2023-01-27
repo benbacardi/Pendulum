@@ -10,19 +10,20 @@ import SwiftUI
 struct ContentView: View {
     
     @State private var selectedTab: Int = Tab.penPalList.rawValue
+    @StateObject private var appPreferences = AppPreferences.shared
     
     var body: some View {
         if DeviceType.isPad() {
-            PenPalList()
+            PenPalList(appPreferences: appPreferences)
         } else {
             TabView(selection: $selectedTab) {
-                PenPalList()
+                PenPalList(appPreferences: appPreferences)
                     .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                     .tag(Tab.penPalList.rawValue)
                 StatsView()
                     .tabItem { Label("Statistics", systemImage: "chart.xyaxis.line") }
                     .tag(Tab.stats.rawValue)
-                SettingsList()
+                SettingsList(appPreferences: appPreferences)
                     .tabItem { Label("Settings", systemImage: "gear") }
                     .tag(Tab.settings.rawValue)
 //                Text("Debug")

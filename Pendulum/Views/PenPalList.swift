@@ -18,6 +18,8 @@ struct PenPalList: View {
     
     @Environment(\.managedObjectContext) var moc
     
+    @ObservedObject var appPreferences: AppPreferences
+    
     // MARK: State
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     
@@ -237,7 +239,7 @@ struct PenPalList: View {
             }
         }
         .sheet(isPresented: $presentingSettingsSheet) {
-            SettingsList()
+            SettingsList(appPreferences: appPreferences)
         }
         .sheet(isPresented: $presentingStatsSheet) {
             StatsView()
@@ -268,7 +270,7 @@ struct PenPalListIconWidthPreferenceKey: PreferenceKey {
 
 struct PenPalList_Previews: PreviewProvider {
     static var previews: some View {
-        PenPalList()
+        PenPalList(appPreferences: AppPreferences.shared)
             .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }
