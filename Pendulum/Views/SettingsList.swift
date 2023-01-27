@@ -27,6 +27,7 @@ struct SettingsList: View {
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
+    @State private var showStatsLink: Bool = false
     
     @State private var angle: Double = 0
     
@@ -102,6 +103,7 @@ struct SettingsList: View {
                     NavigationLink(destination: StatsView()) {
                         Text("Statistics")
                     }
+                    .disabled(!showStatsLink)
                 }
 
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
@@ -212,22 +214,23 @@ struct SettingsList: View {
                 UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
-            .onAppear {
-                Task {
-                    if motionManager.isDeviceMotionAvailable {
-                        motionManager.deviceMotionUpdateInterval = 0.1
-                        let queue = OperationQueue()
-                        motionManager.startDeviceMotionUpdates(to: queue, withHandler: { motion, error in
-                            if let attitude = motion?.attitude {
-                                DispatchQueue.main.async {
-                                    withAnimation {
-                                        self.angle = attitude.roll * 180.0/Double.pi
-                                    }
+            .task {
+                if motionManager.isDeviceMotionAvailable {
+                    motionManager.deviceMotionUpdateInterval = 0.1
+                    let queue = OperationQueue()
+                    motionManager.startDeviceMotionUpdates(to: queue, withHandler: { motion, error in
+                        if let attitude = motion?.attitude {
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    self.angle = attitude.roll * 180.0/Double.pi
                                 }
                             }
-                        })
-                    }
+                        }
+                    })
                 }
+            }
+            .task {
+                self.showStatsLink = Event.count() != 0
             }
         }
     }
