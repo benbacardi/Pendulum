@@ -147,7 +147,7 @@ struct AddEventSheet: View {
                             .toolbar {
                                 ToolbarItemGroup(placement: .keyboard) {
                                     HStack {
-                                        ScrollView(.horizontal) {
+                                        ScrollView(.horizontal, showsIndicators: false) {
                                             HStack {
                                                 ForEach(autoSuggestions, id: \.self) { suggestion in
                                                     Button(action: {
