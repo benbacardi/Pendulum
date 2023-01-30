@@ -356,6 +356,7 @@ extension PenPal {
     static func averageTimeToRespond() -> Double {
         
         var durations: [Int] = []
+        let today = Date()
         
         for penpal in PenPal.fetch() {
             dataLogger.debug("Fetching events for \(penpal.wrappedName)")
@@ -374,6 +375,9 @@ extension PenPal {
                         continue
                     }
                 }
+            }
+            if penpal.lastEventType == .received, let receivedDate = penpal.lastEventDate {
+                durations.append(Calendar.current.numberOfDaysBetween(receivedDate, and: today))
             }
         }
         
