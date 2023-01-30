@@ -24,7 +24,11 @@ struct AddEventSheet: View {
     @State private var letterType: LetterType = .letter
     @State private var ignore: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
+    
     @FocusState private var isNotesFieldActive: Bool
+    @FocusState private var isPenFieldActive: Bool
+    @FocusState private var isInkFieldActive: Bool
+    @FocusState private var isPaperFieldActive: Bool
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
@@ -45,6 +49,43 @@ struct AddEventSheet: View {
         } else {
             return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
         }
+    }
+    
+    var autoSuggestions: [String] {
+        let suggestions: [String]
+        let st: String
+        if isPenFieldActive {
+            suggestions = penSuggestions
+            st = pen
+        }
+        else if isInkFieldActive {
+            suggestions = inkSuggestions
+            st = ink
+        }
+        else if isPaperFieldActive {
+            suggestions = paperSuggestions
+            st = paper
+        }
+        else {
+            suggestions = []
+            st = ""
+        }
+        let search = st.lowercased().trimmingCharacters(in: .whitespaces)
+        return suggestions.filter { $0.lowercased().contains(search) }
+    }
+    
+    func chooseSuggestion(_ suggestion: String) {
+        if isPenFieldActive { pen = suggestion }
+        else if isInkFieldActive { ink = suggestion }
+        else if isPaperFieldActive { paper = suggestion }
+        clearFocus()
+    }
+    
+    func clearFocus() {
+        isNotesFieldActive = false
+        isPenFieldActive = false
+        isInkFieldActive = false
+        isPaperFieldActive = false
     }
     
     var body: some View {
@@ -105,9 +146,26 @@ struct AddEventSheet: View {
                             .focused($isNotesFieldActive)
                             .toolbar {
                                 ToolbarItemGroup(placement: .keyboard) {
-                                    Spacer()
-                                    Button("Done") {
-                                        isNotesFieldActive = false
+                                    HStack {
+                                        ScrollView(.horizontal, showsIndicators: false) {
+                                            HStack {
+                                                ForEach(autoSuggestions, id: \.self) { suggestion in
+                                                    Button(action: {
+                                                        chooseSuggestion(suggestion)
+                                                    }) {
+                                                        Text(suggestion)
+                                                    }
+                                                    .font(.caption)
+                                                    .foregroundColor(.secondary)
+                                                    .padding(5)
+                                                    .background {
+                                                        Color(uiColor: UIColor.secondarySystemBackground)
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        Spacer()
+                                        Button(action: clearFocus) { Text("Done") }
                                     }
                                 }
                             }
@@ -126,6 +184,7 @@ struct AddEventSheet: View {
                                     .foregroundColor(.secondary)
                                 HStack {
                                     TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen)
+                                        .focused($isPenFieldActive)
                                     if !penSuggestions.isEmpty {
                                         Button(action: {
                                             presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
@@ -140,6 +199,7 @@ struct AddEventSheet: View {
                                     .foregroundColor(.secondary)
                                 HStack {
                                     TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink)
+                                        .focused($isInkFieldActive)
                                     if !inkSuggestions.isEmpty {
                                         Button(action: {
                                             presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
@@ -154,6 +214,7 @@ struct AddEventSheet: View {
                                     .foregroundColor(.secondary)
                                 HStack {
                                     TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
+                                        .focused($isPaperFieldActive)
                                     if !paperSuggestions.isEmpty {
                                         Button(action: {
                                             presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper")
