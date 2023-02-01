@@ -79,4 +79,20 @@ extension Stationery {
         return []
     }
     
+    static func delete(_ parameter: ParameterCount) {
+        let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "type = %@", parameter.type.rawValue),
+            NSPredicate(format: "value = %@", parameter.name),
+        ])
+        do {
+            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
+                PersistenceController.shared.container.viewContext.delete(result)
+            }
+            PersistenceController.shared.save()
+        } catch {
+            dataLogger.error("Could not delete stationery: \(parameter)")
+        }
+    }
+    
 }

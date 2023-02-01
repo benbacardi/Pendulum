@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct ParameterCount: Comparable, Identifiable {
+struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
     let id = UUID()
     let name: String
     let count: Int
@@ -23,6 +23,10 @@ struct ParameterCount: Comparable, Identifiable {
     
     static func == (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
         return lhs.count == rhs.count && lhs.name == rhs.name
+    }
+    
+    var description: String {
+        "\(type.rawValue): \(name) (\(count))"
     }
     
 }
@@ -48,6 +52,9 @@ struct EventPropertyDetailsSheet: View {
     @State private var newPaperEntry: String = ""
     @FocusState private var newPaperEntryIsFocused: Bool
     
+    @State private var toDelete: ParameterCount? = nil
+    @State private var showDeleteAlert: Bool = false
+    
     @ViewBuilder
     func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
         Section(header: HStack {
@@ -61,6 +68,17 @@ struct EventPropertyDetailsSheet: View {
                     if option.count > 0 {
                         Text("\(option.count)")
                             .foregroundColor(.secondary)
+                    }
+                }
+                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                    if option.count == 0 {
+                        Button(action: {
+                            self.toDelete = option
+                            self.showDeleteAlert = true
+                        }) {
+                            Label("Delete", systemImage: "trash")
+                        }
+                        .tint(.red)
                     }
                 }
             }
@@ -114,10 +132,28 @@ struct EventPropertyDetailsSheet: View {
                     }
                     .padding()
                 } else {
-                    Form {
+                    List {
                         section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
                         section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
                         section(for: .paper, with: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused)
+                    }
+                    .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
+                        Button("Delete \(parameter.name)", role: .destructive) {
+                            Stationery.delete(parameter)
+                            self.toDelete = nil
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    switch parameter.type {
+                                    case .pen:
+                                        self.pens = self.pens.filter { $0 != parameter }
+                                    case .ink:
+                                        self.inks = self.inks.filter { $0 != parameter }
+                                    case .paper:
+                                        self.papers = self.papers.filter { $0 != parameter }
+                                    }
+                                }
+                            }
+                        }
                     }
                 }
             }
