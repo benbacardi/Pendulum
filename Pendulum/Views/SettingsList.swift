@@ -157,6 +157,9 @@ struct SettingsList: View {
                                 .foregroundColor(.secondary)
                         }
                     }
+                    NavigationLink(destination: TipJarView()) {
+                        Text("Support Pendulum")
+                    }
                 }
             }
             .navigationTitle(Text("Settings"))

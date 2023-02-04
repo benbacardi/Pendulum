@@ -42,9 +42,11 @@
 		5E62521F292E75E000A3EB86 /* PenPalListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E62521E292E75E000A3EB86 /* PenPalListItem.swift */; };
 		5E625223292F730200A3EB86 /* LetterType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E625222292F730200A3EB86 /* LetterType.swift */; };
 		5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252242932058B00A3EB86 /* ManualAddPenPalSheet.swift */; };
+		5E72EE39298E4D84008E3BAA /* TipJar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E72EE38298E4D84008E3BAA /* TipJar.swift */; };
 		5E7EC41929799FD700C24189 /* Array.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7EC41829799FD700C24189 /* Array.swift */; };
 		5E7EC41B2979A73A00C24189 /* Double.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7EC41A2979A73A00C24189 /* Double.swift */; };
 		5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7EC41E29801FD400C24189 /* SentByTypeChart.swift */; };
+		5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
@@ -98,9 +100,11 @@
 		5E62521E292E75E000A3EB86 /* PenPalListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListItem.swift; sourceTree = "<group>"; };
 		5E625222292F730200A3EB86 /* LetterType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LetterType.swift; sourceTree = "<group>"; };
 		5E6252242932058B00A3EB86 /* ManualAddPenPalSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualAddPenPalSheet.swift; sourceTree = "<group>"; };
+		5E72EE38298E4D84008E3BAA /* TipJar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipJar.swift; sourceTree = "<group>"; };
 		5E7EC41829799FD700C24189 /* Array.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Array.swift; sourceTree = "<group>"; };
 		5E7EC41A2979A73A00C24189 /* Double.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Double.swift; sourceTree = "<group>"; };
 		5E7EC41E29801FD400C24189 /* SentByTypeChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentByTypeChart.swift; sourceTree = "<group>"; };
+		5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipJarView.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
@@ -178,6 +182,7 @@
 				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E625209292B76FA00A3EB86 /* PenPalView.swift */,
 				5ED5A15E297815560053B3D0 /* StatsView.swift */,
+				5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */,
 				5ED5A160297842220053B3D0 /* Charts */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
@@ -235,6 +240,7 @@
 			isa = PBXGroup;
 			children = (
 				5E40552529151E2200BD52BF /* AppInfo.swift */,
+				5E72EE38298E4D84008E3BAA /* TipJar.swift */,
 				5EEF4A01291E5B1E000528C6 /* Launch Screen.storyboard */,
 			);
 			path = "App Info";
@@ -389,11 +395,13 @@
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
 				5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */,
+				5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */,
 				5ED5A1642978430F0053B3D0 /* Date.swift in Sources */,
 				5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */,
 				5E6252062927D94600A3EB86 /* PenPalList.swift in Sources */,
 				5E7EC41929799FD700C24189 /* Array.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
+				5E72EE39298E4D84008E3BAA /* TipJar.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,
 				5E40553E29165F1C00BD52BF /* ContactsAccessRequiredView.swift in Sources */,
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
