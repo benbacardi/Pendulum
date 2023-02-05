@@ -49,6 +49,7 @@ extension TipJar {
                 case .verified(let transaction):
                     storeLogger.debug("Purchase success result: verified")
                     await transaction.finish()
+                    NSUbiquitousKeyValueStore.default.add(tip: self)
                     return true
                 default:
                     storeLogger.debug("Purchase success result: unverified")
@@ -61,6 +62,10 @@ extension TipJar {
             storeLogger.error("Could not purchase \(self.rawValue): \(error.localizedDescription)")
             return false
         }
+    }
+    
+    func previousPurchaseCount() -> Int {
+        NSUbiquitousKeyValueStore.default.fetchCount(forTip: self)
     }
     
     static func fetchProducts() async -> [Self: Product] {
