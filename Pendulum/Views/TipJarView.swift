@@ -14,9 +14,25 @@ struct TipJarView: View {
     @State private var productsFetched: Bool = false
     @State private var pendingPurchase: TipJar? = nil
     @State private var showingSuccessAlert: Bool = false
+    @State private var purchasedTips: [TipJar: Int] = [:]
     
     func isDisabled(for tip: TipJar) -> Bool {
         tipJarPrices[tip] == nil || (pendingPurchase != nil && pendingPurchase != tip)
+    }
+    
+    var purchasedTipsText: String {
+        var tipText: [String] = []
+        for tip in TipJar.allCases {
+            if let count = purchasedTips[tip] {
+                tipText.append("\(VERBOSE_NUMBER_MAPPINGS[count] ?? "\(count)") \(tip.lowerCaseName)")
+            }
+        }
+        if tipText.count == 1 {
+            return tipText.first!
+        }
+        guard let last = tipText.last else { return "" }
+        tipText.removeLast()
+        return "\(String(tipText.joined(separator: ", "))), and \(last)"
     }
     
     var body: some View {
@@ -46,6 +62,7 @@ struct TipJarView: View {
                                     withAnimation {
                                         showingSuccessAlert = successful
                                         pendingPurchase = nil
+                                        purchasedTips = NSUbiquitousKeyValueStore.default.fetchAllTipCounts()
                                     }
                                 }
                             }
@@ -77,12 +94,24 @@ struct TipJarView: View {
                     .opacity(productsFetched ? (isDisabled(for: tip) ? 0.5 : 1) : 1)
                 }
                 
+                if !purchasedTipsText.isEmpty {
+                    Text("In your tip collection, you have \(purchasedTipsText)! Thank you so much for your support.")
+                        .padding(.top)
+                        .foregroundColor(.secondary)
+                        .fullWidth(alignment: .center)
+                }
+                
             }
         }
         .alert(isPresented: $showingSuccessAlert) {
             Alert(title: Text("Purchase Successful"), message: Text("Thank you for supporting Pendulum!"), dismissButton: .default(Text("🧡")))
         }
         .padding()
+        .onAppear {
+            withAnimation {
+                purchasedTips = NSUbiquitousKeyValueStore.default.fetchAllTipCounts()
+            }
+        }
         .task {
             let products = await TipJar.fetchProducts()
             DispatchQueue.main.async {
