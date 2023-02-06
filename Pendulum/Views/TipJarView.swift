@@ -32,7 +32,8 @@ struct TipJarView: View {
         }
         guard let last = tipText.last else { return "" }
         tipText.removeLast()
-        return "\(String(tipText.joined(separator: ", "))), and \(last)"
+        let comma = tipText.count == 1 ? "" : ","
+        return "\(String(tipText.joined(separator: ", ")))\(comma) and \(last)"
     }
     
     var body: some View {
