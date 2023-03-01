@@ -12,8 +12,7 @@ struct SettingsList: View {
     
     // MARK: Environment
     @Environment(\.openURL) private var openURL
-    
-    @ObservedObject var appPreferences: AppPreferences
+    @EnvironmentObject var appPreferences: AppPreferences
     
     let motionManager = CMMotionManager()
     
@@ -258,7 +257,7 @@ struct SettingsList: View {
 
 struct SettingsList_Previews: PreviewProvider {
     static var previews: some View {
-        SettingsList(appPreferences: AppPreferences.shared)
+        SettingsList()
     }
 }
 

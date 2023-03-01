@@ -13,19 +13,21 @@ struct AddPenPalSheet: View {
     // MARK: Environment
     @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject private var router: Router
     
     // MARK: Parameters
-    let existingPenPals: FetchedResults<PenPal>
+//    let existingPenPals: FetchedResults<PenPal>
     let done: (PenPal) -> ()
     
     // MARK: State
+    @StateObject private var subRouter = Router()
+    @FetchRequest(sortDescriptors: []) var existingPenPals: FetchedResults<PenPal>
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var existingPenPalIdentifiers: Set<String> = []
     @State private var contactDetails: [CNContact] = []
     @State private var contactsFetched: Bool = false
     @State private var filteredContacts: [CNContact] = []
     @State private var searchText: String = ""
-    @State private var presentingManualAddPenPalSheet: Bool = false
     
     @ViewBuilder
     func contactEntry(for contact: CNContact) -> some View {
@@ -58,9 +60,7 @@ struct AddPenPalSheet: View {
             Group {
                 if !contactDetails.isEmpty {
                     List {
-                        Button(action: {
-                            self.presentingManualAddPenPalSheet = true
-                        }) {
+                        Button(action: presentManualAddSheet) {
                             Text("Add Pen Pal Manually…")
                         }
                         ForEach(filteredContacts, id: \.identifier) { contact in
@@ -114,9 +114,7 @@ struct AddPenPalSheet: View {
                             }
                         }
                         Spacer()
-                        Button(action: {
-                            self.presentingManualAddPenPalSheet = true
-                        }) {
+                        Button(action: presentManualAddSheet) {
                             Text("Add Pen Pal Manually")
                         }
                         Spacer()
@@ -140,10 +138,11 @@ struct AddPenPalSheet: View {
                     ] as! [CNKeyDescriptor]
                     let request = CNContactFetchRequest(keysToFetch: keys)
                     request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                    let identifiers = existingPenPalIdentifiers
                     DispatchQueue.global(qos: .userInitiated).async {
                         do {
                             try store.enumerateContacts(with: request) { (contact, stop) in
-                                if !existingPenPalIdentifiers.contains(contact.identifier) {
+                                if !identifiers.contains(contact.identifier) {
                                     DispatchQueue.main.async {
                                         self.contactDetails.append(contact)
                                     }
@@ -163,7 +162,7 @@ struct AddPenPalSheet: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        router.presentedSheet = nil
                     }) {
                         Text("Cancel")
                     }
@@ -176,11 +175,14 @@ struct AddPenPalSheet: View {
                 self.filterContacts(with: searchText)
             }
         }
-        .sheet(isPresented: $presentingManualAddPenPalSheet) {
-            ManualAddPenPalSheet(penpal: nil) { newPenPal in
-                self.presentingManualAddPenPalSheet = false
-                done(newPenPal)
-            }
+        .withSheetDestinations(sheetDestination: $subRouter.presentedSheet)
+    }
+    
+    func presentManualAddSheet() {
+        subRouter.presentedSheet = .addPenPalManually { newPenPal in
+            subRouter.presentedSheet = nil
+            router.presentedSheet = nil
+            router.navigate(to: .penPalDetail(penpal: newPenPal))
         }
     }
     

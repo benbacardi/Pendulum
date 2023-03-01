@@ -9,6 +9,9 @@ import SwiftUI
 
 struct PenPalListItem: View {
     
+    // MARK: Environment
+    @EnvironmentObject private var router: Router
+    
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     var asListItem: Bool = true
@@ -54,7 +57,7 @@ struct PenPalListItem: View {
                         .fullWidth()
                 }
             }
-            if asListItem {
+            if asListItem && !DeviceType.isPad() {
                 Spacer()
                 Image(systemName: "chevron.right")
                     .foregroundColor(.secondary)
