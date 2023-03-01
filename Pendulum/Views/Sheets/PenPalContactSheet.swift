@@ -38,7 +38,7 @@ struct PenPalContactSheet: View {
                     }
                     
                     if contactsAccessStatus != .authorized && !self.stopAskingAboutContacts {
-                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses \(penpal.wrappedName).")
+                        ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses for \(penpal.wrappedName).")
                             .padding(.top)
                     } else {
                         

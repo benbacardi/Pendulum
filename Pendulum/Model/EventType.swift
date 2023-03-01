@@ -34,6 +34,24 @@ enum EventType: Int, CaseIterable, Identifiable {
         NSPredicate(format: "typeValue = %d", self.rawValue)
     }
     
+    var lastPredicate: NSCompoundPredicate {
+        var predicates: [NSPredicate] = []
+        switch self {
+        case .archived:
+            predicates.append(NSPredicate(format: "archived = %@", NSNumber(value: true)))
+        case .noEvent:
+            predicates.append(NSPredicate(format: "lastEventTypeValue = %i", rawValue))
+            predicates.append(NSPredicate(format: "events.@count == 0"))
+        case .nothingToDo:
+            predicates.append(NSPredicate(format: "lastEventTypeValue = %i", EventType.noEvent.rawValue))
+            predicates.append(NSPredicate(format: "events.@count > 0"))
+        default:
+            predicates.append(NSPredicate(format: "lastEventTypeValue = %i", rawValue))
+            predicates.append(NSPredicate(format: "archived = %@", NSNumber(value: false)))
+        }
+        return NSCompoundPredicate(type: .and, subpredicates: predicates)
+    }
+    
     func replace(_ value: String, for type: LetterType) -> String {
         return value.replacingOccurrences(of: "%TYPE%", with: type.description)
     }

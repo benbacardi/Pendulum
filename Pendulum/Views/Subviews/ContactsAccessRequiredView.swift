@@ -24,14 +24,12 @@ struct ContactsAccessRequiredView: View {
     
     var body: some View {
         Group {
-            if !DeviceType.isPad() || alwaysShowImage {
-                if let image = UIImage(named: "undraw_directions_re_kjxs") {
-                    Image(uiImage: image)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(maxWidth: 200)
-                        .padding(.bottom)
-                }
+            if let image = UIImage(named: "undraw_directions_re_kjxs") {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(maxWidth: 200)
+                    .padding(.bottom)
             }
             Text("Pendulum works best if you allow access to your contacts \(reason)")
                 .multilineTextAlignment(.center)
@@ -91,6 +89,8 @@ struct ContactsAccessRequiredView: View {
                         Text("Synced data uses private Apple-provided services that we have no access to, and only the name and profile picture of each contact you add is synced in this way. This data is not accessible to anybody other than you.")
                             .fullWidth()
                         Text("All other information about your contacts stays local to your device, and **no** data is available to anybody other than you.")
+                            .fullWidth()
+                        Text("You can turn off Contacts integration in Pendulum Settings to avoid seeing the prompts to grant access in future.")
                             .fullWidth()
                     }
                     .foregroundColor(.secondary)
