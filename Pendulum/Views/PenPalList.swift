@@ -15,11 +15,12 @@ struct PenPalList: View {
     
     // MARK: State
     @State private var iconWidth: CGFloat = .zero
+    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
     
     var body: some View {
         List {
             ForEach(EventType.allCases) { eventType in
-                PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: appPreferences.trackPostingLetters)
+                PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: appPreferences.trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets())
                     .padding(.horizontal)
