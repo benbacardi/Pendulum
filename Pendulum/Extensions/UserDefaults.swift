@@ -20,6 +20,7 @@ extension UserDefaults {
         case penpalContactMap
         case stopAskingAboutContacts
         case trackPostingLetters
+        case sortPenPalsAlphabetically
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -28,6 +29,12 @@ extension UserDefaults {
     var trackPostingLetters: Bool {
         get { bool(forKey: Key.trackPostingLetters.rawValue) }
         set { setValue(newValue, forKey: Key.trackPostingLetters.rawValue) }
+    }
+    
+    @objc
+    var sortPenPalsAlphabetically: Bool {
+        get { bool(forKey: Key.sortPenPalsAlphabetically.rawValue) }
+        set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically.rawValue) }
     }
     
     @objc

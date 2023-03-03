@@ -32,10 +32,6 @@ struct PenPalListSection: View {
             NSSortDescriptor(key: "name", ascending: true)
         ]
         
-        if sortAlphabetically {
-            sortDescriptors.insert(NSSortDescriptor(key: "name", ascending: true), at: 0)
-        }
-        
         let predicate: NSCompoundPredicate
         
         /// If trackPostingLetters is false, we need to:
@@ -62,6 +58,10 @@ struct PenPalListSection: View {
             predicate = EMPTY_PREDICATE
         default:
             predicate = eventType.lastPredicate
+        }
+        
+        if sortAlphabetically || eventType == .archived {
+            sortDescriptors.insert(NSSortDescriptor(key: "name", ascending: true), at: 0)
         }
         
         self._penpals = FetchRequest<PenPal>(
