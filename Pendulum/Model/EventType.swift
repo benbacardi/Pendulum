@@ -35,10 +35,12 @@ enum EventType: Int, CaseIterable, Identifiable {
     }
     
     var lastPredicate: NSCompoundPredicate {
-        var predicates: [NSPredicate] = []
+        var predicates: [NSPredicate] = [
+            NSPredicate(format: "archived = %@", NSNumber(value: false))
+        ]
         switch self {
         case .archived:
-            predicates.append(NSPredicate(format: "archived = %@", NSNumber(value: true)))
+            predicates = [NSPredicate(format: "archived = %@", NSNumber(value: true))]
         case .noEvent:
             predicates.append(NSPredicate(format: "lastEventTypeValue = %i", rawValue))
             predicates.append(NSPredicate(format: "events.@count == 0"))
