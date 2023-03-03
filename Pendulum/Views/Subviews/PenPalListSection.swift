@@ -51,10 +51,14 @@ struct PenPalListSection: View {
             }
         case .sent:
             if trackPostingLetters {
-                predicate = EventType.sent.lastPredicate
+                predicate = NSCompoundPredicate(type: .or, subpredicates: [
+                    EventType.sent.lastPredicate,
+                    EventType.theyReceived.lastPredicate,
+                ])
             } else {
                 predicate = NSCompoundPredicate(type: .or, subpredicates: [
                     EventType.sent.lastPredicate,
+                    EventType.theyReceived.lastPredicate,
                     EventType.written.lastPredicate
                 ])
             }
