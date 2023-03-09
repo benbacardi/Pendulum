@@ -192,7 +192,7 @@ struct PenPalView: View {
             self.buttonHeight = $0
         }
         .navigationBarTitleDisplayMode(.inline)
-        .onAppear {
+        .task {
             penpal.syncWithContact()
         }
     }

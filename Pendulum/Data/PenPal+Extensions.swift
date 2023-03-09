@@ -293,6 +293,10 @@ extension PenPal {
             
             if let uuid = self.id {
                 let mapping = UserDefaults.shared.penpalContactMap
+                
+                appLogger.debug("Fetched mapping: \(mapping)")
+                appLogger.debug("This ID: \(uuid)")
+                
                 if let contactID = mapping[uuid.uuidString] {
                     do {
                         appLogger.debug("Fetching contact \(contactID) for \(self.wrappedName)")
@@ -301,19 +305,22 @@ extension PenPal {
                     } catch {
                         appLogger.error("Could not fetch contact with ID \(contactID) \(self.wrappedName): \(error.localizedDescription)")
                     }
-                }
-            } else {
-                let request = CNContactFetchRequest(keysToFetch: keys)
-                request.sortOrder = CNContactsUserDefaults.shared().sortOrder
-                do {
-                    try store.enumerateContacts(with: request) { (contact, stop) in
-                        if contact.fullName == self.wrappedName {
-                            appLogger.debug("Setting \(self.wrappedName) to contact \(contact.identifier)")
-                            UserDefaults.shared.setContactID(for: self, to: contact.identifier)
+                } else {
+                    appLogger.debug("No mapping found, searching contacts")
+                    let request = CNContactFetchRequest(keysToFetch: keys)
+                    request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                    DispatchQueue.global(qos: .userInitiated).async {
+                        do {
+                            try store.enumerateContacts(with: request) { (contact, stop) in
+                                if contact.fullName == self.wrappedName {
+                                    appLogger.debug("Setting \(self.wrappedName) to contact \(contact.identifier)")
+                                    UserDefaults.shared.setContactID(for: self, to: contact.identifier)
+                                }
+                            }
+                        } catch {
+                            appLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                         }
                     }
-                } catch {
-                    appLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                 }
             }
             
