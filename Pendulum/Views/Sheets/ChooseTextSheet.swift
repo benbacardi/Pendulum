@@ -74,7 +74,7 @@ struct ChooseTextSheet: View {
                 self.text = self.chosenOptions.joined(separator: "\n")
             }
             .onAppear {
-                self.chosenOptions = self.text.components(separatedBy: Event.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
+                self.chosenOptions = self.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? [] : self.text.components(separatedBy: Event.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
                 self.typedOptions = self.chosenOptions.filter { !self.options.contains($0) }
                 self.loaded = true
             }
