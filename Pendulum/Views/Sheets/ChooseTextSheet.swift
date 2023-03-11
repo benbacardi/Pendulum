@@ -26,20 +26,35 @@ struct ChooseTextSheet: View {
     let options: [String]
     let title: String
     
+    // MARK: State
+    @State private var chosenOptions: [String] = []
+    @State private var typedOptions: [String] = []
+    @State private var loaded: Bool = false
+    
+    var allOptions: [String] {
+        options.sorted() + typedOptions
+    }
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(options, id: \.self) { option in
+                ForEach(allOptions, id: \.self) { option in
                     Button(action: {
-                        if self.text.trimmingCharacters(in: .whitespaces) != "" {
-                            self.text = "\(self.text); \(option)"
+                        if self.chosenOptions.contains(option) {
+                            self.chosenOptions = self.chosenOptions.filter { $0 != option }
                         } else {
-                            self.text = option
+                            self.chosenOptions.append(option)
                         }
-                        presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text(option)
-                            .foregroundColor(.primary)
+                        HStack {
+                            Text(option)
+                                .foregroundColor(.primary)
+                            Spacer()
+                            if chosenOptions.contains(option) {
+                                Image(systemName: "checkmark")
+                                    .foregroundColor(.adequatelyGinger)
+                            }
+                        }
                     }
                 }
             }
@@ -50,9 +65,18 @@ struct ChooseTextSheet: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Cancel")
+                        Text("Done")
                     }
                 }
+            }
+            .onChange(of: chosenOptions) { newValue in
+                guard self.loaded else { return }
+                self.text = self.chosenOptions.joined(separator: "\n")
+            }
+            .onAppear {
+                self.chosenOptions = self.text.components(separatedBy: Event.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
+                self.typedOptions = self.chosenOptions.filter { !self.options.contains($0) }
+                self.loaded = true
             }
         }
     }

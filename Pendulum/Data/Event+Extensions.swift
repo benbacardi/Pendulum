@@ -11,6 +11,7 @@ import Foundation
 extension Event {
     
     static let entityName: String = "Event"
+    static let optionSeparators = CharacterSet(charactersIn: ";\n")
     
     var wrappedDate: Date {
         self.date ?? .distantPast
@@ -36,17 +37,17 @@ extension Event {
     
     var inks: [String] {
         guard let inks = self.ink else { return [] }
-        return inks.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+        return inks.components(separatedBy: Self.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
     }
     
     var pens: [String] {
         guard let pens = self.pen else { return [] }
-        return pens.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+        return pens.components(separatedBy: Self.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
     }
     
     var papers: [String] {
         guard let papers = self.paper else { return [] }
-        return papers.components(separatedBy: ";").map { $0.trimmingCharacters(in: .whitespaces) }
+        return papers.components(separatedBy: Self.optionSeparators).map { $0.trimmingCharacters(in: .whitespaces) }
     }
     
 }
@@ -55,10 +56,10 @@ extension Event {
     
     func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool) {
         self.date = date
-        self.notes = notes
-        self.pen = pen
-        self.ink = ink
-        self.paper = paper
+        self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.ink = ink?.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.paper = paper?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.letterType = letterType
         self.ignore = ignore
         self.penpal?.updateLastEventType()
