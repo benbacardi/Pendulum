@@ -8,13 +8,13 @@
 import SwiftUI
 
 struct AddEventSheet: View {
-        
+    
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     let event: Event?
     let eventType: EventType
     let done: () -> ()
-        
+    
     // MARK: State
     @State private var date: Date = Date()
     @State private var notes: String = ""
@@ -179,49 +179,49 @@ struct AddEventSheet: View {
                                 EmptyView()
                             }
                         }) {
-                            HStack {
+                            HStack(alignment: .top) {
                                 Image(systemName: "pencil")
                                     .foregroundColor(.secondary)
-                                HStack {
-                                    TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen)
-                                        .focused($isPenFieldActive)
-                                    if !penSuggestions.isEmpty {
-                                        Button(action: {
-                                            presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose a Pen")
-                                        }) {
-                                            Image(systemName: "ellipsis")
-                                        }
+                                    .offset(y: 4)
+                                TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
+                                    .focused($isPenFieldActive)
+                                if !penSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose Pens")
+                                    }) {
+                                        Image(systemName: "ellipsis")
                                     }
+                                    .offset(y: 8)
                                 }
                             }
-                            HStack {
+                            HStack(alignment: .top) {
                                 Image(systemName: "drop")
                                     .foregroundColor(.secondary)
-                                HStack {
-                                    TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink)
-                                        .focused($isInkFieldActive)
-                                    if !inkSuggestions.isEmpty {
-                                        Button(action: {
-                                            presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose an Ink")
-                                        }) {
-                                            Image(systemName: "ellipsis")
-                                        }
+                                    .offset(y: 1)
+                                TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
+                                    .focused($isInkFieldActive)
+                                if !inkSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose Inks")
+                                    }) {
+                                        Image(systemName: "ellipsis")
                                     }
+                                    .offset(y: 8)
                                 }
                             }
-                            HStack {
+                            HStack(alignment: .top) {
                                 Image(systemName: "doc.plaintext")
                                     .foregroundColor(.secondary)
-                                HStack {
-                                    TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper)
-                                        .focused($isPaperFieldActive)
-                                    if !paperSuggestions.isEmpty {
-                                        Button(action: {
-                                            presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose a Paper")
-                                        }) {
-                                            Image(systemName: "ellipsis")
-                                        }
+                                    .offset(y: 1)
+                                TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
+                                    .focused($isPaperFieldActive)
+                                if !paperSuggestions.isEmpty {
+                                    Button(action: {
+                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose Paper")
+                                    }) {
+                                        Image(systemName: "ellipsis")
                                     }
+                                    .offset(y: 8)
                                 }
                             }
                         }
@@ -273,9 +273,9 @@ struct AddEventSheet: View {
                     dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription) ignore=\(event.ignore)")
                     self.date = event.wrappedDate
                     self.notes = event.notes ?? ""
-                    self.pen = event.pen ?? ""
-                    self.ink = event.ink ?? ""
-                    self.paper = event.paper ?? ""
+                    self.pen = event.pens.joined(separator: "\n")
+                    self.ink = event.inks.joined(separator: "\n")
+                    self.paper = event.papers.joined(separator: "\n")
                     self.letterType = event.letterType
                     self.ignore = event.ignore
                 }
