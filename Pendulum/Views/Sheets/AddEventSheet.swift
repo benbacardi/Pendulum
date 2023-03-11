@@ -277,6 +277,7 @@ struct AddEventSheet: View {
             }
             .sheet(item: $presentSuggestionSheetFor) { option in
                 ChooseTextSheet(text: option.text, options: option.options, title: option.title)
+                    .presentationDetents([.medium, .large])
             }
             .onChange(of: letterType) { newValue in
                 if self.setToDefaultIgnoreWhenChangingLetterType {
