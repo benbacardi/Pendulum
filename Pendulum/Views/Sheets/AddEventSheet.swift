@@ -25,6 +25,8 @@ struct AddEventSheet: View {
     @State private var ignore: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
     
+    @State private var iconWidth: CGFloat = 20
+    
     @FocusState private var isNotesFieldActive: Bool
     @FocusState private var isPenFieldActive: Bool
     @FocusState private var isInkFieldActive: Bool
@@ -183,6 +185,12 @@ struct AddEventSheet: View {
                                 Image(systemName: "pencil")
                                     .foregroundColor(.secondary)
                                     .offset(y: 4)
+                                    .background {
+                                        GeometryReader { geo in
+                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                                        }
+                                    }
+                                    .frame(width: iconWidth)
                                 TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
                                     .focused($isPenFieldActive)
                                 if !penSuggestions.isEmpty {
@@ -198,6 +206,12 @@ struct AddEventSheet: View {
                                 Image(systemName: "drop")
                                     .foregroundColor(.secondary)
                                     .offset(y: 1)
+                                    .background {
+                                        GeometryReader { geo in
+                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                                        }
+                                    }
+                                    .frame(width: iconWidth)
                                 TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
                                     .focused($isInkFieldActive)
                                 if !inkSuggestions.isEmpty {
@@ -213,6 +227,12 @@ struct AddEventSheet: View {
                                 Image(systemName: "doc.plaintext")
                                     .foregroundColor(.secondary)
                                     .offset(y: 1)
+                                    .background {
+                                        GeometryReader { geo in
+                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                                        }
+                                    }
+                                    .frame(width: iconWidth)
                                 TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
                                     .focused($isPaperFieldActive)
                                 if !paperSuggestions.isEmpty {
@@ -263,6 +283,9 @@ struct AddEventSheet: View {
                     self.ignore = newValue.defaultIgnore
                 }
             }
+            .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
+                self.iconWidth = value
+            }
             .onAppear {
                 if event == nil {
                     self.setToDefaultIgnoreWhenChangingLetterType = true
@@ -296,6 +319,15 @@ struct AddEventSheet: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private extension AddEventSheet {
+    struct IconWidthPreferenceKey: PreferenceKey {
+        static let defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = max(value, nextValue())
         }
     }
 }
