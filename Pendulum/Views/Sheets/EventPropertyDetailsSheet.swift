@@ -45,6 +45,9 @@ struct EventPropertyDetailsSheet: View {
     @State private var inks: [ParameterCount] = []
     @State private var papers: [ParameterCount] = []
     
+    @AppStorage(UserDefaults.Key.sortStationeryAlphabetically.rawValue, store: UserDefaults.shared) private var sortAlphabetically: Bool = false
+    @State private var outbound: Bool = true
+    
     @State private var newPenEntry: String = ""
     @FocusState private var newPenEntryIsFocused: Bool
     @State private var newInkEntry: String = ""
@@ -61,6 +64,10 @@ struct EventPropertyDetailsSheet: View {
             Image(systemName: type.icon)
             Text(type.namePlural)
         }) {
+            if options.wrappedValue.isEmpty && !(allowAdding && outbound) {
+                Text("None recorded yet")
+                    .foregroundColor(.secondary)
+            }
             ForEach(options.wrappedValue, id: \.name) { option in
                 HStack {
                     Text(option.name)
@@ -70,7 +77,7 @@ struct EventPropertyDetailsSheet: View {
                             .foregroundColor(.secondary)
                     }
                 }
-                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     if option.count == 0 {
                         Button(action: {
                             self.toDelete = option
@@ -82,7 +89,7 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
             }
-            if allowAdding {
+            if allowAdding && outbound {
                 HStack {
                     TextField("Add…", text: newEntry)
                         .focused(focused)
@@ -113,25 +120,13 @@ struct EventPropertyDetailsSheet: View {
     var body: some View {
         NavigationStack {
             Group {
-                if pens.isEmpty && inks.isEmpty && papers.isEmpty && !allowAdding {
-                    VStack {
-                        if let image = UIImage(named: "undraw_monster_artist_2crm") {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 200)
-                                .padding(.bottom)
-                        }
-                        if let penpal = penpal {
-                            Text("You haven't recorded any of the stationery you've used to write to \(penpal.wrappedName) yet!")
-                                .fullWidth(alignment: .center)
-                        } else {
-                            Text("You haven't recorded any of the stationery you've used to write with yet!")
-                                .fullWidth(alignment: .center)
-                        }
+                VStack(spacing: 0) {
+                    Picker("Direction", selection: $outbound) {
+                        Text("Sent").tag(true)
+                        Text("Received").tag(false)
                     }
+                    .pickerStyle(.segmented)
                     .padding()
-                } else {
                     List {
                         section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
                         section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
@@ -156,10 +151,20 @@ struct EventPropertyDetailsSheet: View {
                         }
                     }
                 }
+                .background(Color(uiColor: .secondarySystemBackground))
             }
             .navigationTitle("Stationery")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        withAnimation {
+                            self.sortAlphabetically.toggle()
+                        }
+                    }) {
+                        Label("Sort Alphabetically", systemImage: self.sortAlphabetically ? "textformat.123" : "textformat")
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
@@ -169,10 +174,26 @@ struct EventPropertyDetailsSheet: View {
                 }
             }
             .task {
-                pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal)
-                inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal)
-                papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal)
+                self.updateStationery()
+            }
+            .onChange(of: sortAlphabetically) { _ in
+                withAnimation {
+                    self.updateStationery()
+                }
+            }
+            .onChange(of: outbound) { _ in
+                withAnimation {
+                    self.updateStationery()
+                }
             }
         }
+        
     }
+    
+    private func updateStationery() {
+        pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
+        inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
+        papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
+    }
+    
 }
