@@ -21,6 +21,7 @@ extension UserDefaults {
         case stopAskingAboutContacts
         case trackPostingLetters
         case sortPenPalsAlphabetically
+        case sortStationeryAlphabetically
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -35,6 +36,12 @@ extension UserDefaults {
     var sortPenPalsAlphabetically: Bool {
         get { bool(forKey: Key.sortPenPalsAlphabetically.rawValue) }
         set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically.rawValue) }
+    }
+    
+    @objc
+    var sortStationeryAlphabetically: Bool {
+        get { bool(forKey: Key.sortStationeryAlphabetically.rawValue) }
+        set { setValue(newValue, forKey: Key.sortStationeryAlphabetically.rawValue) }
     }
     
     @objc

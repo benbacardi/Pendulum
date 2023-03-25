@@ -181,12 +181,24 @@ extension PenPal {
         return nil
     }
     
-    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil) -> [ParameterCount] {
+    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true) -> [ParameterCount] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery.rawValue, ascending: true)]
+        var predicates: [NSCompoundPredicate] = []
         if let penpal = penpal {
-            fetchRequest.predicate = penpal.ownEventsPredicate
+            predicates.append(NSCompoundPredicate(type: .and, subpredicates: [penpal.ownEventsPredicate]))
         }
+        if outbound {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                EventType.sent.predicate,
+                EventType.written.predicate,
+            ]))
+        } else {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                EventType.received.predicate
+            ]))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         do {
             let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
             
@@ -209,7 +221,7 @@ extension PenPal {
             
             var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value, type: stationery) }
             
-            if penpal == nil {
+            if penpal == nil && outbound {
                 let unusedStationery = Stationery.fetchUnused(for: stationery)
                 let setOfResults = Set(intermediate.map { $0.name })
                 for item in unusedStationery {
@@ -218,15 +230,19 @@ extension PenPal {
                     }
                 }
             }
-            return intermediate.sorted()
+            if sortAlphabetically {
+                return intermediate.sorted(using: KeyPathComparator(\.name))
+            } else {
+                return intermediate.sorted()
+            }
         } catch {
             dataLogger.error("Could not fetch distinct stationery: \(error.localizedDescription)")
         }
         return []
     }
     
-    func fetchDistinctStationery(ofType stationery: StationeryType) -> [ParameterCount] {
-        PenPal.fetchDistinctStationery(ofType: stationery, for: self)
+    func fetchDistinctStationery(ofType stationery: StationeryType, sortAlphabetically: Bool = false, outbound: Bool = true) -> [ParameterCount] {
+        PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound)
     }
     
     static func fetch(withStatus eventType: EventType? = nil) -> [PenPal] {

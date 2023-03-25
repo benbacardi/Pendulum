@@ -172,77 +172,77 @@ struct AddEventSheet: View {
                                 }
                             }
                     }
-                    if eventType == .written || eventType == .sent {
                         
-                        Section(header: Group {
-                            if let priorWrittenEvent = priorWrittenEvent {
-                                Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
-                            } else {
-                                EmptyView()
-                            }
-                        }) {
-                            HStack(alignment: .top) {
-                                Image(systemName: "pencil")
-                                    .foregroundColor(.secondary)
-                                    .offset(y: 4)
-                                    .background {
-                                        GeometryReader { geo in
-                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                        }
+                    Section(header: Group {
+                        if let priorWrittenEvent = priorWrittenEvent {
+                            Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
+                        } else {
+                            EmptyView()
+                        }
+                    }) {
+                        HStack(alignment: .top) {
+                            Image(systemName: "pencil")
+                                .foregroundColor(.secondary)
+                                .offset(y: 4)
+                                .background {
+                                    GeometryReader { geo in
+                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
                                     }
-                                    .frame(width: iconWidth)
-                                TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
-                                    .focused($isPenFieldActive)
-                                if !penSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose Pens")
-                                    }) {
-                                        Image(systemName: "ellipsis")
-                                    }
-                                    .offset(y: 8)
                                 }
-                            }
-                            HStack(alignment: .top) {
-                                Image(systemName: "drop")
-                                    .foregroundColor(.secondary)
-                                    .offset(y: 1)
-                                    .background {
-                                        GeometryReader { geo in
-                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                        }
-                                    }
-                                    .frame(width: iconWidth)
-                                TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
-                                    .focused($isInkFieldActive)
-                                if !inkSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose Inks")
-                                    }) {
-                                        Image(systemName: "ellipsis")
-                                    }
-                                    .offset(y: 8)
+                                .frame(width: iconWidth)
+                            TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
+                                .focused($isPenFieldActive)
+                            if !penSuggestions.isEmpty {
+                                Button(action: {
+                                    presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose Pens")
+                                }) {
+                                    Image(systemName: "ellipsis")
                                 }
+                                .foregroundColor(.accentColor)
+                                .offset(y: 8)
                             }
-                            HStack(alignment: .top) {
-                                Image(systemName: "doc.plaintext")
-                                    .foregroundColor(.secondary)
-                                    .offset(y: 1)
-                                    .background {
-                                        GeometryReader { geo in
-                                            Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                        }
+                        }
+                        .buttonStyle(.plain)
+                        HStack(alignment: .top) {
+                            Image(systemName: "drop")
+                                .foregroundColor(.secondary)
+                                .offset(y: 1)
+                                .background {
+                                    GeometryReader { geo in
+                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
                                     }
-                                    .frame(width: iconWidth)
-                                TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
-                                    .focused($isPaperFieldActive)
-                                if !paperSuggestions.isEmpty {
-                                    Button(action: {
-                                        presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose Paper")
-                                    }) {
-                                        Image(systemName: "ellipsis")
-                                    }
-                                    .offset(y: 8)
                                 }
+                                .frame(width: iconWidth)
+                            TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
+                                .focused($isInkFieldActive)
+                            if !inkSuggestions.isEmpty {
+                                Button(action: {
+                                    presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose Inks")
+                                }) {
+                                    Image(systemName: "ellipsis")
+                                }
+                                .offset(y: 8)
+                            }
+                        }
+                        HStack(alignment: .top) {
+                            Image(systemName: "doc.plaintext")
+                                .foregroundColor(.secondary)
+                                .offset(y: 1)
+                                .background {
+                                    GeometryReader { geo in
+                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                                    }
+                                }
+                                .frame(width: iconWidth)
+                            TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
+                                .focused($isPaperFieldActive)
+                            if !paperSuggestions.isEmpty {
+                                Button(action: {
+                                    presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose Paper")
+                                }) {
+                                    Image(systemName: "ellipsis")
+                                }
+                                .offset(y: 8)
                             }
                         }
                     }
