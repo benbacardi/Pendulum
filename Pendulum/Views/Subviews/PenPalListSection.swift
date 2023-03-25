@@ -96,6 +96,28 @@ struct PenPalListSection: View {
         }
     }
     
+    @ViewBuilder
+    func archiveButton(for penpal: PenPal) -> some View {
+        Button(action: {
+            withAnimation {
+                penpal.archive(!penpal.archived)
+            }
+        }) {
+            Label(penpal.archived ? "Unarchive" : "Archive", systemImage: "archivebox")
+        }
+    }
+    
+    @ViewBuilder
+    func deleteButton(for penpal: PenPal) -> some View {
+        Button(role: .destructive) {
+            self.currentPenPal = penpal
+            self.showDeleteAlert = true
+        } label: {
+            Label("Delete", systemImage: "trash")
+        }
+        .tint(.red)
+    }
+    
     var body: some View {
         if !penpals.isEmpty {
             sectionHeader
@@ -106,23 +128,15 @@ struct PenPalListSection: View {
                     PenPalListItem(penpal: penpal)
                 }
                 .animation(.default, value: penpal)
-                .swipeActions {
-                    Button(action: {
-                        withAnimation {
-                            penpal.archive(!penpal.archived)
-                        }
-                    }) {
-                        Label(penpal.archived ? "Unarchive" : "Archive", systemImage: "archivebox")
-                    }
+                .contextMenu {
+                    archiveButton(for: penpal)
+                    deleteButton(for: penpal)
                 }
-                .swipeActions(edge: .leading, allowsFullSwipe: false) {
-                    Button(action: {
-                        self.currentPenPal = penpal
-                        self.showDeleteAlert = true
-                    }) {
-                        Label("Delete", systemImage: "trash")
-                    }
-                    .tint(.red)
+                .swipeActions(edge: .leading) {
+                    archiveButton(for: penpal)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    deleteButton(for: penpal)
                 }
                 .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
                     Button("Delete \(penpal.wrappedName)", role: .destructive) {
