@@ -126,7 +126,7 @@ struct EventPropertyDetailsSheet: View {
                         Text("Received").tag(false)
                     }
                     .pickerStyle(.segmented)
-                    .padding()
+                    .padding(.horizontal)
                     List {
                         section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
                         section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
