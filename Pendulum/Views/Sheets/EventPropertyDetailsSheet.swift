@@ -127,6 +127,7 @@ struct EventPropertyDetailsSheet: View {
                     }
                     .pickerStyle(.segmented)
                     .padding(.horizontal)
+                    .padding(.bottom)
                     List {
                         section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
                         section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
@@ -151,7 +152,7 @@ struct EventPropertyDetailsSheet: View {
                         }
                     }
                 }
-                .background(Color(uiColor: .secondarySystemBackground))
+                .background(Color(uiColor: .systemGroupedBackground))
             }
             .navigationTitle("Stationery")
             .navigationBarTitleDisplayMode(.inline)
