@@ -5,8 +5,25 @@
 //  Created by Alex Faber on 05/11/2022.
 //
 
+import UIKit
 import SwiftUI
 import CoreMotion
+import SafariServices
+
+struct SafariView: UIViewControllerRepresentable {
+
+    let url: URL
+
+    func makeUIViewController(context: UIViewControllerRepresentableContext<SafariView>) -> SFSafariViewController {
+        let controller = SFSafariViewController(url: url)
+        controller.preferredControlTintColor = UIColor(Color.accentColor)
+        return controller
+    }
+
+    func updateUIViewController(_ uiViewController: SFSafariViewController, context: UIViewControllerRepresentableContext<SafariView>) {
+    }
+
+}
 
 struct SettingsList: View {
     
@@ -28,6 +45,7 @@ struct SettingsList: View {
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
     @State private var showStatsLink: Bool = false
+    @State private var showFAQs: Bool = false
     
     @State private var angle: Double = 0
     
@@ -142,12 +160,16 @@ struct SettingsList: View {
                     footer: Text("\nA **Faber & Cardy** Production\n\nFor Ellen; adequately ginger, but perfectly lovely")
                         .fullWidth(alignment: .center)
                 ) {
-                    HStack {
-                        Text("App Version")
-                            .fullWidth()
-                        Spacer()
-                        Text("\(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
-                            .foregroundColor(.secondary)
+                    Button(action: {
+                        self.showFAQs = true
+                    }) {
+                        HStack {
+                            Text("Get Help")
+                                .foregroundColor(.primary)
+                            Spacer()
+                            Image(systemName: "questionmark.circle")
+                                .foregroundColor(.secondary)
+                        }
                     }
                     Link(destination: URL(string: "mailto:pendulum@bencardy.co.uk")!) {
                         HStack {
@@ -161,7 +183,17 @@ struct SettingsList: View {
                     NavigationLink(destination: TipJarView()) {
                         Text("Support Pendulum")
                     }
+                    HStack {
+                        Text("App Version")
+                            .fullWidth()
+                        Spacer()
+                        Text("\(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
+                            .foregroundColor(.secondary)
+                    }
                 }
+            }
+            .sheet(isPresented: $showFAQs) {
+                SafariView(url: URL(string: "https://bencardy.co.uk/pendulum/faq.html")!)
             }
             .navigationTitle(Text("Settings"))
             .task {
