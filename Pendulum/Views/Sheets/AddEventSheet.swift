@@ -99,6 +99,23 @@ struct AddEventSheet: View {
         isPaperFieldActive = false
     }
     
+    @ViewBuilder
+    var imagePickerView: some View {
+        ImagePickerView(sourceType: pickerType) { image in
+            let newEventPhoto = EventPhoto.from(image)
+            DispatchQueue.main.async {
+                withAnimation {
+                    eventPhotos.append(newEventPhoto)
+                    photoLoadPending = false
+                }
+            }
+        } onDismiss: {
+            self.photoLoadPending = false
+            self.showPhotoPicker = false
+            self.showPhotoPickerPopover = false
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
@@ -275,8 +292,8 @@ struct AddEventSheet: View {
                                     self.showPhotoPickerPopover = true
                                 } else {
                                     self.showPhotoPicker = true
+                                    self.photoLoadPending = true
                                 }
-                                self.photoLoadPending = true
                             }) {
                                 Label("Photo Library", systemImage: "photo.on.rectangle")
                             }
@@ -323,32 +340,10 @@ struct AddEventSheet: View {
                         }
                     }
                     .fullScreenCover(isPresented: $showPhotoPicker) {
-                        ImagePickerView(sourceType: pickerType) { image in
-                            let newEventPhoto = EventPhoto.from(image)
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    eventPhotos.append(newEventPhoto)
-                                    photoLoadPending = false
-                                }
-                            }
-                        } onDismiss: {
-                            self.photoLoadPending = false
-                            self.showPhotoPicker = false
-                        }
+                        imagePickerView
                     }
                     .popover(isPresented: $showPhotoPickerPopover) {
-                        ImagePickerView(sourceType: pickerType) { image in
-                            let newEventPhoto = EventPhoto.from(image)
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    eventPhotos.append(newEventPhoto)
-                                    photoLoadPending = false
-                                }
-                            }
-                        } onDismiss: {
-                            self.photoLoadPending = false
-                            self.showPhotoPicker = false
-                        }
+                        imagePickerView
                     }
                     
                     
