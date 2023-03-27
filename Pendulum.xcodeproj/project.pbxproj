@@ -64,6 +64,7 @@
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
 		5ED5A1642978430F0053B3D0 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1632978430F0053B3D0 /* Date.swift */; };
 		5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */; };
+		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
@@ -131,6 +132,7 @@
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
 		5ED5A1632978430F0053B3D0 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostUsedStationeryChart.swift; sourceTree = "<group>"; };
+		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				5E6252072928C20600A3EB86 /* PenPal+Extensions.swift */,
 				5E62520B292B7A2A00A3EB86 /* Event+Extensions.swift */,
 				5E625213292B999500A3EB86 /* Stationery+Extensions.swift */,
+				5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */,
 				5E625218292CBD2700A3EB86 /* Export.swift */,
 			);
 			path = Data;
@@ -446,6 +449,7 @@
 				5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
 				5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */,
+				5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
 				5E625210292B8CAA00A3EB86 /* AddEventSheet.swift in Sources */,
 				5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */,
