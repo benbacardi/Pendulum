@@ -59,6 +59,7 @@
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
+		5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */; };
 		5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A15E297815560053B3D0 /* StatsView.swift */; };
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
 		5ED5A1642978430F0053B3D0 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1632978430F0053B3D0 /* Date.swift */; };
@@ -125,6 +126,7 @@
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
+		5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStationerySheet.swift; sourceTree = "<group>"; };
 		5ED5A15E297815560053B3D0 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
 		5ED5A1632978430F0053B3D0 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
@@ -299,6 +301,7 @@
 				5E62520F292B8CAA00A3EB86 /* AddEventSheet.swift */,
 				5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */,
 				5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */,
+				5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */,
 			);
 			path = Sheets;
 			sourceTree = "<group>";
@@ -465,6 +468,7 @@
 				5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */,
 				5E0A016429AFA68C00BADAC6 /* GrantContactsAccessView.swift in Sources */,
 				5E62520C292B7A2A00A3EB86 /* Event+Extensions.swift in Sources */,
+				5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */,
 				5E7EC41B2979A73A00C24189 /* Double.swift in Sources */,
 				5E62520E292B889700A3EB86 /* EventCell.swift in Sources */,
 			);
