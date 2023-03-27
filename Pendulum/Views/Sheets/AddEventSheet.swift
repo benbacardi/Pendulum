@@ -327,6 +327,9 @@ struct AddEventSheet: View {
                                     photoLoadPending = false
                                 }
                             }
+                        } onDismiss: {
+                            self.photoLoadPending = false
+                            self.showPhotoPicker = false
                         }
                     }
                     

@@ -11,12 +11,12 @@ struct ImagePickerView: UIViewControllerRepresentable {
     
     private var sourceType: UIImagePickerController.SourceType
     private let onImagePicked: (UIImage) -> Void
+    private let onDismiss: () -> Void
     
-    @Environment(\.presentationMode) private var presentationMode
-    
-    public init(sourceType: UIImagePickerController.SourceType, onImagePicked: @escaping (UIImage) -> Void) {
+    public init(sourceType: UIImagePickerController.SourceType, onImagePicked: @escaping (UIImage) -> Void, onDismiss: @escaping () -> Void) {
         self.sourceType = sourceType
         self.onImagePicked = onImagePicked
+        self.onDismiss = onDismiss
     }
     
     public func makeUIViewController(context: Context) -> UIImagePickerController {
@@ -30,7 +30,7 @@ struct ImagePickerView: UIViewControllerRepresentable {
     
     public func makeCoordinator() -> Coordinator {
         Coordinator(
-            onDismiss: { self.presentationMode.wrappedValue.dismiss() },
+            onDismiss: self.onDismiss,
             onImagePicked: self.onImagePicked
         )
     }
