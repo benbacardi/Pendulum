@@ -40,6 +40,36 @@ struct EventCell: View {
         .padding(.top, 10)
     }
     
+    @ViewBuilder
+    func image(from photo: EventPhoto) -> some View {
+        if let image = photo.image() {
+            image
+                .resizable()
+                .scaledToFill()
+                .frame(width: 60, height: 60)
+                .cornerRadius(5)
+        } else {
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    func imageHStack(from photos: [EventPhoto]) -> some View {
+        HStack {
+            ForEach(photos) { photo in
+                Button(action: {
+//                    if let image = photo.image() {
+//                        self.previewImage = image
+//                        self.showImageViewer = true
+//                    }
+                }) {
+                    self.image(from: photo)
+                }
+            }
+            Spacer()
+        }
+    }
+    
     // MARK: Body
     var body: some View {
         HStack(alignment: .top) {
@@ -63,6 +93,15 @@ struct EventCell: View {
                                     Image(systemName: "line.diagonal")
                                 }
                                 .foregroundColor(.secondary)
+                            }
+                        }
+
+                        if !event.allPhotos().isEmpty {
+                            ViewThatFits {
+                                imageHStack(from: event.allPhotos())
+                                ScrollView(.horizontal) {
+                                    imageHStack(from: event.allPhotos())
+                                }
                             }
                         }
                         

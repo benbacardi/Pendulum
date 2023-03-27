@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import PhotosUI
 
 struct AddEventSheet: View {
     
@@ -24,6 +25,10 @@ struct AddEventSheet: View {
     @State private var letterType: LetterType = .letter
     @State private var ignore: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
+    
+    @State private var selectedPhoto: PhotosPickerItem? = nil
+    @State private var eventPhotos: [EventPhoto] = []
+    @State private var photoLoadPending: Bool = false
     
     @State private var iconWidth: CGFloat = 20
     
@@ -247,6 +252,79 @@ struct AddEventSheet: View {
                         }
                     }
                     
+                    Section {
+                        PhotosPicker(selection: $selectedPhoto, matching: .images, photoLibrary: .shared()) {
+                            HStack {
+                                Text("Add a photo…")
+                                Spacer()
+                                if photoLoadPending {
+                                    ProgressView()
+                                }
+                            }
+                        }
+                        .onChange(of: selectedPhoto) { newPhoto in
+                            withAnimation {
+                                if newPhoto != nil {
+                                    photoLoadPending = true
+                                } else {
+                                    photoLoadPending = false
+                                }
+                            }
+                            Task {
+                                do {
+                                    if let data = try await newPhoto?.loadTransferable(type: Data.self) {
+                                        let newEventPhoto = EventPhoto.from(data)
+                                        DispatchQueue.main.async {
+                                            withAnimation {
+                                                eventPhotos.append(newEventPhoto)
+                                            }
+                                        }
+                                    }
+                                } catch {
+                                    appLogger.error("Could not get photo data: \(error.localizedDescription)")
+                                }
+                                DispatchQueue.main.async {
+                                    withAnimation {
+                                        photoLoadPending = false
+                                    }
+                                }
+                            }
+                        }
+                        .listRowSeparator(.hidden)
+                        if !eventPhotos.isEmpty {
+                            ScrollView(.horizontal) {
+                                LazyHStack {
+                                    ForEach(eventPhotos) { imageData in
+                                        if let image = imageData.image() {
+                                            ZStack(alignment: .topTrailing) {
+                                                image
+                                                    .resizable()
+                                                    .scaledToFill()
+                                                    .frame(width: 100, height: 100)
+                                                    .cornerRadius(10)
+                                                Button(role: .destructive, action: {
+                                                    let _ = withAnimation {
+                                                        self.eventPhotos = self.eventPhotos.filter { $0.id != imageData.id }
+                                                    }
+                                                }) {
+                                                    Label("Delete", systemImage: "x.circle.fill")
+                                                        .font(.headline)
+                                                        .labelStyle(.iconOnly)
+                                                        .foregroundColor(.red)
+                                                }
+                                                .buttonStyle(.plain)
+                                                .backgroundCircle(color: .white, multiplier: 1.0)
+                                                .offset(x: 5, y: -5)
+                                            }
+                                        }
+                                    }
+                                }
+                                .padding([.horizontal, .bottom])
+                            }
+                            .listRowInsets(EdgeInsets())
+                        }
+                    }
+                    
                     Section(footer: Text(ignoreFooterText)) {
                         Toggle("No response needed", isOn: $ignore)
                     }
@@ -262,9 +340,9 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
+                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPhotos: eventPhotos)
                             } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore)
+                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPhotos: eventPhotos)
                             }
                             done()
                         }) {
@@ -302,6 +380,7 @@ struct AddEventSheet: View {
                     self.paper = event.papers.joined(separator: "\n")
                     self.letterType = event.letterType
                     self.ignore = event.ignore
+                    self.eventPhotos = event.allPhotos()
                 }
             }
             .task {

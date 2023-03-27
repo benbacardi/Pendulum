@@ -54,7 +54,7 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool) {
+    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, withPhotos photos: [EventPhoto]? = nil) {
         self.date = date
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -62,6 +62,19 @@ extension Event {
         self.paper = paper?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.letterType = letterType
         self.ignore = ignore
+        
+        if let photos {
+            dataLogger.debug("There are photos for the event: \(photos.count)")
+            for photo in photos {
+                if photo.event == nil {
+                    dataLogger.debug("Photo is new: \(photo.id?.uuidString ?? "NO ID")")
+                    self.addToPhotos(photo)
+                }
+            }
+            let deletedCount = self.deletePhotos(notMatching: photos.compactMap { $0.id }, saving: false)
+            dataLogger.debug("Deleted \(deletedCount) old photos")
+        }
+        
         self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
     }
@@ -70,6 +83,39 @@ extension Event {
         PersistenceController.shared.container.viewContext.delete(self)
         self.penpal?.updateLastEventType()
         PersistenceController.shared.save()
+    }
+    
+}
+
+extension Event {
+    
+    func addPhoto(fromData data: Data, saving: Bool = false) {
+        let newPhoto = EventPhoto(context: PersistenceController.shared.container.viewContext)
+        newPhoto.id = UUID()
+        newPhoto.data = data
+        self.addToPhotos(newPhoto)
+        if saving {
+            PersistenceController.shared.save()
+        }
+    }
+    
+    func allPhotos() -> [EventPhoto] {
+        Array(photos as? Set<EventPhoto> ?? [])
+    }
+    
+    func deletePhotos(notMatching ids: [UUID], saving: Bool = false) -> Int {
+        var deletedCount = 0
+        for photo in self.allPhotos() {
+            guard let id = photo.id else { continue }
+            if !ids.contains(id) {
+                deletedCount += 1
+                PersistenceController.shared.container.viewContext.delete(photo)
+            }
+        }
+        if saving {
+            PersistenceController.shared.save()
+        }
+        return deletedCount
     }
     
 }
