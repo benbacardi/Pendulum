@@ -318,7 +318,7 @@ struct AddEventSheet: View {
                             .listRowInsets(EdgeInsets())
                         }
                     }
-                    .sheet(isPresented: $showPhotoPicker) {
+                    .fullScreenCover(isPresented: $showPhotoPicker) {
                         ImagePickerView(sourceType: pickerType) { image in
                             let newEventPhoto = EventPhoto.from(image)
                             DispatchQueue.main.async {
