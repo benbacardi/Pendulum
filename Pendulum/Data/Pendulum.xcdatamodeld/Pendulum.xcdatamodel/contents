@@ -11,11 +11,13 @@
         <attribute name="pen" optional="YES" attributeType="String"/>
         <attribute name="typeValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <relationship name="penpal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PenPal" inverseName="events" inverseEntity="PenPal"/>
-        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="EventPhoto" inverseName="event" inverseEntity="EventPhoto"/>
+        <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EventPhoto" inverseName="event" inverseEntity="EventPhoto"/>
     </entity>
     <entity name="EventPhoto" representedClassName="EventPhoto" syncable="YES" codeGenerationType="class">
         <attribute name="data" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
+        <attribute name="dateAdded" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="thumbnailData" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES"/>
         <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="photos" inverseEntity="Event"/>
     </entity>
     <entity name="PenPal" representedClassName="PenPal" syncable="YES" codeGenerationType="class">

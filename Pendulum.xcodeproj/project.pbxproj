@@ -65,6 +65,8 @@
 		5ED5A1642978430F0053B3D0 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1632978430F0053B3D0 /* Date.swift */; };
 		5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */; };
 		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
+		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
+		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
@@ -133,6 +135,8 @@
 		5ED5A1632978430F0053B3D0 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostUsedStationeryChart.swift; sourceTree = "<group>"; };
 		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
+		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
+		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -234,6 +238,7 @@
 				5E7EC41829799FD700C24189 /* Array.swift */,
 				5E7EC41A2979A73A00C24189 /* Double.swift */,
 				5E72EE3A298E59BA008E3BAA /* NSUbiquitousKeyValueStore.swift */,
+				5EE5687229D1E43E00BC2687 /* UIImage.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -248,6 +253,7 @@
 				5EEF49FD291D1218000528C6 /* Orientation.swift */,
 				5E3461EF2983BF6700BBD038 /* AppPreferences.swift */,
 				5E0A015F29AF75FC00BADAC6 /* SplitView.swift */,
+				5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -437,6 +443,7 @@
 				5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */,
 				5ED5A1642978430F0053B3D0 /* Date.swift in Sources */,
 				5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */,
+				5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */,
 				5E7EC41929799FD700C24189 /* Array.swift in Sources */,
 				5E72EE3B298E59BA008E3BAA /* NSUbiquitousKeyValueStore.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
@@ -465,6 +472,7 @@
 				5E625212292B958D00A3EB86 /* PenPalContactSheet.swift in Sources */,
 				5E62521B292CDE8000A3EB86 /* ContactAddress.swift in Sources */,
 				5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */,
+				5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */,
 				5E0A016029AF75FC00BADAC6 /* SplitView.swift in Sources */,
 				5E625217292BCFB800A3EB86 /* PenPal+Notifications.swift in Sources */,
 				5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */,
@@ -610,7 +618,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pendulum/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To add photos of your correspondence";
 				INFOPLIST_KEY_NSContactsUsageDescription = "To choose and sync your Pen Pals";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "To save photos of your correspondence";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -655,7 +665,9 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Pendulum/Info.plist;
+				INFOPLIST_KEY_NSCameraUsageDescription = "To add photos of your correspondence";
 				INFOPLIST_KEY_NSContactsUsageDescription = "To choose and sync your Pen Pals";
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "To save photos of your correspondence";
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

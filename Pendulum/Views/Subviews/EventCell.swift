@@ -42,7 +42,8 @@ struct EventCell: View {
     
     @ViewBuilder
     func image(from photo: EventPhoto) -> some View {
-        if let image = photo.image() {
+        let image = photo.thumbnail() ?? photo.image()
+        if let image {
             image
                 .resizable()
                 .scaledToFill()

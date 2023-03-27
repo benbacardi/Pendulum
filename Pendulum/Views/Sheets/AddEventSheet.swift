@@ -30,6 +30,10 @@ struct AddEventSheet: View {
     @State private var eventPhotos: [EventPhoto] = []
     @State private var photoLoadPending: Bool = false
     
+    @State private var showPickerChoice: Bool = false
+    @State private var showPhotoPicker: Bool = false
+    @State private var pickerType: UIImagePickerController.SourceType = .photoLibrary
+    
     @State private var iconWidth: CGFloat = 20
     
     @FocusState private var isNotesFieldActive: Bool
@@ -253,7 +257,9 @@ struct AddEventSheet: View {
                     }
                     
                     Section {
-                        PhotosPicker(selection: $selectedPhoto, matching: .images, photoLibrary: .shared()) {
+                        Button(action: {
+                            self.showPickerChoice = true
+                        }) {
                             HStack {
                                 Text("Add a photo…")
                                 Spacer()
@@ -262,40 +268,28 @@ struct AddEventSheet: View {
                                 }
                             }
                         }
-                        .onChange(of: selectedPhoto) { newPhoto in
-                            withAnimation {
-                                if newPhoto != nil {
-                                    photoLoadPending = true
-                                } else {
-                                    photoLoadPending = false
-                                }
+                        .confirmationDialog("Add a photo…", isPresented: $showPickerChoice) {
+                            Button(action: {
+                                self.pickerType = .photoLibrary
+                                self.showPhotoPicker = true
+                                self.photoLoadPending = true
+                            }) {
+                                Label("Photo Library", systemImage: "photo.on.rectangle")
                             }
-                            Task {
-                                do {
-                                    if let data = try await newPhoto?.loadTransferable(type: Data.self) {
-                                        let newEventPhoto = EventPhoto.from(data)
-                                        DispatchQueue.main.async {
-                                            withAnimation {
-                                                eventPhotos.append(newEventPhoto)
-                                            }
-                                        }
-                                    }
-                                } catch {
-                                    appLogger.error("Could not get photo data: \(error.localizedDescription)")
-                                }
-                                DispatchQueue.main.async {
-                                    withAnimation {
-                                        photoLoadPending = false
-                                    }
-                                }
+                            Button(action: {
+                                self.pickerType = .camera
+                                self.showPhotoPicker = true
+                                self.photoLoadPending = true
+                            }) {
+                                Label("Camera", systemImage: "camera")
                             }
                         }
                         .listRowSeparator(.hidden)
                         if !eventPhotos.isEmpty {
                             ScrollView(.horizontal) {
                                 LazyHStack {
-                                    ForEach(eventPhotos) { imageData in
-                                        if let image = imageData.image() {
+                                    ForEach(eventPhotos) { photo in
+                                        if let image = photo.thumbnail() ?? photo.image() {
                                             ZStack(alignment: .topTrailing) {
                                                 image
                                                     .resizable()
@@ -304,7 +298,7 @@ struct AddEventSheet: View {
                                                     .cornerRadius(10)
                                                 Button(role: .destructive, action: {
                                                     let _ = withAnimation {
-                                                        self.eventPhotos = self.eventPhotos.filter { $0.id != imageData.id }
+                                                        self.eventPhotos = self.eventPhotos.filter { $0.id != photo.id }
                                                     }
                                                 }) {
                                                     Label("Delete", systemImage: "x.circle.fill")
@@ -322,6 +316,17 @@ struct AddEventSheet: View {
                                 .padding([.horizontal, .bottom])
                             }
                             .listRowInsets(EdgeInsets())
+                        }
+                    }
+                    .sheet(isPresented: $showPhotoPicker) {
+                        ImagePickerView(sourceType: pickerType) { image in
+                            let newEventPhoto = EventPhoto.from(image)
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    eventPhotos.append(newEventPhoto)
+                                    photoLoadPending = false
+                                }
+                            }
                         }
                     }
                     
@@ -381,6 +386,7 @@ struct AddEventSheet: View {
                     self.letterType = event.letterType
                     self.ignore = event.ignore
                     self.eventPhotos = event.allPhotos()
+                    appLogger.debug("Event photos: \(self.eventPhotos)")
                 }
             }
             .task {

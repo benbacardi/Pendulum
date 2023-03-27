@@ -100,7 +100,7 @@ extension Event {
     }
     
     func allPhotos() -> [EventPhoto] {
-        Array(photos as? Set<EventPhoto> ?? [])
+        Array(photos as? Set<EventPhoto> ?? []).sorted(using: KeyPathComparator(\.dateAdded))
     }
     
     func deletePhotos(notMatching ids: [UUID], saving: Bool = false) -> Int {
