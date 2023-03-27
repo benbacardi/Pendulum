@@ -14,6 +14,7 @@ struct PendulumApp: App {
     @Environment(\.scenePhase) var scenePhase
     
     let persistenceController = PersistenceController.shared
+    let imageViewerController = ImageViewerController()
     
     init() {
             // This fixes a bug / feature introduced in iOS 15
@@ -37,6 +38,7 @@ struct PendulumApp: App {
         WindowGroup {
             ContentView()
                 .environmentObject(OrientationObserver.shared)
+                .environmentObject(imageViewerController)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
         }
     }

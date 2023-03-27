@@ -6,12 +6,14 @@
 //
 
 import SwiftUI
+import ImageViewer
 
 struct ContentView: View {
     
     @State private var selectedTab: Int = Tab.penPalList.rawValue
     @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
+    @EnvironmentObject var imageViewerController: ImageViewerController
     
     var body: some View {
         Group {
@@ -29,6 +31,7 @@ struct ContentView: View {
             }
         }
         .environmentObject(appPreferences)
+        .overlay(ImageViewer(image: $imageViewerController.image, viewerShown: $imageViewerController.show, closeButtonTopRight: true))
     }
 }
 
