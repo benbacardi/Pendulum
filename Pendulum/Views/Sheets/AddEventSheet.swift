@@ -26,12 +26,12 @@ struct AddEventSheet: View {
     @State private var ignore: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
     
-    @State private var selectedPhoto: PhotosPickerItem? = nil
     @State private var eventPhotos: [EventPhoto] = []
     @State private var photoLoadPending: Bool = false
     
     @State private var showPickerChoice: Bool = false
     @State private var showPhotoPicker: Bool = false
+    @State private var showPhotoPickerPopover: Bool = false
     @State private var pickerType: UIImagePickerController.SourceType = .photoLibrary
     
     @State private var iconWidth: CGFloat = 20
@@ -271,7 +271,11 @@ struct AddEventSheet: View {
                         .confirmationDialog("Add a photo…", isPresented: $showPickerChoice) {
                             Button(action: {
                                 self.pickerType = .photoLibrary
-                                self.showPhotoPicker = true
+                                if DeviceType.isPad() {
+                                    self.showPhotoPickerPopover = true
+                                } else {
+                                    self.showPhotoPicker = true
+                                }
                                 self.photoLoadPending = true
                             }) {
                                 Label("Photo Library", systemImage: "photo.on.rectangle")
@@ -332,6 +336,21 @@ struct AddEventSheet: View {
                             self.showPhotoPicker = false
                         }
                     }
+                    .popover(isPresented: $showPhotoPickerPopover) {
+                        ImagePickerView(sourceType: pickerType) { image in
+                            let newEventPhoto = EventPhoto.from(image)
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    eventPhotos.append(newEventPhoto)
+                                    photoLoadPending = false
+                                }
+                            }
+                        } onDismiss: {
+                            self.photoLoadPending = false
+                            self.showPhotoPicker = false
+                        }
+                    }
+                    
                     
                     Section(footer: Text(ignoreFooterText)) {
                         Toggle("No response needed", isOn: $ignore)
