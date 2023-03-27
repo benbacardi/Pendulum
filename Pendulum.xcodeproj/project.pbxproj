@@ -67,6 +67,8 @@
 		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
 		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
 		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
+		5EE5687829D1E98D00BC2687 /* ImageViewer in Frameworks */ = {isa = PBXBuildFile; productRef = 5EE5687729D1E98D00BC2687 /* ImageViewer */; };
+		5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
@@ -137,6 +139,7 @@
 		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
 		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
+		5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerController.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -148,6 +151,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EE5687829D1E98D00BC2687 /* ImageViewer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -254,6 +258,7 @@
 				5E3461EF2983BF6700BBD038 /* AppPreferences.swift */,
 				5E0A015F29AF75FC00BADAC6 /* SplitView.swift */,
 				5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */,
+				5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -364,6 +369,7 @@
 			);
 			name = Pendulum;
 			packageProductDependencies = (
+				5EE5687729D1E98D00BC2687 /* ImageViewer */,
 			);
 			productName = Pendulum;
 			productReference = 5E4055052914205D00BD52BF /* Pendulum.app */;
@@ -394,6 +400,7 @@
 			);
 			mainGroup = 5E4054FC2914205D00BD52BF;
 			packageReferences = (
+				5EE5687629D1E98D00BC2687 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */,
 			);
 			productRefGroup = 5E4055062914205D00BD52BF /* Products */;
 			projectDirPath = "";
@@ -439,6 +446,7 @@
 				5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
+				5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */,
 				5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */,
 				5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */,
 				5ED5A1642978430F0053B3D0 /* Date.swift in Sources */,
@@ -716,6 +724,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5EE5687629D1E98D00BC2687 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Jake-Short/swiftui-image-viewer.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5EE5687729D1E98D00BC2687 /* ImageViewer */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EE5687629D1E98D00BC2687 /* XCRemoteSwiftPackageReference "swiftui-image-viewer" */;
+			productName = ImageViewer;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */ = {

@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EventCell: View {
     
+    @EnvironmentObject var imageViewerController: ImageViewerController
+    
     // MARK: Parameters
     let event: Event
     let penpal: PenPal
@@ -59,10 +61,9 @@ struct EventCell: View {
         HStack {
             ForEach(photos) { photo in
                 Button(action: {
-//                    if let image = photo.image() {
-//                        self.previewImage = image
-//                        self.showImageViewer = true
-//                    }
+                    if let image = photo.image() {
+                        imageViewerController.present(image)
+                    }
                 }) {
                     self.image(from: photo)
                 }

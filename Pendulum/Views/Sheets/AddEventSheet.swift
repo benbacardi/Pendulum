@@ -9,7 +9,7 @@ import SwiftUI
 import PhotosUI
 
 struct AddEventSheet: View {
-    
+        
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     let event: Event?
