@@ -71,8 +71,9 @@ extension Stationery {
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "value", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "type = %@", type.rawValue)
         do {
-            let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
-            return results.map { $0.wrappedValue }
+            let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest).map { $0.wrappedValue }
+            dataLogger.debug("Results for type \(type.name): \(results)")
+            return results
         } catch {
             dataLogger.error("Could not fetch unused stationery of type: \(type.rawValue): \(error.localizedDescription)")
         }
@@ -93,6 +94,25 @@ extension Stationery {
         } catch {
             dataLogger.error("Could not delete stationery: \(parameter)")
         }
+    }
+    
+    static func update(_ parameter: ParameterCount, to newName: String, outbound: Bool = true) {
+        let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "type = %@", parameter.type.rawValue),
+            NSPredicate(format: "value = %@", parameter.name),
+        ])
+        do {
+            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
+                dataLogger.debug("Updating \(result.wrappedValue) to \(newName)")
+                result.value = newName
+            }
+            dataLogger.debug("Saving")
+            PersistenceController.shared.save()
+            Event.updateStationery(ofType: parameter.type, from: parameter.name, to: newName, outbound: outbound)
+        } catch {
+            dataLogger.error("Could not update stationery: \(parameter): \(error.localizedDescription)")
+        }        
     }
     
 }

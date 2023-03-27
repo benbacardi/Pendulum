@@ -104,4 +104,46 @@ extension Event {
         return 0
     }
     
+    static func updateStationery(ofType type: StationeryType, from oldName: String, to newName: String, outbound: Bool = true) {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        var predicates: [NSPredicate] = [NSPredicate(format: "\(type.recordType) CONTAINS %@", oldName)]
+        if outbound {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                EventType.sent.predicate,
+                EventType.written.predicate,
+            ]))
+        } else {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                EventType.received.predicate
+            ]))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        dataLogger.debug("Updating \(type.recordType) called \(oldName) to \(newName)")
+        do {
+            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
+                switch type {
+                case .pen:
+                    result.pen = parseStationery(result.pen, replacing: oldName, with: newName)
+                case .ink:
+                    result.ink = parseStationery(result.ink, replacing: oldName, with: newName)
+                case .paper:
+                    result.paper = parseStationery(result.paper, replacing: oldName, with: newName)
+                }
+            }
+            PersistenceController.shared.save()
+        } catch {
+            dataLogger.error("Could not update stationery: \(error.localizedDescription)")
+        }
+    }
+    
+}
+
+func parseStationery(_ data: String?, replacing oldName: String, with newName: String) -> String? {
+    guard let data else { return nil }
+    return data.trimmingCharacters(in: .whitespacesAndNewlines)
+        .components(separatedBy: Event.optionSeparators)
+        .map { $0.trimmingCharacters(in: .whitespaces) }
+        .map { $0 == oldName ? newName : $0 }
+        .uniqued()
+        .joined(separator: "\n")
 }

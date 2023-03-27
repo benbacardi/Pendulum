@@ -45,6 +45,8 @@ struct EventPropertyDetailsSheet: View {
     @State private var inks: [ParameterCount] = []
     @State private var papers: [ParameterCount] = []
     
+    @State private var editingStationery: ParameterCount? = nil
+    
     @AppStorage(UserDefaults.Key.sortStationeryAlphabetically.rawValue, store: UserDefaults.shared) private var sortAlphabetically: Bool = false
     @State private var outbound: Bool = true
     
@@ -57,6 +59,30 @@ struct EventPropertyDetailsSheet: View {
     
     @State private var toDelete: ParameterCount? = nil
     @State private var showDeleteAlert: Bool = false
+    
+    @ViewBuilder
+    func deleteButton(for option: ParameterCount) -> some View {
+        if option.count == 0 {
+            Button(role: .destructive) {
+                self.toDelete = option
+                self.showDeleteAlert = true
+            } label: {
+                Label("Delete", systemImage: "trash")
+            }
+            .tint(.red)
+        } else {
+            EmptyView()
+        }
+    }
+    
+    @ViewBuilder
+    func editButton(for option: ParameterCount) -> some View {
+        Button(action: {
+            self.editingStationery = option
+        }) {
+            Label("Edit", systemImage: "pencil")
+        }
+    }
     
     @ViewBuilder
     func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
@@ -77,16 +103,15 @@ struct EventPropertyDetailsSheet: View {
                             .foregroundColor(.secondary)
                     }
                 }
+                .swipeActions(edge: .leading) {
+                    editButton(for: option)
+                }
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    if option.count == 0 {
-                        Button(action: {
-                            self.toDelete = option
-                            self.showDeleteAlert = true
-                        }) {
-                            Label("Delete", systemImage: "trash")
-                        }
-                        .tint(.red)
-                    }
+                    deleteButton(for: option)
+                }
+                .contextMenu {
+                    editButton(for: option)
+                    deleteButton(for: option)
                 }
             }
             if allowAdding && outbound {
@@ -116,7 +141,7 @@ struct EventPropertyDetailsSheet: View {
             }
         }
     }
-    
+        
     var body: some View {
         NavigationStack {
             Group {
@@ -184,6 +209,28 @@ struct EventPropertyDetailsSheet: View {
             .onChange(of: outbound) { _ in
                 withAnimation {
                     self.updateStationery()
+                }
+            }
+            .sheet(item: $editingStationery) { item in
+                NavigationStack {
+                    EditStationerySheet(currentStationery: item, outbound: outbound) {
+                        self.editingStationery = nil
+                        withAnimation {
+                            dataLogger.debug("Updating!")
+                            self.updateStationery()
+                        }
+                    }
+                    .navigationTitle("Update \(item.type.name)")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.editingStationery = nil
+                            }) {
+                                Text("Cancel")
+                            }
+                        }
+                    }
                 }
             }
         }
