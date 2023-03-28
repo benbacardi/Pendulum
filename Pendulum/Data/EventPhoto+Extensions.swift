@@ -21,8 +21,8 @@ extension EventPhoto {
     static func from(_ image: UIImage) -> EventPhoto {
         let eventPhoto = EventPhoto(context: PersistenceController.shared.container.viewContext)
         eventPhoto.id = UUID()
-        eventPhoto.data = image.jpegData(compressionQuality: 1.0) ?? Data()
-        eventPhoto.thumbnailData = image.resize(targetSize: CGSize(width: 200, height: 200))?.jpegData(compressionQuality: 1.0) ?? Data()
+        eventPhoto.data = image.resize(targetSize: CGSize(width: 2000, height: 2000))?.jpegData(compressionQuality: 1.0) ?? Data()
+        eventPhoto.thumbnailData = image.resize(targetSize: CGSize(width: 200, height: 200))?.jpegData(compressionQuality: 0.8) ?? Data()
         eventPhoto.dateAdded = Date()
         return eventPhoto
     }
