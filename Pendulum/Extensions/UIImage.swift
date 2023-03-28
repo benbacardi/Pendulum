@@ -24,6 +24,10 @@ extension UIImage {
             newSize = CGSize(width: size.width * widthRatio, height: size.height * widthRatio)
         }
         
+        if newSize.width > size.width || newSize.height > size.height {
+            return self
+        }
+        
         // This is the rect that we've calculated out and this is what is actually used below
         let rect = CGRect(origin: .zero, size: newSize)
         
