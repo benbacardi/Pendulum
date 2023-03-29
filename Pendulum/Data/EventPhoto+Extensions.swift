@@ -27,8 +27,13 @@ extension EventPhoto {
         return eventPhoto
     }
     
+    func uiImage() -> UIImage? {
+        guard let data = self.data else { return nil }
+        return UIImage(data: data)
+    }
+    
     func image() -> Image? {
-        guard let data = self.data, let uiImage = UIImage(data: data) else { return nil }
+        guard let uiImage = self.uiImage() else { return nil }
         return Image(uiImage: uiImage)
     }
     

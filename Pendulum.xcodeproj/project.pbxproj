@@ -33,6 +33,7 @@
 		5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554129166EBE00BD52BF /* FullWidthText.swift */; };
 		5E4055492918184000BD52BF /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055482918184000BD52BF /* Calendar.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
+		5E494C7B29D41E4B00D908E1 /* ImageGalleryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E494C7A29D41E4B00D908E1 /* ImageGalleryOverlay.swift */; };
 		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
 		5E6252022927D73900A3EB86 /* Pendulum.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */; };
 		5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E6252032927D83200A3EB86 /* PersistenceController.swift */; };
@@ -105,6 +106,7 @@
 		5E40554129166EBE00BD52BF /* FullWidthText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FullWidthText.swift; sourceTree = "<group>"; };
 		5E4055482918184000BD52BF /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		5E40554E2918215C00BD52BF /* CNPostalAddress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CNPostalAddress.swift; sourceTree = "<group>"; };
+		5E494C7A29D41E4B00D908E1 /* ImageGalleryOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGalleryOverlay.swift; sourceTree = "<group>"; };
 		5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalHeader.swift; sourceTree = "<group>"; };
 		5E6252012927D73900A3EB86 /* Pendulum.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Pendulum.xcdatamodel; sourceTree = "<group>"; };
 		5E6252032927D83200A3EB86 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
@@ -259,6 +261,7 @@
 				5E0A015F29AF75FC00BADAC6 /* SplitView.swift */,
 				5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */,
 				5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */,
+				5E494C7A29D41E4B00D908E1 /* ImageGalleryOverlay.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -463,6 +466,7 @@
 				5E0A016229AF9F8300BADAC6 /* PenPalSplitView.swift in Sources */,
 				5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
+				5E494C7B29D41E4B00D908E1 /* ImageGalleryOverlay.swift in Sources */,
 				5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */,
 				5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,

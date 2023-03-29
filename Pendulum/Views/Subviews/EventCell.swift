@@ -61,9 +61,12 @@ struct EventCell: View {
         HStack {
             ForEach(photos) { photo in
                 Button(action: {
-                    if let image = photo.image() {
-                        imageViewerController.present(image)
+                    withAnimation {
+                        imageViewerController.present(self.event.allPhotos())
                     }
+//                    if let image = photo.image() {
+//                        imageViewerController.present(image)
+//                    }
                 }) {
                     self.image(from: photo)
                 }
