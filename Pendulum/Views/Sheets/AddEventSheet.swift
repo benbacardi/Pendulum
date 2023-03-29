@@ -341,6 +341,7 @@ struct AddEventSheet: View {
                     }
                     .fullScreenCover(isPresented: $showPhotoPicker) {
                         imagePickerView
+                            .edgesIgnoringSafeArea(.all)
                     }
                     .popover(isPresented: $showPhotoPickerPopover) {
                         imagePickerView
