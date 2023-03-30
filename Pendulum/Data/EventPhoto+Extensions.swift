@@ -41,4 +41,14 @@ extension EventPhoto {
         guard let thumbnailData = self.thumbnailData, let uiImage = UIImage(data: thumbnailData) else { return nil }
         return Image(uiImage: uiImage)
     }
+    
+    func temporaryURL() -> URL? {
+        guard let data = self.data else { return nil }
+        let url = FileManager.default.temporaryDirectory
+            .appendingPathComponent((id ?? UUID()).uuidString)
+            .appendingPathExtension("jpg")
+        try? data.write(to: url)
+        return url
+    }
+    
 }

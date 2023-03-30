@@ -32,7 +32,9 @@ struct ContentView: View {
         }
         .environmentObject(appPreferences)
 //        .overlay(ImageViewer(image: $imageViewerController.image, viewerShown: $imageViewerController.show, closeButtonTopRight: true))
-        .overlay(ImageGalleryOverlay())
+        .sheet(isPresented: $imageViewerController.show) {
+            ImageGalleryOverlay()
+        }
     }
 }
 

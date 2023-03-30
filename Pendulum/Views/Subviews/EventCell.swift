@@ -62,7 +62,7 @@ struct EventCell: View {
             ForEach(photos) { photo in
                 Button(action: {
                     withAnimation {
-                        imageViewerController.present(self.event.allPhotos())
+                        imageViewerController.present(self.event.allPhotos(), showing: photo)
                     }
 //                    if let image = photo.image() {
 //                        imageViewerController.present(image)
