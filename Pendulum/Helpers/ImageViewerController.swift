@@ -10,21 +10,20 @@ import SwiftUI
 
 class ImageViewerController: ObservableObject {
     
-    @Published var show: Bool = true
-    @Published var image: Image? = nil
+    @Published var show: Bool = false
+    @Published var image: EventPhoto? = nil
     @Published var images: [EventPhoto] = []
     
-    func present(_ image: Image) {
+    func present(_ images: [EventPhoto], showing: EventPhoto) {
         withAnimation {
-            self.image = image
             self.show = true
+            self.image = showing
+            self.images = images
         }
     }
     
-    func present(_ images: [EventPhoto]) {
-        withAnimation {
-            self.images = images
-        }
+    var urls: [URL] {
+        self.images.compactMap { $0.temporaryURL() }
     }
     
     func dismiss() {
