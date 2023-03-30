@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ImageViewer
 
 struct ContentView: View {
     
@@ -31,8 +30,7 @@ struct ContentView: View {
             }
         }
         .environmentObject(appPreferences)
-//        .overlay(ImageViewer(image: $imageViewerController.image, viewerShown: $imageViewerController.show, closeButtonTopRight: true))
-        .sheet(isPresented: $imageViewerController.show) {
+        .overlay {
             ImageGalleryOverlay()
         }
     }

@@ -7,30 +7,41 @@
 
 import Foundation
 import SwiftUI
+import QuickLook
+
+
+class EventPhotoPreview: NSObject, QLPreviewItem {
+     var previewItemURL: URL?
+     var previewItemTitle: String?
+     
+     init(url: URL?, title: String?) {
+         previewItemURL = url
+         previewItemTitle = title
+     }
+}
+
 
 class ImageViewerController: ObservableObject {
-    
-    @Published var show: Bool = false
     @Published var image: EventPhoto? = nil
     @Published var images: [EventPhoto] = []
     
     func present(_ images: [EventPhoto], showing: EventPhoto) {
         withAnimation {
-            self.show = true
             self.image = showing
             self.images = images
         }
-    }
-    
-    var urls: [URL] {
-        self.images.compactMap { $0.temporaryURL() }
     }
     
     func dismiss() {
         withAnimation {
             self.image = nil
             self.images = []
-            self.show = false
+        }
+    }
+    
+    var urls: [EventPhotoPreview] {
+        self.images.enumerated().compactMap { index, item in
+            EventPhotoPreview(url: item.temporaryURL(), title: "Photo \(index + 1)")
         }
     }
     
