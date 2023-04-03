@@ -40,7 +40,8 @@ struct WhatsNew: View {
             WhatsNewGridRow(icon: "rectangle.and.pencil.and.ellipsis", iconColor: .purple, title: "Edit your stationery", summary: "Fix typos or make changes to your logged stationery.")
             WhatsNewGridRow(icon: "questionmark.app.fill", iconColor: .pink, title: "FAQs", summary: "View frequently asked questions from the Settings screen.")
         }
-        .padding(.bottom, 30)
+        .padding(.horizontal, 20)
+        .padding(.top, 30)
     }
     
     var dismissButton: some View {
@@ -71,13 +72,17 @@ struct WhatsNew: View {
             .padding(.vertical)
             .background(Color.accentColor)
             
-            ScrollView {
-                grid
+            VStack {
+                ViewThatFits(in: .vertical) {
+                    grid
+                    ScrollView {
+                        grid
+                    }
+                }
+                Spacer()
+                dismissButton
                     .padding(20)
-                    .padding(.top)
             }
-            dismissButton
-                .padding(20)
             
         }
     }
