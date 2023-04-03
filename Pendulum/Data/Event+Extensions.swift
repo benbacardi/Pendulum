@@ -64,7 +64,7 @@ extension Event {
         self.ignore = ignore
         
         if let photos {
-            dataLogger.debug("There are photos for the event: \(photos.count)")
+            dataLogger.debug("There are photos for the event \(self.id?.uuidString ?? "NO ID"): \(photos.count)")
             for photo in photos {
                 if photo.event == nil {
                     dataLogger.debug("Photo is new: \(photo.id?.uuidString ?? "NO ID")")
