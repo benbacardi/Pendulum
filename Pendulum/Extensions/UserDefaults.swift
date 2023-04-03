@@ -10,6 +10,7 @@ import Foundation
 extension UserDefaults {
     
     enum Key: String {
+        case lastLaunchedVersion
         case sendRemindersToPostLetters
         case sendRemindersToWriteLetters
         case badgeRemindersToPostLetters

@@ -13,7 +13,9 @@ struct ContentView: View {
     @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
-    
+    @State private var showWhatsNewOverlay: Bool = false
+    @AppStorage(UserDefaults.Key.lastLaunchedVersion.rawValue, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
+        
     var body: some View {
         Group {
             if DeviceType.isPad() && horizontalSizeClass != .compact {
@@ -30,8 +32,17 @@ struct ContentView: View {
             }
         }
         .environmentObject(appPreferences)
+        .sheet(isPresented: $showWhatsNewOverlay) {
+            WhatsNew()
+        }
         .overlay {
             ImageGalleryOverlay()
+        }
+        .onAppear {
+            if lastLaunchedVersion != Bundle.main.appBuildNumber {
+                showWhatsNewOverlay = true
+                lastLaunchedVersion = Bundle.main.appBuildNumber
+            }
         }
     }
 }
