@@ -70,16 +70,17 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, withPhotos photos: [EventPhoto]? = nil) {
+    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: PersistenceController.shared.container.viewContext)
         newEvent.id = UUID()
         newEvent.date = date
         newEvent.type = eventType
-        newEvent.notes = notes
-        newEvent.pen = pen
-        newEvent.ink = ink
-        newEvent.paper = paper
+        newEvent.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
+        newEvent.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
+        newEvent.ink = ink?.trimmingCharacters(in: .whitespacesAndNewlines)
+        newEvent.paper = paper?.trimmingCharacters(in: .whitespacesAndNewlines)
+        newEvent.trackingReference = trackingReference?.trimmingCharacters(in: .whitespacesAndNewlines)
         newEvent.letterType = letterType
         newEvent.ignore = ignore
         self.addToEvents(newEvent)
