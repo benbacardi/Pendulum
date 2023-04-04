@@ -47,7 +47,9 @@ extension EventPhoto {
         let url = FileManager.default.temporaryDirectory
             .appendingPathComponent((id ?? UUID()).uuidString)
             .appendingPathExtension("jpg")
-        try? data.write(to: url)
+        if !FileManager.default.fileExists(atPath: url.path) {
+            try? data.write(to: url)
+        }
         return url
     }
     
