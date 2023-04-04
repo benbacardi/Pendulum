@@ -17,6 +17,7 @@
 		5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */; };
 		5E0A016829AFA9A900BADAC6 /* PenPalTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */; };
 		5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */; };
+		5E30A7F229DC628500B1E89D /* ExtendedGroupBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */; };
 		5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461EF2983BF6700BBD038 /* AppPreferences.swift */; };
 		5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */; };
 		5E4055092914205D00BD52BF /* PendulumApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055082914205D00BD52BF /* PendulumApp.swift */; };
@@ -87,6 +88,7 @@
 		5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFirstPenPalView.swift; sourceTree = "<group>"; };
 		5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalTab.swift; sourceTree = "<group>"; };
 		5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection.swift; sourceTree = "<group>"; };
+		5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedGroupBoxStyle.swift; sourceTree = "<group>"; };
 		5E3461EF2983BF6700BBD038 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByMonthChart.swift; sourceTree = "<group>"; };
 		5E4055052914205D00BD52BF /* Pendulum.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pendulum.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -262,6 +264,7 @@
 				5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */,
 				5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */,
 				5E494C7A29D41E4B00D908E1 /* ImageGalleryOverlay.swift */,
+				5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -458,6 +461,7 @@
 				5E72EE3B298E59BA008E3BAA /* NSUbiquitousKeyValueStore.swift in Sources */,
 				5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */,
 				5E494C7D29DB179F00D908E1 /* WhatsNew.swift in Sources */,
+				5E30A7F229DC628500B1E89D /* ExtendedGroupBoxStyle.swift in Sources */,
 				5E72EE39298E4D84008E3BAA /* TipJar.swift in Sources */,
 				5E0A016829AFA9A900BADAC6 /* PenPalTab.swift in Sources */,
 				5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */,

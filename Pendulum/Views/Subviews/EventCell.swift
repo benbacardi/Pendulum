@@ -15,9 +15,6 @@ struct EventCell: View {
     let event: Event
     let penpal: PenPal
     
-    // MARK: External State
-//    @Binding var lastEventTypeForPenPal: EventType
-    
     // MARK: State
     @State private var iconWidth: CGFloat?
     @State private var showDeleteAlert = false
@@ -64,9 +61,6 @@ struct EventCell: View {
                     withAnimation {
                         imageViewerController.present(self.event.allPhotos(), showing: photo)
                     }
-//                    if let image = photo.image() {
-//                        imageViewerController.present(image)
-//                    }
                 }) {
                     self.image(from: photo)
                 }
@@ -85,30 +79,42 @@ struct EventCell: View {
                 self.showEditEventSheet = true
             }) {
                 GroupBox {
-                    VStack(spacing: 10) {
-                        
-                        HStack {
-                            Text(event.type.description(for: event.letterType))
-                                .fullWidth()
-                            if event.ignore {
-                                Spacer()
-                                ZStack {
-                                    Image(systemName: "arrowshape.turn.up.left")
-                                        .font(.caption)
-                                    Image(systemName: "line.diagonal")
-                                }
-                                .foregroundColor(.secondary)
+                    
+                    HStack {
+                        Text(event.type.description(for: event.letterType))
+                            .fullWidth()
+                        if event.ignore {
+                            Spacer()
+                            ZStack {
+                                Image(systemName: "arrowshape.turn.up.left")
+                                    .font(.caption)
+                                Image(systemName: "line.diagonal")
                             }
+                            .foregroundColor(.secondary)
                         }
+                    }
+                    .padding([.horizontal, .top])
+                    .padding(.bottom, event.allPhotos().isEmpty ? 5 : 0)
 
-                        if !event.allPhotos().isEmpty {
-                            ViewThatFits {
+                    if !event.allPhotos().isEmpty {
+                        ViewThatFits(in: .horizontal) {
+                            imageHStack(from: event.allPhotos())
+                                .padding(.horizontal)
+                            ScrollView(.horizontal, showsIndicators: false) {
                                 imageHStack(from: event.allPhotos())
-                                ScrollView(.horizontal, showsIndicators: false) {
-                                    imageHStack(from: event.allPhotos())
-                                }
+                                    .padding(.horizontal)
                             }
                         }
+                        
+                        if event.hasNotes {
+                            Rectangle()
+                                .fill(.clear)
+                                .frame(height: 1)
+                        }
+                        
+                    }
+                    
+                    VStack {
                         
                         if event.hasNotes {
                             
@@ -117,6 +123,8 @@ struct EventCell: View {
                                     .font(.caption)
                                     .foregroundColor(.secondary)
                                     .fullWidth()
+                                    .padding(.bottom, event.hasAttributes ? 5 : 0)
+                                
                             }
                             
                             if event.hasAttributes {
@@ -162,8 +170,10 @@ struct EventCell: View {
                         }
                         
                     }
+                    .padding([.horizontal, .bottom])
                     
                 }
+                .groupBoxStyle(ExtendedGroupBoxStyle(includePadding: false))
             }
             .buttonStyle(.plain)
             .animation(.default, value: penpal)

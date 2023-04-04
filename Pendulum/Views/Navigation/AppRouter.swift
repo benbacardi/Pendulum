@@ -71,7 +71,7 @@ extension View {
                 AddPenPalSheet(done: done)
             case let .addPenPalManually(done):
                 ManualAddPenPalSheet(done: done)
-            case let .settings:
+            case .settings:
                 SettingsList()
             }
         }
