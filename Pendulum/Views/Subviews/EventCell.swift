@@ -104,7 +104,7 @@ struct EventCell: View {
                         if !event.allPhotos().isEmpty {
                             ViewThatFits {
                                 imageHStack(from: event.allPhotos())
-                                ScrollView(.horizontal) {
+                                ScrollView(.horizontal, showsIndicators: false) {
                                     imageHStack(from: event.allPhotos())
                                 }
                             }
