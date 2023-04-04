@@ -56,17 +56,6 @@ class QLPreviewCoordinator: NSObject, QLPreviewControllerDataSource {
     
     @objc func dismiss() {
         self.parent.imageViewerController.dismiss()
-        Task {
-            do {
-                let temporaryDirectory = FileManager.default.temporaryDirectory
-                try FileManager.default.contentsOfDirectory(atPath: temporaryDirectory.path).forEach { file in
-                    let fileURL = temporaryDirectory.appendingPathComponent(file)
-                    try FileManager.default.removeItem(atPath: fileURL.path)
-                }
-            } catch {
-                appLogger.error("Error cleaning up temporary directory: \(error.localizedDescription)")
-            }
-        }
     }
     
 }
