@@ -9,6 +9,7 @@ import SwiftUI
 
 struct EventCell: View {
     
+    @Environment(\.openURL) var openURL
     @EnvironmentObject var imageViewerController: ImageViewerController
     
     // MARK: Parameters
@@ -188,6 +189,11 @@ struct EventCell: View {
             .animation(.default, value: penpal)
             .contextMenu {
                 if !(event.trackingReference?.isEmpty ?? true) {
+                    Button(action: {
+                        openURL(URL(string: "https://t.17track.net/en#nums=\(event.trackingReference ?? "")")!)
+                    }) {
+                        Label("Track \(event.letterType.properNoun) on 17track.net", systemImage: "mappin.and.ellipse")
+                    }
                     Button(action: {
                         if let trackingReference = event.trackingReference {
                             UIPasteboard.general.string = trackingReference
