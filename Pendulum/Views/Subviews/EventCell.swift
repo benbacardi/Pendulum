@@ -160,6 +160,15 @@ struct EventCell: View {
                                             }
                                         }
                                     }
+                                    
+                                    if let trackingReference = event.trackingReference, !trackingReference.isEmpty {
+                                        GridRow {
+                                            Image(systemName: "smallcircle.filled.circle")
+                                            Text(trackingReference)
+                                        }
+                                        .padding(.top, event.hasStationery ? 5 : 0)
+                                    }
+                                    
                                 }
                                 .font(.caption)
                                 .foregroundColor(.secondary)
@@ -178,6 +187,15 @@ struct EventCell: View {
             .buttonStyle(.plain)
             .animation(.default, value: penpal)
             .contextMenu {
+                if !(event.trackingReference?.isEmpty ?? true) {
+                    Button(action: {
+                        if let trackingReference = event.trackingReference {
+                            UIPasteboard.general.string = trackingReference
+                        }
+                    }) {
+                        Label("Copy Tracking Reference", systemImage: "smallcircle.filled.circle")
+                    }
+                }
                 Button(action: {
                     self.showEditEventSheet = true
                 }) {

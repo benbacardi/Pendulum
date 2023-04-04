@@ -32,6 +32,10 @@ extension Event {
     }
     
     var hasAttributes: Bool {
+        self.hasStationery || !(self.trackingReference?.isEmpty ?? true)
+    }
+    
+    var hasStationery: Bool {
         !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true)
     }
     
@@ -54,12 +58,13 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, withPhotos photos: [EventPhoto]? = nil) {
+    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil) {
         self.date = date
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.ink = ink?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.paper = paper?.trimmingCharacters(in: .whitespacesAndNewlines)
+        self.trackingReference = trackingReference?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.letterType = letterType
         self.ignore = ignore
         

@@ -22,6 +22,7 @@ struct AddEventSheet: View {
     @State private var pen: String = ""
     @State private var ink: String = ""
     @State private var paper: String = ""
+    @State private var trackingReference: String = ""
     @State private var letterType: LetterType = .letter
     @State private var ignore: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
@@ -40,6 +41,7 @@ struct AddEventSheet: View {
     @FocusState private var isPenFieldActive: Bool
     @FocusState private var isInkFieldActive: Bool
     @FocusState private var isPaperFieldActive: Bool
+    @FocusState private var isTrackingFieldActive: Bool
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
@@ -97,6 +99,7 @@ struct AddEventSheet: View {
         isPenFieldActive = false
         isInkFieldActive = false
         isPaperFieldActive = false
+        isTrackingFieldActive = false
     }
     
     @ViewBuilder
@@ -172,31 +175,6 @@ struct AddEventSheet: View {
                     Section {
                         TextField("Notes", text: $notes, axis: .vertical)
                             .focused($isNotesFieldActive)
-                            .toolbar {
-                                ToolbarItemGroup(placement: .keyboard) {
-                                    HStack {
-                                        ScrollView(.horizontal, showsIndicators: false) {
-                                            HStack {
-                                                ForEach(autoSuggestions, id: \.self) { suggestion in
-                                                    Button(action: {
-                                                        chooseSuggestion(suggestion)
-                                                    }) {
-                                                        Text(suggestion)
-                                                    }
-                                                    .font(.caption)
-                                                    .foregroundColor(.secondary)
-                                                    .padding(5)
-                                                    .background {
-                                                        Color(uiColor: UIColor.secondarySystemBackground)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        Spacer()
-                                        Button(action: clearFocus) { Text("Done") }
-                                    }
-                                }
-                            }
                     }
                         
                     Section(header: Group {
@@ -347,6 +325,10 @@ struct AddEventSheet: View {
                         imagePickerView
                     }
                     
+                    Section {
+                        TextField("Tracking Reference", text: $trackingReference)
+                            .focused($isTrackingFieldActive)
+                    }
                     
                     Section(footer: Text(ignoreFooterText)) {
                         Toggle("No response needed", isOn: $ignore)
@@ -363,9 +345,9 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPhotos: eventPhotos)
+                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos)
                             } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, withPhotos: eventPhotos)
+                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos)
                             }
                             done()
                         }) {
@@ -401,6 +383,7 @@ struct AddEventSheet: View {
                     self.pen = event.pens.joined(separator: "\n")
                     self.ink = event.inks.joined(separator: "\n")
                     self.paper = event.papers.joined(separator: "\n")
+                    self.trackingReference = event.trackingReference ?? ""
                     self.letterType = event.letterType
                     self.ignore = event.ignore
                     self.eventPhotos = event.allPhotos()
@@ -421,6 +404,30 @@ struct AddEventSheet: View {
                         self.letterType = priorWrittenEvent.letterType
                         self.ignore = priorWrittenEvent.ignore
                     }
+                }
+            }
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(autoSuggestions, id: \.self) { suggestion in
+                                Button(action: {
+                                    chooseSuggestion(suggestion)
+                                }) {
+                                    Text(suggestion)
+                                }
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(5)
+                                .background {
+                                    Color(uiColor: UIColor.secondarySystemBackground)
+                                }
+                            }
+                        }
+                    }
+                    Button(action: {
+                        clearFocus()
+                    }) { Text("Done")}
                 }
             }
         }
