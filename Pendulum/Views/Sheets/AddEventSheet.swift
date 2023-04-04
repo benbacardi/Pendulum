@@ -328,7 +328,7 @@ struct AddEventSheet: View {
                                                         .foregroundColor(.red)
                                                 }
                                                 .buttonStyle(.plain)
-                                                .backgroundCircle(color: .white, multiplier: 1.0)
+                                                .backgroundCircle(color: .white, multiplier: 0.5)
                                                 .offset(x: 5, y: -5)
                                             }
                                         }
