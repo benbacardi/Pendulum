@@ -36,6 +36,7 @@ struct WhatsNew: View {
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
             WhatsNewGridRow(icon: "photo", iconColor: .blue, title: "Photos", summary: "Add photos of the letters that you send and receive, so you never forget what you wrote.")
+            WhatsNewGridRow(icon: "smallcircle.filled.circle", iconColor: .yellow, title: "Tracking references", summary: "Save parcel reference numbers to more easily track items you've sent.")
             WhatsNewGridRow(icon: "paperplane", iconColor: .green, title: "Record received stationery", summary: "Keep track of the pens, ink, and paper your Pen Pals used when they wrote to you.")
             WhatsNewGridRow(icon: "rectangle.and.pencil.and.ellipsis", iconColor: .purple, title: "Edit your stationery", summary: "Fix typos or make changes to your logged stationery.")
             WhatsNewGridRow(icon: "questionmark.app.fill", iconColor: .pink, title: "FAQs", summary: "View frequently asked questions from the Settings screen.")
