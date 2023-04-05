@@ -29,10 +29,10 @@ struct AddEventSheet: View {
     
     @State private var eventPhotos: [EventPhoto] = []
     @State private var photoLoadPending: Bool = false
+    @State private var photosLoadingCount: Int = 0
     
     @State private var showPickerChoice: Bool = false
     @State private var showPhotoPicker: Bool = false
-    @State private var showPhotoPickerPopover: Bool = false
     @State private var pickerType: UIImagePickerController.SourceType = .photoLibrary
     
     @State private var iconWidth: CGFloat = 20
@@ -104,18 +104,44 @@ struct AddEventSheet: View {
     
     @ViewBuilder
     var imagePickerView: some View {
-        ImagePickerView(sourceType: pickerType) { image in
-            let newEventPhoto = EventPhoto.from(image)
-            DispatchQueue.main.async {
-                withAnimation {
-                    eventPhotos.append(newEventPhoto)
-                    photoLoadPending = false
+        if pickerType == .camera {
+            ImagePickerView(sourceType: pickerType) { image in
+                let newEventPhoto = EventPhoto.from(image)
+                DispatchQueue.main.async {
+                    withAnimation {
+                        eventPhotos.append(newEventPhoto)
+                        photoLoadPending = false
+                    }
                 }
+            } onDismiss: {
+                self.photoLoadPending = false
+                self.showPhotoPicker = false
             }
-        } onDismiss: {
-            self.photoLoadPending = false
-            self.showPhotoPicker = false
-            self.showPhotoPickerPopover = false
+        } else {
+            PHImagePickerView { results in
+                DispatchQueue.main.async {
+                    photosLoadingCount = results.count
+                }
+                for result in results {
+                    result.fetchImage { image in
+                        let newEventPhoto = EventPhoto.from(image)
+                        DispatchQueue.main.async {
+                            withAnimation {
+                                photosLoadingCount -= 1
+                                eventPhotos.append(newEventPhoto)
+                                if photosLoadingCount <= 0 {
+                                    photoLoadPending = false
+                                }
+                            }
+                        }
+                    }
+                }
+            } onDismiss: { photosCount in
+                if photosCount == 0 {
+                    self.photoLoadPending = false
+                }
+                self.showPhotoPicker = false
+            }
         }
     }
     
@@ -136,7 +162,6 @@ struct AddEventSheet: View {
                 .background(eventType.color)
                 Form {
                     if let event = event {
-                        
                         if event.type == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
                             Section {
                                 Button(action: {
@@ -266,12 +291,8 @@ struct AddEventSheet: View {
                         .confirmationDialog("Add a photo…", isPresented: $showPickerChoice) {
                             Button(action: {
                                 self.pickerType = .photoLibrary
-                                if DeviceType.isPad() {
-                                    self.showPhotoPickerPopover = true
-                                } else {
-                                    self.showPhotoPicker = true
-                                    self.photoLoadPending = true
-                                }
+                                self.showPhotoPicker = true
+                                self.photoLoadPending = true
                             }) {
                                 Label("Photo Library", systemImage: "photo.on.rectangle")
                             }
@@ -285,7 +306,7 @@ struct AddEventSheet: View {
                         }
                         .listRowSeparator(.hidden)
                         if !eventPhotos.isEmpty {
-                            ScrollView(.horizontal) {
+                            ScrollView(.horizontal, showsIndicators: false) {
                                 LazyHStack {
                                     ForEach(eventPhotos) { photo in
                                         if let image = photo.thumbnail() ?? photo.image() {
@@ -300,18 +321,26 @@ struct AddEventSheet: View {
                                                         self.eventPhotos = self.eventPhotos.filter { $0.id != photo.id }
                                                     }
                                                 }) {
-                                                    Label("Delete", systemImage: "x.circle.fill")
-                                                        .font(.headline)
-                                                        .labelStyle(.iconOnly)
-                                                        .foregroundColor(.red)
+                                                    ZStack(alignment: .topTrailing) {
+                                                        Rectangle()
+                                                            .fill(.clear)
+                                                            .frame(width: 30, height: 30)
+                                                        Label("Delete", systemImage: "minus.circle.fill")
+                                                            .font(.headline)
+                                                            .labelStyle(.iconOnly)
+                                                            .foregroundColor(.gray)
+                                                            .background(.white)
+                                                            .clipShape(Circle())
+                                                    }
                                                 }
+                                                .contentShape(Rectangle())
                                                 .buttonStyle(.plain)
-                                                .backgroundCircle(color: .white, multiplier: 0.5)
                                                 .offset(x: 5, y: -5)
                                             }
                                         }
                                     }
                                 }
+                                .padding(.top, 5)
                                 .padding([.horizontal, .bottom])
                             }
                             .listRowInsets(EdgeInsets())
@@ -320,9 +349,6 @@ struct AddEventSheet: View {
                     .fullScreenCover(isPresented: $showPhotoPicker) {
                         imagePickerView
                             .edgesIgnoringSafeArea(.all)
-                    }
-                    .popover(isPresented: $showPhotoPickerPopover) {
-                        imagePickerView
                     }
                     
                     Section {

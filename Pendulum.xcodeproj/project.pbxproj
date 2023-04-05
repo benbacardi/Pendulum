@@ -67,6 +67,7 @@
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
 		5ED5A1642978430F0053B3D0 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1632978430F0053B3D0 /* Date.swift */; };
 		5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */; };
+		5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */; };
 		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
 		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
 		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
@@ -141,6 +142,7 @@
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
 		5ED5A1632978430F0053B3D0 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostUsedStationeryChart.swift; sourceTree = "<group>"; };
+		5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHPickerResult.swift; sourceTree = "<group>"; };
 		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
 		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
@@ -247,6 +249,7 @@
 				5E7EC41A2979A73A00C24189 /* Double.swift */,
 				5E72EE3A298E59BA008E3BAA /* NSUbiquitousKeyValueStore.swift */,
 				5EE5687229D1E43E00BC2687 /* UIImage.swift */,
+				5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -438,6 +441,7 @@
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
+				5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */,
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,

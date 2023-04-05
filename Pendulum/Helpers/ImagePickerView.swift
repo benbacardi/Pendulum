@@ -6,6 +6,50 @@
 //
 
 import SwiftUI
+import PhotosUI
+
+
+struct PHImagePickerView: UIViewControllerRepresentable {
+    
+    private let handleImages: ([PHPickerResult]) -> Void
+    private let onDismiss: (Int) -> Void
+    
+    public init(handleImages: @escaping ([PHPickerResult]) -> Void, onDismiss: @escaping (Int) -> Void) {
+        self.handleImages = handleImages
+        self.onDismiss = onDismiss
+    }
+    
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+        
+    public func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.selectionLimit = 0
+        configuration.filter = .images
+        let controller = PHPickerViewController(configuration: configuration)
+        controller.delegate = context.coordinator
+        return controller
+    }
+    
+    public func makeCoordinator() -> Coordinator {
+        Coordinator(handleImages: handleImages, onDismiss: self.onDismiss)
+    }
+    
+    final public class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        private let handleImages: ([PHPickerResult]) -> Void
+        private let onDismiss: (Int) -> Void
+        public init(handleImages: @escaping ([PHPickerResult]) -> Void, onDismiss: @escaping (Int) -> Void) {
+            self.handleImages = handleImages
+            self.onDismiss = onDismiss
+        }
+        public func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            onDismiss(results.count)
+            handleImages(results)
+        }
+    }
+    
+}
+
+
 
 struct ImagePickerView: UIViewControllerRepresentable {
     
