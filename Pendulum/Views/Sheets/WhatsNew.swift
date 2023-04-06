@@ -8,30 +8,50 @@
 import SwiftUI
 
 struct WhatsNewGridRow: View {
+    
+    @Environment(\.sizeCategory) var sizeCategory
+    
     let icon: String
     let iconColor: Color
     let title: String
     let summary: String
-
+    
+    @ViewBuilder
+    var iconView: some View {
+        Image(systemName: icon)
+            .font(.title)
+            .foregroundColor(iconColor)
+    }
+    
     var body: some View {
         GridRow(alignment: .top) {
-            Image(systemName: icon)
-                .font(.title)
-                .foregroundColor(iconColor)
+            if sizeCategory < .accessibilityExtraLarge {
+                iconView
+            }
             VStack(alignment: .leading, spacing: 5) {
-                Text(title)
-                    .font(.headline)
+                HStack(alignment: .top) {
+                    Text(title)
+                        .font(.headline)
+                        .fullWidth()
+                        .fixedSize(horizontal: false, vertical: true)
+                    if sizeCategory >= .accessibilityExtraLarge {
+                        Spacer()
+                        iconView
+                    }
+                }
                 Text(summary)
+                    .fixedSize(horizontal: false, vertical: true)
             }
             .fullWidth()
         }
     }
-
+    
 }
 
 struct WhatsNew: View {
     
     @Environment(\.dismiss) var dismiss
+    @Environment(\.sizeCategory) var sizeCategory
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
@@ -58,33 +78,50 @@ struct WhatsNew: View {
         .padding(.horizontal)
     }
     
+    var header: some View {
+        VStack(spacing: 4) {
+            Text("What's New")
+                .font(.largeTitle)
+                .bold()
+                .fullWidth(alignment: .center)
+            Text("Version \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
+        }
+        .foregroundColor(.white)
+        .padding()
+        .padding(.vertical)
+        .background(Color.accentColor)
+    }
+    
     var body: some View {
+        
         VStack(spacing: 0) {
             
-            VStack(spacing: 4) {
-                Text("What's New")
-                    .font(.largeTitle)
-                    .bold()
-                    .fullWidth(alignment: .center)
-                Text("Version \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
-            }
-            .foregroundColor(.white)
-            .padding()
-            .padding(.vertical)
-            .background(Color.accentColor)
-            
-            VStack {
-                ViewThatFits(in: .vertical) {
+            if sizeCategory >= .accessibilityExtraLarge {
+                
+                ScrollView {
+                    header
                     grid
-                    ScrollView {
-                        grid
-                    }
                 }
                 Spacer()
                 dismissButton
                     .padding(20)
+                
+            } else {
+                
+                header
+                VStack {
+                    ViewThatFits(in: .vertical) {
+                        grid
+                        ScrollView {
+                            grid
+                        }
+                    }
+                    Spacer()
+                    dismissButton
+                        .padding(20)
+                }
+                
             }
-            
         }
     }
 }
