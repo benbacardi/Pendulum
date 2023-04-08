@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WhatsNewGridRow: View {
     
-    @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
     let icon: String
     let iconColor: Color
@@ -25,7 +25,7 @@ struct WhatsNewGridRow: View {
     
     var body: some View {
         GridRow(alignment: .top) {
-            if sizeCategory < .accessibilityExtraLarge {
+            if dynamicTypeSize < .accessibility3 {
                 iconView
             }
             VStack(alignment: .leading, spacing: 5) {
@@ -34,7 +34,7 @@ struct WhatsNewGridRow: View {
                         .font(.headline)
                         .fullWidth()
                         .fixedSize(horizontal: false, vertical: true)
-                    if sizeCategory >= .accessibilityExtraLarge {
+                    if dynamicTypeSize >= .accessibility3 {
                         Spacer()
                         iconView
                     }
@@ -51,7 +51,7 @@ struct WhatsNewGridRow: View {
 struct WhatsNew: View {
     
     @Environment(\.dismiss) var dismiss
-    @Environment(\.sizeCategory) var sizeCategory
+    @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
@@ -96,7 +96,7 @@ struct WhatsNew: View {
         
         VStack(spacing: 0) {
             
-            if sizeCategory >= .accessibilityExtraLarge {
+            if dynamicTypeSize >= .accessibility3 {
                 
                 ScrollView {
                     header
