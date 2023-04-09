@@ -183,7 +183,6 @@ struct EventCell: View {
                     .padding([.horizontal, .bottom])
                     
                 }
-                .groupBoxStyle(ExtendedGroupBoxStyle(includePadding: false))
             }
             .buttonStyle(.plain)
             .animation(.default, value: penpal)
