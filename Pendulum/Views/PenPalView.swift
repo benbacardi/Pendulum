@@ -12,6 +12,7 @@ struct PenPalView: View {
     
     // MARK: Environment
     @Environment(\.managedObjectContext) var moc
+    @Environment(\.colorScheme) var colorScheme
     
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
@@ -152,6 +153,7 @@ struct PenPalView: View {
                                     .padding(.bottom)
                             }
                             EventCell(event: event, penpal: penpal)
+                                .groupBoxStyle(ExtendedGroupBoxStyle(background: colorScheme == .dark ? Color(.secondarySystemGroupedBackground) : Color(.systemGroupedBackground), includePadding: false))
                                 .padding(.bottom)
                         }
                     }

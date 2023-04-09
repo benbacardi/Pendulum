@@ -31,7 +31,6 @@ struct ContentView: View {
                 }
             }
         }
-        .groupBoxStyle(ExtendedGroupBoxStyle())
         .environmentObject(appPreferences)
         .sheet(isPresented: $showWhatsNewOverlay) {
             WhatsNew()
