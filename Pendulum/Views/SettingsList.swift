@@ -164,7 +164,7 @@ struct SettingsList: View {
                         self.showFAQs = true
                     }) {
                         HStack {
-                            Text("Get Help")
+                            Text("Get Help & FAQs")
                                 .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "questionmark.circle")
