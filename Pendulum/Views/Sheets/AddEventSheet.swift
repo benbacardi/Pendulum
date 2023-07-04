@@ -456,6 +456,7 @@ struct AddEventSheet: View {
                     }) { Text("Done")}
                 }
             }
+            .interactiveDismissDisabled(true)
         }
     }
 }
