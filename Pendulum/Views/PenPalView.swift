@@ -54,7 +54,7 @@ struct PenPalView: View {
                 if penpal.archived {
                     Button(action: {
                         withAnimation {
-                            penpal.archive(false)
+                            penpal.archive(false, in: moc)
                         }
                     }) {
                         Label("Unarchive", systemImage: EventType.archived.icon)
@@ -204,7 +204,8 @@ struct PenPalView: View {
             self.presentAddEventSheetForType = eventType
         } else {
             withAnimation {
-                penpal.addEvent(ofType: eventType)
+                penpal.addEvent(ofType: eventType, in: moc)
+//                penPalListController.addEvent(to: penpal, ofType: eventType, in: moc)
             }
         }
     }

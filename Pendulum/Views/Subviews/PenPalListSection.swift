@@ -16,6 +16,7 @@ struct PenPalListSection: View {
     
     // MARK: Environment
     @EnvironmentObject private var router: Router
+    @Environment(\.managedObjectContext) var moc
     
     // MARK: State
     @FetchRequest var penpals: FetchedResults<PenPal>
@@ -100,7 +101,7 @@ struct PenPalListSection: View {
     func archiveButton(for penpal: PenPal) -> some View {
         Button(action: {
             withAnimation {
-                penpal.archive(!penpal.archived)
+                penpal.archive(!penpal.archived, in: moc)
             }
         }) {
             Label(penpal.archived ? "Unarchive" : "Archive", systemImage: "archivebox")

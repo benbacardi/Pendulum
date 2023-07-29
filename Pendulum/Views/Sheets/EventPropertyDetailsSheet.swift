@@ -35,6 +35,7 @@ struct EventPropertyDetailsSheet: View {
     
     // MARK: Environment
     @Environment(\.presentationMode) var presentationMode
+    @Environment(\.managedObjectContext) var moc
     
     // MARK: Properties
     let penpal: PenPal?
@@ -120,12 +121,12 @@ struct EventPropertyDetailsSheet: View {
                         .focused(focused)
                     if focused.wrappedValue {
                         Button(action: {
-                            let stationery = Stationery(context: PersistenceController.shared.container.viewContext)
+                            let stationery = Stationery(context: moc)
                             stationery.id = UUID()
                             stationery.value = newEntry.wrappedValue
                             stationery.type = type.recordType
                             withAnimation {
-                                PersistenceController.shared.save()
+                                PersistenceController.shared.save(context: moc)
                                 options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0, type: type))
                                 focused.wrappedValue = false
                                 newEntry.wrappedValue = ""
@@ -160,7 +161,7 @@ struct EventPropertyDetailsSheet: View {
                     }
                     .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
                         Button("Delete \(parameter.name)", role: .destructive) {
-                            Stationery.delete(parameter)
+                            Stationery.delete(parameter, in: moc)
                             self.toDelete = nil
                             DispatchQueue.main.async {
                                 withAnimation {
@@ -239,9 +240,9 @@ struct EventPropertyDetailsSheet: View {
     }
     
     private func updateStationery() {
-        pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
-        inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
-        papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound)
+        pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
+        inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
+        papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
     }
     
 }

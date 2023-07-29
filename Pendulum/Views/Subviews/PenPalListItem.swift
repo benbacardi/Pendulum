@@ -11,6 +11,7 @@ struct PenPalListItem: View {
     
     // MARK: Environment
     @EnvironmentObject private var router: Router
+    @Environment(\.managedObjectContext) var moc
     
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
@@ -44,7 +45,7 @@ struct PenPalListItem: View {
                             .font(.caption)
                             .fullWidth()
                     } else {
-                        if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true) {
+                        if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
                             Text("\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))")
                                 .font(.caption)
                                 .fullWidth()

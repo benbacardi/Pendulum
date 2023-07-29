@@ -60,8 +60,9 @@ struct PersistenceController {
         
     }
     
-    func save() {
-        if container.viewContext.hasChanges {
+    func save(context: NSManagedObjectContext) {
+//        let context = passedContext ?? container.viewContext
+        if context.hasChanges {
             DispatchQueue.main.async {
                 do {
                     try container.viewContext.save()

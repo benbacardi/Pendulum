@@ -10,6 +10,8 @@ import PhotosUI
 
 struct AddEventSheet: View {
         
+    @Environment(\.managedObjectContext) var moc
+    
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     let event: Event?
@@ -106,7 +108,7 @@ struct AddEventSheet: View {
     var imagePickerView: some View {
         if pickerType == .camera {
             ImagePickerView(sourceType: pickerType) { image in
-                let newEventPhoto = EventPhoto.from(image)
+                let newEventPhoto = EventPhoto.from(image, in: moc)
                 DispatchQueue.main.async {
                     withAnimation {
                         eventPhotos.append(newEventPhoto)
@@ -124,7 +126,7 @@ struct AddEventSheet: View {
                 }
                 for result in results {
                     result.fetchImage { image in
-                        let newEventPhoto = EventPhoto.from(image)
+                        let newEventPhoto = EventPhoto.from(image, in: moc)
                         DispatchQueue.main.async {
                             withAnimation {
                                 photosLoadingCount -= 1
@@ -166,7 +168,7 @@ struct AddEventSheet: View {
                             Section {
                                 Button(action: {
                                     withAnimation {
-                                        penpal.addEvent(ofType: .sent)
+                                        penpal.addEvent(ofType: .sent, in: moc)
                                         done()
                                     }
                                 }) {
@@ -371,9 +373,9 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos)
+                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos)
+                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             }
                             done()
                         }) {
@@ -417,14 +419,14 @@ struct AddEventSheet: View {
                 }
             }
             .task {
-                self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen).map { $0.name }
-                self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink).map { $0.name }
-                self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper).map { $0.name }
+                self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen, from: moc).map { $0.name }
+                self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink, from: moc).map { $0.name }
+                self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper, from: moc).map { $0.name }
             }
             .task {
                 if eventType == .sent && event == nil {
-                    let priorSentEvent = penpal.fetchPriorEvent(to: Date(), ofType: .sent, ignore: false)
-                    let priorWrittenEvent = penpal.fetchPriorEvent(to: Date(), ofType: .written, ignore: false)
+                    let priorSentEvent = penpal.fetchPriorEvent(to: Date(), ofType: .sent, ignore: false, from: moc)
+                    let priorWrittenEvent = penpal.fetchPriorEvent(to: Date(), ofType: .written, ignore: false, from: moc)
                     if let priorWrittenEvent = priorWrittenEvent, priorSentEvent?.date ?? .distantPast < priorWrittenEvent.wrappedDate {
                         self.priorWrittenEvent = priorWrittenEvent
                         self.letterType = priorWrittenEvent.letterType

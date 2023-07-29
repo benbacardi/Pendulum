@@ -139,7 +139,7 @@ struct ManualAddPenPalSheet: View {
                     Button(action: {
                         Task {
                             if let penpal = penpal {
-                                penpal.update(name: name, initials: initials, image: imageData)
+                                penpal.update(name: name, initials: initials, image: imageData, in: moc)
                                 done(penpal)
                             } else {
                                 let newPenPal = PenPal(context: moc)

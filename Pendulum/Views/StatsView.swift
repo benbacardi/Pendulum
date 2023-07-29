@@ -10,6 +10,8 @@ import Charts
 
 struct StatsView: View {
     
+    @Environment(\.managedObjectContext) var moc
+    
     @State private var iconWidth: CGFloat?
     @State private var inbound: Bool = false
     
@@ -173,7 +175,7 @@ struct StatsView: View {
         }
         .navigationTitle("Statistics")
         .task {
-            let interestingEvents = Event.fetch(withStatus: [.written, .sent, .received])
+            let interestingEvents = Event.fetch(withStatus: [.written, .sent, .received], from: moc)
             DispatchQueue.main.async {
                 withAnimation {
                     self.events = interestingEvents
@@ -184,9 +186,9 @@ struct StatsView: View {
             
             // Calculate stationery stats
             
-            let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen).filter { $0.count != 0 }.first
-            let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink).filter { $0.count != 0 }.first
-            let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper).filter { $0.count != 0 }.first
+            let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, from: moc).filter { $0.count != 0 }.first
+            let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, from: moc).filter { $0.count != 0 }.first
+            let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, from: moc).filter { $0.count != 0 }.first
             
             DispatchQueue.main.async {
                 withAnimation {
@@ -198,7 +200,7 @@ struct StatsView: View {
             
             // Calculate reply stats
             
-            let averageTimeToReply = PenPal.averageTimeToRespond()
+            let averageTimeToReply = PenPal.averageTimeToRespond(from: moc)
             
             DispatchQueue.main.async {
                 withAnimation {
@@ -210,11 +212,11 @@ struct StatsView: View {
             
             let allSent: [Event]
             if UserDefaults.shared.trackPostingLetters {
-                allSent = Event.fetch(withStatus: [.sent])
+                allSent = Event.fetch(withStatus: [.sent], from: moc)
             } else {
-                allSent = Event.fetch(withStatus: [.written])
+                allSent = Event.fetch(withStatus: [.written], from: moc)
             }
-            let allReceived: [Event] = Event.fetch(withStatus: [.received])
+            let allReceived: [Event] = Event.fetch(withStatus: [.received], from: moc)
             let numberReceived = allReceived.count
             let numberSent = allSent.count
             

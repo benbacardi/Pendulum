@@ -29,6 +29,7 @@ struct SettingsList: View {
     
     // MARK: Environment
     @Environment(\.openURL) private var openURL
+    @Environment(\.managedObjectContext) var moc
     @EnvironmentObject var appPreferences: AppPreferences
     
     let motionManager = CMMotionManager()
@@ -266,7 +267,7 @@ struct SettingsList: View {
                 }
             }
             .task {
-                self.showStatsLink = Event.count() != 0
+                self.showStatsLink = Event.count(from: moc) != 0
             }
         }
     }
