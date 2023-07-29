@@ -23,6 +23,7 @@ extension UserDefaults {
         case trackPostingLetters
         case sortPenPalsAlphabetically
         case sortStationeryAlphabetically
+        case refreshId
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -91,6 +92,10 @@ extension UserDefaults {
     var stopAskingAboutContacts: Bool {
         get { bool(forKey: Key.stopAskingAboutContacts.rawValue) }
         set { setValue(newValue, forKey: Key.stopAskingAboutContacts.rawValue) }
+    }
+    
+    func refreshId() {
+        setValue(UUID().uuidString, forKey: Key.refreshId.rawValue)
     }
     
     var penpalContactMap: [String: String] {
