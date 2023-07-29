@@ -58,7 +58,7 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil) {
+    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
         self.date = date
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -76,31 +76,31 @@ extension Event {
                     self.addToPhotos(photo)
                 }
             }
-            let deletedCount = self.deletePhotos(notMatching: photos.compactMap { $0.id }, saving: false)
+            let deletedCount = self.deletePhotos(notMatching: photos.compactMap { $0.id }, saving: false, in: context)
             dataLogger.debug("Deleted \(deletedCount) old photos")
         }
         
-        self.penpal?.updateLastEventType()
-        PersistenceController.shared.save()
+        self.penpal?.updateLastEventType(in: context)
+        PersistenceController.shared.save(context: context)
     }
     
-    func delete() {
-        PersistenceController.shared.container.viewContext.delete(self)
-        self.penpal?.updateLastEventType()
-        PersistenceController.shared.save()
+    func delete(in context: NSManagedObjectContext) {
+        context.delete(self)
+        self.penpal?.updateLastEventType(in: context)
+        PersistenceController.shared.save(context: context)
     }
     
 }
 
 extension Event {
     
-    func addPhoto(fromData data: Data, saving: Bool = false) {
-        let newPhoto = EventPhoto(context: PersistenceController.shared.container.viewContext)
+    func addPhoto(fromData data: Data, saving: Bool = false, in context: NSManagedObjectContext) {
+        let newPhoto = EventPhoto(context: context)
         newPhoto.id = UUID()
         newPhoto.data = data
         self.addToPhotos(newPhoto)
         if saving {
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         }
     }
     
@@ -108,17 +108,17 @@ extension Event {
         Array(photos as? Set<EventPhoto> ?? []).sorted(using: KeyPathComparator(\.dateAdded))
     }
     
-    func deletePhotos(notMatching ids: [UUID], saving: Bool = false) -> Int {
+    func deletePhotos(notMatching ids: [UUID], saving: Bool = false, in context: NSManagedObjectContext) -> Int {
         var deletedCount = 0
         for photo in self.allPhotos() {
             guard let id = photo.id else { continue }
             if !ids.contains(id) {
                 deletedCount += 1
-                PersistenceController.shared.container.viewContext.delete(photo)
+                context.delete(photo)
             }
         }
         if saving {
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         }
         return deletedCount
     }
@@ -127,7 +127,7 @@ extension Event {
 
 extension Event {
     
-    static func fetch(withStatus eventTypes: [EventType]? = nil) -> [Event] {
+    static func fetch(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         var predicates: [NSPredicate] = []
         if let eventTypes = eventTypes {
@@ -137,25 +137,25 @@ extension Event {
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
-            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            return try context.fetch(fetchRequest)
         } catch {
             dataLogger.error("Could not fetch events: \(error.localizedDescription)")
         }
         return []
     }
     
-    static func count() -> Int {
+    static func count(from context: NSManagedObjectContext) -> Int {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.resultType = NSFetchRequestResultType.countResultType
         do {
-            return try PersistenceController.shared.container.viewContext.count(for: fetchRequest)
+            return try context.count(for: fetchRequest)
         } catch {
             dataLogger.error("Could not fetch events: \(error.localizedDescription)")
         }
         return 0
     }
     
-    static func updateStationery(ofType type: StationeryType, from oldName: String, to newName: String, outbound: Bool = true) {
+    static func updateStationery(ofType type: StationeryType, from oldName: String, to newName: String, outbound: Bool = true, in context: NSManagedObjectContext) {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         var predicates: [NSPredicate] = [NSPredicate(format: "\(type.recordType) CONTAINS %@", oldName)]
         if outbound {
@@ -171,7 +171,7 @@ extension Event {
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         dataLogger.debug("Updating \(type.recordType) called \(oldName) to \(newName)")
         do {
-            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
+            for result in try context.fetch(fetchRequest) {
                 switch type {
                 case .pen:
                     result.pen = parseStationery(result.pen, replacing: oldName, with: newName)
@@ -181,7 +181,7 @@ extension Event {
                     result.paper = parseStationery(result.paper, replacing: oldName, with: newName)
                 }
             }
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         } catch {
             dataLogger.error("Could not update stationery: \(error.localizedDescription)")
         }

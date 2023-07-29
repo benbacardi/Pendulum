@@ -9,6 +9,8 @@ import SwiftUI
 
 struct EditStationerySheet: View {
     
+    @Environment(\.managedObjectContext) var moc
+    
     // MARK: Properties
     let currentStationery: ParameterCount
     let outbound: Bool
@@ -29,7 +31,7 @@ struct EditStationerySheet: View {
             
             Section {
                 Button(action: {
-                    Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound)
+                    Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound, in: moc)
                     done()
                 }) {
                     Text("Update")

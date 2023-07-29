@@ -6,20 +6,21 @@
 //
 
 import Foundation
+import CoreData
 import SwiftUI
 
 extension EventPhoto {
     static let entityName: String = "EventPhoto"
     
-    static func from(_ data: Data) -> EventPhoto {
-        let eventPhoto = EventPhoto(context: PersistenceController.shared.container.viewContext)
+    static func from(_ data: Data, in context: NSManagedObjectContext) -> EventPhoto {
+        let eventPhoto = EventPhoto(context: context)
         eventPhoto.id = UUID()
         eventPhoto.data = data
         return eventPhoto
     }
     
-    static func from(_ image: UIImage) -> EventPhoto {
-        let eventPhoto = EventPhoto(context: PersistenceController.shared.container.viewContext)
+    static func from(_ image: UIImage, in context: NSManagedObjectContext) -> EventPhoto {
+        let eventPhoto = EventPhoto(context: context)
         eventPhoto.id = UUID()
         eventPhoto.data = image.resize(targetSize: CGSize(width: 2000, height: 2000))?.jpegData(compressionQuality: 1.0) ?? Data()
         eventPhoto.thumbnailData = image.resize(targetSize: CGSize(width: 200, height: 200))?.jpegData(compressionQuality: 0.8) ?? Data()

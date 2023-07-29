@@ -33,7 +33,7 @@ extension PenPal {
         
         do {
             
-            let count = PenPal.fetch(withStatus: .written).count
+            let count = PenPal.fetch(withStatus: .written, from: PersistenceController.shared.container.viewContext).count
             if count == 0 {
                 return
             }
@@ -60,13 +60,13 @@ extension PenPal {
     }
     
     static func cancelAllShouldWriteBackNotifications() {
-        let notificationIdentifiers = PenPal.fetch().map { $0.shouldWriteBackNotificationIdentifier }
+        let notificationIdentifiers = PenPal.fetch(from: PersistenceController.shared.container.viewContext).map { $0.shouldWriteBackNotificationIdentifier }
         appLogger.debug("Removing pending notifications for \(notificationIdentifiers)")
         UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: notificationIdentifiers)
     }
     
     static func scheduleAllShouldWriteBackNotifications() {
-        for penpal in PenPal.fetch(withStatus: .received) {
+        for penpal in PenPal.fetch(withStatus: .received, from: PersistenceController.shared.container.viewContext) {
             penpal.scheduleShouldWriteBackNotification()
         }
     }

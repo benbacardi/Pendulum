@@ -66,12 +66,12 @@ extension Stationery {
     var wrappedType: String { self.type ?? "type" }
     var wrappedValue: String { self.value ?? "value" }
     
-    static func fetchUnused(for type: StationeryType) -> [String] {
+    static func fetchUnused(for type: StationeryType, from context: NSManagedObjectContext) -> [String] {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "value", ascending: true)]
         fetchRequest.predicate = NSPredicate(format: "type = %@", type.rawValue)
         do {
-            let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest).map { $0.wrappedValue }
+            let results = try context.fetch(fetchRequest).map { $0.wrappedValue }
             dataLogger.debug("Results for type \(type.name): \(results)")
             return results
         } catch {
@@ -80,36 +80,36 @@ extension Stationery {
         return []
     }
     
-    static func delete(_ parameter: ParameterCount) {
+    static func delete(_ parameter: ParameterCount, in context: NSManagedObjectContext) {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "type = %@", parameter.type.rawValue),
             NSPredicate(format: "value = %@", parameter.name),
         ])
         do {
-            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
-                PersistenceController.shared.container.viewContext.delete(result)
+            for result in try context.fetch(fetchRequest) {
+                context.delete(result)
             }
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         } catch {
             dataLogger.error("Could not delete stationery: \(parameter)")
         }
     }
     
-    static func update(_ parameter: ParameterCount, to newName: String, outbound: Bool = true) {
+    static func update(_ parameter: ParameterCount, to newName: String, outbound: Bool = true, in context: NSManagedObjectContext) {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "type = %@", parameter.type.rawValue),
             NSPredicate(format: "value = %@", parameter.name),
         ])
         do {
-            for result in try PersistenceController.shared.container.viewContext.fetch(fetchRequest) {
+            for result in try context.fetch(fetchRequest) {
                 dataLogger.debug("Updating \(result.wrappedValue) to \(newName)")
                 result.value = newName
             }
             dataLogger.debug("Saving")
-            PersistenceController.shared.save()
-            Event.updateStationery(ofType: parameter.type, from: parameter.name, to: newName, outbound: outbound)
+            PersistenceController.shared.save(context: context)
+            Event.updateStationery(ofType: parameter.type, from: parameter.name, to: newName, outbound: outbound, in: context)
         } catch {
             dataLogger.error("Could not update stationery: \(parameter): \(error.localizedDescription)")
         }        

@@ -10,6 +10,8 @@ import Charts
 
 struct MostUsedStationeryChart: View {
     
+    @Environment(\.managedObjectContext) var moc
+    
     let stationeryType: StationeryType
     
     @State private var data: [ParameterCount] = [
@@ -57,7 +59,7 @@ struct MostUsedStationeryChart: View {
                 .frame(height: CGFloat(parsedData.count * 50))
             }
             .task {
-                let data = PenPal.fetchDistinctStationery(ofType: self.stationeryType)
+                let data = PenPal.fetchDistinctStationery(ofType: self.stationeryType, from: moc)
                 DispatchQueue.main.async {
                     self.data = data
                 }

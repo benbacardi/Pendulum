@@ -70,9 +70,9 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil) {
+    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
-        let newEvent = Event(context: PersistenceController.shared.container.viewContext)
+        let newEvent = Event(context: context)
         newEvent.id = UUID()
         newEvent.date = date
         newEvent.type = eventType
@@ -90,28 +90,31 @@ extension PenPal {
                 newEvent.addToPhotos(photo)
             }
         }
-        self.updateLastEventType()
-        PersistenceController.shared.save()
+        self.updateLastEventType(in: context)
+        PersistenceController.shared.save(context: context)
+        dataLogger.debug("UPDATING REFRESH ID FROM \(UserDefaults.standard.string(forKey: UserDefaults.Key.refreshId.rawValue).debugDescription)")
+        UserDefaults.standard.refreshId()
+        dataLogger.debug(" -> TO \(UserDefaults.standard.string(forKey: UserDefaults.Key.refreshId.rawValue).debugDescription)")
     }
     
-    func setLastEventType(to eventType: EventType, letterType: LetterType, at date: Date?, saving: Bool = false) {
+    func setLastEventType(to eventType: EventType, letterType: LetterType, at date: Date?, saving: Bool = false, in context: NSManagedObjectContext) {
         if self.lastEventType != eventType { self.lastEventType = eventType }
         if self.lastEventDate != date { self.lastEventDate = date }
         if self.lastEventLetterType != letterType { self.lastEventLetterType = letterType }
         if saving {
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         }
     }
     
     @discardableResult
-    func updateLastEventType(saving: Bool = false) -> EventType {
+    func updateLastEventType(saving: Bool = false, in context: NSManagedObjectContext) -> EventType {
         var newEventType: EventType = .noEvent
         var newEventDate: Date? = nil
         var newEventLetterType: LetterType = .letter
         
         var updateFromDb: Bool = true
-        if let lastWritten = self.getLastEvent(ofType: .written) {
-            let lastSent = self.getLastEvent(ofType: .sent)
+        if let lastWritten = self.getLastEvent(ofType: .written, from: context) {
+            let lastSent = self.getLastEvent(ofType: .sent, from: context)
             if lastSent?.date ?? .distantPast < lastWritten.date ?? .distantPast {
                 newEventType = .written
                 newEventDate = lastWritten.date
@@ -120,14 +123,14 @@ extension PenPal {
             }
         }
         
-        if updateFromDb, let lastEvent = self.getLastEvent() {
+        if updateFromDb, let lastEvent = self.getLastEvent(from: context) {
             newEventType = lastEvent.type
             newEventDate = lastEvent.date
             newEventLetterType = lastEvent.letterType
         }
         
         dataLogger.debug("Setting the Last Event Type for \(self.wrappedName) to \(newEventType.description(for: newEventLetterType)) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
-        self.setLastEventType(to: newEventType, letterType: newEventLetterType, at: newEventDate, saving: saving)
+        self.setLastEventType(to: newEventType, letterType: newEventLetterType, at: newEventDate, saving: saving, in: context)
         
         if newEventType == .received {
             self.scheduleShouldWriteBackNotification(countingFrom: newEventDate)
@@ -145,7 +148,7 @@ extension PenPal {
         
     }
     
-    func getLastEvent(ofType eventType: EventType? = nil, includingIgnoredEvents: Bool = false) -> Event? {
+    func getLastEvent(ofType eventType: EventType? = nil, includingIgnoredEvents: Bool = false, from context: NSManagedObjectContext) -> Event? {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
@@ -160,14 +163,14 @@ extension PenPal {
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
-            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first
+            return try context.fetch(fetchRequest).first
         } catch {
             dataLogger.error("Could not fetch events of type \(eventType?.description ?? "any") for \(self.wrappedName): \(error.localizedDescription)")
         }
         return nil
     }
     
-    func fetchPriorEvent(to date: Date, ofType eventType: EventType, ignore: Bool = true) -> Event? {
+    func fetchPriorEvent(to date: Date, ofType eventType: EventType, ignore: Bool = true, from context: NSManagedObjectContext) -> Event? {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
@@ -181,14 +184,14 @@ extension PenPal {
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
-            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest).first
+            return try context.fetch(fetchRequest).first
         } catch {
             dataLogger.error("Could not fetch prior events of type \(eventType.description) for \(self.wrappedName): \(error.localizedDescription)")
         }
         return nil
     }
     
-    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true) -> [ParameterCount] {
+    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery.rawValue, ascending: true)]
         var predicates: [NSCompoundPredicate] = []
@@ -207,7 +210,7 @@ extension PenPal {
         }
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         do {
-            let results = try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            let results = try context.fetch(fetchRequest)
             
             var pending: [String: Int] = [:]
             
@@ -229,7 +232,7 @@ extension PenPal {
             var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value, type: stationery) }
             
             if penpal == nil && outbound {
-                let unusedStationery = Stationery.fetchUnused(for: stationery)
+                let unusedStationery = Stationery.fetchUnused(for: stationery, from: context)
                 let setOfResults = Set(intermediate.map { $0.name })
                 for item in unusedStationery {
                     if !setOfResults.contains(item) {
@@ -248,11 +251,11 @@ extension PenPal {
         return []
     }
     
-    func fetchDistinctStationery(ofType stationery: StationeryType, sortAlphabetically: Bool = false, outbound: Bool = true) -> [ParameterCount] {
-        PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound)
+    func fetchDistinctStationery(ofType stationery: StationeryType, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
+        PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
     }
     
-    static func fetch(withStatus eventType: EventType? = nil) -> [PenPal] {
+    static func fetch(withStatus eventType: EventType? = nil, from context: NSManagedObjectContext) -> [PenPal] {
         let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
         var predicates: [NSPredicate] = [
             NSPredicate(format: "archived = %@", NSNumber(value: false))
@@ -262,40 +265,40 @@ extension PenPal {
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
-            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            return try context.fetch(fetchRequest)
         } catch {
             dataLogger.error("Could not fetch penpals with status \(eventType?.description ?? "all"): \(error.localizedDescription)")
         }
         return []
     }
     
-    func archive(_ value: Bool = true) {
+    func archive(_ value: Bool = true, in context: NSManagedObjectContext) {
         self.archived = value
-        PersistenceController.shared.save()
+        PersistenceController.shared.save(context: context)
     }
     
-    func update(from contact: CNContact, saving: Bool = true) {
+    func update(from contact: CNContact, saving: Bool = true, in context: NSManagedObjectContext) {
         dataLogger.debug("Updating \(self.wrappedName) using \(contact.fullName ?? "UNKNOWN CONTACT")")
         if self.image != contact.thumbnailImageData { self.image = contact.thumbnailImageData }
         if self.initials != contact.initials { self.initials = contact.initials }
         if self.name != contact.fullName { self.name = contact.fullName }
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
-        self.updateLastEventType()
+        self.updateLastEventType(in: context)
         if saving {
-            PersistenceController.shared.save()
+            PersistenceController.shared.save(context: context)
         }
     }
     
-    func update(name: String, initials: String, image: Data?) {
+    func update(name: String, initials: String, image: Data?, in context: NSManagedObjectContext) {
         if self.name != name { self.name = name }
         if self.initials != initials { self.initials = initials }
         if self.image != image { self.image = image }
-        PersistenceController.shared.save()
+        PersistenceController.shared.save(context: context)
     }
     
-    func delete() {
-        PersistenceController.shared.container.viewContext.delete(self)
-        PersistenceController.shared.save()
+    func delete(in context: NSManagedObjectContext) {
+        context.delete(self)
+        PersistenceController.shared.save(context: context)
     }
     
     func syncWithContact() {
@@ -324,7 +327,7 @@ extension PenPal {
                     do {
                         appLogger.debug("Fetching contact \(contactID) for \(self.wrappedName)")
                         let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                        self.update(from: contact)
+                        self.update(from: contact, in: PersistenceController.shared.container.viewContext)
                     } catch {
                         appLogger.error("Could not fetch contact with ID \(contactID) \(self.wrappedName): \(error.localizedDescription)")
                     }
@@ -355,15 +358,15 @@ extension PenPal {
         appLogger.debug("Calcuating badge - showing to reply? \(toWrite) - showing to post? \(toPost)")
         var count = 0
         if toWrite {
-            count += Self.fetch(withStatus: .received).count
+            count += Self.fetch(withStatus: .received, from: PersistenceController.shared.container.viewContext).count
         }
         if toPost {
-            count += Self.fetch(withStatus: .written).count
+            count += Self.fetch(withStatus: .written, from: PersistenceController.shared.container.viewContext).count
         }
         return count
     }
     
-    func events(withStatus eventTypes: [EventType]? = nil) -> [Event] {
+    func events(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
         var predicates: [NSPredicate] = [
@@ -376,22 +379,22 @@ extension PenPal {
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
-            return try PersistenceController.shared.container.viewContext.fetch(fetchRequest)
+            return try context.fetch(fetchRequest)
         } catch {
             dataLogger.error("Could not fetch events: \(error.localizedDescription)")
         }
         return []
     }
     
-    static func averageTimeToRespond() -> Double {
+    static func averageTimeToRespond(from context: NSManagedObjectContext) -> Double {
         
         var durations: [Int] = []
         let today = Date()
         
-        for penpal in PenPal.fetch() {
+        for penpal in PenPal.fetch(from: context) {
             dataLogger.debug("Fetching events for \(penpal.wrappedName)")
             var fromEvent: Event? = nil
-            for event in penpal.events(withStatus: [.received, .written, .sent]) {
+            for event in penpal.events(withStatus: [.received, .written, .sent], from: context) {
                 if !event.ignore {
                     dataLogger.debug("Handling event: \(event.type.actionableTextShort) - \(event.wrappedDate)")
                     if event.type == .received {

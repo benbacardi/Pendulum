@@ -10,6 +10,7 @@ import SwiftUI
 struct EventCell: View {
     
     @Environment(\.openURL) var openURL
+    @Environment(\.managedObjectContext) var moc
     @EnvironmentObject var imageViewerController: ImageViewerController
     
     // MARK: Parameters
@@ -216,7 +217,7 @@ struct EventCell: View {
             .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert) {
                 Button("Delete Status", role: .destructive) {
                     withAnimation {
-                        event.delete()
+                        event.delete(in: moc)
                     }
                 }
             }

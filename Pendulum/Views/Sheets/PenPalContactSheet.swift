@@ -13,6 +13,7 @@ struct PenPalContactSheet: View {
     
     // MARK: Environment
     @Environment(\.openURL) private var openURL
+    @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
     
     // MARK: State
@@ -132,7 +133,7 @@ struct PenPalContactSheet: View {
             .toolbar {
                 Button(action: {
                     penpal.notes = notes.isEmpty ? nil : notes
-                    PersistenceController.shared.save()
+                    PersistenceController.shared.save(context: moc)
                     presentationMode.wrappedValue.dismiss()
                 }) {
                     Text("Done")
