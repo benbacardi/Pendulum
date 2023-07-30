@@ -20,7 +20,7 @@ struct PenPalList: View {
     
     var body: some View {
         ScrollView {
-            VStack(spacing: 0) {
+            LazyVStack(spacing: 0) {
                 ForEach(EventType.allCases) { eventType in
                     PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: appPreferences.trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
                         .padding(.horizontal)
