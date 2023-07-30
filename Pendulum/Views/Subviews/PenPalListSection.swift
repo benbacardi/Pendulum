@@ -98,6 +98,17 @@ struct PenPalListSection: View {
     }
     
     @ViewBuilder
+    func sendButton(for penpal: PenPal) -> some View {
+        Button(action: {
+            withAnimation {
+                penpal.sendLastWrittenEvent(in: moc)
+            }
+        }) {
+            Label("I've Posted This", systemImage: EventType.sent.icon)
+        }
+    }
+    
+    @ViewBuilder
     func archiveButton(for penpal: PenPal) -> some View {
         Button(action: {
             withAnimation {
@@ -131,6 +142,9 @@ struct PenPalListSection: View {
                 }
                 .animation(.default, value: penpal)
                 .contextMenu {
+                    if penpal.groupingEventType == .written {
+                        sendButton(for: penpal)
+                    }
                     archiveButton(for: penpal)
                     deleteButton(for: penpal)
                 }

@@ -70,6 +70,11 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
+    func sendLastWrittenEvent(in context: NSManagedObjectContext) {
+        let lastWrittenEvent = self.getLastEvent(ofType: .written, from: context)
+        self.addEvent(ofType: .sent, letterType: lastWrittenEvent?.letterType ?? .letter, in: context)
+    }
+    
     func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: context)
