@@ -92,7 +92,6 @@ extension PenPal {
         }
         self.updateLastEventType(in: context)
         PersistenceController.shared.save(context: context)
-        UserDefaults.standard.refreshId()
     }
     
     func setLastEventType(to eventType: EventType, letterType: LetterType, at date: Date?, saving: Bool = false, in context: NSManagedObjectContext) {
@@ -102,7 +101,6 @@ extension PenPal {
         if saving {
             PersistenceController.shared.save(context: context)
         }
-        UserDefaults.standard.refreshId()
     }
     
     @discardableResult

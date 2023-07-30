@@ -19,21 +19,18 @@ struct PenPalList: View {
     @AppStorage(UserDefaults.Key.refreshId.rawValue) private var refreshId: String = UUID().uuidString
     
     var body: some View {
-        List {
-            ForEach(EventType.allCases) { eventType in
-                PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: appPreferences.trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets())
-                    .padding(.horizontal)
-                    .padding(.vertical, 5)
-                    .listRowSeparator(.hidden)
+        ScrollView {
+            VStack(spacing: 0) {
+                ForEach(EventType.allCases) { eventType in
+                    PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: appPreferences.trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
+                        .padding(.horizontal)
+                }
             }
         }
         .listStyle(.plain)
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
             self.iconWidth = value
         }
-        .id(refreshId)
     }
     
 }
