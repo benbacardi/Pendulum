@@ -122,6 +122,7 @@ struct PenPalListSection: View {
     var body: some View {
         if !penpals.isEmpty {
             sectionHeader
+                .padding(.bottom, 8)
             ForEach(penpals) { penpal in
                 Button(action: {
                     router.replace(with: .penPalDetail(penpal: penpal))
@@ -155,7 +156,9 @@ struct PenPalListSection: View {
                         }
                     }
                 }
+                .padding(.bottom, 8)
             }
+            Spacer().frame(height: 10)
         } else {
             EmptyView()
         }
