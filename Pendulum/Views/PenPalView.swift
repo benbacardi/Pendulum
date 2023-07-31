@@ -169,7 +169,7 @@ struct PenPalView: View {
             EventPropertyDetailsSheet(penpal: penpal)
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
-            AddEventSheet(penpal: penpal, event: nil, eventType: eventType) {
+            AddEventSheet(penpal: penpal, eventType: eventType) {
                 self.presentAddEventSheetForType = nil
             }
         }
