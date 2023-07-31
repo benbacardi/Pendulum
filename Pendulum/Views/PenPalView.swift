@@ -205,7 +205,6 @@ struct PenPalView: View {
         } else {
             withAnimation {
                 penpal.addEvent(ofType: eventType, in: moc)
-//                penPalListController.addEvent(to: penpal, ofType: eventType, in: moc)
             }
         }
     }
