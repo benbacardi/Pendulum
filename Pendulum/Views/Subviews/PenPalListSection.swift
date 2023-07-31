@@ -148,12 +148,6 @@ struct PenPalListSection: View {
                     archiveButton(for: penpal)
                     deleteButton(for: penpal)
                 }
-                .swipeActions(edge: .leading) {
-                    archiveButton(for: penpal)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    deleteButton(for: penpal)
-                }
                 .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
                     Button("Delete \(penpal.wrappedName)", role: .destructive) {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
