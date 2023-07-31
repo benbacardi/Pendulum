@@ -144,6 +144,7 @@ struct PenPalListSection: View {
                 .contextMenu {
                     if penpal.groupingEventType == .written {
                         sendButton(for: penpal)
+                        Divider()
                     }
                     archiveButton(for: penpal)
                     deleteButton(for: penpal)

@@ -15,10 +15,24 @@ struct AddEventSheet: View {
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     let event: Event?
-    let eventType: EventType
     let done: () -> ()
     
+    init(penpal: PenPal, eventType: EventType, done: @escaping () -> ()) {
+        self._penpal = ObservedObject(wrappedValue: penpal)
+        self.event = nil
+        self._eventType = State(wrappedValue: eventType)
+        self.done = done
+    }
+    
+    init(penpal: PenPal, event: Event, done: @escaping () -> ()) {
+        self._penpal = ObservedObject(wrappedValue: penpal)
+        self.event = event
+        self._eventType = State(wrappedValue: event.type)
+        self.done = done
+    }
+    
     // MARK: State
+    @State private var eventType: EventType = .written
     @State private var date: Date = Date()
     @State private var notes: String = ""
     @State private var pen: String = ""
@@ -52,6 +66,9 @@ struct AddEventSheet: View {
     @State private var presentSuggestionSheetFor: TextOptions? = nil
     
     @State private var priorWrittenEvent: Event? = nil
+    
+    @State private var showEventTypeOptions: Bool = false
+    @State private var thingsHaveChanged: Bool = false
     
     var priorWrittenEventHeaderText: String {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
@@ -150,39 +167,51 @@ struct AddEventSheet: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                VStack(spacing: 4) {
-                    Image(systemName: eventType.icon)
-                        .font(.largeTitle)
-                    Text("\(eventType.description(for: letterType))!")
-                        .font(.largeTitle)
-                        .bold()
-                        .fullWidth(alignment: .center)
+                Button(action: {
+                    self.showEventTypeOptions = true
+                }) {
+                    VStack(spacing: 4) {
+                        Image(systemName: eventType.icon)
+                            .font(.largeTitle)
+                        Text("\(eventType.description(for: letterType))!")
+                            .font(.largeTitle)
+                            .bold()
+                            .fullWidth(alignment: .center)
+                    }
+                    .foregroundColor(.white)
+                    .padding()
+                    .padding(.vertical)
+                    .background(eventType.color)
                 }
-                .foregroundColor(.white)
-                .padding()
-                .padding(.vertical)
-                .background(eventType.color)
-                Form {
-                    if let event = event {
-                        if event.type == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
-                            Section {
-                                Button(action: {
-                                    withAnimation {
-                                        penpal.addEvent(ofType: .sent, in: moc)
-                                        done()
-                                    }
-                                }) {
-                                    HStack {
-                                        Spacer()
-                                        Image(systemName: EventType.sent.icon)
-                                        Text("I've posted this!")
-                                        Spacer()
-                                    }
-                                }
-                                .foregroundColor(EventType.sent.color)
+                .confirmationDialog("Change log type", isPresented: $showEventTypeOptions, titleVisibility: .visible) {
+                    ForEach(EventType.actionableCases) { eventType in
+                        Button(action: {
+                            withAnimation {
+                                self.eventType = eventType
                             }
+                        }) {
+                            Label(" \(eventType.actionableText)", systemImage: eventType.icon).tag(eventType)
                         }
-                        
+                    }
+                }
+                Form {
+                    if let event = event, eventType == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
+                        Section {
+                            Button(action: {
+                                withAnimation {
+                                    penpal.addEvent(ofType: .sent, in: moc)
+                                    done()
+                                }
+                            }) {
+                                HStack {
+                                    Spacer()
+                                    Image(systemName: EventType.sent.icon)
+                                    Text("I've posted this!")
+                                    Spacer()
+                                }
+                            }
+                            .foregroundColor(EventType.sent.color)
+                        }
                     }
                     
                     Section {
@@ -373,7 +402,7 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             } else {
                                 penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             }
@@ -394,6 +423,27 @@ struct AddEventSheet: View {
                 if self.setToDefaultIgnoreWhenChangingLetterType {
                     self.ignore = newValue.defaultIgnore
                 }
+            }
+            .onChange(of: date) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: notes) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: pen) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: ink) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: paper) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: trackingReference) { _ in
+                self.thingsHaveChanged = true
+            }
+            .onChange(of: eventPhotos) { _ in
+                self.thingsHaveChanged = true
             }
             .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
                 self.iconWidth = value
@@ -416,6 +466,9 @@ struct AddEventSheet: View {
                     self.ignore = event.ignore
                     self.eventPhotos = event.allPhotos()
                     appLogger.debug("Event photos: \(self.eventPhotos)")
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        self.thingsHaveChanged = false
+                    }
                 }
             }
             .task {
@@ -458,7 +511,7 @@ struct AddEventSheet: View {
                     }) { Text("Done")}
                 }
             }
-            .interactiveDismissDisabled(true)
+            .interactiveDismissDisabled(thingsHaveChanged)
         }
     }
 }

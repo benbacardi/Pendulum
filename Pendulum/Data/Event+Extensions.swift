@@ -58,8 +58,9 @@ extension Event {
 
 extension Event {
     
-    func update(date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
+    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
         self.date = date
+        self.type = type
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.pen = pen?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.ink = ink?.trimmingCharacters(in: .whitespacesAndNewlines)

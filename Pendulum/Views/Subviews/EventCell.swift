@@ -226,7 +226,7 @@ struct EventCell: View {
             }
         }
         .sheet(isPresented: $showEditEventSheet) {
-            AddEventSheet(penpal: penpal, event: event, eventType: event.type) {
+            AddEventSheet(penpal: penpal, event: event) {
                 self.showEditEventSheet = false
             }
         }
