@@ -16,9 +16,9 @@ struct PenPalList: View {
     // MARK: State
     @State private var iconWidth: CGFloat = .zero
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
-    @AppStorage(UserDefaults.Key.refreshId.rawValue) private var refreshId: String = UUID().uuidString
     
     var body: some View {
+        /// Changed from a List to a scrolling LazyVStack, because List didn't properly update within the sections when the underlying Fetch Request data updated
         ScrollView {
             LazyVStack(spacing: 0) {
                 ForEach(EventType.allCases) { eventType in
@@ -27,7 +27,6 @@ struct PenPalList: View {
                 }
             }
         }
-        .listStyle(.plain)
         .onPreferenceChange(PenPalListIconWidthPreferenceKey.self) { value in
             self.iconWidth = value
         }
