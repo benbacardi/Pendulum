@@ -10,17 +10,12 @@ import UIKit
 
 extension UIApplication {
     
-    static var systemSettingsURL: URL? {
-        guard let url = URL(string: UIApplication.openSettingsURLString) else { return nil }
-        guard UIApplication.shared.canOpenURL(url) else { return nil }
-        return url
-    }
-    
     func updateBadgeNumber() {
         let fetchedBadgeNumber = PenPal.calculateBadgeNumber(toWrite: UserDefaults.shared.badgeRemindersToWriteLetters, toPost: UserDefaults.shared.badgeRemindersToPostLetters && UserDefaults.shared.trackPostingLetters)
         appLogger.debug("Setting applicationIconBadgeNumber to \(fetchedBadgeNumber)")
         DispatchQueue.main.async {
             self.applicationIconBadgeNumber = fetchedBadgeNumber
+//            WidgetType.NonInteractiveWidget.reload()
         }
     }
     

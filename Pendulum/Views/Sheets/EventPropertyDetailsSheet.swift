@@ -7,30 +7,6 @@
 
 import SwiftUI
 
-struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
-    let id = UUID()
-    let name: String
-    let count: Int
-    let type: StationeryType
-    
-    static func < (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
-        if lhs.count != rhs.count {
-            return lhs.count > rhs.count
-        } else {
-            return lhs.name < rhs.name
-        }
-    }
-    
-    static func == (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
-        return lhs.count == rhs.count && lhs.name == rhs.name
-    }
-    
-    var description: String {
-        "\(type.rawValue): \(name) (\(count))"
-    }
-    
-}
-
 struct EventPropertyDetailsSheet: View {
     
     // MARK: Environment

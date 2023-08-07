@@ -33,6 +33,8 @@ struct PersistenceController {
 
         return controller
     }()
+    
+    static let appGroupStoreURL: URL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: APP_GROUP)!.appendingPathComponent("Pendulum.sqlite")
 
     // An initializer to load Core Data, optionally able
     // to use an in-memory store.
@@ -40,12 +42,27 @@ struct PersistenceController {
         // If you didn't name your model Main you'll need
         // to change this name below.
         container = NSPersistentCloudKitContainer(name: "Pendulum")
+        
+        let initial = container.persistentStoreDescriptions.first!.url!
 
+        appLogger.debug("BEN: \(PersistenceController.appGroupStoreURL.debugDescription)")
+        appLogger.debug("BEN: Initial: \(initial.debugDescription)")
+        
         if inMemory {
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
+        } else {
+            #if !IN_EXTENSION
+            if !UserDefaults.shared.hasPerformedCoreDataMigrationToAppGroup {
+                migrateStore(for: container)
+            } else {
+                container.persistentStoreDescriptions.first?.url = PersistenceController.appGroupStoreURL
+            }
+            #else
+            container.persistentStoreDescriptions.first?.url = PersistenceController.appGroupStoreURL
+            #endif
         }
         
-        //Setup auto merge of Cloudkit data
+        // Setup auto merge of CloudKit data
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
@@ -55,13 +72,50 @@ struct PersistenceController {
             }
         }
         
-        //Set the Query generation to .current. for dynamically updating views from Cloudkit
+        // Set the Query generation to .current. for dynamically updating views from CloudKit
         try? container.viewContext.setQueryGenerationFrom(.current)
         
     }
     
+    private func migrateStore(for container: NSPersistentContainer) {
+
+        // see what configuration you're going to apply to the new store
+        for persistentStoreDescription in container.persistentStoreDescriptions {
+            appLogger.info("BEN: opt \(persistentStoreDescription.options)")
+            appLogger.info("BEN: type \(persistentStoreDescription.type)")
+            appLogger.info("BEN: conn \(persistentStoreDescription.configuration?.debugDescription ?? "")")
+            appLogger.info("BEN: url \(persistentStoreDescription.url?.absoluteString ?? "")")
+            
+            do {
+                appLogger.info("BEN: copy persistence store")
+                try container.persistentStoreCoordinator.replacePersistentStore(
+                    at: PersistenceController.appGroupStoreURL,  //destination
+                    destinationOptions: persistentStoreDescription.options,
+                    withPersistentStoreFrom: container.persistentStoreDescriptions.first!.url!, // source
+                    sourceOptions: persistentStoreDescription.options,
+                    ofType: persistentStoreDescription.type
+                )
+            } catch {
+                appLogger.error("BEN: failed to copy persistence store: \(error.localizedDescription)")
+            }
+
+        }
+        
+        container.persistentStoreDescriptions.first!.url = PersistenceController.appGroupStoreURL
+
+        // Used to verify the URL has changed and other config is there
+        for persistentStoreDescription in container.persistentStoreDescriptions {
+            appLogger.info("BEN: opt \(persistentStoreDescription.options)")
+            appLogger.info("BEN: type \(persistentStoreDescription.type)")
+            appLogger.info("BEN: conn \(persistentStoreDescription.configuration?.debugDescription ?? "")")
+            appLogger.info("BEN: url \(persistentStoreDescription.url?.absoluteString ?? "")")
+        }
+        
+        UserDefaults.shared.hasPerformedCoreDataMigrationToAppGroup = true
+        
+    }
+    
     func save(context: NSManagedObjectContext) {
-//        let context = passedContext ?? container.viewContext
         if context.hasChanges {
             DispatchQueue.main.async {
                 do {

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import WidgetKit
 import SwiftUI
 
 class AppPreferences: ObservableObject {
@@ -15,6 +16,7 @@ class AppPreferences: ObservableObject {
     @AppStorage(UserDefaults.Key.trackPostingLetters.rawValue, store: UserDefaults.shared) var trackPostingLetters = true {
         didSet {
             objectWillChange.send()
+//            WidgetType.NonInteractiveWidget.reload()
         }
     }
     

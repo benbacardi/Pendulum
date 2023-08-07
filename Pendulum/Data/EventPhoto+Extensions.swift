@@ -28,6 +28,23 @@ extension EventPhoto {
         return eventPhoto
     }
     
+    static func fetch(from context: NSManagedObjectContext) -> [EventPhoto] {
+        let fetchRequest = NSFetchRequest<EventPhoto>(entityName: EventPhoto.entityName)
+        do {
+            return try context.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch event photos: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
+    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
+        context.delete(self)
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+    }
+    
     func uiImage() -> UIImage? {
         guard let data = self.data else { return nil }
         return UIImage(data: data)
@@ -54,4 +71,13 @@ extension EventPhoto {
         return url
     }
     
+}
+
+extension EventPhoto {
+    static func deleteAll(in context: NSManagedObjectContext) {
+        for photo in fetch(from: context) {
+            photo.delete(in: context, saving: false)
+        }
+        PersistenceController.shared.save(context: context)
+    }
 }

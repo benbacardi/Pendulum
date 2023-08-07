@@ -8,6 +8,30 @@
 import Foundation
 import CoreData
 
+struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
+    let id = UUID()
+    let name: String
+    let count: Int
+    let type: StationeryType
+    
+    static func < (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
+        if lhs.count != rhs.count {
+            return lhs.count > rhs.count
+        } else {
+            return lhs.name < rhs.name
+        }
+    }
+    
+    static func == (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
+        return lhs.count == rhs.count && lhs.name == rhs.name
+    }
+    
+    var description: String {
+        "\(type.rawValue): \(name) (\(count))"
+    }
+    
+}
+
 enum StationeryType: String {
     case pen
     case ink
@@ -66,6 +90,16 @@ extension Stationery {
     var wrappedType: String { self.type ?? "type" }
     var wrappedValue: String { self.value ?? "value" }
     
+    static func fetch(from context: NSManagedObjectContext) -> [Stationery] {
+        let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
+        do {
+            return try context.fetch(fetchRequest)
+        } catch {
+            dataLogger.error("Could not fetch stationery: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     static func fetchUnused(for type: StationeryType, from context: NSManagedObjectContext) -> [String] {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "value", ascending: true)]
@@ -96,6 +130,13 @@ extension Stationery {
         }
     }
     
+    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
+        context.delete(self)
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+    }
+    
     static func update(_ parameter: ParameterCount, to newName: String, outbound: Bool = true, in context: NSManagedObjectContext) {
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
@@ -115,4 +156,13 @@ extension Stationery {
         }        
     }
     
+}
+
+extension Stationery {
+    static func deleteAll(in context: NSManagedObjectContext) {
+        for stationery in fetch(from: context) {
+            stationery.delete(in: context, saving: false)
+        }
+        PersistenceController.shared.save(context: context)
+    }
 }

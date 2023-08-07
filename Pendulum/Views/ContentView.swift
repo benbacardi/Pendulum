@@ -9,10 +9,12 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var selectedTab: Int = Tab.penPalList.rawValue
-    @StateObject private var appPreferences = AppPreferences.shared
+    @Environment(\.scenePhase) var scenePhase
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
+    
+    @State private var selectedTab: Int = Tab.penPalList.rawValue
+    @StateObject private var appPreferences = AppPreferences.shared
     @State private var showWhatsNewOverlay: Bool = false
     @AppStorage(UserDefaults.Key.lastLaunchedVersion.rawValue, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
         
@@ -42,6 +44,12 @@ struct ContentView: View {
             if lastLaunchedVersion != Bundle.main.appBuildNumber {
 //                showWhatsNewOverlay = true
                 lastLaunchedVersion = Bundle.main.appBuildNumber
+            }
+            appLogger.debug("BEN: track? \(UserDefaults.shared.trackPostingLetters.description)")
+        }
+        .onChange(of: scenePhase) { phase in
+            if phase == .background || phase == .inactive {
+//                WidgetType.reload()
             }
         }
     }
