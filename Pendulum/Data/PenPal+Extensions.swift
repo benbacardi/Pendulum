@@ -298,9 +298,11 @@ extension PenPal {
         PersistenceController.shared.save(context: context)
     }
     
-    func delete(in context: NSManagedObjectContext) {
+    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
         context.delete(self)
-        PersistenceController.shared.save(context: context)
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
     }
     
     func syncWithContact() {
@@ -425,4 +427,13 @@ extension PenPal {
         return average
     }
     
+}
+
+extension PenPal {
+    static func deleteAll(in context: NSManagedObjectContext) {
+        for penpal in fetch(from: context) {
+            penpal.delete(in: context, saving: false)
+        }
+        PersistenceController.shared.save(context: context)
+    }
 }

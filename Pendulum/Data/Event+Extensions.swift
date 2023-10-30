@@ -85,10 +85,12 @@ extension Event {
         PersistenceController.shared.save(context: context)
     }
     
-    func delete(in context: NSManagedObjectContext) {
+    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
         context.delete(self)
         self.penpal?.updateLastEventType(in: context)
-        PersistenceController.shared.save(context: context)
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
     }
     
 }
@@ -188,6 +190,15 @@ extension Event {
         }
     }
     
+}
+
+extension Event {
+    static func deleteAll(in context: NSManagedObjectContext) {
+        for event in fetch(from: context) {
+            event.delete(in: context, saving: false)
+        }
+        PersistenceController.shared.save(context: context)
+    }
 }
 
 func parseStationery(_ data: String?, replacing oldName: String, with newName: String) -> String? {
