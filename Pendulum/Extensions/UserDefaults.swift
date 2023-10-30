@@ -23,9 +23,17 @@ extension UserDefaults {
         case trackPostingLetters
         case sortPenPalsAlphabetically
         case sortStationeryAlphabetically
+        
+        case hasPerformedCoreDataMigrationToAppGroup
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
+    
+    @objc
+    var hasPerformedCoreDataMigrationToAppGroup: Bool {
+        get { bool(forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
+        set { setValue(newValue, forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
+    }
     
     @objc
     var trackPostingLetters: Bool {
