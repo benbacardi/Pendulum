@@ -44,7 +44,7 @@ struct PersistenceController {
 
     // An initializer to load Core Data, optionally able
     // to use an in-memory store.
-    init(location: DatastoreLocation = .appGroup) {
+    init(location: DatastoreLocation = .local) {
         // If you didn't name your model Main you'll need
         // to change this name below.
         container = NSPersistentCloudKitContainer(name: "Pendulum")

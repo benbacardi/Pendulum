@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var selectedTab: Int = Tab.settings.rawValue
+    @State private var selectedTab: Tab = .penPalList
     @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
@@ -24,10 +24,10 @@ struct ContentView: View {
                 TabView(selection: $selectedTab) {
                     PenPalTab()
                         .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
-                        .tag(Tab.penPalList.rawValue)
+                        .tag(Tab.penPalList)
                     SettingsList()
                         .tabItem { Label("Settings", systemImage: "gear") }
-                        .tag(Tab.settings.rawValue)
+                        .tag(Tab.settings)
                 }
             }
         }
