@@ -43,14 +43,14 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
     
-#if DEBUG
+//#if DEBUG
     @AppStorage(UserDefaults.Key.hasPerformedCoreDataMigrationToAppGroup.rawValue, store: UserDefaults.shared) private var hasPerformedCoreDataMigrationToAppGroup: Bool = false
     
     @State private var penpalCount: Int = 0
     @State private var eventCount: Int = 0
     @State private var stationeryCount: Int = 0
     @State private var photoCount: Int = 0
-#endif
+//#endif
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
@@ -77,7 +77,7 @@ struct SettingsList: View {
         NavigationView {
             Form {
                 
-#if DEBUG
+//#if DEBUG
                 Section(header: Text("Debug")) {
                     Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
                         Text("Migration performed?")
@@ -133,7 +133,7 @@ struct SettingsList: View {
                         }
                     }
                 }
-#endif
+//#endif
                 
                 if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
                     Section(footer: Text("Without Notification permissions, Pendulum will be unable to send reminders or display an icon badge.")) {
@@ -200,6 +200,12 @@ struct SettingsList: View {
                 
                 Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
+                }
+                
+                Section {
+                    NavigationLink(destination: BackupAndRestoreView()) {
+                        Text("Backup and Restore")
+                    }
                 }
                 
                 Section(
@@ -273,11 +279,11 @@ struct SettingsList: View {
                     }
                 }
             }
-#if DEBUG
+//#if DEBUG
             .task {
                 updateCounts()
             }
-#endif
+//#endif
             .onAppear {
                 var dateComponents = DateComponents()
                 dateComponents.hour = UserDefaults.shared.sendRemindersToPostLettersAtHour
@@ -344,14 +350,14 @@ struct SettingsList: View {
         }
     }
     
-#if DEBUG
+//#if DEBUG
     func updateCounts() {
         self.penpalCount = PenPal.fetch(from: moc).count
         self.eventCount = Event.fetch(from: moc).count
         self.stationeryCount = Stationery.fetch(from: moc).count
         self.photoCount = EventPhoto.fetch(from: moc).count
     }
-#endif
+//#endif
     
     func requestNotificationAccess() {
         Task {

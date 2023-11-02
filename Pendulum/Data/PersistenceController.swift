@@ -8,6 +8,12 @@
 import Foundation
 import CoreData
 
+enum DatastoreLocation {
+    case local
+    case appGroup
+    case inMemory
+}
+
 struct PersistenceController {
     // A singleton for our entire app to use
     static let shared = PersistenceController()
@@ -17,7 +23,7 @@ struct PersistenceController {
 
     // A test configuration for SwiftUI previews
     static var preview: PersistenceController = {
-        let controller = PersistenceController(inMemory: true)
+        let controller = PersistenceController(location: .inMemory)
 
         let p1 = PenPal(context: controller.container.viewContext)
         p1.id = UUID()
@@ -38,17 +44,15 @@ struct PersistenceController {
 
     // An initializer to load Core Data, optionally able
     // to use an in-memory store.
-    init(inMemory: Bool = false) {
+    init(location: DatastoreLocation = .appGroup) {
         // If you didn't name your model Main you'll need
         // to change this name below.
         container = NSPersistentCloudKitContainer(name: "Pendulum")
         
-        let SHOULD_MIGRATE: Bool = true
-
-        if inMemory {
+        switch location {
+        case .inMemory:
             container.persistentStoreDescriptions.first?.url = URL(fileURLWithPath: "/dev/null")
-        } else {
-            if SHOULD_MIGRATE {
+        case .appGroup:
 #if !IN_EXTENSION
                 if !UserDefaults.shared.hasPerformedCoreDataMigrationToAppGroup {
                     migrateStore(for: container)
@@ -58,10 +62,11 @@ struct PersistenceController {
 #else
                 container.persistentStoreDescriptions.first?.url = PersistenceController.appGroupStoreURL
 #endif
-            }
+        default:
+            break
         }
         
-        //Setup auto merge of Cloudkit data
+        //Setup auto merge of CloudKit data
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
@@ -78,38 +83,22 @@ struct PersistenceController {
     
     private func migrateStore(for container: NSPersistentContainer) {
 
-        // see what configuration you're going to apply to the new store
         for persistentStoreDescription in container.persistentStoreDescriptions {
-            appLogger.info("BEN: opt \(persistentStoreDescription.options)")
-            appLogger.info("BEN: type \(persistentStoreDescription.type)")
-            appLogger.info("BEN: conn \(persistentStoreDescription.configuration?.debugDescription ?? "")")
-            appLogger.info("BEN: url \(persistentStoreDescription.url?.absoluteString ?? "")")
-            
             do {
-                appLogger.info("BEN: copy persistence store")
                 try container.persistentStoreCoordinator.replacePersistentStore(
-                    at: PersistenceController.appGroupStoreURL,  //destination
+                    at: PersistenceController.appGroupStoreURL,
                     destinationOptions: persistentStoreDescription.options,
-                    withPersistentStoreFrom: container.persistentStoreDescriptions.first!.url!, // source
+                    withPersistentStoreFrom: container.persistentStoreDescriptions.first!.url!,
                     sourceOptions: persistentStoreDescription.options,
                     ofType: persistentStoreDescription.type
                 )
             } catch {
-                appLogger.error("BEN: failed to copy persistence store: \(error.localizedDescription)")
+                appLogger.error("Failed to copy persistence store: \(error.localizedDescription)")
             }
 
         }
         
         container.persistentStoreDescriptions.first!.url = PersistenceController.appGroupStoreURL
-
-        // Used to verify the URL has changed and other config is there
-        for persistentStoreDescription in container.persistentStoreDescriptions {
-            appLogger.info("BEN: opt \(persistentStoreDescription.options)")
-            appLogger.info("BEN: type \(persistentStoreDescription.type)")
-            appLogger.info("BEN: conn \(persistentStoreDescription.configuration?.debugDescription ?? "")")
-            appLogger.info("BEN: url \(persistentStoreDescription.url?.absoluteString ?? "")")
-        }
-        
         UserDefaults.shared.hasPerformedCoreDataMigrationToAppGroup = true
         
     }

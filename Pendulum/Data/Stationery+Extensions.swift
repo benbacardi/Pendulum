@@ -132,6 +132,18 @@ extension Stationery {
         }        
     }
     
+    @discardableResult
+    static func add(type: String, value: String, to context: NSManagedObjectContext, saving: Bool = true) -> NSManagedObject {
+        let stationery = Stationery(context: context)
+        stationery.id = UUID()
+        stationery.type = type
+        stationery.value = value
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+        return stationery
+    }
+    
 }
 
 extension Stationery {
@@ -140,5 +152,24 @@ extension Stationery {
             stationery.delete(in: context, saving: false)
         }
         PersistenceController.shared.save(context: context)
+    }
+}
+
+extension Stationery {
+    static func restore(_ data: [ExportedStationery], to context: NSManagedObjectContext, saving: Bool = true) -> Int {
+        let allStationery = Self.fetch(from: context).reduce(into: [String: Set<String>]()) { grouping, item in
+            grouping[item.wrappedType, default: Set<String>()].insert(item.wrappedValue)
+        }
+        var count: Int = 0
+        for importItem in data {
+            if !(allStationery[importItem.type]?.contains(importItem.value) ?? false) {
+                Stationery.add(type: importItem.type, value: importItem.value, to: context, saving: false)
+            }
+            count += 1
+        }
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+        return count
     }
 }

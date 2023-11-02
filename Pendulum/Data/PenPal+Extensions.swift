@@ -75,10 +75,10 @@ extension PenPal {
         self.addEvent(ofType: .sent, letterType: lastWrittenEvent?.letterType ?? .letter, in: context)
     }
     
-    func addEvent(ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
+    func addEvent(id: UUID? = nil, ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: context)
-        newEvent.id = UUID()
+        newEvent.id = id ?? UUID()
         newEvent.date = date
         newEvent.type = eventType
         newEvent.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -95,8 +95,12 @@ extension PenPal {
                 newEvent.addToPhotos(photo)
             }
         }
-        self.updateLastEventType(in: context)
-        PersistenceController.shared.save(context: context)
+        if recalculatePenPalEvent {
+            self.updateLastEventType(in: context)
+        }
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
     }
     
     func setLastEventType(to eventType: EventType, letterType: LetterType, at date: Date?, saving: Bool = false, in context: NSManagedObjectContext) {
@@ -435,5 +439,82 @@ extension PenPal {
             penpal.delete(in: context, saving: false)
         }
         PersistenceController.shared.save(context: context)
+    }
+}
+
+extension PenPal {
+    
+    @discardableResult
+    static func add(id: UUID? = nil, name: String, initials: String, image: Data? = nil, notes: String? = nil, to context: NSManagedObjectContext, saving: Bool = true) -> PenPal {
+        let newPenPal = PenPal(context: context)
+        newPenPal.id = id ?? UUID()
+        newPenPal.name = name
+        newPenPal.initials = initials
+        newPenPal.image = image
+        newPenPal.lastEventType = EventType.noEvent
+        newPenPal.notes = notes
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+        return newPenPal
+    }
+    
+    static func restore(_ data: [ExportedPenPal], to context: NSManagedObjectContext, saving: Bool = true) -> ImportResult {
+        let allPenPals = Dictionary(grouping: Self.fetch(from: context)) { $0.id ?? UUID() }
+        var penpalCount: Int = 0
+        var eventCount: Int = 0
+        var photoCount: Int = 0
+        for importItem in data {
+            let penpal: PenPal
+            var penpalEvents: [UUID: [Event]] = [:]
+            
+            if let existingPenpal = allPenPals[importItem.id]?.first {
+                // Find existing penpal
+                penpal = existingPenpal
+                penpalEvents = Dictionary(grouping: existingPenpal.events(from: context)) { $0.id ?? UUID() }
+            } else {
+                // Create new penpal
+                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.image, notes: importItem.notes, to: context, saving: false)
+            }
+            penpalCount += 1
+            
+            for event in importItem.events {
+                // Ignore events where we don't recognise the type
+                guard let eventType = EventType(rawValue: event.type), let letterType = LetterType(rawValue: event.letterType) else { continue }
+                
+                // Find existing event and associated photos
+                let existingEvent = penpalEvents[event.id]?.first
+                var existingPhotos: [UUID: [EventPhoto]] = [:]
+                if let existingEvent = existingEvent {
+                    existingPhotos = Dictionary(grouping: existingEvent.allPhotos()) { $0.id ?? UUID() }
+                }
+                
+                // Create photo objects
+                var photos: [EventPhoto] = []
+                for photo in event.photos {
+                    guard let data = photo.data else { continue }
+                    if let existingPhoto = existingPhotos[photo.id]?.first {
+                        photos.append(existingPhoto)
+                    } else {
+                        photos.append(EventPhoto.from(data, id: photo.id, dateAdded: photo.dateAdded, thumbnailData: photo.thumbnailData, in: context))
+                    }
+                    photoCount += 1
+                }
+                
+                if let existingEvent = existingEvent {
+                    // Update existing event with new photos
+                    existingEvent.update(type: existingEvent.type, date: existingEvent.wrappedDate, notes: existingEvent.notes, pen: existingEvent.pen, ink: existingEvent.ink, paper: existingEvent.paper, letterType: existingEvent.letterType, ignore: existingEvent.ignore, trackingReference: existingEvent.trackingReference, withPhotos: photos, in: context, recalculatePenPalEvent: false, saving: false)
+                } else {
+                    // Add new event
+                    penpal.addEvent(id: event.id, ofType: eventType, date: event.date, notes: event.notes, pen: event.pen, ink: event.ink, paper: event.paper, letterType: letterType, ignore: event.ignore, trackingReference: event.trackingReference, withPhotos: photos, in: context, recalculatePenPalEvent: false, saving: false)
+                }
+                eventCount += 1
+            }
+            penpal.updateLastEventType(saving: false, in: context)
+        }
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+        return ImportResult(stationeryCount: 0, penPalCount: penpalCount, eventCount: eventCount, photoCount: photoCount)
     }
 }

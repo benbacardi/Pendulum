@@ -67,11 +67,14 @@
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
 		5ED5A1642978430F0053B3D0 /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1632978430F0053B3D0 /* Date.swift */; };
 		5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */; };
+		5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDFFA3D2AF30114008530A1 /* BackupAndRestoreView.swift */; };
+		5EDFFA402AF302D6008530A1 /* RestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDFFA3F2AF302D6008530A1 /* RestoreButton.swift */; };
 		5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */; };
 		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
 		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
 		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
 		5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */; };
+		5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787092AF2B61700CD3221 /* ExportButton.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
@@ -142,11 +145,14 @@
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
 		5ED5A1632978430F0053B3D0 /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostUsedStationeryChart.swift; sourceTree = "<group>"; };
+		5EDFFA3D2AF30114008530A1 /* BackupAndRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreView.swift; sourceTree = "<group>"; };
+		5EDFFA3F2AF302D6008530A1 /* RestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreButton.swift; sourceTree = "<group>"; };
 		5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHPickerResult.swift; sourceTree = "<group>"; };
 		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
 		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerController.swift; sourceTree = "<group>"; };
+		5EE787092AF2B61700CD3221 /* ExportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportButton.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -219,6 +225,7 @@
 		5E40551729151B5F00BD52BF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5EE787082AF2B60700CD3221 /* Data */,
 				5E0A015829AD09FE00BADAC6 /* Navigation */,
 				5E4055292915202B00BD52BF /* ContentView.swift */,
 				5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */,
@@ -362,6 +369,16 @@
 			path = Charts;
 			sourceTree = "<group>";
 		};
+		5EE787082AF2B60700CD3221 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				5EDFFA3D2AF30114008530A1 /* BackupAndRestoreView.swift */,
+				5EE787092AF2B61700CD3221 /* ExportButton.swift */,
+				5EDFFA3F2AF302D6008530A1 /* RestoreButton.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -450,6 +467,7 @@
 				5E625214292B999500A3EB86 /* Stationery+Extensions.swift in Sources */,
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */,
+				5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */,
 				5E0A015E29AE8A1E00BADAC6 /* PenPalList.swift in Sources */,
 				5E625219292CBD2700A3EB86 /* Export.swift in Sources */,
 				5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */,
@@ -475,6 +493,7 @@
 				5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
 				5E494C7B29D41E4B00D908E1 /* ImageGalleryOverlay.swift in Sources */,
+				5EDFFA402AF302D6008530A1 /* RestoreButton.swift in Sources */,
 				5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */,
 				5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
@@ -499,6 +518,7 @@
 				5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */,
 				5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */,
 				5E0A016429AFA68C00BADAC6 /* GrantContactsAccessView.swift in Sources */,
+				5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */,
 				5E62520C292B7A2A00A3EB86 /* Event+Extensions.swift in Sources */,
 				5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */,
 				5E7EC41B2979A73A00C24189 /* Double.swift in Sources */,

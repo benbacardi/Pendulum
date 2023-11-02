@@ -12,10 +12,12 @@ import SwiftUI
 extension EventPhoto {
     static let entityName: String = "EventPhoto"
     
-    static func from(_ data: Data, in context: NSManagedObjectContext) -> EventPhoto {
+    static func from(_ data: Data, id: UUID? = nil, dateAdded: Date? = nil, thumbnailData: Data? = nil, in context: NSManagedObjectContext) -> EventPhoto {
         let eventPhoto = EventPhoto(context: context)
-        eventPhoto.id = UUID()
+        eventPhoto.id = id ?? UUID()
         eventPhoto.data = data
+        eventPhoto.dateAdded = dateAdded ?? Date()
+        eventPhoto.thumbnailData = data
         return eventPhoto
     }
     
