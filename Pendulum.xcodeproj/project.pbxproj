@@ -69,6 +69,7 @@
 		5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */; };
 		5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDFFA3D2AF30114008530A1 /* BackupAndRestoreView.swift */; };
 		5EDFFA402AF302D6008530A1 /* RestoreButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDFFA3F2AF302D6008530A1 /* RestoreButton.swift */; };
+		5EDFFA442AF4546C008530A1 /* DebugView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EDFFA432AF4546C008530A1 /* DebugView.swift */; };
 		5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */; };
 		5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */; };
 		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
@@ -147,6 +148,7 @@
 		5ED5A165297843A10053B3D0 /* MostUsedStationeryChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MostUsedStationeryChart.swift; sourceTree = "<group>"; };
 		5EDFFA3D2AF30114008530A1 /* BackupAndRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAndRestoreView.swift; sourceTree = "<group>"; };
 		5EDFFA3F2AF302D6008530A1 /* RestoreButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RestoreButton.swift; sourceTree = "<group>"; };
+		5EDFFA432AF4546C008530A1 /* DebugView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugView.swift; sourceTree = "<group>"; };
 		5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PHPickerResult.swift; sourceTree = "<group>"; };
 		5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EventPhoto+Extensions.swift"; sourceTree = "<group>"; };
 		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
@@ -231,10 +233,11 @@
 				5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */,
 				5E0A016129AF9F8300BADAC6 /* PenPalSplitView.swift */,
 				5E0A015D29AE8A1E00BADAC6 /* PenPalList.swift */,
-				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5E625209292B76FA00A3EB86 /* PenPalView.swift */,
+				406626EA2916E24E00CA0BD7 /* SettingsList.swift */,
 				5ED5A15E297815560053B3D0 /* StatsView.swift */,
 				5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */,
+				5EDFFA432AF4546C008530A1 /* DebugView.swift */,
 				5ED5A160297842220053B3D0 /* Charts */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
@@ -520,6 +523,7 @@
 				5E0A016429AFA68C00BADAC6 /* GrantContactsAccessView.swift in Sources */,
 				5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */,
 				5E62520C292B7A2A00A3EB86 /* Event+Extensions.swift in Sources */,
+				5EDFFA442AF4546C008530A1 /* DebugView.swift in Sources */,
 				5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */,
 				5E7EC41B2979A73A00C24189 /* Double.swift in Sources */,
 				5E62520E292B889700A3EB86 /* EventCell.swift in Sources */,

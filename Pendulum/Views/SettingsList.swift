@@ -42,15 +42,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
-    
-//#if DEBUG
-    @AppStorage(UserDefaults.Key.hasPerformedCoreDataMigrationToAppGroup.rawValue, store: UserDefaults.shared) private var hasPerformedCoreDataMigrationToAppGroup: Bool = false
-    
-    @State private var penpalCount: Int = 0
-    @State private var eventCount: Int = 0
-    @State private var stationeryCount: Int = 0
-    @State private var photoCount: Int = 0
-//#endif
+    @AppStorage(UserDefaults.Key.shouldShowDebugView.rawValue, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
@@ -76,64 +68,6 @@ struct SettingsList: View {
     var body: some View {
         NavigationView {
             Form {
-                
-//#if DEBUG
-                Section(header: Text("Debug")) {
-                    Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
-                        Text("Migration performed?")
-                    }
-                    Text(moc.persistentStoreCoordinator!.persistentStores.first!.url!.debugDescription)
-                        .font(.caption)
-                    HStack {
-                        Text("PenPals")
-                        Spacer()
-                        Text("\(penpalCount)")
-                            .foregroundColor(.secondary)
-                        Button(action: {
-                            PenPal.deleteAll(in: moc)
-                            updateCounts()
-                        }) {
-                            Image(systemName: "trash")
-                        }
-                    }
-                    HStack {
-                        Text("Events")
-                        Spacer()
-                        Text("\(eventCount)")
-                            .foregroundColor(.secondary)
-                        Button(action: {
-                            Event.deleteAll(in: moc)
-                            updateCounts()
-                        }) {
-                            Image(systemName: "trash")
-                        }
-                    }
-                    HStack {
-                        Text("EventPhotos")
-                        Spacer()
-                        Text("\(photoCount)")
-                            .foregroundColor(.secondary)
-                        Button(action: {
-                            EventPhoto.deleteAll(in: moc)
-                            updateCounts()
-                        }) {
-                            Image(systemName: "trash")
-                        }
-                    }
-                    HStack {
-                        Text("Stationery")
-                        Spacer()
-                        Text("\(stationeryCount)")
-                            .foregroundColor(.secondary)
-                        Button(action: {
-                            Stationery.deleteAll(in: moc)
-                            updateCounts()
-                        }) {
-                            Image(systemName: "trash")
-                        }
-                    }
-                }
-//#endif
                 
                 if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
                     Section(footer: Text("Without Notification permissions, Pendulum will be unable to send reminders or display an icon badge.")) {
@@ -230,10 +164,20 @@ struct SettingsList: View {
                             .font(.headline)
                     }
                         .padding(.vertical)
-                        .fullWidth(alignment: .center),
+                        .fullWidth(alignment: .center)
+                        .onTapGesture(count: 5) {
+                            withAnimation {
+                                shouldShowDebugView.toggle()
+                            }
+                        },
                     footer: Text("\nA **Faber & Cardy** Production\n\nFor Ellen; adequately ginger, but perfectly lovely")
                         .fullWidth(alignment: .center)
                 ) {
+                    if shouldShowDebugView {
+                        NavigationLink(destination: DebugView()) {
+                            Text("Debug")
+                        }
+                    }
                     Button(action: {
                         self.showFAQs = true
                     }) {
@@ -279,11 +223,6 @@ struct SettingsList: View {
                     }
                 }
             }
-//#if DEBUG
-            .task {
-                updateCounts()
-            }
-//#endif
             .onAppear {
                 var dateComponents = DateComponents()
                 dateComponents.hour = UserDefaults.shared.sendRemindersToPostLettersAtHour
@@ -349,15 +288,6 @@ struct SettingsList: View {
             }
         }
     }
-    
-//#if DEBUG
-    func updateCounts() {
-        self.penpalCount = PenPal.fetch(from: moc).count
-        self.eventCount = Event.fetch(from: moc).count
-        self.stationeryCount = Stationery.fetch(from: moc).count
-        self.photoCount = EventPhoto.fetch(from: moc).count
-    }
-//#endif
     
     func requestNotificationAccess() {
         Task {

@@ -25,9 +25,16 @@ extension UserDefaults {
         case sortStationeryAlphabetically
         
         case hasPerformedCoreDataMigrationToAppGroup
+        case shouldShowDebugView
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
+    
+    @objc
+    var shouldShowDebugView: Bool {
+        get { bool(forKey: Key.shouldShowDebugView.rawValue) }
+        set { setValue(newValue, forKey: Key.shouldShowDebugView.rawValue) }
+    }
     
     @objc
     var hasPerformedCoreDataMigrationToAppGroup: Bool {
