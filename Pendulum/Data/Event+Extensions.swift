@@ -58,7 +58,7 @@ extension Event {
 
 extension Event {
     
-    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext) {
+    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
         self.date = date
         self.type = type
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -81,8 +81,12 @@ extension Event {
             dataLogger.debug("Deleted \(deletedCount) old photos")
         }
         
-        self.penpal?.updateLastEventType(in: context)
-        PersistenceController.shared.save(context: context)
+        if recalculatePenPalEvent {
+            self.penpal?.updateLastEventType(in: context)
+        }
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
     }
     
     func delete(in context: NSManagedObjectContext, saving: Bool = true) {
