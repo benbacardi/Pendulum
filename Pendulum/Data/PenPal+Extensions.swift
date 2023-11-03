@@ -466,7 +466,7 @@ extension PenPal {
     }
     
     static func restore(_ data: [ExportedPenPal], to context: NSManagedObjectContext, saving: Bool = true) -> ImportResult {
-        let allPenPals = Dictionary(grouping: Self.fetch(from: context)) { $0.id ?? UUID() }
+        let allPenPals = Dictionary(grouping: Self.fetchAll(from: context)) { $0.id ?? UUID() }
         var penpalCount: Int = 0
         var eventCount: Int = 0
         var photoCount: Int = 0
