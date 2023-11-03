@@ -98,7 +98,7 @@ struct Export: Codable {
     let stationery: [ExportedStationery]
     
     init(from context: NSManagedObjectContext) {
-        self.penpals = PenPal.fetch(from: context).map { ExportedPenPal(from: $0, in: context) }
+        self.penpals = PenPal.fetchAll(from: context).map { ExportedPenPal(from: $0, in: context) }
         self.stationery = Stationery.fetch(from: context).map { ExportedStationery(from: $0) }
     }
     
