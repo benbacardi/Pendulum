@@ -83,7 +83,7 @@ struct DebugView: View {
     }
     
     func updateCounts() {
-        self.penpalCount = PenPal.fetch(from: moc).count
+        self.penpalCount = PenPal.fetchAll(from: moc).count
         self.eventCount = Event.fetch(from: moc).count
         self.stationeryCount = Stationery.fetch(from: moc).count
         self.photoCount = EventPhoto.fetch(from: moc).count

@@ -102,13 +102,15 @@ struct ExportButton: View {
     
     func export() {
         exportState = .inProgress
-        do {
-            let exportData = try Export(from: moc).asJSON()
-            self.document = JSONFile(from: exportData)
-            self.showFileExporter = true
-        } catch {
-            appLogger.error("Could not export data: \(error.localizedDescription)")
-            self.changeExportState(to: .error)
+        Task {
+            do {
+                let exportData = try Export(from: moc).asJSON()
+                self.document = JSONFile(from: exportData)
+                self.showFileExporter = true
+            } catch {
+                appLogger.error("Could not export data: \(error.localizedDescription)")
+                self.changeExportState(to: .error)
+            }
         }
     }
     

@@ -261,11 +261,12 @@ extension PenPal {
         PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
     }
     
-    static func fetch(withStatus eventType: EventType? = nil, from context: NSManagedObjectContext) -> [PenPal] {
+    static func fetch(withStatus eventType: EventType? = nil, all: Bool = false, from context: NSManagedObjectContext) -> [PenPal] {
         let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
-        var predicates: [NSPredicate] = [
-            NSPredicate(format: "archived = %@", NSNumber(value: false))
-        ]
+        var predicates: [NSPredicate] = []
+        if !all {
+            predicates.append(NSPredicate(format: "archived = %@", NSNumber(value: false)))
+        }
         if let eventType = eventType {
             predicates.append(NSPredicate(format: "lastEventTypeValue = %d", eventType.rawValue))
         }
@@ -276,6 +277,10 @@ extension PenPal {
             dataLogger.error("Could not fetch penpals with status \(eventType?.description ?? "all"): \(error.localizedDescription)")
         }
         return []
+    }
+    
+    static func fetchAll(from context: NSManagedObjectContext) -> [PenPal] {
+        return fetch(all: true, from: context)
     }
     
     func archive(_ value: Bool = true, in context: NSManagedObjectContext) {
@@ -435,7 +440,7 @@ extension PenPal {
 
 extension PenPal {
     static func deleteAll(in context: NSManagedObjectContext) {
-        for penpal in fetch(from: context) {
+        for penpal in fetchAll(from: context) {
             penpal.delete(in: context, saving: false)
         }
         PersistenceController.shared.save(context: context)
@@ -445,7 +450,7 @@ extension PenPal {
 extension PenPal {
     
     @discardableResult
-    static func add(id: UUID? = nil, name: String, initials: String, image: Data? = nil, notes: String? = nil, to context: NSManagedObjectContext, saving: Bool = true) -> PenPal {
+    static func add(id: UUID? = nil, name: String, initials: String, image: Data? = nil, notes: String? = nil, archived: Bool = false, to context: NSManagedObjectContext, saving: Bool = true) -> PenPal {
         let newPenPal = PenPal(context: context)
         newPenPal.id = id ?? UUID()
         newPenPal.name = name
@@ -453,6 +458,7 @@ extension PenPal {
         newPenPal.image = image
         newPenPal.lastEventType = EventType.noEvent
         newPenPal.notes = notes
+        newPenPal.archived = archived
         if saving {
             PersistenceController.shared.save(context: context)
         }
@@ -474,7 +480,7 @@ extension PenPal {
                 penpalEvents = Dictionary(grouping: existingPenpal.events(from: context)) { $0.id ?? UUID() }
             } else {
                 // Create new penpal
-                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.image, notes: importItem.notes, to: context, saving: false)
+                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.image, notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
             }
             penpalCount += 1
             
