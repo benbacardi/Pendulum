@@ -9,30 +9,15 @@ import SwiftUI
 import UniformTypeIdentifiers
 
 
-struct JSONFile: FileDocument {
-    static var readableContentTypes = [UTType.json]
-
-    // by default our document is empty
-    var data: Data = Data()
-
-    // a simple initializer that creates new, empty documents
-    init(from: Data) {
-        self.data = from
-    }
-
-    // this initializer loads data that has been saved previously
-    init(configuration: ReadConfiguration) throws {
-        if let data = configuration.file.regularFileContents {
-            self.data = data
+struct Backup: Transferable {
+    let url: URL
+    let name: String
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: .zip) { backup in
+            SentTransferredFile(backup.url)
         }
     }
-
-    // this will be called when the system wants to write our data to disk
-    func fileWrapper(configuration: WriteConfiguration) throws -> FileWrapper {
-        return FileWrapper(regularFileWithContents: self.data)
-    }
 }
-
 
 enum ExportState {
     case pending
@@ -41,7 +26,6 @@ enum ExportState {
     case error
 }
 
-
 struct ExportButton: View {
     
     // MARK: Environment
@@ -49,13 +33,12 @@ struct ExportButton: View {
     
     // MARK: State
     @State private var exportState: ExportState = .pending
-    @State private var document: JSONFile? = nil
-    @State private var showFileExporter: Bool = false
+    @State private var backup: Backup? = nil
     
     var body: some View {
         Button(action: export) {
             HStack {
-                Text("Export Data Backup")
+                Text("Generate Backup File")
                 Spacer()
                 switch exportState {
                 case .pending:
@@ -72,19 +55,15 @@ struct ExportButton: View {
             }
         }
         .disabled(exportState == .inProgress)
-        .fileExporter(isPresented: $showFileExporter, document: document, contentType: .json, defaultFilename: "PendulumExport.json") { result in
-            switch result {
-            case .success(let url):
-                appLogger.debug("Saved export to \(url)")
-                self.changeExportState(to: .successful)
-            case .failure(let error):
-                appLogger.error("Could not save export: \(error.localizedDescription)")
-                self.changeExportState(to: .error)
-            }
-        }
-        .onChange(of: showFileExporter) { newValue in
-            if !showFileExporter && self.exportState == .inProgress {
-                self.exportState = .pending
+        if exportState != .inProgress, let backup = backup {
+            ShareLink(item: backup, preview: .init(backup.name, image: Image(.pendulum))) {
+                HStack {
+                    Image(systemName: "arrow.down.circle")
+                    Text("Save…")
+                        .fullWidth()
+                    Text(backup.url.fileSizeString)
+                        .foregroundStyle(Color.secondary)
+                }
             }
         }
     }
@@ -103,10 +82,13 @@ struct ExportButton: View {
     func export() {
         exportState = .inProgress
         Task {
+            let export = Export(from: moc)
             do {
-                let exportData = try Export(from: moc).asJSON()
-                self.document = JSONFile(from: exportData)
-                self.showFileExporter = true
+                let exportURL = try export.export()
+                withAnimation {
+                    self.backup = Backup(url: exportURL, name: export.name)
+                }
+                self.changeExportState(to: .successful)
             } catch {
                 appLogger.error("Could not export data: \(error.localizedDescription)")
                 self.changeExportState(to: .error)

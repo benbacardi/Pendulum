@@ -17,6 +17,7 @@
 		5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */; };
 		5E0A016829AFA9A900BADAC6 /* PenPalTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */; };
 		5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */; };
+		5E2F86E52AF6FA6F00BEB28B /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2F86E42AF6FA6F00BEB28B /* URL.swift */; };
 		5E30A7F229DC628500B1E89D /* ExtendedGroupBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */; };
 		5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461EF2983BF6700BBD038 /* AppPreferences.swift */; };
 		5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */; };
@@ -34,6 +35,7 @@
 		5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554129166EBE00BD52BF /* FullWidthText.swift */; };
 		5E4055492918184000BD52BF /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E4055482918184000BD52BF /* Calendar.swift */; };
 		5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E40554E2918215C00BD52BF /* CNPostalAddress.swift */; };
+		5E41006C2AF8493F00737E5C /* ZIPFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 5E41006B2AF8493F00737E5C /* ZIPFoundation */; };
 		5E494C7B29D41E4B00D908E1 /* ImageGalleryOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E494C7A29D41E4B00D908E1 /* ImageGalleryOverlay.swift */; };
 		5E494C7D29DB179F00D908E1 /* WhatsNew.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E494C7C29DB179F00D908E1 /* WhatsNew.swift */; };
 		5E52C65F2919B8A600BBD58D /* PenPalHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E52C65E2919B8A600BBD58D /* PenPalHeader.swift */; };
@@ -93,6 +95,7 @@
 		5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFirstPenPalView.swift; sourceTree = "<group>"; };
 		5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalTab.swift; sourceTree = "<group>"; };
 		5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection.swift; sourceTree = "<group>"; };
+		5E2F86E42AF6FA6F00BEB28B /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedGroupBoxStyle.swift; sourceTree = "<group>"; };
 		5E3461EF2983BF6700BBD038 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
 		5E3461F12983F6A200BBD038 /* SentAndWrittenByMonthChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByMonthChart.swift; sourceTree = "<group>"; };
@@ -166,6 +169,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5E41006C2AF8493F00737E5C /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -185,6 +189,7 @@
 			children = (
 				5E4055072914205D00BD52BF /* Pendulum */,
 				5E4055062914205D00BD52BF /* Products */,
+				5E41006A2AF8493F00737E5C /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -260,6 +265,7 @@
 				5E72EE3A298E59BA008E3BAA /* NSUbiquitousKeyValueStore.swift */,
 				5EE5687229D1E43E00BC2687 /* UIImage.swift */,
 				5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */,
+				5E2F86E42AF6FA6F00BEB28B /* URL.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -339,6 +345,13 @@
 			path = Sheets;
 			sourceTree = "<group>";
 		};
+		5E41006A2AF8493F00737E5C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		5E6251FF2927D72100A3EB86 /* Data */ = {
 			isa = PBXGroup;
 			children = (
@@ -399,6 +412,7 @@
 			);
 			name = Pendulum;
 			packageProductDependencies = (
+				5E41006B2AF8493F00737E5C /* ZIPFoundation */,
 			);
 			productName = Pendulum;
 			productReference = 5E4055052914205D00BD52BF /* Pendulum.app */;
@@ -429,6 +443,7 @@
 			);
 			mainGroup = 5E4054FC2914205D00BD52BF;
 			packageReferences = (
+				5E4100692AF8492400737E5C /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
 			);
 			productRefGroup = 5E4055062914205D00BD52BF /* Products */;
 			projectDirPath = "";
@@ -509,6 +524,7 @@
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E62520A292B76FA00A3EB86 /* PenPalView.swift in Sources */,
 				5E6252082928C20600A3EB86 /* PenPal+Extensions.swift in Sources */,
+				5E2F86E52AF6FA6F00BEB28B /* URL.swift in Sources */,
 				5E62521F292E75E000A3EB86 /* PenPalListItem.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
 				5E625212292B958D00A3EB86 /* PenPalContactSheet.swift in Sources */,
@@ -760,6 +776,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5E4100692AF8492400737E5C /* XCRemoteSwiftPackageReference "ZIPFoundation" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/weichsel/ZIPFoundation.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.9.17;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5E41006B2AF8493F00737E5C /* ZIPFoundation */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5E4100692AF8492400737E5C /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
+			productName = ZIPFoundation;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5E6252002927D73900A3EB86 /* Pendulum.xcdatamodeld */ = {

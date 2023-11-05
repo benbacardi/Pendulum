@@ -480,7 +480,7 @@ extension PenPal {
                 penpalEvents = Dictionary(grouping: existingPenpal.events(from: context)) { $0.id ?? UUID() }
             } else {
                 // Create new penpal
-                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.image, notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
+                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: nil, notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
             }
             penpalCount += 1
             
@@ -497,15 +497,15 @@ extension PenPal {
                 
                 // Create photo objects
                 var photos: [EventPhoto] = []
-                for photo in event.photos {
-                    guard let data = photo.data else { continue }
-                    if let existingPhoto = existingPhotos[photo.id]?.first {
-                        photos.append(existingPhoto)
-                    } else {
-                        photos.append(EventPhoto.from(data, id: photo.id, dateAdded: photo.dateAdded, thumbnailData: photo.thumbnailData, in: context))
-                    }
-                    photoCount += 1
-                }
+//                for photo in event.photos {
+//                    guard let data = photo.data else { continue }
+//                    if let existingPhoto = existingPhotos[photo.id]?.first {
+//                        photos.append(existingPhoto)
+//                    } else {
+//                        photos.append(EventPhoto.from(data, id: photo.id, dateAdded: photo.dateAdded, thumbnailData: photo.thumbnailData, in: context))
+//                    }
+//                    photoCount += 1
+//                }
                 
                 if let existingEvent = existingEvent {
                     // Update existing event with new photos
