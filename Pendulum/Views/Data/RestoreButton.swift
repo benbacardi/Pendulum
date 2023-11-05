@@ -45,7 +45,7 @@ struct RestoreButton: View {
             }
         }
         .disabled(importState == .inProgress)
-        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.json]) { result in
+        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.zip]) { result in
             switch result {
             case .success(let file):
                 do {

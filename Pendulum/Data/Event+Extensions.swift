@@ -115,6 +115,17 @@ extension Event {
         Array(photos as? Set<EventPhoto> ?? []).sorted(using: KeyPathComparator(\.dateAdded))
     }
     
+    func photoInformationForExport() -> [EventPhoto] {
+        let fetchRequest = NSFetchRequest<EventPhoto>(entityName: EventPhoto.entityName)
+//        fetchRequest.propertiesToFetch = ["id", "dateAdded"]
+        do {
+            return try self.managedObjectContext?.fetch(fetchRequest) ?? []
+        } catch {
+            dataLogger.error("Could not fetch photos: \(error.localizedDescription)")
+        }
+        return []
+    }
+    
     func deletePhotos(notMatching ids: [UUID], saving: Bool = false, in context: NSManagedObjectContext) -> Int {
         var deletedCount = 0
         for photo in self.allPhotos() {
