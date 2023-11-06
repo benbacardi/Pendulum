@@ -86,18 +86,12 @@ struct ExportButton: View {
                     }
                 }
                 .swipeActions(edge: .trailing) {
-                    Button(role: .destructive, action: {
-                        if let backup = self.backup {
-                            withAnimation {
-                                let backupUrl = backup.url
-                                Task {
-                                    try? FileManager.default.removeItem(at: backupUrl)
-                                }
-                                self.backup = nil
-                                UserDefaults.shared.exportURL = nil
-                            }
-                        }
-                    }, label: {
+                    Button(role: .destructive, action: deleteLocalArchive, label: {
+                        Label("Delete", systemImage: "trash")
+                    })
+                }
+                .contextMenu {
+                    Button(role: .destructive, action: deleteLocalArchive, label: {
                         Label("Delete", systemImage: "trash")
                     })
                 }
@@ -135,6 +129,19 @@ struct ExportButton: View {
         if revert && state != .pending {
             DispatchQueue.main.asyncAfter(deadline: .now() + 3) {
                 self.exportState = .pending
+            }
+        }
+    }
+    
+    func deleteLocalArchive() {
+        if let backup = self.backup {
+            withAnimation {
+                let backupUrl = backup.url
+                Task {
+                    try? FileManager.default.removeItem(at: backupUrl)
+                }
+                self.backup = nil
+                UserDefaults.shared.exportURL = nil
             }
         }
     }
