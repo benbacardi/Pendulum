@@ -12,22 +12,33 @@ import SwiftUI
 extension EventPhoto {
     static let entityName: String = "EventPhoto"
     
+    static let maxSize = CGSize(width: 2000, height: 2000)
+    static let thumbnailSize = CGSize(width: 200, height: 200)
+    
     static func from(_ data: Data, id: UUID? = nil, dateAdded: Date? = nil, thumbnailData: Data? = nil, in context: NSManagedObjectContext) -> EventPhoto {
         let eventPhoto = EventPhoto(context: context)
         eventPhoto.id = id ?? UUID()
-        eventPhoto.data = data
         eventPhoto.dateAdded = dateAdded ?? Date()
-        eventPhoto.thumbnailData = data
+        if let thumbnailData {
+            eventPhoto.data = data
+            eventPhoto.thumbnailData = data
+        }
+        eventPhoto.updateImage(data)
         return eventPhoto
     }
     
     static func from(_ image: UIImage, in context: NSManagedObjectContext) -> EventPhoto {
         let eventPhoto = EventPhoto(context: context)
         eventPhoto.id = UUID()
-        eventPhoto.data = image.resize(targetSize: CGSize(width: 2000, height: 2000))?.jpegData(compressionQuality: 1.0) ?? Data()
-        eventPhoto.thumbnailData = image.resize(targetSize: CGSize(width: 200, height: 200))?.jpegData(compressionQuality: 0.8) ?? Data()
+        eventPhoto.data = image.resize(targetSize: Self.maxSize)?.jpegData(compressionQuality: 1.0) ?? Data()
+        eventPhoto.thumbnailData = image.resize(targetSize: Self.thumbnailSize)?.jpegData(compressionQuality: 0.8) ?? Data()
         eventPhoto.dateAdded = Date()
         return eventPhoto
+    }
+    
+    func updateImage(_ data: Data) {
+        self.data = data
+        self.thumbnailData = UIImage(data: data)?.resize(targetSize: Self.thumbnailSize)?.jpegData(compressionQuality: 0.8)
     }
     
     static func fetch(from context: NSManagedObjectContext) -> [EventPhoto] {
