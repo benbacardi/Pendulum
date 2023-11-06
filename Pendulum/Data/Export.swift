@@ -169,6 +169,7 @@ struct Export: Codable {
         let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName).appendingPathExtension("zip")
         try? FileManager.default.removeItem(at: tmpURL)
         try FileManager.default.zipItem(at: directoryURL, to: tmpURL)
+        try? FileManager.default.removeItem(at: directoryURL)
         
         return tmpURL
         

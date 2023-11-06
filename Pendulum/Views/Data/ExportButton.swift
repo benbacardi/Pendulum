@@ -42,13 +42,10 @@ struct ExportButton: View {
                     Text("Generate Backup File…")
                     Spacer()
                     switch exportState {
-                    case .pending:
+                    case .pending, .successful:
                         EmptyView()
                     case .inProgress:
                         ProgressView()
-                    case .successful:
-                        Image(systemName: "checkmark")
-                            .foregroundStyle(Color.green)
                     case .error:
                         Image(systemName: "exclamationmark.triangle")
                             .foregroundStyle(Color.red)
@@ -59,16 +56,37 @@ struct ExportButton: View {
             if exportState != .inProgress, let backup = backup {
                 ShareLink(item: backup, preview: .init(backup.name, image: Image(.pendulum))) {
                     HStack {
+                        VStack {
+                            Text(backup.name)
+                                .fullWidth()
+                                .foregroundStyle(Color.primary)
+                            Text(backup.url.fileSizeString)
+                                .font(.caption)
+                                .fullWidth()
+                                .foregroundStyle(Color.secondary)
+                        }
                         Image(systemName: "arrow.down.circle")
-                        Text("Save…")
-                            .fullWidth()
-                        Text(backup.url.fileSizeString)
-                            .foregroundStyle(Color.secondary)
+                            .font(.title2)
                     }
+                }
+                .swipeActions(edge: .trailing) {
+                    Button(role: .destructive, action: {
+                        if let backup = self.backup {
+                            withAnimation {
+                                let backupUrl = backup.url
+                                Task {
+                                    try? FileManager.default.removeItem(at: backupUrl)
+                                }
+                                self.backup = nil
+                            }
+                        }
+                    }, label: {
+                        Label("Delete", systemImage: "trash")
+                    })
                 }
             }
         } footer: {
-            Text("Pendulum will export a single file containing all your Pen Pal data, including logged events, stationery, and photos. This file can be used to import your data back into the app at a later date. It can be quite large if you have many photos within the app.")
+            Text("Pendulum will export an archive file containing all your Pen Pal data, including logged events, stationery, and photos. This archive can be used to import your data back into the app at a later date. It can be quite large if you have many photos within the app.")
         }
     }
     
@@ -100,4 +118,11 @@ struct ExportButton: View {
         }
     }
     
+}
+
+#Preview {
+    Form {
+        ExportButton()
+            .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    }
 }
