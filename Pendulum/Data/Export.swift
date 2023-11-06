@@ -165,13 +165,15 @@ struct Export: Codable {
             }
         }
         
-        // Create temporary export ZIP file
-        let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName).appendingPathExtension("zip")
-        try? FileManager.default.removeItem(at: tmpURL)
-        try FileManager.default.zipItem(at: directoryURL, to: tmpURL)
+        // Create export ZIP file
+        let zipURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! .appendingPathComponent(fileName).appendingPathExtension("zip")
+        try? FileManager.default.removeItem(at: zipURL)
+        try FileManager.default.zipItem(at: directoryURL, to: zipURL)
         try? FileManager.default.removeItem(at: directoryURL)
         
-        return tmpURL
+        print("BEN: Saved to \(zipURL)")
+        
+        return zipURL
         
     }
     

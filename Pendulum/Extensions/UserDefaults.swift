@@ -26,9 +26,19 @@ extension UserDefaults {
         
         case hasPerformedCoreDataMigrationToAppGroup
         case shouldShowDebugView
+        case exportURL
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
+    
+    var exportURL: URL? {
+        get {
+            guard let fileName = string(forKey: Key.exportURL.rawValue) else { return nil }
+            guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
+            return directory.appendingPathComponent(fileName)
+        }
+        set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL.rawValue) }
+    }
     
     @objc
     var shouldShowDebugView: Bool {
