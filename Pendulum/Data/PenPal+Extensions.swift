@@ -465,62 +465,124 @@ extension PenPal {
         return newPenPal
     }
     
-    static func restore(_ data: [ExportedPenPal], to context: NSManagedObjectContext, saving: Bool = true) -> ImportResult {
-        let allPenPals = Dictionary(grouping: Self.fetchAll(from: context)) { $0.id ?? UUID() }
-        var penpalCount: Int = 0
+    static func restore(_ data: [ExportedPenPal], to context: NSManagedObjectContext, usingArchive archiveDirectory: URL, overwritingExistingData: Bool = false, saving: Bool = true) -> ImportResult {
+        var penPalCount: Int = 0
         var eventCount: Int = 0
         var photoCount: Int = 0
+        
+        let existingPenPals = Self.fetchAll(from: context).reduce(into: [UUID: PenPal]()) { grouping, item in
+            guard let id = item.id else { return }
+            grouping[id] = item
+        }
+        
         for importItem in data {
-            let penpal: PenPal
-            var penpalEvents: [UUID: [Event]] = [:]
+            let penPal: PenPal
+            var penPalEvents: [UUID: Event] = [:]
             
-            if let existingPenpal = allPenPals[importItem.id]?.first {
-                // Find existing penpal
-                penpal = existingPenpal
-                penpalEvents = Dictionary(grouping: existingPenpal.events(from: context)) { $0.id ?? UUID() }
+            appLogger.debug("Importing \(importItem.name)")
+            
+            if let existingPenPal = existingPenPals[importItem.id] {
+                appLogger.debug("Existing PenPal found")
+                penPal = existingPenPal
+                penPalEvents = existingPenPal.events(from: context).reduce(into: [UUID: Event]()) { grouping, item in
+                    guard let id = item.id else { return }
+                    grouping[id] = item
+                }
+                if overwritingExistingData {
+                    appLogger.debug("Overwriting...")
+                    penPal.name = importItem.name
+                    penPal.initials = importItem.initials
+                    penPal.notes = importItem.notes
+                    penPal.archived = importItem.archived
+                    penPal.image = importItem.loadImage(fromArchive: archiveDirectory)
+                }
             } else {
-                // Create new penpal
-                penpal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: nil, notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
+                appLogger.debug("Not found locally, creating...")
+                penPal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.loadImage(fromArchive: archiveDirectory), notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
             }
-            penpalCount += 1
+            penPalCount += 1
             
             for event in importItem.events {
-                // Ignore events where we don't recognise the type
                 guard let eventType = EventType(rawValue: event.type), let letterType = LetterType(rawValue: event.letterType) else { continue }
                 
-                // Find existing event and associated photos
-                let existingEvent = penpalEvents[event.id]?.first
-                var existingPhotos: [UUID: [EventPhoto]] = [:]
-                if let existingEvent = existingEvent {
-                    existingPhotos = Dictionary(grouping: existingEvent.allPhotos()) { $0.id ?? UUID() }
+                appLogger.debug("Handling event \(event.type) - \(event.date)")
+                
+                let existingEvent = penPalEvents[event.id]
+                var existingPhotos: [UUID: EventPhoto] = [:]
+                if let existingEvent {
+                    appLogger.debug("Existing Event found")
+                    existingPhotos = existingEvent.allPhotos().reduce(into: [UUID: EventPhoto]()) { grouping, item in
+                        guard let id = item.id else { return }
+                        grouping[id] = item
+                    }
+                    appLogger.debug("Photos loaded: \(existingPhotos.count)")
                 }
                 
-                // Create photo objects
                 var photos: [EventPhoto] = []
-//                for photo in event.photos {
-//                    guard let data = photo.data else { continue }
-//                    if let existingPhoto = existingPhotos[photo.id]?.first {
-//                        photos.append(existingPhoto)
-//                    } else {
-//                        photos.append(EventPhoto.from(data, id: photo.id, dateAdded: photo.dateAdded, thumbnailData: photo.thumbnailData, in: context))
-//                    }
-//                    photoCount += 1
-//                }
+                for photo in event.photos {
+                    appLogger.debug("Handling photo \(photo.id)")
+                    if let existingPhoto = existingPhotos[photo.id] {
+                        appLogger.debug("Existing EventPhoto found")
+                        if overwritingExistingData, let photoData = photo.load(fromArchive: archiveDirectory) {
+                            appLogger.debug("Overwriting data...")
+                            existingPhoto.updateImage(photoData)
+                            photoCount += 1
+                        }
+                        photos.append(existingPhoto)
+                    } else {
+                        appLogger.debug("No EventPhoto found locally, creating...")
+                        if let photoData = photo.load(fromArchive: archiveDirectory) {
+                            photos.append(EventPhoto.from(photoData, id: photo.id, dateAdded: photo.dateAdded, in: context))
+                            photoCount += 1
+                        }
+                    }
+                }
                 
                 if let existingEvent = existingEvent {
+                    appLogger.debug("Updating existing Event")
                     // Update existing event with new photos
-                    existingEvent.update(type: existingEvent.type, date: existingEvent.wrappedDate, notes: existingEvent.notes, pen: existingEvent.pen, ink: existingEvent.ink, paper: existingEvent.paper, letterType: existingEvent.letterType, ignore: existingEvent.ignore, trackingReference: existingEvent.trackingReference, withPhotos: photos, in: context, recalculatePenPalEvent: false, saving: false)
+                    existingEvent.update(
+                        type: overwritingExistingData ? eventType : existingEvent.type,
+                        date: overwritingExistingData ? event.date : existingEvent.wrappedDate,
+                        notes: overwritingExistingData ? event.notes : existingEvent.notes,
+                        pen: overwritingExistingData ? event.pen : existingEvent.pen,
+                        ink: overwritingExistingData ? event.ink : existingEvent.ink,
+                        paper: overwritingExistingData ? event.paper : existingEvent.paper,
+                        letterType: overwritingExistingData ? letterType : existingEvent.letterType,
+                        ignore: overwritingExistingData ? event.ignore : existingEvent.ignore,
+                        trackingReference: overwritingExistingData ? event.trackingReference : existingEvent.trackingReference,
+                        withPhotos: photos,
+                        in: context,
+                        recalculatePenPalEvent: false,
+                        saving: false
+                    )
                 } else {
+                    appLogger.debug("Adding new Event")
                     // Add new event
-                    penpal.addEvent(id: event.id, ofType: eventType, date: event.date, notes: event.notes, pen: event.pen, ink: event.ink, paper: event.paper, letterType: letterType, ignore: event.ignore, trackingReference: event.trackingReference, withPhotos: photos, in: context, recalculatePenPalEvent: false, saving: false)
+                    penPal.addEvent(
+                        id: event.id,
+                        ofType: eventType,
+                        date: event.date,
+                        notes: event.notes,
+                        pen: event.pen,
+                        ink: event.ink,
+                        paper: event.paper,
+                        letterType: letterType,
+                        ignore: event.ignore,
+                        trackingReference: event.trackingReference,
+                        withPhotos: photos,
+                        in: context,
+                        recalculatePenPalEvent: false,
+                        saving: false
+                    )
                 }
                 eventCount += 1
+                
             }
-            penpal.updateLastEventType(saving: false, in: context)
+            penPal.updateLastEventType(saving: false, in: context)
         }
-        if saving {
-            PersistenceController.shared.save(context: context)
-        }
-        return ImportResult(stationeryCount: 0, penPalCount: penpalCount, eventCount: eventCount, photoCount: photoCount)
+        
+        if saving { PersistenceController.shared.save(context: context) }
+        return ImportResult(stationeryCount: 0, penPalCount: penPalCount, eventCount: eventCount, photoCount: photoCount)
     }
 }

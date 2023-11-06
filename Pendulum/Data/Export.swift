@@ -6,20 +6,27 @@
 //
 
 import Foundation
+import AppleArchive
+import System
 import CoreData
 import ZIPFoundation
 
 struct ExportedPhoto: Codable {
     let id: UUID
-//    let data: Data?
     let dateAdded: Date?
-//    let thumbnailData: Data?
     
     init(from: EventPhoto) {
         self.id = from.id ?? UUID()
-//        self.data = from.data
         self.dateAdded = from.dateAdded
-//        self.thumbnailData = from.thumbnailData
+    }
+    
+    func load(fromArchive archiveDirectory: URL) -> Data? {
+        do {
+            return try Data(contentsOf: archiveDirectory.appendingPathComponent("photo-\(id.uuidString)").appendingPathExtension("png"))
+        } catch {
+            appLogger.debug("Could not load photo \(id) from archive \(archiveDirectory)")
+        }
+        return nil
     }
     
 }
@@ -60,7 +67,6 @@ struct ExportedPenPal: Codable {
     let notes: String?
     let events: [ExportedEvent]
     let archived: Bool
-//    let image: Data?
     
     init(from: PenPal, in context: NSManagedObjectContext) {
         self.id = from.id ?? UUID()
@@ -68,8 +74,16 @@ struct ExportedPenPal: Codable {
         self.initials = from.wrappedInitials
         self.notes = from.notes
         self.archived = from.archived
-//        self.image = from.image
         self.events = from.events(from: context).map { ExportedEvent(from: $0) }
+    }
+    
+    func loadImage(fromArchive archiveDirectory: URL) -> Data? {
+        do {
+            return try Data(contentsOf: archiveDirectory.appendingPathComponent("penpal-\(id.uuidString)").appendingPathExtension("png"))
+        } catch {
+            appLogger.debug("Could not load contact image \(id) from archive \(archiveDirectory)")
+        }
+        return nil
     }
     
 }
@@ -123,9 +137,6 @@ struct Export: Codable {
     
     func export() throws -> URL {
         
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "yyyy-MM-dd"
         let fileName = name
         
         // Create temporary directory
@@ -156,37 +167,14 @@ struct Export: Codable {
         
         // Create temporary export ZIP file
         let tmpURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName).appendingPathExtension("zip")
-        print("BEN: \(tmpURL)")
-        
         try? FileManager.default.removeItem(at: tmpURL)
+        try FileManager.default.zipItem(at: directoryURL, to: tmpURL)
         
-        // Zip the contents of the directory
-        var error: NSError?
-        let coordinator = NSFileCoordinator()
-        coordinator.coordinate(readingItemAt: directoryURL, options: [.forUploading], error: &error) { zipurl in
-            try! FileManager.default.moveItem(at: zipurl, to: tmpURL)
-            print("BEN: Zipped!")
-        }
-        
-        // Return the URL of the temporary ZIP file
         return tmpURL
         
     }
     
-    static func restore(from data: Data, to context: NSManagedObjectContext) throws -> ImportResult {
-        let decoder = JSONDecoder()
-        let importData = try decoder.decode(Self.self, from: data)
-        let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
-        let penpalRestore = PenPal.restore(importData.penpals, to: context, saving: false)
-        PersistenceController.shared.save(context: context)
-        return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
-    }
-    
-    static func restore(from url: URL, to context: NSManagedObjectContext) throws -> ImportResult {
-        var stationeryCount: Int = 0
-        var penPalCount: Int = 0
-        var eventCount: Int = 0
-        var photoCount: Int = 0
+    static func restore(from url: URL, to context: NSManagedObjectContext, overwritingExistingData: Bool = false) throws -> ImportResult {
         if url.startAccessingSecurityScopedResource() {
             print("BEN: Got URL: \(url)")
             let temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("restore")
@@ -201,18 +189,20 @@ struct Export: Codable {
                 let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
                 let decoder = JSONDecoder()
                 let importData = try decoder.decode(Self.self, from: Data(contentsOf: dataFile))
-                print("BEN: import: \(importData)")
                 
-                stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
+                let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
+                let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
                 
                 PersistenceController.shared.save(context: context)
                 
+                return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
+                
             } else {
-                print("BEN: No folder inside ZIP file")
+                appLogger.error("No folder found inside ZIP file")
             }
             
         }
-        return ImportResult(stationeryCount: stationeryCount, penPalCount: penPalCount, eventCount: eventCount, photoCount: photoCount)
+        return ImportResult(stationeryCount: 0, penPalCount: 0, eventCount: 0, photoCount: 0)
     }
     
 }

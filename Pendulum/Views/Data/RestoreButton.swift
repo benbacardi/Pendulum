@@ -24,32 +24,46 @@ struct RestoreButton: View {
     @State private var importState: ImportState = .pending
     @State private var importResult: ImportResult? = nil
     @State private var showImportResult: Bool = false
+    @State private var overwrite: Bool = false
+    
+    var footerText: String {
+        var string = "Import data from a previously exported backup file. The backup will be merged with the existing data in the app,"
+        if !overwrite {
+            string = "\(string) not"
+        }
+        return "\(string) updating any duplicate Pen Pals and events."
+    }
     
     var body: some View {
-        Button(action: restore) {
-            HStack {
-                Text("Restore from Backup")
-                Spacer()
-                switch importState {
-                case .pending:
-                    EmptyView()
-                case .inProgress:
-                    ProgressView()
-                case .successful:
-                    Image(systemName: "checkmark")
-                        .foregroundStyle(Color.green)
-                case .error:
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundStyle(Color.red)
+        Section {
+            Button(action: restore) {
+                HStack {
+                    Text("Restore from Backup…")
+                    Spacer()
+                    switch importState {
+                    case .pending:
+                        EmptyView()
+                    case .inProgress:
+                        ProgressView()
+                    case .successful:
+                        Image(systemName: "checkmark")
+                            .foregroundStyle(Color.green)
+                    case .error:
+                        Image(systemName: "exclamationmark.triangle")
+                            .foregroundStyle(Color.red)
+                    }
                 }
             }
+            .disabled(importState == .inProgress)
+            Toggle("Overwrite Duplicates", isOn: $overwrite)
+        } footer: {
+            Text(footerText)
         }
-        .disabled(importState == .inProgress)
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.zip]) { result in
             switch result {
             case .success(let file):
                 do {
-                    self.importResult = try Export.restore(from: file, to: moc)
+                    self.importResult = try Export.restore(from: file, to: moc, overwritingExistingData: self.overwrite)
                     self.showImportResult = true
                 } catch {
                     appLogger.error("Could not restore from file: \(error.localizedDescription)")
@@ -65,7 +79,7 @@ struct RestoreButton: View {
             }
         }
         .alert("Restore Complete", isPresented: $showImportResult, presenting: importResult) { importResult in
-                
+            
         } message: { importResult in
             Text("Restored ^[\(importResult.penPalCount) Pen Pal](inflect: true), ^[\(importResult.eventCount) event](inflect: true), ^[\(importResult.photoCount) photo](inflect: true), and ^[\(importResult.stationeryCount) stationery item](inflect: true).")
         }
@@ -87,8 +101,4 @@ struct RestoreButton: View {
         }
     }
     
-}
-
-#Preview {
-    RestoreButton()
 }
