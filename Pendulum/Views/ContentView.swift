@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ContentView: View {
     
-    @State private var selectedTab: Tab = .settings
+    @State private var selectedTab: Tab = .penPalList
     @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController

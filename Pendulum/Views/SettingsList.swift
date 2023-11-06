@@ -69,72 +69,72 @@ struct SettingsList: View {
         NavigationView {
             Form {
                 
-//                if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
-//                    Section(footer: Text("Without Notification permissions, Pendulum will be unable to send reminders or display an icon badge.")) {
-//                        Button(role: .destructive, action: {
-//                            if let url = UIApplication.systemSettingsURL {
-//                                openURL(url)
-//                            }
-//                        }) {
-//                            HStack {
-//                                Image(systemName: "exclamationmark.octagon.fill")
-//                                Text("Enable Notifications in Settings")
-//                                    .fullWidth()
-//                            }
-//                        }
-//                    }
-//                }
-//                
-//                Section(
-//                    header: HStack {
-//                        Image(systemName: "bell")
-//                        Text("Notifications")
-//                        Spacer()
-//                    },
-//                    footer: Text("Reminders will be sent seven days after you receive a letter, and daily at the specified time after you've written back but not yet posted the response.")
-//                ) {
-//                    Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
-//                    Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
-//                        .disabled(!appPreferences.trackPostingLetters)
-//                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
-//                    if sendRemindersToPostLetters {
-//                        HStack {
-//                            Image(systemName: "arrow.turn.down.right")
-//                            DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
-//                                .disabled(!appPreferences.trackPostingLetters)
-//                        }
-//                        .padding(.leading, 4)
-//                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
-//                    }
-//                }
-//                
-//                Section(header: HStack {
-//                    Image(systemName: "app.badge")
-//                    Text("Icon Badges")
-//                    Spacer()
-//                }) {
-//                    Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
-//                    Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
-//                        .disabled(!appPreferences.trackPostingLetters)
-//                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
-//                }
-//                
-//                Section {
-//                    NavigationLink(destination: StatsView()) {
-//                        Text("Statistics")
-//                    }
-//                    .disabled(!showStatsLink)
-//                }
-//                
-//                Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
-//                    Toggle("Track posting letters", isOn: $appPreferences.trackPostingLetters)
-//                    Toggle("Sort Pen Pals alphabetically", isOn: $sortPenPalsAlphabetically)
-//                    Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
-//                }
-//                
-//                Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
-//                    Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
-//                }
+                if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
+                    Section(footer: Text("Without Notification permissions, Pendulum will be unable to send reminders or display an icon badge.")) {
+                        Button(role: .destructive, action: {
+                            if let url = UIApplication.systemSettingsURL {
+                                openURL(url)
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "exclamationmark.octagon.fill")
+                                Text("Enable Notifications in Settings")
+                                    .fullWidth()
+                            }
+                        }
+                    }
+                }
+                
+                Section(
+                    header: HStack {
+                        Image(systemName: "bell")
+                        Text("Notifications")
+                        Spacer()
+                    },
+                    footer: Text("Reminders will be sent seven days after you receive a letter, and daily at the specified time after you've written back but not yet posted the response.")
+                ) {
+                    Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
+                    Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
+                        .disabled(!appPreferences.trackPostingLetters)
+                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                    if sendRemindersToPostLetters {
+                        HStack {
+                            Image(systemName: "arrow.turn.down.right")
+                            DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
+                                .disabled(!appPreferences.trackPostingLetters)
+                        }
+                        .padding(.leading, 4)
+                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                    }
+                }
+                
+                Section(header: HStack {
+                    Image(systemName: "app.badge")
+                    Text("Icon Badges")
+                    Spacer()
+                }) {
+                    Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
+                    Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
+                        .disabled(!appPreferences.trackPostingLetters)
+                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                }
+                
+                Section {
+                    NavigationLink(destination: StatsView()) {
+                        Text("Statistics")
+                    }
+                    .disabled(!showStatsLink)
+                }
+                
+                Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
+                    Toggle("Track posting letters", isOn: $appPreferences.trackPostingLetters)
+                    Toggle("Sort Pen Pals alphabetically", isOn: $sortPenPalsAlphabetically)
+                    Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
+                }
+                
+                Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
+                    Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
+                }
                 
                 Section {
                     NavigationLink(destination: BackupAndRestoreView()) {
