@@ -11,7 +11,7 @@ import UniformTypeIdentifiers
 
 struct Backup: Transferable {
     let url: URL
-    let name: String
+    var name: String { url.lastPathComponent }
     static var transferRepresentation: some TransferRepresentation {
         FileRepresentation(exportedContentType: .zip) { backup in
             SentTransferredFile(backup.url)
@@ -32,14 +32,23 @@ struct ExportButton: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
+    @Binding var backup: Backup?
+    
     @State private var exportState: ExportState = .pending
-    @State private var backup: Backup? = nil
+    @State private var showSuccessAlert: Bool = false
+    @State private var showOverwriteConfirmation: Bool = false
     
     var body: some View {
         Section {
-            Button(action: export) {
+            Button(action: {
+                if backup != nil {
+                    showOverwriteConfirmation = true
+                } else {
+                    export()
+                }
+            }) {
                 HStack {
-                    Text("Generate Backup File…")
+                    Text("Generate Backup Archive…")
                     Spacer()
                     switch exportState {
                     case .pending, .successful:
@@ -58,9 +67,16 @@ struct ExportButton: View {
                     HStack {
                         VStack {
                             Text(backup.name)
+                                .lineLimit(1)
                                 .fullWidth()
                                 .foregroundStyle(Color.primary)
-                            Text(backup.url.fileSizeString)
+                            Group {
+                                if let date = backup.url.creationDate {
+                                    Text("\(backup.url.fileSizeString) - ") + Text(date, format: .dateTime)
+                                } else {
+                                    Text(backup.url.fileSizeString)
+                                }
+                            }
                                 .font(.caption)
                                 .fullWidth()
                                 .foregroundStyle(Color.secondary)
@@ -78,6 +94,7 @@ struct ExportButton: View {
                                     try? FileManager.default.removeItem(at: backupUrl)
                                 }
                                 self.backup = nil
+                                UserDefaults.shared.exportURL = nil
                             }
                         }
                     }, label: {
@@ -87,6 +104,27 @@ struct ExportButton: View {
             }
         } footer: {
             Text("Pendulum will export an archive file containing all your Pen Pal data, including logged events, stationery, and photos. This archive can be used to import your data back into the app at a later date. It can be quite large if you have many photos within the app.")
+        }
+        .onChange(of: exportState) { newValue in
+            if newValue == .successful {
+                showSuccessAlert = true
+            }
+        }
+        .alert("Backup file generated!", isPresented: $showSuccessAlert) {
+        } message: {
+            Text("The archive will be available in the app, or you can save it elsewhere for safe keeping.")
+        }
+        .alert("Are you sure?", isPresented: $showOverwriteConfirmation) {
+            Button("Continue") {
+                export()
+            }
+            Button("Cancel", role: .cancel) {}
+        } message: {
+            if let backup = backup, let date = backup.url.creationDate {
+                Text("This will overwrite the previous backup archive, created ") + Text(date, format: .dateTime) + Text(".")
+            } else {
+                Text("")
+            }
         }
     }
     
@@ -108,7 +146,8 @@ struct ExportButton: View {
             do {
                 let exportURL = try export.export()
                 withAnimation {
-                    self.backup = Backup(url: exportURL, name: export.name)
+                    self.backup = Backup(url: exportURL)
+                    UserDefaults.shared.exportURL = exportURL
                 }
                 self.changeExportState(to: .successful)
             } catch {
@@ -122,7 +161,7 @@ struct ExportButton: View {
 
 #Preview {
     Form {
-        ExportButton()
+        ExportButton(backup: .constant(nil))
             .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
     }
 }

@@ -20,11 +20,16 @@ struct RestoreButton: View {
     @Environment(\.managedObjectContext) var moc
     
     // MARK: State
+    @Binding var backup: Backup?
+    
     @State private var showFileImporter: Bool = false
     @State private var importState: ImportState = .pending
     @State private var importResult: ImportResult? = nil
     @State private var showImportResult: Bool = false
     @State private var overwrite: Bool = false
+    @State private var lastArchive: URL? = nil
+    
+    @State private var showBackupChoice: Bool = false
     
     var footerText: String {
         var string = "Import data from a previously exported backup file. The backup will be merged with the existing data in the app,"
@@ -41,13 +46,10 @@ struct RestoreButton: View {
                     Text("Restore from Backup…")
                     Spacer()
                     switch importState {
-                    case .pending:
+                    case .pending, .successful:
                         EmptyView()
                     case .inProgress:
                         ProgressView()
-                    case .successful:
-                        Image(systemName: "checkmark")
-                            .foregroundStyle(Color.green)
                     case .error:
                         Image(systemName: "exclamationmark.triangle")
                             .foregroundStyle(Color.red)
@@ -62,13 +64,7 @@ struct RestoreButton: View {
         .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.zip]) { result in
             switch result {
             case .success(let file):
-                do {
-                    self.importResult = try Export.restore(from: file, to: moc, overwritingExistingData: self.overwrite)
-                    self.showImportResult = true
-                } catch {
-                    appLogger.error("Could not restore from file: \(error.localizedDescription)")
-                    self.changeImportState(to: .error)
-                }
+                importURL(file)
             case .failure(let error):
                 print(error.localizedDescription)
             }
@@ -83,11 +79,45 @@ struct RestoreButton: View {
         } message: { importResult in
             Text("Restored ^[\(importResult.penPalCount) Pen Pal](inflect: true), ^[\(importResult.eventCount) event](inflect: true), ^[\(importResult.photoCount) photo](inflect: true), and ^[\(importResult.stationeryCount) stationery item](inflect: true).")
         }
+        .confirmationDialog("Choose an archive", isPresented: $showBackupChoice, titleVisibility: .visible) {
+            if let backup = backup {
+                Button(action: {
+                    importURL(backup.url)
+                }) {
+                    if let date = backup.url.creationDate {
+                        Text(date, format: .dateTime)
+                    } else {
+                        Text(backup.name)
+                    }
+                }
+            }
+            Button(action: {
+                self.showFileImporter = true
+            }) {
+                Text("Choose from Files")
+            }
+            Button("Cancel", role: .cancel) { self.changeImportState(to: .pending) }
+        }
+    }
+    
+    func importURL(_ url: URL) {
+        do {
+            self.importResult = try Export.restore(from: url, to: moc, overwritingExistingData: self.overwrite)
+            self.showImportResult = true
+            self.changeImportState(to: .successful)
+        } catch {
+            appLogger.error("Could not restore from file: \(error.localizedDescription)")
+            self.changeImportState(to: .error)
+        }
     }
     
     func restore() {
         self.importState = .inProgress
-        self.showFileImporter = true
+        if backup == nil {
+            self.showFileImporter = true
+        } else {
+            self.showBackupChoice = true
+        }
     }
     
     func changeImportState(to state: ImportState, revert: Bool = true) {
