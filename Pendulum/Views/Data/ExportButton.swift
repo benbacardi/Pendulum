@@ -62,6 +62,27 @@ struct ExportButton: View {
                 }
             }
             .disabled(exportState == .inProgress)
+            .onChange(of: exportState) { newValue in
+                if newValue == .successful {
+                    showSuccessAlert = true
+                }
+            }
+            .alert("Backup file generated!", isPresented: $showSuccessAlert) {
+            } message: {
+                Text("The archive will be available in the app, or you can save it elsewhere for safe keeping.")
+            }
+            .alert("Are you sure?", isPresented: $showOverwriteConfirmation) {
+                Button("Continue") {
+                    export()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                if let backup = backup, let date = backup.url.creationDate {
+                    Text("This will overwrite the previous backup archive, created ") + Text(date, format: .dateTime) + Text(".")
+                } else {
+                    Text("")
+                }
+            }
             if exportState != .inProgress, let backup = backup {
                 ShareLink(item: backup, preview: .init(backup.name, image: Image(.pendulum))) {
                     HStack {
@@ -77,9 +98,9 @@ struct ExportButton: View {
                                     Text(backup.url.fileSizeString)
                                 }
                             }
-                                .font(.caption)
-                                .fullWidth()
-                                .foregroundStyle(Color.secondary)
+                            .font(.caption)
+                            .fullWidth()
+                            .foregroundStyle(Color.secondary)
                         }
                         Image(systemName: "arrow.down.circle")
                             .font(.title2)
@@ -96,29 +117,10 @@ struct ExportButton: View {
                     })
                 }
             }
+        } header: {
+            Text("Backup")
         } footer: {
-            Text("Pendulum will export an archive file containing all your Pen Pal data, including logged events, stationery, and photos. This archive can be used to import your data back into the app at a later date. It can be quite large if you have many photos within the app.")
-        }
-        .onChange(of: exportState) { newValue in
-            if newValue == .successful {
-                showSuccessAlert = true
-            }
-        }
-        .alert("Backup file generated!", isPresented: $showSuccessAlert) {
-        } message: {
-            Text("The archive will be available in the app, or you can save it elsewhere for safe keeping.")
-        }
-        .alert("Are you sure?", isPresented: $showOverwriteConfirmation) {
-            Button("Continue") {
-                export()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            if let backup = backup, let date = backup.url.creationDate {
-                Text("This will overwrite the previous backup archive, created ") + Text(date, format: .dateTime) + Text(".")
-            } else {
-                Text("")
-            }
+            Text("Pendulum will create an archive file containing all your Pen Pal data, including logged events, stationery, and photos. This archive can be used to import your data back into the app at a later date. It can be quite large if you have many photos within the app.")
         }
     }
     

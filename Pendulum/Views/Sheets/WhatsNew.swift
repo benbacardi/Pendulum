@@ -11,16 +11,20 @@ struct WhatsNewGridRow: View {
     
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
-    let icon: String
-    let iconColor: Color
+    var icon: String? = nil
+    var iconColor: Color? = nil
     let title: String
     let summary: String
     
     @ViewBuilder
     var iconView: some View {
-        Image(systemName: icon)
-            .font(.title)
-            .foregroundColor(iconColor)
+        if let icon {
+            Image(systemName: icon)
+                .font(.title)
+                .foregroundColor(iconColor ?? .primary)
+        } else {
+            EmptyView()
+        }
     }
     
     var body: some View {
@@ -56,6 +60,9 @@ struct WhatsNew: View {
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
             WhatsNewGridRow(icon: "arrow.down.circle", iconColor: .pink, title: "Backup and Restore", summary: "From Settings, you can now generate an archive of your current data—including Pen Pals, events, photos, and stationery—that can be restored at any point.")
+            GroupBox {
+                WhatsNewGridRow(title: "Just so you know…", summary: "An initial archive has been created for you already. If you need to free up storage or do not wish to keep it around, it can be exported or deleted from the Backup and Restore settings.")
+            }
         }
         .padding(.horizontal, 20)
         .padding(.top, 30)

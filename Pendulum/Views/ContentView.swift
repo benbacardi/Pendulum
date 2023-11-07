@@ -9,6 +9,8 @@ import SwiftUI
 
 struct ContentView: View {
     
+    @Environment(\.managedObjectContext) var moc
+    
     @State private var selectedTab: Tab = .penPalList
     @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
@@ -42,6 +44,12 @@ struct ContentView: View {
             if lastLaunchedVersion != Bundle.main.appBuildNumber {
                 showWhatsNewOverlay = true
                 lastLaunchedVersion = Bundle.main.appBuildNumber
+            }
+            if !UserDefaults.shared.hasGeneratedInitialBackup && UserDefaults.shared.exportURL == nil {
+                UserDefaults.shared.hasGeneratedInitialBackup = true
+                Task {
+                    UserDefaults.shared.exportURL = try? Export(from: moc).export()
+                }
             }
         }
     }
