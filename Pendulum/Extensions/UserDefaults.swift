@@ -26,7 +26,9 @@ extension UserDefaults {
         
         case hasPerformedCoreDataMigrationToAppGroup
         case shouldShowDebugView
+        
         case exportURL
+        case hasGeneratedInitialBackup
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -35,9 +37,17 @@ extension UserDefaults {
         get {
             guard let fileName = string(forKey: Key.exportURL.rawValue) else { return nil }
             guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
-            return directory.appendingPathComponent(fileName)
+            let fileURL = directory.appendingPathComponent(fileName)
+            guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
+            return fileURL
         }
         set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL.rawValue) }
+    }
+    
+    @objc
+    var hasGeneratedInitialBackup: Bool {
+        get { bool(forKey: Key.hasGeneratedInitialBackup.rawValue) }
+        set { setValue(newValue, forKey: Key.hasGeneratedInitialBackup.rawValue) }
     }
     
     @objc

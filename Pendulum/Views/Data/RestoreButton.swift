@@ -58,6 +58,8 @@ struct RestoreButton: View {
             }
             .disabled(importState == .inProgress)
             Toggle("Overwrite Duplicates", isOn: $overwrite)
+        } header: {
+            Text("Restore")
         } footer: {
             Text(footerText)
         }
