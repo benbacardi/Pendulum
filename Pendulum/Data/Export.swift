@@ -141,13 +141,13 @@ struct Export: Codable {
         
         // Create temporary directory
         let directoryURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        print("BEN: \(directoryURL)")
+        appLogger.debug("\(directoryURL)")
         try? FileManager.default.removeItem(atPath: directoryURL.path(percentEncoded: false))
         try FileManager.default.createDirectory(atPath: directoryURL.path(percentEncoded: false), withIntermediateDirectories: true)
         
         // Save JSON data
         let jsonFilePath = directoryURL.appendingPathComponent("data").appendingPathExtension("json")
-        print("BEN: \(jsonFilePath)")
+        appLogger.debug("\(jsonFilePath)")
         let jsonData = try self.asJSON()
         try jsonData.write(to: jsonFilePath)
         
@@ -171,7 +171,7 @@ struct Export: Codable {
         try FileManager.default.zipItem(at: directoryURL, to: zipURL)
         try? FileManager.default.removeItem(at: directoryURL)
         
-        print("BEN: Saved to \(zipURL)")
+        appLogger.debug("Saved to \(zipURL)")
         
         return zipURL
         
@@ -179,9 +179,9 @@ struct Export: Codable {
     
     static func restore(from url: URL, to context: NSManagedObjectContext, overwritingExistingData: Bool = false) throws -> ImportResult {
         if url.startAccessingSecurityScopedResource() {
-            print("BEN: Got URL: \(url)")
+            appLogger.debug("Got URL: \(url)")
             let temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("restore")
-            print("BEN: Destination: \(temporaryDirectory)")
+            appLogger.debug("Destination: \(temporaryDirectory)")
             try? FileManager.default.removeItem(at: temporaryDirectory)
             
             try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
