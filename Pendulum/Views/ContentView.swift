@@ -48,7 +48,8 @@ struct ContentView: View {
             if !UserDefaults.shared.hasGeneratedInitialBackup && UserDefaults.shared.exportURL == nil {
                 UserDefaults.shared.hasGeneratedInitialBackup = true
                 Task {
-                    UserDefaults.shared.exportURL = try? Export(from: moc).export()
+                    let exportService = ExportService()
+                    UserDefaults.shared.exportURL = try? exportService.export(from: moc)
                 }
             }
         }

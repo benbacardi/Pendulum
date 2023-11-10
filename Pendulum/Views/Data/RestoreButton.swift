@@ -103,8 +103,9 @@ struct RestoreButton: View {
     }
     
     func importURL(_ url: URL) {
+        let exportService = ExportService()
         do {
-            self.importResult = try Export.restore(from: url, to: moc, overwritingExistingData: self.overwrite)
+            self.importResult = try exportService.restore(from: url, to: moc, overwritingExistingData: self.overwrite)
             self.showImportResult = true
             self.changeImportState(to: .successful)
         } catch {
