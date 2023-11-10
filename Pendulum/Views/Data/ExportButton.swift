@@ -151,9 +151,9 @@ struct ExportButton: View {
     func export() {
         exportState = .inProgress
         Task {
-            let export = Export(from: moc)
+            let exportService = ExportService()
             do {
-                let exportURL = try export.export()
+                let exportURL = try exportService.export(from: moc)
                 withAnimation {
                     self.backup = Backup(url: exportURL)
                     UserDefaults.shared.exportURL = exportURL

@@ -122,51 +122,60 @@ struct Export: Codable {
         self.stationery = Stationery.fetch(from: context).map { ExportedStationery(from: $0) }
         self.context = context
     }
+}
+
+enum ExportRestoreError: Error {
+    case fileSystemError
+    case invalidFormat
+}
+
+class ExportService {
+    let encoder: JSONEncoder
+    let decoder: JSONDecoder
+    let name: String
     
-    func asJSON() throws -> Data {
-        let encoder = JSONEncoder()
-        return try encoder.encode(self)
+    init(encoder: JSONEncoder = .init(), decoder: JSONDecoder = .init(), name: String? = nil) {
+        self.encoder = encoder
+        self.decoder = decoder
+        if let name {
+            self.name = name
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "en_US")
+            dateFormatter.dateFormat = "yyyy-MM-dd"
+            self.name =  "PendulumExport-\(dateFormatter.string(from: .now))"
+        }
     }
     
-    var name: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.locale = Locale(identifier: "en_US")
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return "PendulumExport-\(dateFormatter.string(from: .now))"
-    }
-    
-    func export() throws -> URL {
-        
-        let fileName = name
-        
+    func export(from context: NSManagedObjectContext) throws -> URL {
         // Create temporary directory
-        let directoryURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-        appLogger.debug("\(directoryURL)")
+        let directoryURL = FileManager.default.temporaryDirectory.appendingPathComponent(self.name)
+        appLogger.debug("Temporary export directory: \(directoryURL)")
         try? FileManager.default.removeItem(atPath: directoryURL.path(percentEncoded: false))
         try FileManager.default.createDirectory(atPath: directoryURL.path(percentEncoded: false), withIntermediateDirectories: true)
         
         // Save JSON data
         let jsonFilePath = directoryURL.appendingPathComponent("data").appendingPathExtension("json")
-        appLogger.debug("\(jsonFilePath)")
-        let jsonData = try self.asJSON()
+        appLogger.debug("JSON data file: \(jsonFilePath)")
+        
+        let exportData = Export(from: context)
+        let jsonData = try self.encoder.encode(exportData)
         try jsonData.write(to: jsonFilePath)
         
         // Save PenPal photos
-        if let context {
-            for penpal in PenPal.fetchAll(from: context) {
-                guard let id = penpal.id, let imageData = penpal.image else { continue }
-                let filepath = directoryURL.appendingPathComponent("penpal-\(id.uuidString)").appendingPathExtension("png")
-                try? imageData.write(to: filepath)
-            }
-            for photo in EventPhoto.fetch(from: context) {
-                guard let id = photo.id, let imageData = photo.data else { continue }
-                let filepath = directoryURL.appendingPathComponent("photo-\(id.uuidString)").appendingPathExtension("png")
-                try? imageData.write(to: filepath)
-            }
+        for penpal in PenPal.fetchAll(from: context) {
+            guard let id = penpal.id, let imageData = penpal.image else { continue }
+            let filepath = directoryURL.appendingPathComponent("penpal-\(id.uuidString)").appendingPathExtension("png")
+            try? imageData.write(to: filepath)
+        }
+        for photo in EventPhoto.fetch(from: context) {
+            guard let id = photo.id, let imageData = photo.data else { continue }
+            let filepath = directoryURL.appendingPathComponent("photo-\(id.uuidString)").appendingPathExtension("png")
+            try? imageData.write(to: filepath)
         }
         
         // Create export ZIP file
-        let zipURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! .appendingPathComponent(fileName).appendingPathExtension("zip")
+        let zipURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first! .appendingPathComponent(self.name).appendingPathExtension("zip")
         try? FileManager.default.removeItem(at: zipURL)
         try FileManager.default.zipItem(at: directoryURL, to: zipURL)
         try? FileManager.default.removeItem(at: directoryURL)
@@ -174,24 +183,41 @@ struct Export: Codable {
         appLogger.debug("Saved to \(zipURL)")
         
         return zipURL
-        
     }
     
-    static func restore(from url: URL, to context: NSManagedObjectContext, overwritingExistingData: Bool = false) throws -> ImportResult {
+    func restore(from url: URL, to context: NSManagedObjectContext, overwritingExistingData: Bool = false) throws -> ImportResult {
         if url.startAccessingSecurityScopedResource() {
             appLogger.debug("Got URL: \(url)")
+            
             let temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("restore")
             appLogger.debug("Destination: \(temporaryDirectory)")
             try? FileManager.default.removeItem(at: temporaryDirectory)
             
-            try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
-            try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
+            do {
+                try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
+            } catch {
+                throw ExportRestoreError.fileSystemError
+            }
+            
+            do {
+                try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
+            } catch {
+                throw ExportRestoreError.invalidFormat
+            }
             
             if let folderName = try FileManager.default.contentsOfDirectory(atPath: temporaryDirectory.path).first {
+                
                 let containingFolder = temporaryDirectory.appendingPathComponent(folderName)
                 let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
                 let decoder = JSONDecoder()
-                let importData = try decoder.decode(Self.self, from: Data(contentsOf: dataFile))
+                
+                let importData: Export
+                
+                do {
+                    importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
+                } catch {
+                    throw ExportRestoreError.invalidFormat
+                }
                 
                 let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
                 let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
@@ -202,10 +228,11 @@ struct Export: Codable {
                 
             } else {
                 appLogger.error("No folder found inside ZIP file")
+                throw ExportRestoreError.invalidFormat
             }
             
         }
-        return ImportResult(stationeryCount: 0, penPalCount: 0, eventCount: 0, photoCount: 0)
+        throw ExportRestoreError.fileSystemError
     }
     
 }
