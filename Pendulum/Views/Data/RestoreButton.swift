@@ -57,48 +57,48 @@ struct RestoreButton: View {
                 }
             }
             .disabled(importState == .inProgress)
+            .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.zip]) { result in
+                switch result {
+                case .success(let file):
+                    importURL(file)
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+            .onChange(of: showFileImporter) { newValue in
+                if !showFileImporter && self.importState == .inProgress {
+                    self.importState = .pending
+                }
+            }
+            .alert("Restore Complete", isPresented: $showImportResult, presenting: importResult) { importResult in
+                
+            } message: { importResult in
+                Text("Restored ^[\(importResult.penPalCount) Pen Pal](inflect: true), ^[\(importResult.eventCount) event](inflect: true), ^[\(importResult.photoCount) photo](inflect: true), and ^[\(importResult.stationeryCount) stationery item](inflect: true).")
+            }
+            .confirmationDialog("Choose an archive", isPresented: $showBackupChoice, titleVisibility: .visible) {
+                if let backup = backup {
+                    Button(action: {
+                        importURL(backup.url)
+                    }) {
+                        if let date = backup.url.creationDate {
+                            Text(date, format: .dateTime)
+                        } else {
+                            Text(backup.name)
+                        }
+                    }
+                }
+                Button(action: {
+                    self.showFileImporter = true
+                }) {
+                    Text("Choose from Files")
+                }
+                Button("Cancel", role: .cancel) { self.changeImportState(to: .pending) }
+            }
             Toggle("Overwrite Duplicates", isOn: $overwrite)
         } header: {
             Text("Restore")
         } footer: {
             Text(footerText)
-        }
-        .fileImporter(isPresented: $showFileImporter, allowedContentTypes: [.zip]) { result in
-            switch result {
-            case .success(let file):
-                importURL(file)
-            case .failure(let error):
-                print(error.localizedDescription)
-            }
-        }
-        .onChange(of: showFileImporter) { newValue in
-            if !showFileImporter && self.importState == .inProgress {
-                self.importState = .pending
-            }
-        }
-        .alert("Restore Complete", isPresented: $showImportResult, presenting: importResult) { importResult in
-            
-        } message: { importResult in
-            Text("Restored ^[\(importResult.penPalCount) Pen Pal](inflect: true), ^[\(importResult.eventCount) event](inflect: true), ^[\(importResult.photoCount) photo](inflect: true), and ^[\(importResult.stationeryCount) stationery item](inflect: true).")
-        }
-        .confirmationDialog("Choose an archive", isPresented: $showBackupChoice, titleVisibility: .visible) {
-            if let backup = backup {
-                Button(action: {
-                    importURL(backup.url)
-                }) {
-                    if let date = backup.url.creationDate {
-                        Text(date, format: .dateTime)
-                    } else {
-                        Text(backup.name)
-                    }
-                }
-            }
-            Button(action: {
-                self.showFileImporter = true
-            }) {
-                Text("Choose from Files")
-            }
-            Button("Cancel", role: .cancel) { self.changeImportState(to: .pending) }
         }
     }
     
