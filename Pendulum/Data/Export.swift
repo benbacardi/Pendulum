@@ -111,17 +111,6 @@ struct ImportResult {
 struct Export: Codable {
     let penpals: [ExportedPenPal]
     let stationery: [ExportedStationery]
-    var context: NSManagedObjectContext? = nil
-    
-    enum CodingKeys: CodingKey {
-        case penpals, stationery
-    }
-    
-    init(from context: NSManagedObjectContext) {
-        self.penpals = PenPal.fetchAll(from: context).map { ExportedPenPal(from: $0, in: context) }
-        self.stationery = Stationery.fetch(from: context).map { ExportedStationery(from: $0) }
-        self.context = context
-    }
 }
 
 enum ExportRestoreError: Error {
@@ -158,7 +147,10 @@ class ExportService {
         let jsonFilePath = directoryURL.appendingPathComponent("data").appendingPathExtension("json")
         appLogger.debug("JSON data file: \(jsonFilePath)")
         
-        let exportData = Export(from: context)
+        let penpals = PenPal.fetchAll(from: context).map { ExportedPenPal(from: $0, in: context) }
+        let stationery = Stationery.fetch(from: context).map { ExportedStationery(from: $0) }
+        
+        let exportData = Export(penpals: penpals, stationery: stationery)
         let jsonData = try self.encoder.encode(exportData)
         try jsonData.write(to: jsonFilePath)
         
