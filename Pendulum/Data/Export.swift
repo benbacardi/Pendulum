@@ -113,9 +113,23 @@ struct Export: Codable {
     let stationery: [ExportedStationery]
 }
 
+struct ExportMetadata: Codable {
+    let majorVersion: Int
+    let minorVersion: Int
+    
+    static var currentVersion: ExportMetadata {
+        initialVersion
+    }
+    
+    static var initialVersion: ExportMetadata {
+        ExportMetadata(majorVersion: 1, minorVersion: 0)
+    }
+}
+
 enum ExportRestoreError: Error {
     case fileSystemError
     case invalidFormat
+    case unknownFormat
 }
 
 class ExportService {
@@ -142,6 +156,10 @@ class ExportService {
         appLogger.debug("Temporary export directory: \(directoryURL)")
         try? FileManager.default.removeItem(atPath: directoryURL.path(percentEncoded: false))
         try FileManager.default.createDirectory(atPath: directoryURL.path(percentEncoded: false), withIntermediateDirectories: true)
+        
+        // Save Metadata 
+        let metadataFilePath = directoryURL.appendingPathComponent("metadata").appendingPathExtension("json")
+        try self.encoder.encode(ExportMetadata.currentVersion).write(to: metadataFilePath)
         
         // Save JSON data
         let jsonFilePath = directoryURL.appendingPathComponent("data").appendingPathExtension("json")
@@ -199,24 +217,50 @@ class ExportService {
             
             if let folderName = try FileManager.default.contentsOfDirectory(atPath: temporaryDirectory.path).first {
                 
-                let containingFolder = temporaryDirectory.appendingPathComponent(folderName)
-                let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
                 let decoder = JSONDecoder()
                 
-                let importData: Export
+                let containingFolder = temporaryDirectory.appendingPathComponent(folderName)
                 
-                do {
-                    importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
-                } catch {
-                    throw ExportRestoreError.invalidFormat
+                // Fetch metadata, if it exists
+                let metadataFilePath = containingFolder.appendingPathComponent("metadata").appendingPathExtension("json")
+                
+                let metadata: ExportMetadata
+                if !FileManager.default.fileExists(atPath: metadataFilePath.path) {
+                    metadata = .initialVersion
+                } else {
+                    do {
+                        metadata = try decoder.decode(ExportMetadata.self, from: Data(contentsOf: metadataFilePath))
+                    } catch {
+                        appLogger.error("Could not read metadata file")
+                        throw ExportRestoreError.invalidFormat
+                    }
                 }
                 
-                let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
-                let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
-                
-                PersistenceController.shared.save(context: context)
-                
-                return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
+                switch(metadata.majorVersion) {
+                    
+                case 1:
+                    
+                    let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
+                    
+                    let importData: Export
+                    
+                    do {
+                        importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
+                    } catch {
+                        throw ExportRestoreError.invalidFormat
+                    }
+                    
+                    let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
+                    let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
+                    
+                    PersistenceController.shared.save(context: context)
+                    
+                    return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
+                    
+                default:
+                    throw ExportRestoreError.unknownFormat
+                    
+                }
                 
             } else {
                 appLogger.error("No folder found inside ZIP file")
