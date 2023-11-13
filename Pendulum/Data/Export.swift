@@ -42,6 +42,7 @@ struct ExportedEvent: Codable {
     let paper: String?
     let trackingReference: String?
     let ignore: Bool
+    let noFurtherActions: Bool?
     let photos: [ExportedPhoto]
     
     init(from: Event) {
@@ -54,6 +55,7 @@ struct ExportedEvent: Codable {
         self.paper = from.paper
         self.trackingReference = from.trackingReference
         self.ignore = from.ignore
+        self.noFurtherActions = from.noFurtherActions
         self.letterType = from.letterType.rawValue
         self.photos = from.allPhotos().map { ExportedPhoto(from: $0) }
     }
@@ -113,12 +115,16 @@ struct Export: Codable {
     let stationery: [ExportedStationery]
 }
 
+/// Export Metadata Versions
+/// 1.0: initial
+///     1.1: added `noFurtherActions` to `ExportedEvent`
+
 struct ExportMetadata: Codable {
     let majorVersion: Int
     let minorVersion: Int
     
     static var currentVersion: ExportMetadata {
-        initialVersion
+        ExportMetadata(majorVersion: 1, minorVersion: 1)
     }
     
     static var initialVersion: ExportMetadata {
@@ -129,7 +135,19 @@ struct ExportMetadata: Codable {
 enum ExportRestoreError: Error {
     case fileSystemError
     case invalidFormat
-    case unknownFormat
+    case unknownFormat(format: ExportMetadata)
+    
+    public var errorDescription: String? {
+        switch self {
+        case .fileSystemError:
+            return "Could not read from the filesystem"
+        case .invalidFormat:
+            return "The archive is not a valid format"
+        case .unknownFormat(let format):
+            return "The archive format of \(format) is not known"
+        }
+    }
+    
 }
 
 class ExportService {
@@ -258,7 +276,7 @@ class ExportService {
                     return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
                     
                 default:
-                    throw ExportRestoreError.unknownFormat
+                    throw ExportRestoreError.unknownFormat(format: metadata)
                     
                 }
                 
@@ -268,6 +286,7 @@ class ExportService {
             }
             
         }
+        appLogger.debug("Could not open scoped security file.")
         throw ExportRestoreError.fileSystemError
     }
     

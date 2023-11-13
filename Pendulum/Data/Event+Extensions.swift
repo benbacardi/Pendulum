@@ -58,7 +58,7 @@ extension Event {
 
 extension Event {
     
-    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
+    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, noFurtherActions: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
         self.date = date
         self.type = type
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -68,6 +68,7 @@ extension Event {
         self.trackingReference = trackingReference?.trimmingCharacters(in: .whitespacesAndNewlines)
         self.letterType = letterType
         self.ignore = ignore
+        self.noFurtherActions = noFurtherActions
         
         if let photos {
             dataLogger.debug("There are photos for the event \(self.id?.uuidString ?? "NO ID"): \(photos.count)")
