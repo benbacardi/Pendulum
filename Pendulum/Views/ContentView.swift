@@ -41,10 +41,10 @@ struct ContentView: View {
             ImageGalleryOverlay()
         }
         .onAppear {
-            if lastLaunchedVersion != Bundle.main.appBuildNumber {
-                showWhatsNewOverlay = true
-                lastLaunchedVersion = Bundle.main.appBuildNumber
-            }
+//            if lastLaunchedVersion != Bundle.main.appBuildNumber {
+//                showWhatsNewOverlay = true
+//                lastLaunchedVersion = Bundle.main.appBuildNumber
+//            }
             if !UserDefaults.shared.hasGeneratedInitialBackup && UserDefaults.shared.exportURL == nil {
                 UserDefaults.shared.hasGeneratedInitialBackup = true
                 Task {
