@@ -45,7 +45,10 @@ enum EventType: Int, CaseIterable, Identifiable {
             predicates.append(NSPredicate(format: "lastEventTypeValue = %i", rawValue))
             predicates.append(NSPredicate(format: "events.@count == 0"))
         case .nothingToDo:
-            predicates.append(NSPredicate(format: "lastEventTypeValue = %i", EventType.noEvent.rawValue))
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                NSPredicate(format: "lastEventTypeValue = %i", EventType.noEvent.rawValue),
+                NSPredicate(format: "lastEventTypeValue = %i", EventType.nothingToDo.rawValue),
+            ]))
             predicates.append(NSPredicate(format: "events.@count > 0"))
         default:
             predicates.append(NSPredicate(format: "lastEventTypeValue = %i", rawValue))

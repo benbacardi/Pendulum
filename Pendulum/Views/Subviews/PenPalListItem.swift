@@ -40,16 +40,14 @@ struct PenPalListItem: View {
                     .font(.headline)
                     .fullWidth()
                 if !penpal.archived && asListItem {
-                    if let lastEventDate = penpal.lastEventDate  {
+                    if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
+                        Text("\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))")
+                            .font(.caption)
+                            .fullWidth()
+                    } else if let lastEventDate = penpal.lastEventDate {
                         Text("\(penpal.lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))")
                             .font(.caption)
                             .fullWidth()
-                    } else {
-                        if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
-                            Text("\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))")
-                                .font(.caption)
-                                .fullWidth()
-                        }
                     }
                 }
                 if let subText = subText {

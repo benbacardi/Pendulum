@@ -41,6 +41,7 @@ struct AddEventSheet: View {
     @State private var trackingReference: String = ""
     @State private var letterType: LetterType = .letter
     @State private var ignore: Bool = false
+    @State private var noFurtherActions: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
     
     @State private var eventPhotos: [EventPhoto] = []
@@ -76,10 +77,14 @@ struct AddEventSheet: View {
     }
     
     var ignoreFooterText: String {
-        if eventType == .written || eventType == .sent || eventType == .theyReceived {
-            return "If enabled, Pendulum won't indicate that you are waiting for a response to this \(letterType.description)."
+        if noFurtherActions {
+            return "Pendulum will move \(penpal.wrappedName) to the \"No actions pending\" section if this is the most recent event."
         } else {
-            return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
+            if eventType == .written || eventType == .sent || eventType == .theyReceived {
+                return "If enabled, Pendulum won't indicate that you are waiting for a response to this \(letterType.description)."
+            } else {
+                return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
+            }
         }
     }
     
@@ -388,7 +393,10 @@ struct AddEventSheet: View {
                     }
                     
                     Section(footer: Text(ignoreFooterText)) {
-                        Toggle("No response needed", isOn: $ignore)
+                        Toggle("No further actions", isOn: $noFurtherActions.animation())
+                        if !noFurtherActions {
+                            Toggle("No response needed", isOn: $ignore)
+                        }
                     }
                     
                     Section(footer: Group {
@@ -402,9 +410,9 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             }
                             done()
                         }) {
@@ -465,6 +473,7 @@ struct AddEventSheet: View {
                     self.trackingReference = event.trackingReference ?? ""
                     self.letterType = event.letterType
                     self.ignore = event.ignore
+                    self.noFurtherActions = event.noFurtherActions
                     self.eventPhotos = event.allPhotos()
                     appLogger.debug("Event photos: \(self.eventPhotos)")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {

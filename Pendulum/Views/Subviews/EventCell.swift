@@ -85,12 +85,18 @@ struct EventCell: View {
                     HStack {
                         Text(event.type.description(for: event.letterType))
                             .fullWidth()
-                        if event.ignore {
+                        if event.noFurtherActions || event.ignore {
                             Spacer()
                             ZStack {
-                                Image(systemName: "arrowshape.turn.up.left")
-                                    .font(.caption)
-                                Image(systemName: "line.diagonal")
+                                if event.noFurtherActions {
+                                    Image(systemName: "arrow.down.to.line")
+                                        .font(.caption)
+                                } else {
+                                    Image(systemName: "arrowshape.turn.up.left")
+                                        .font(.caption)
+                                    Image(systemName: "line.diagonal")
+                                    
+                                }
                             }
                             .foregroundColor(.secondary)
                         }

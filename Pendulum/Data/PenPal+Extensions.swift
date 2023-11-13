@@ -75,7 +75,7 @@ extension PenPal {
         self.addEvent(ofType: .sent, letterType: lastWrittenEvent?.letterType ?? .letter, in: context)
     }
     
-    func addEvent(id: UUID? = nil, ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
+    func addEvent(id: UUID? = nil, ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, noFurtherActions: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
         dataLogger.debug("Adding event of type \(eventType.rawValue) to \(self.wrappedName)")
         let newEvent = Event(context: context)
         newEvent.id = id ?? UUID()
@@ -88,6 +88,7 @@ extension PenPal {
         newEvent.trackingReference = trackingReference?.trimmingCharacters(in: .whitespacesAndNewlines)
         newEvent.letterType = letterType
         newEvent.ignore = ignore
+        newEvent.noFurtherActions = noFurtherActions
         self.addToEvents(newEvent)
         if let photos {
             dataLogger.debug("There are photos for the event: \(photos.count)")
@@ -130,7 +131,11 @@ extension PenPal {
         }
         
         if updateFromDb, let lastEvent = self.getLastEvent(from: context) {
-            newEventType = lastEvent.type
+            if lastEvent.noFurtherActions {
+                newEventType = .nothingToDo
+            } else {
+                newEventType = lastEvent.type
+            }
             newEventDate = lastEvent.date
             newEventLetterType = lastEvent.letterType
         }
@@ -165,7 +170,10 @@ extension PenPal {
             predicates.append(eventType.predicate)
         }
         if !includingIgnoredEvents {
-            predicates.append(NSPredicate(format: "ignore == %@", NSNumber(value: false)))
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
+                NSPredicate(format: "ignore == %@", NSNumber(value: false)),
+                NSPredicate(format: "noFurtherActions == %@", NSNumber(value: true))
+            ]))
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
@@ -554,6 +562,7 @@ extension PenPal {
                         paper: overwritingExistingData ? event.paper : existingEvent.paper,
                         letterType: overwritingExistingData ? letterType : existingEvent.letterType,
                         ignore: overwritingExistingData ? event.ignore : existingEvent.ignore,
+                        noFurtherActions: overwritingExistingData ? (event.noFurtherActions ?? false) : existingEvent.noFurtherActions,
                         trackingReference: overwritingExistingData ? event.trackingReference : existingEvent.trackingReference,
                         withPhotos: photos,
                         in: context,
@@ -573,6 +582,7 @@ extension PenPal {
                         paper: event.paper,
                         letterType: letterType,
                         ignore: event.ignore,
+                        noFurtherActions: event.noFurtherActions ?? false,
                         trackingReference: event.trackingReference,
                         withPhotos: photos,
                         in: context,
