@@ -42,6 +42,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
+    @AppStorage(UserDefaults.Key.groupPenPalsInListView.rawValue, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
     @AppStorage(UserDefaults.Key.shouldShowDebugView.rawValue, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
@@ -129,6 +130,7 @@ struct SettingsList: View {
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
                     Toggle("Track posting letters", isOn: $appPreferences.trackPostingLetters)
                     Toggle("Sort Pen Pals alphabetically", isOn: $sortPenPalsAlphabetically)
+                    Toggle("Group Pen Pals by status", isOn: $groupPenPalsInListView)
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }
                 

@@ -12,7 +12,7 @@ let EMPTY_PREDICATE = NSCompoundPredicate(type: .and, subpredicates: [NSPredicat
 
 struct PenPalListSection: View {
     
-    let eventType: EventType
+    let eventType: EventType?
     
     // MARK: Environment
     @EnvironmentObject private var router: Router
@@ -23,8 +23,8 @@ struct PenPalListSection: View {
     @Binding var iconWidth: CGFloat
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
-    
-    init(eventType: EventType, iconWidth: Binding<CGFloat>, trackPostingLetters: Bool, sortAlphabetically: Bool = false) {
+        
+    init(eventType: EventType?, iconWidth: Binding<CGFloat>, trackPostingLetters: Bool, sortAlphabetically: Bool = false) {
         self.eventType = eventType
         self._iconWidth = iconWidth
         
@@ -33,40 +33,50 @@ struct PenPalListSection: View {
             NSSortDescriptor(key: "name", ascending: true)
         ]
         
-        let predicate: NSCompoundPredicate
+        let predicate: NSCompoundPredicate?
         
         /// If trackPostingLetters is false, we need to:
         ///  - group both .sent and .written penpals into the .sent section
         ///  - return no penpals for .written
         
-        switch eventType {
-        case .written:
-            if trackPostingLetters {
-                predicate = EventType.written.lastPredicate
-            } else {
+        if let eventType {
+            
+            switch eventType {
+            case .written:
+                if trackPostingLetters {
+                    predicate = EventType.written.lastPredicate
+                } else {
+                    predicate = EMPTY_PREDICATE
+                }
+            case .sent:
+                if trackPostingLetters {
+                    predicate = NSCompoundPredicate(type: .or, subpredicates: [
+                        EventType.sent.lastPredicate,
+                        EventType.theyReceived.lastPredicate,
+                    ])
+                } else {
+                    predicate = NSCompoundPredicate(type: .or, subpredicates: [
+                        EventType.sent.lastPredicate,
+                        EventType.theyReceived.lastPredicate,
+                        EventType.written.lastPredicate
+                    ])
+                }
+            case .theyReceived:
                 predicate = EMPTY_PREDICATE
+            default:
+                predicate = eventType.lastPredicate
             }
-        case .sent:
-            if trackPostingLetters {
-                predicate = NSCompoundPredicate(type: .or, subpredicates: [
-                    EventType.sent.lastPredicate,
-                    EventType.theyReceived.lastPredicate,
-                ])
-            } else {
-                predicate = NSCompoundPredicate(type: .or, subpredicates: [
-                    EventType.sent.lastPredicate,
-                    EventType.theyReceived.lastPredicate,
-                    EventType.written.lastPredicate
-                ])
-            }
-        case .theyReceived:
-            predicate = EMPTY_PREDICATE
-        default:
-            predicate = eventType.lastPredicate
+            
+        } else {
+            predicate = nil
         }
         
         if sortAlphabetically || eventType == .archived {
             sortDescriptors.insert(NSSortDescriptor(key: "name", ascending: true), at: 0)
+        }
+        
+        if eventType == nil {
+            sortDescriptors.insert(NSSortDescriptor(key: "archived", ascending: true), at: 0)
         }
         
         self._penpals = FetchRequest<PenPal>(
@@ -78,22 +88,26 @@ struct PenPalListSection: View {
     
     @ViewBuilder
     var sectionHeader: some View {
-        HStack {
-            ZStack {
-                Circle()
-                    .fill(eventType.color)
-                    .frame(width: iconWidth * 1.5, height: iconWidth * 1.5)
-                Image(systemName: eventType.phraseIcon)
-                    .font(Font.caption.weight(.bold))
-                    .foregroundColor(.white)
-                    .background(GeometryReader { geo in
-                        Color.clear.preference(key: PenPalListIconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
-                    })
+        if let eventType {
+            HStack {
+                ZStack {
+                    Circle()
+                        .fill(eventType.color)
+                        .frame(width: iconWidth * 1.5, height: iconWidth * 1.5)
+                    Image(systemName: eventType.phraseIcon)
+                        .font(Font.caption.weight(.bold))
+                        .foregroundColor(.white)
+                        .background(GeometryReader { geo in
+                            Color.clear.preference(key: PenPalListIconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
+                        })
+                }
+                Text(eventType.phrase)
+                    .fullWidth()
+                    .font(.body)
+                    .foregroundColor(.primary)
             }
-            Text(eventType.phrase)
-                .fullWidth()
-                .font(.body)
-                .foregroundColor(.primary)
+        } else {
+            EmptyView()
         }
     }
     

@@ -30,6 +30,7 @@ struct PendulumApp: App {
                 UserDefaults.Key.sendRemindersToPostLettersAtHour.rawValue: 8,
                 UserDefaults.Key.sendRemindersToPostLettersAtMinute.rawValue: 0,
                 UserDefaults.Key.trackPostingLetters.rawValue: true,
+                UserDefaults.Key.groupPenPalsInListView.rawValue: true,
             ])
         
         }

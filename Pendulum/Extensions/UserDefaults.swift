@@ -23,6 +23,7 @@ extension UserDefaults {
         case trackPostingLetters
         case sortPenPalsAlphabetically
         case sortStationeryAlphabetically
+        case groupPenPalsInListView
         
         case hasPerformedCoreDataMigrationToAppGroup
         case shouldShowDebugView
@@ -54,6 +55,12 @@ extension UserDefaults {
     var shouldShowDebugView: Bool {
         get { bool(forKey: Key.shouldShowDebugView.rawValue) }
         set { setValue(newValue, forKey: Key.shouldShowDebugView.rawValue) }
+    }
+    
+    @objc
+    var groupPenPalsInListView: Bool {
+        get { bool(forKey: Key.groupPenPalsInListView.rawValue) }
+        set { setValue(newValue, forKey: Key.groupPenPalsInListView.rawValue) }
     }
     
     @objc
