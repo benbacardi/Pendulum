@@ -45,91 +45,76 @@ extension UserDefaults {
         set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL.rawValue) }
     }
     
-    @objc
     var hasGeneratedInitialBackup: Bool {
         get { bool(forKey: Key.hasGeneratedInitialBackup.rawValue) }
         set { setValue(newValue, forKey: Key.hasGeneratedInitialBackup.rawValue) }
     }
     
-    @objc
     var shouldShowDebugView: Bool {
         get { bool(forKey: Key.shouldShowDebugView.rawValue) }
         set { setValue(newValue, forKey: Key.shouldShowDebugView.rawValue) }
     }
     
-    @objc
     var groupPenPalsInListView: Bool {
         get { bool(forKey: Key.groupPenPalsInListView.rawValue) }
         set { setValue(newValue, forKey: Key.groupPenPalsInListView.rawValue) }
     }
     
-    @objc
     var hasPerformedCoreDataMigrationToAppGroup: Bool {
         get { bool(forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
         set { setValue(newValue, forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
     }
     
-    @objc
     var trackPostingLetters: Bool {
         get { bool(forKey: Key.trackPostingLetters.rawValue) }
         set { setValue(newValue, forKey: Key.trackPostingLetters.rawValue) }
     }
     
-    @objc
     var sortPenPalsAlphabetically: Bool {
         get { bool(forKey: Key.sortPenPalsAlphabetically.rawValue) }
         set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically.rawValue) }
     }
     
-    @objc
     var sortStationeryAlphabetically: Bool {
         get { bool(forKey: Key.sortStationeryAlphabetically.rawValue) }
         set { setValue(newValue, forKey: Key.sortStationeryAlphabetically.rawValue) }
     }
     
-    @objc
     var sendRemindersToPostLetters: Bool {
         get { bool(forKey: Key.sendRemindersToPostLetters.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLetters.rawValue) }
     }
     
-    @objc
     var sendRemindersToWriteLetters: Bool {
         get { bool(forKey: Key.sendRemindersToWriteLetters.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToWriteLetters.rawValue) }
     }
     
-    @objc
     var badgeRemindersToPostLetters: Bool {
         get { bool(forKey: Key.badgeRemindersToPostLetters.rawValue) }
         set { setValue(newValue, forKey: Key.badgeRemindersToPostLetters.rawValue) }
     }
     
-    @objc
     var badgeRemindersToWriteLetters: Bool {
         get { bool(forKey: Key.badgeRemindersToWriteLetters.rawValue) }
         set { setValue(newValue, forKey: Key.badgeRemindersToWriteLetters.rawValue) }
     }
     
-    @objc
     var enableQuickEntry: Bool {
         get { bool(forKey: Key.enableQuickEntry.rawValue) }
         set { setValue(newValue, forKey: Key.enableQuickEntry.rawValue) }
     }
     
-    @objc
     var sendRemindersToPostLettersAtHour: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
     }
     
-    @objc
     var sendRemindersToPostLettersAtMinute: Int {
         get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
         set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
     }
     
-    @objc
     var stopAskingAboutContacts: Bool {
         get { bool(forKey: Key.stopAskingAboutContacts.rawValue) }
         set { setValue(newValue, forKey: Key.stopAskingAboutContacts.rawValue) }
