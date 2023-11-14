@@ -423,6 +423,7 @@ struct AddEventSheet: View {
                 if self.setToDefaultIgnoreWhenChangingLetterType {
                     self.ignore = newValue.defaultIgnore
                 }
+                self.thingsHaveChanged = true
             }
             .onChange(of: date) { _ in
                 self.thingsHaveChanged = true

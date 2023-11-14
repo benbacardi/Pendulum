@@ -286,6 +286,10 @@ extension PenPal {
     func archive(_ value: Bool = true, in context: NSManagedObjectContext) {
         self.archived = value
         PersistenceController.shared.save(context: context)
+        UIApplication.shared.updateBadgeNumber()
+        Task {
+            await Self.scheduleShouldPostLettersNotification()
+        }
     }
     
     func update(from contact: CNContact, saving: Bool = true, in context: NSManagedObjectContext) {
