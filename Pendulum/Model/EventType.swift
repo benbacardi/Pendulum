@@ -136,13 +136,13 @@ enum EventType: Int, CaseIterable, Identifiable {
             if !UserDefaults.shared.trackPostingLetters {
                 return "You're waiting for a response"
             }
-            return "You have letters to post!"
+            return "You have post to send!"
         case .sent, .theyReceived:
             return "You're waiting for a response"
         case .inbound:
             return "Post is on its way!"
         case .received:
-            return "You have letters to reply to!"
+            return "You have post to reply to!"
         case .archived:
             return "Archived"
         case .nothingToDo:
