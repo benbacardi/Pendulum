@@ -26,6 +26,8 @@ struct PenPalView: View {
     @State private var showingPenPalContactSheet: Bool = false
     @State private var presentPropertyDetailsSheet: Bool = false
     
+    @State private var eventsWithDifferences: [(Event, Int)] = []
+    
     init(penpal: PenPal) {
         self.penpal = penpal
         self._events = FetchRequest<Event>(
@@ -139,7 +141,7 @@ struct PenPalView: View {
                 Spacer()
             } else {
                 ScrollView {
-                    VStack(spacing: 0) {
+                    LazyVStack(spacing: 0) {
                         
                         if let firstEvent = events.first {
                             let difference = Calendar.current.numberOfDaysBetween(firstEvent.wrappedDate, and: Date())
@@ -147,7 +149,7 @@ struct PenPalView: View {
                                 .padding(.bottom)
                         }
                         
-                        ForEach(self.eventsWithDifferences(for: events), id: \.0.id) { (event, difference) in
+                        ForEach(self.eventsWithDifferences, id: \.0.id) { (event, difference) in
                             if difference > 0 {
                                 dateDivider(for: event.wrappedDate, withDifference: difference)
                                     .padding(.bottom)
@@ -196,6 +198,11 @@ struct PenPalView: View {
         .navigationBarTitleDisplayMode(.inline)
         .task {
             penpal.syncWithContact()
+        }
+        .task {
+            withAnimation {
+                self.eventsWithDifferences = self.eventsWithDifferences(for: self.events)
+            }
         }
     }
     
