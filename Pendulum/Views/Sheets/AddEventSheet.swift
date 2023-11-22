@@ -88,6 +88,10 @@ struct AddEventSheet: View {
         }
     }
     
+    func parseStationery(for stationery: String?) -> String? {
+        stationery?.replacingOccurrences(of: ",", with: "\n")
+    }
+    
     var autoSuggestions: [String] {
         let suggestions: [String]
         let st: String
@@ -410,9 +414,9 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : pen, ink: ink.isEmpty ? nil : ink, paper: paper.isEmpty ? nil : paper, letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             }
                             done()
                         }) {
@@ -467,9 +471,9 @@ struct AddEventSheet: View {
                     dataLogger.debug("Setting event details to: date=\(event.wrappedDate) notes=\(event.notes.debugDescription) pen=\(event.pen.debugDescription) ink=\(event.ink.debugDescription) paper=\(event.paper.debugDescription) ignore=\(event.ignore)")
                     self.date = event.wrappedDate
                     self.notes = event.notes ?? ""
-                    self.pen = event.pens.joined(separator: "\n")
-                    self.ink = event.inks.joined(separator: "\n")
-                    self.paper = event.papers.joined(separator: "\n")
+                    self.pen = parseStationery(for: event.pens.joined(separator: "\n")) ?? ""
+                    self.ink = parseStationery(for: event.inks.joined(separator: "\n")) ?? ""
+                    self.paper = parseStationery(for: event.papers.joined(separator: "\n")) ?? ""
                     self.trackingReference = event.trackingReference ?? ""
                     self.letterType = event.letterType
                     self.ignore = event.ignore
