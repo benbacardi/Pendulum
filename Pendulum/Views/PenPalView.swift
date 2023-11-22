@@ -143,20 +143,22 @@ struct PenPalView: View {
                 ScrollView {
                     LazyVStack(spacing: 0) {
                         
-                        if let firstEvent = events.first {
-                            let difference = Calendar.current.numberOfDaysBetween(firstEvent.wrappedDate, and: Date())
-                            self.dateDivider(for: firstEvent.wrappedDate, withDifference: difference, relativeToToday: true)
+                        if let firstEvent = self.eventsWithDifferences.first, firstEvent.0.type != .noEvent {
+                            let difference = Calendar.current.numberOfDaysBetween(firstEvent.0.wrappedDate, and: Date())
+                            self.dateDivider(for: firstEvent.0.wrappedDate, withDifference: difference, relativeToToday: true)
                                 .padding(.bottom)
                         }
                         
                         ForEach(self.eventsWithDifferences, id: \.0.id) { (event, difference) in
-                            if difference > 0 {
-                                dateDivider(for: event.wrappedDate, withDifference: difference)
+                            if event.type != .noEvent {
+                                if difference > 0 {
+                                    dateDivider(for: event.wrappedDate, withDifference: difference)
+                                        .padding(.bottom)
+                                }
+                                EventCell(event: event, penpal: penpal)
+                                    .groupBoxStyle(ExtendedGroupBoxStyle(background: colorScheme == .dark ? Color(.secondarySystemGroupedBackground) : Color(.systemGroupedBackground), includePadding: false))
                                     .padding(.bottom)
                             }
-                            EventCell(event: event, penpal: penpal)
-                                .groupBoxStyle(ExtendedGroupBoxStyle(background: colorScheme == .dark ? Color(.secondarySystemGroupedBackground) : Color(.systemGroupedBackground), includePadding: false))
-                                .padding(.bottom)
                         }
                     }
                     .padding()
@@ -172,6 +174,7 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, eventType: eventType) {
+                self.updateEventsList()
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -188,8 +191,8 @@ struct PenPalView: View {
             }
         }
         .onReceive(self.didSave) { _ in
-            withAnimation {
-                self.refreshID = UUID()
+            Task {
+                updateEventsList()
             }
         }
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
@@ -200,9 +203,14 @@ struct PenPalView: View {
             penpal.syncWithContact()
         }
         .task {
-            withAnimation {
-                self.eventsWithDifferences = self.eventsWithDifferences(for: self.events)
-            }
+            updateEventsList()
+        }
+    }
+    
+    func updateEventsList() {
+        withAnimation {
+            self.eventsWithDifferences = self.eventsWithDifferences(for: self.events)
+            self.refreshID = UUID()
         }
     }
     
