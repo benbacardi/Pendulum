@@ -174,7 +174,9 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, eventType: eventType) {
-                self.updateEventsList()
+                Task {
+                    await self.updateEventsList()
+                }
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -192,7 +194,7 @@ struct PenPalView: View {
         }
         .onReceive(self.didSave) { _ in
             Task {
-                updateEventsList()
+                await updateEventsList()
             }
         }
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
@@ -203,11 +205,11 @@ struct PenPalView: View {
             penpal.syncWithContact()
         }
         .task {
-            updateEventsList()
+            await updateEventsList()
         }
     }
     
-    func updateEventsList() {
+    func updateEventsList() async {
         withAnimation {
             self.eventsWithDifferences = self.eventsWithDifferences(for: self.events)
             self.refreshID = UUID()
