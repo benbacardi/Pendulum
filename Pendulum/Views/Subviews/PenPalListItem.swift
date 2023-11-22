@@ -17,12 +17,14 @@ struct PenPalListItem: View {
     @ObservedObject var penpal: PenPal
     var asListItem: Bool = true
     var subText: String? = nil
+    @State private var displayImage: Image?
+    @State private var subHeader: String? = nil
     
     @ViewBuilder
     var content: some View {
         HStack {
-            if let image = penpal.displayImage {
-                image
+            if let displayImage {
+                displayImage
                     .clipShape(Circle())
                     .frame(width: 40, height: 40)
             } else {
@@ -34,21 +36,16 @@ struct PenPalListItem: View {
                         .foregroundColor(.white)
                 }
                 .frame(width: 40, height: 40)
+                .task { displayImage = await penpal.displayImage }
             }
             VStack {
                 Text(penpal.wrappedName)
                     .font(.headline)
                     .fullWidth()
-                if !penpal.archived && asListItem {
-                    if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
-                        Text("\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))")
-                            .font(.caption)
-                            .fullWidth()
-                    } else if let lastEventDate = penpal.lastEventDate {
-                        Text("\(penpal.lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))")
-                            .font(.caption)
-                            .fullWidth()
-                    }
+                if let subHeader {
+                    Text(subHeader)
+                        .font(.caption)
+                        .fullWidth()
                 }
                 if let subText = subText {
                     Text(subText)
@@ -63,6 +60,17 @@ struct PenPalListItem: View {
             }
         }
         .foregroundColor(.primary)
+        .task {
+            withAnimation {
+                if !penpal.archived && asListItem {
+                    if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
+                        self.subHeader = "\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))"
+                    } else if let lastEventDate = penpal.lastEventDate {
+                        self.subHeader = "\(penpal.lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))"
+                    }
+                }
+            }
+        }
     }
         
     var body: some View {

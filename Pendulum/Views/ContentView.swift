@@ -12,7 +12,6 @@ struct ContentView: View {
     @Environment(\.managedObjectContext) var moc
     
     @State private var selectedTab: Tab = .penPalList
-    @StateObject private var appPreferences = AppPreferences.shared
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
     @State private var showWhatsNewOverlay: Bool = false
@@ -33,7 +32,6 @@ struct ContentView: View {
                 }
             }
         }
-        .environmentObject(appPreferences)
         .sheet(isPresented: $showWhatsNewOverlay) {
             WhatsNew()
         }

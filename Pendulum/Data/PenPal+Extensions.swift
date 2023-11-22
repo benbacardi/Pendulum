@@ -52,10 +52,12 @@ extension PenPal {
     }
     
     var displayImage: Image? {
-        if let imageData = self.image, let image = UIImage(data: imageData) {
-            return Image(uiImage: image).resizable()
+        get async {
+            if let imageData = self.image, let image = UIImage(data: imageData) {
+                return Image(uiImage: image).resizable()
+            }
+            return nil
         }
-        return nil
     }
     
     var contactID: String? {
