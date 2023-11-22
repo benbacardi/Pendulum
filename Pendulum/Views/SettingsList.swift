@@ -44,6 +44,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
     @AppStorage(UserDefaults.Key.groupPenPalsInListView.rawValue, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
     @AppStorage(UserDefaults.Key.shouldShowDebugView.rawValue, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
+    @AppStorage(UserDefaults.Key.trackPostingLetters.rawValue, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
@@ -96,16 +97,16 @@ struct SettingsList: View {
                 ) {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
-                        .disabled(!appPreferences.trackPostingLetters)
-                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                        .disabled(trackPostingLetters)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
                             DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
-                                .disabled(!appPreferences.trackPostingLetters)
+                                .disabled(trackPostingLetters)
                         }
                         .padding(.leading, 4)
-                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                     }
                 }
                 
@@ -116,8 +117,8 @@ struct SettingsList: View {
                 }) {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
-                        .disabled(!appPreferences.trackPostingLetters)
-                        .foregroundColor(appPreferences.trackPostingLetters ? .primary : .secondary)
+                        .disabled(trackPostingLetters)
+                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
                 }
                 
                 Section {
@@ -128,7 +129,7 @@ struct SettingsList: View {
                 }
                 
                 Section(footer: Text("With Quick Entry, you won't be prompted for notes when logging a written or sent letter. You can add those later by tapping on the entry.")) {
-                    Toggle("Track posting letters", isOn: $appPreferences.trackPostingLetters)
+                    Toggle("Track posting letters", isOn: $trackPostingLetters)
                     Toggle("Sort Pen Pals alphabetically", isOn: $sortPenPalsAlphabetically)
                     Toggle("Group Pen Pals by status", isOn: $groupPenPalsInListView)
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
@@ -266,7 +267,7 @@ struct SettingsList: View {
                 }
                 UIApplication.shared.updateBadgeNumber()
             }
-            .onChange(of: appPreferences.trackPostingLetters) { newValue in
+            .onChange(of: trackPostingLetters) { newValue in
                 UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
