@@ -173,8 +173,14 @@ struct AddEventSheet: View {
         }
     }
     
+    /// This path is not used, but an issue with iOS 17 prevents
+    /// the keyboard toolbar from functioning correctly unless
+    /// NavigationStack(path:) is used.
+    /// See https://stackoverflow.com/questions/77238131/placing-the-toolbar-above-keyboard-does-not-work-in-ios-17
+    @State private var path = NavigationPath()
+    
     var body: some View {
-        NavigationView {
+        NavigationStack(path: $path) {
             VStack(spacing: 0) {
                 Button(action: {
                     self.showEventTypeOptions = true
