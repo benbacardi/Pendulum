@@ -26,6 +26,11 @@ struct ContentView: View {
                     PenPalTab()
                         .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
                         .tag(Tab.penPalList)
+                    #if DEBUG
+                    DebugView()
+                        .tabItem { Label("Debug", systemImage: "ant") }
+                        .tag(Tab.debug)
+                    #endif
                     SettingsList()
                         .tabItem { Label("Settings", systemImage: "gear") }
                         .tag(Tab.settings)

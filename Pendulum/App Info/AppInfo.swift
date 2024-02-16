@@ -14,6 +14,7 @@ enum Tab: Int {
     case penPalList
     case settings
     case stats
+    case debug
 }
 
 extension Color {

@@ -21,6 +21,9 @@ struct DebugView: View {
     
     var body: some View {
         Form {
+            #if DEBUG
+            Text("You are running an Xcode debug build.")
+            #endif
             Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
                 Text("Migration performed?")
             }
