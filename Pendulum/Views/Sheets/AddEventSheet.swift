@@ -214,7 +214,7 @@ struct AddEventSheet: View {
                         Section {
                             Button(action: {
                                 withAnimation {
-                                    penpal.addEvent(ofType: .sent, in: moc)
+                                    penpal.sendLastWrittenEvent(in: moc, from: event)
                                     done()
                                 }
                             }) {

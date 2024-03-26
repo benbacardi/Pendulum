@@ -72,9 +72,20 @@ extension PenPal {
         NSPredicate(format: "penpal = %@", self)
     }
     
-    func sendLastWrittenEvent(in context: NSManagedObjectContext) {
-        let lastWrittenEvent = self.getLastEvent(ofType: .written, from: context)
-        self.addEvent(ofType: .sent, letterType: lastWrittenEvent?.letterType ?? .letter, in: context)
+    func sendLastWrittenEvent(in context: NSManagedObjectContext, from lastEvent: Event? = nil) {
+        var letterType: LetterType = .letter
+        var ignore: Bool = false
+        var noFurtherActions: Bool = false
+        if let lastEvent {
+            letterType = lastEvent.letterType
+            ignore = lastEvent.ignore
+            noFurtherActions = lastEvent.noFurtherActions
+        } else if let lastWrittenEvent = self.getLastEvent(ofType: .written, from: context) {
+            letterType = lastWrittenEvent.letterType
+            ignore = lastWrittenEvent.ignore
+            noFurtherActions = lastWrittenEvent.noFurtherActions
+        }
+        self.addEvent(ofType: .sent, letterType: letterType, ignore: ignore, noFurtherActions: noFurtherActions, in: context)
     }
     
     func addEvent(id: UUID? = nil, ofType eventType: EventType, date: Date? = Date(), notes: String? = nil, pen: String? = nil, ink: String? = nil, paper: String? = nil, letterType: LetterType = .letter, ignore: Bool = false, noFurtherActions: Bool = false, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
@@ -121,26 +132,16 @@ extension PenPal {
         var newEventDate: Date? = nil
         var newEventLetterType: LetterType = .letter
         
-        var updateFromDb: Bool = true
-        if let lastWritten = self.getLastEvent(ofType: .written, from: context) {
-            let lastSent = self.getLastEvent(ofType: .sent, from: context)
-            if lastSent?.date ?? .distantPast < lastWritten.date ?? .distantPast {
-                newEventType = .written
-                newEventDate = lastWritten.date
-                newEventLetterType = lastWritten.letterType
-                updateFromDb = false
-            }
-        }
-        
-        if updateFromDb, let lastEvent = self.getLastEvent(from: context) {
-            if lastEvent.noFurtherActions {
+        if let currentEvent = self.getLastEvent(from: context) {
+            if currentEvent.noFurtherActions {
                 newEventType = .nothingToDo
             } else {
-                newEventType = lastEvent.type
+                newEventType = currentEvent.type
             }
-            newEventDate = lastEvent.date
-            newEventLetterType = lastEvent.letterType
+            newEventDate = currentEvent.wrappedDate
+            newEventLetterType = currentEvent.letterType
         }
+        
         
         dataLogger.debug("Setting the Last Event Type for \(self.wrappedName) to \(newEventType.description(for: newEventLetterType)) at \(newEventDate?.timeIntervalSince1970 ?? 0)")
         self.setLastEventType(to: newEventType, letterType: newEventLetterType, at: newEventDate, saving: saving, in: context)
@@ -162,28 +163,52 @@ extension PenPal {
     }
     
     func getLastEvent(ofType eventType: EventType? = nil, includingIgnoredEvents: Bool = false, from context: NSManagedObjectContext) -> Event? {
+        
+        var currentEvent: Event? = nil
+        
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.fetchLimit = 1
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
-        var predicates: [NSPredicate] = [
-            self.ownEventsPredicate,
-        ]
-        if let eventType = eventType {
+        var predicates: [NSPredicate] = [self.ownEventsPredicate]
+        if let eventType {
             predicates.append(eventType.predicate)
         }
-        if !includingIgnoredEvents {
-            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
-                NSPredicate(format: "ignore == %@", NSNumber(value: false)),
-                NSPredicate(format: "noFurtherActions == %@", NSNumber(value: true))
-            ]))
-        }
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
+        
+        var hasSeenSentEvent = false
+        
         do {
-            return try context.fetch(fetchRequest).first
+            /// Loop over all events in reverse order, finding the first one that isn't:
+            /// a) a written event waiting to be posted
+            /// b) set to "no response needed"
+            for event in try context.fetch(fetchRequest) {
+                if event.type == .sent {
+                    /// Track whether we've seen a sent event to later know if a written event has been posted
+                    hasSeenSentEvent = true
+                }
+                if event.type == .written && !hasSeenSentEvent {
+                    /// If we have a written event and it hasn't been posted, this is the last event
+                    /// regardless of whether it is "no response needed" or not
+                    currentEvent = event
+                    break
+                }
+                if event.ignore && !includingIgnoredEvents {
+                    /// If the event is "no response needed" and we don't want to include all events, skip it
+                    continue
+                }
+                currentEvent = event
+                break
+            }
         } catch {
-            dataLogger.error("Could not fetch events of type \(eventType?.description ?? "any") for \(self.wrappedName): \(error.localizedDescription)")
+            dataLogger.error("Could fetching events of type \(eventType.debugDescription) for \(self.wrappedName): \(error.localizedDescription)")
         }
-        return nil
+        
+        if let currentEvent {
+            dataLogger.debug("Current event: \(currentEvent.type.description) ignore=\(currentEvent.ignore) noFurtherActions=\(currentEvent.noFurtherActions)")
+        } else {
+            dataLogger.debug("Current event: none!")
+        }
+        
+        return currentEvent
     }
     
     func fetchPriorEvent(to date: Date, ofType eventType: EventType, ignore: Bool = true, from context: NSManagedObjectContext) -> Event? {
