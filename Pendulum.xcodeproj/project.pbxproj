@@ -64,6 +64,7 @@
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
+		5EBD28792BB37AD300746418 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */; };
 		5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */; };
 		5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A15E297815560053B3D0 /* StatsView.swift */; };
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
@@ -463,6 +464,7 @@
 			files = (
 				5EEF4A02291E5B1E000528C6 /* Launch Screen.storyboard in Resources */,
 				5E4055112914205F00BD52BF /* Preview Assets.xcassets in Resources */,
+				5EBD28792BB37AD300746418 /* PrivacyInfo.xcprivacy in Resources */,
 				5E40550D2914205F00BD52BF /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
