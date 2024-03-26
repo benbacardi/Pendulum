@@ -144,6 +144,7 @@
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
+		5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStationerySheet.swift; sourceTree = "<group>"; };
 		5ED5A15E297815560053B3D0 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 		5E4054FC2914205D00BD52BF = {
 			isa = PBXGroup;
 			children = (
+				5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */,
 				5E4055072914205D00BD52BF /* Pendulum */,
 				5E4055062914205D00BD52BF /* Products */,
 				5E41006A2AF8493F00737E5C /* Frameworks */,
