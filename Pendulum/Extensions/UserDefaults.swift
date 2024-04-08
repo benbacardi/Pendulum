@@ -30,6 +30,8 @@ extension UserDefaults {
         
         case exportURL
         case hasGeneratedInitialBackup
+        
+        case lastSyncDate
     }
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
@@ -44,6 +46,15 @@ extension UserDefaults {
         }
         set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL.rawValue) }
     }
+    
+//    var lastSyncDate: Date? {
+//        get {
+//            let timeInterval = double(forKey: Key.lastSyncDate.rawValue)
+//            guard timeInterval > 0 else { return nil }
+//            return Date(timeIntervalSince1970: timeInterval)
+//        }
+//        set { setValue(newValue?.timeIntervalSince1970 ?? 0, forKey: Key.lastSyncDate.rawValue) }
+//    }
     
     var hasGeneratedInitialBackup: Bool {
         get { bool(forKey: Key.hasGeneratedInitialBackup.rawValue) }
