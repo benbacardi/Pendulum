@@ -11,8 +11,10 @@ struct DebugView: View {
     
     @Environment(\.managedObjectContext) var moc
     
+    @ObservedObject var syncMonitor = SyncMonitor.shared
     
     @AppStorage(UserDefaults.Key.hasPerformedCoreDataMigrationToAppGroup.rawValue, store: UserDefaults.shared) private var hasPerformedCoreDataMigrationToAppGroup: Bool = false
+    @AppStorage(UserDefaults.Key.lastSyncDate.rawValue) private var lastSyncDate: Date = .distantPast
     
     @State private var penpalCount: Int = 0
     @State private var eventCount: Int = 0
@@ -24,6 +26,7 @@ struct DebugView: View {
             #if DEBUG
             Text("You are running an Xcode debug build.")
             #endif
+            Text("\(syncMonitor.state)")
             Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
                 Text("Migration performed?")
             }

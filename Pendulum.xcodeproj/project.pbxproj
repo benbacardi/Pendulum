@@ -17,6 +17,7 @@
 		5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */; };
 		5E0A016829AFA9A900BADAC6 /* PenPalTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */; };
 		5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */; };
+		5E263DFB2BB0A96200E3556A /* SyncMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E263DFA2BB0A96200E3556A /* SyncMonitor.swift */; };
 		5E2F86E52AF6FA6F00BEB28B /* URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2F86E42AF6FA6F00BEB28B /* URL.swift */; };
 		5E30A7F229DC628500B1E89D /* ExtendedGroupBoxStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */; };
 		5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E3461EF2983BF6700BBD038 /* AppPreferences.swift */; };
@@ -96,6 +97,7 @@
 		5E0A016529AFA77A00BADAC6 /* AddFirstPenPalView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFirstPenPalView.swift; sourceTree = "<group>"; };
 		5E0A016729AFA9A900BADAC6 /* PenPalTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalTab.swift; sourceTree = "<group>"; };
 		5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection.swift; sourceTree = "<group>"; };
+		5E263DFA2BB0A96200E3556A /* SyncMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMonitor.swift; sourceTree = "<group>"; };
 		5E2F86E42AF6FA6F00BEB28B /* URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URL.swift; sourceTree = "<group>"; };
 		5E30A7F129DC628500B1E89D /* ExtendedGroupBoxStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtendedGroupBoxStyle.swift; sourceTree = "<group>"; };
 		5E3461EF2983BF6700BBD038 /* AppPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPreferences.swift; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 				5E625213292B999500A3EB86 /* Stationery+Extensions.swift */,
 				5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */,
 				5E625218292CBD2700A3EB86 /* Export.swift */,
+				5E263DFA2BB0A96200E3556A /* SyncMonitor.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -493,6 +496,7 @@
 				5E0A015E29AE8A1E00BADAC6 /* PenPalList.swift in Sources */,
 				5E625219292CBD2700A3EB86 /* Export.swift in Sources */,
 				5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */,
+				5E263DFB2BB0A96200E3556A /* SyncMonitor.swift in Sources */,
 				5E405530291525AA00BD52BF /* UserDefaults.swift in Sources */,
 				5E40553629152DA000BD52BF /* CNContact.swift in Sources */,
 				5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */,
