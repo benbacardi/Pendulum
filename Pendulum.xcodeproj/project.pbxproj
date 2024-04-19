@@ -62,6 +62,16 @@
 		5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E7EC41E29801FD400C24189 /* SentByTypeChart.swift */; };
 		5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */; };
 		5E8BA57A29185E320065FCC4 /* EventType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E8BA57929185E320065FCC4 /* EventType.swift */; };
+		5EA32C702BD1716C009374DC /* PenPalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C6F2BD1716C009374DC /* PenPalViewModel.swift */; };
+		5EA32C732BD1730E009374DC /* GRDBQuery in Frameworks */ = {isa = PBXBuildFile; productRef = 5EA32C722BD1730E009374DC /* GRDBQuery */; };
+		5EA32C762BD1C117009374DC /* EventModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C752BD1C117009374DC /* EventModelCell.swift */; };
+		5EA32C782BD2605D009374DC /* PenPalModelView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C772BD2605D009374DC /* PenPalModelView.swift */; };
+		5EA32C7A2BD26566009374DC /* PenPalModelHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C792BD26566009374DC /* PenPalModelHeader.swift */; };
+		5EA32C7D2BD2758B009374DC /* PenPalServiceProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C7C2BD2758B009374DC /* PenPalServiceProtocol.swift */; };
+		5EA32C7F2BD275A2009374DC /* MockPenPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C7E2BD275A2009374DC /* MockPenPalService.swift */; };
+		5EA32C812BD275C6009374DC /* CoreDataPenPalService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C802BD275C6009374DC /* CoreDataPenPalService.swift */; };
+		5EA32C832BD2945A009374DC /* PenPalModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C822BD2945A009374DC /* PenPalModel.swift */; };
+		5EA32C852BD29475009374DC /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA32C842BD29475009374DC /* EventModel.swift */; };
 		5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81851291BB0C50052F88E /* BackgroundCircle.swift */; };
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
@@ -144,6 +154,15 @@
 		5E7EC41E29801FD400C24189 /* SentByTypeChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentByTypeChart.swift; sourceTree = "<group>"; };
 		5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TipJarView.swift; sourceTree = "<group>"; };
 		5E8BA57929185E320065FCC4 /* EventType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventType.swift; sourceTree = "<group>"; };
+		5EA32C6F2BD1716C009374DC /* PenPalViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalViewModel.swift; sourceTree = "<group>"; };
+		5EA32C752BD1C117009374DC /* EventModelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModelCell.swift; sourceTree = "<group>"; };
+		5EA32C772BD2605D009374DC /* PenPalModelView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalModelView.swift; sourceTree = "<group>"; };
+		5EA32C792BD26566009374DC /* PenPalModelHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalModelHeader.swift; sourceTree = "<group>"; };
+		5EA32C7C2BD2758B009374DC /* PenPalServiceProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalServiceProtocol.swift; sourceTree = "<group>"; };
+		5EA32C7E2BD275A2009374DC /* MockPenPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockPenPalService.swift; sourceTree = "<group>"; };
+		5EA32C802BD275C6009374DC /* CoreDataPenPalService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataPenPalService.swift; sourceTree = "<group>"; };
+		5EA32C822BD2945A009374DC /* PenPalModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalModel.swift; sourceTree = "<group>"; };
+		5EA32C842BD29475009374DC /* EventModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventModel.swift; sourceTree = "<group>"; };
 		5EA81851291BB0C50052F88E /* BackgroundCircle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundCircle.swift; sourceTree = "<group>"; };
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
@@ -173,6 +192,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EA32C732BD1730E009374DC /* GRDBQuery in Frameworks */,
 				5E41006C2AF8493F00737E5C /* ZIPFoundation in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -216,8 +236,10 @@
 				5E40551929151B6C00BD52BF /* Helpers */,
 				5E40551829151B6500BD52BF /* Extensions */,
 				5E625215292BCFA900A3EB86 /* Notifications */,
-				5E40551729151B5F00BD52BF /* Views */,
 				5E40551A29151B7000BD52BF /* Model */,
+				5EA32C7B2BD2757C009374DC /* Services */,
+				5EA32C6E2BD1713B009374DC /* Controllers */,
+				5E40551729151B5F00BD52BF /* Views */,
 				5E4055082914205D00BD52BF /* PendulumApp.swift */,
 				5E40550C2914205F00BD52BF /* Assets.xcassets */,
 				5E40550E2914205F00BD52BF /* Pendulum.entitlements */,
@@ -237,6 +259,7 @@
 		5E40551729151B5F00BD52BF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				5EA32C742BD1C103009374DC /* Rewrite */,
 				5EE787082AF2B60700CD3221 /* Data */,
 				5E0A015829AD09FE00BADAC6 /* Navigation */,
 				5E4055292915202B00BD52BF /* ContentView.swift */,
@@ -298,6 +321,8 @@
 			children = (
 				5E8BA57929185E320065FCC4 /* EventType.swift */,
 				5E625222292F730200A3EB86 /* LetterType.swift */,
+				5EA32C822BD2945A009374DC /* PenPalModel.swift */,
+				5EA32C842BD29475009374DC /* EventModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -380,6 +405,34 @@
 			path = Notifications;
 			sourceTree = "<group>";
 		};
+		5EA32C6E2BD1713B009374DC /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				5EA32C6F2BD1716C009374DC /* PenPalViewModel.swift */,
+			);
+			path = Controllers;
+			sourceTree = "<group>";
+		};
+		5EA32C742BD1C103009374DC /* Rewrite */ = {
+			isa = PBXGroup;
+			children = (
+				5EA32C772BD2605D009374DC /* PenPalModelView.swift */,
+				5EA32C752BD1C117009374DC /* EventModelCell.swift */,
+				5EA32C792BD26566009374DC /* PenPalModelHeader.swift */,
+			);
+			path = Rewrite;
+			sourceTree = "<group>";
+		};
+		5EA32C7B2BD2757C009374DC /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5EA32C7C2BD2758B009374DC /* PenPalServiceProtocol.swift */,
+				5EA32C7E2BD275A2009374DC /* MockPenPalService.swift */,
+				5EA32C802BD275C6009374DC /* CoreDataPenPalService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		5ED5A160297842220053B3D0 /* Charts */ = {
 			isa = PBXGroup;
 			children = (
@@ -419,6 +472,7 @@
 			name = Pendulum;
 			packageProductDependencies = (
 				5E41006B2AF8493F00737E5C /* ZIPFoundation */,
+				5EA32C722BD1730E009374DC /* GRDBQuery */,
 			);
 			productName = Pendulum;
 			productReference = 5E4055052914205D00BD52BF /* Pendulum.app */;
@@ -450,6 +504,7 @@
 			mainGroup = 5E4054FC2914205D00BD52BF;
 			packageReferences = (
 				5E4100692AF8492400737E5C /* XCRemoteSwiftPackageReference "ZIPFoundation" */,
+				5EA32C712BD1730E009374DC /* XCRemoteSwiftPackageReference "GRDBQuery" */,
 			);
 			productRefGroup = 5E4055062914205D00BD52BF /* Products */;
 			projectDirPath = "";
@@ -480,15 +535,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
+				5EA32C7D2BD2758B009374DC /* PenPalServiceProtocol.swift in Sources */,
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
+				5EA32C7F2BD275A2009374DC /* MockPenPalService.swift in Sources */,
 				5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */,
 				5E40551D29151B9A00BD52BF /* Loggers.swift in Sources */,
 				5E40552629151E2200BD52BF /* AppInfo.swift in Sources */,
 				5E40552A2915202B00BD52BF /* ContentView.swift in Sources */,
+				5EA32C762BD1C117009374DC /* EventModelCell.swift in Sources */,
 				406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */,
 				5E4055322915280C00BD52BF /* UIApplication.swift in Sources */,
+				5EA32C852BD29475009374DC /* EventModel.swift in Sources */,
 				5E625214292B999500A3EB86 /* Stationery+Extensions.swift in Sources */,
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */,
@@ -517,10 +576,12 @@
 				5E4055492918184000BD52BF /* Calendar.swift in Sources */,
 				5E0A016229AF9F8300BADAC6 /* PenPalSplitView.swift in Sources */,
 				5E0A016A29AFA9E400BADAC6 /* PenPalListSection.swift in Sources */,
+				5EA32C812BD275C6009374DC /* CoreDataPenPalService.swift in Sources */,
 				5E40554F2918215C00BD52BF /* CNPostalAddress.swift in Sources */,
 				5E494C7B29D41E4B00D908E1 /* ImageGalleryOverlay.swift in Sources */,
 				5EDFFA402AF302D6008530A1 /* RestoreButton.swift in Sources */,
 				5E0A016629AFA77A00BADAC6 /* AddFirstPenPalView.swift in Sources */,
+				5EA32C782BD2605D009374DC /* PenPalModelView.swift in Sources */,
 				5EE5687129D1D63400BC2687 /* EventPhoto+Extensions.swift in Sources */,
 				5E40553429152C6100BD52BF /* AddPenPalSheet.swift in Sources */,
 				5E625210292B8CAA00A3EB86 /* AddEventSheet.swift in Sources */,
@@ -532,6 +593,7 @@
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E62520A292B76FA00A3EB86 /* PenPalView.swift in Sources */,
 				5E6252082928C20600A3EB86 /* PenPal+Extensions.swift in Sources */,
+				5EA32C702BD1716C009374DC /* PenPalViewModel.swift in Sources */,
 				5E2F86E52AF6FA6F00BEB28B /* URL.swift in Sources */,
 				5E62521F292E75E000A3EB86 /* PenPalListItem.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
@@ -542,12 +604,14 @@
 				5E0A016029AF75FC00BADAC6 /* SplitView.swift in Sources */,
 				5E625217292BCFB800A3EB86 /* PenPal+Notifications.swift in Sources */,
 				5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */,
+				5EA32C832BD2945A009374DC /* PenPalModel.swift in Sources */,
 				5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */,
 				5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */,
 				5E0A016429AFA68C00BADAC6 /* GrantContactsAccessView.swift in Sources */,
 				5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */,
 				5E62520C292B7A2A00A3EB86 /* Event+Extensions.swift in Sources */,
 				5EDFFA442AF4546C008530A1 /* DebugView.swift in Sources */,
+				5EA32C7A2BD26566009374DC /* PenPalModelHeader.swift in Sources */,
 				5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */,
 				5E7EC41B2979A73A00C24189 /* Double.swift in Sources */,
 				5E62520E292B889700A3EB86 /* EventCell.swift in Sources */,
@@ -700,7 +764,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
@@ -747,7 +811,7 @@
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = UIInterfaceOrientationPortrait;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
@@ -794,6 +858,14 @@
 				minimumVersion = 0.9.17;
 			};
 		};
+		5EA32C712BD1730E009374DC /* XCRemoteSwiftPackageReference "GRDBQuery" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/groue/GRDBQuery";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -801,6 +873,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5E4100692AF8492400737E5C /* XCRemoteSwiftPackageReference "ZIPFoundation" */;
 			productName = ZIPFoundation;
+		};
+		5EA32C722BD1730E009374DC /* GRDBQuery */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5EA32C712BD1730E009374DC /* XCRemoteSwiftPackageReference "GRDBQuery" */;
+			productName = GRDBQuery;
 		};
 /* End XCSwiftPackageProductDependency section */
 

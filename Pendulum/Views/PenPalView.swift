@@ -217,13 +217,13 @@ struct PenPalView: View {
     }
     
     func userTappedAddEvent(ofType eventType: EventType) {
-        if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
-            self.presentAddEventSheetForType = eventType
-        } else {
+//        if eventType.presentFullNotesSheetByDefault && !UserDefaults.shared.enableQuickEntry {
+//            self.presentAddEventSheetForType = eventType
+//        } else {
             withAnimation {
                 penpal.addEvent(ofType: eventType, in: moc)
             }
-        }
+//        }
     }
     
     private func eventsWithDifferences(for events: FetchedResults<Event>) -> [(Event, Int)] {

@@ -42,6 +42,7 @@ struct PendulumApp: App {
                 .environmentObject(OrientationObserver.shared)
                 .environmentObject(imageViewerController)
                 .environment(\.managedObjectContext, persistenceController.container.viewContext)
+                .environment(\.penPalService, CoreDataPenPalService(context: persistenceController.container.viewContext))
         }
     }
 }

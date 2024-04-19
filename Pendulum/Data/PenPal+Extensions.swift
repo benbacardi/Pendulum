@@ -11,6 +11,22 @@ import CoreData
 import Contacts
 
 extension PenPal {
+    func toPenPalModel() -> PenPalModel {
+        PenPalModel(
+            id: self.id ?? UUID(),
+            name: self.wrappedName,
+            initials: self.wrappedInitials,
+            notes: self.notes,
+            lastEventDate: self.lastEventDate,
+            lastEventType: self.lastEventType,
+            lastEventLetterType: self.lastEventLetterType,
+            imageData: self.image,
+            isArchived: self.archived
+        )
+    }
+}
+
+extension PenPal {
     
     static let entityName: String = "PenPal"
     
@@ -296,6 +312,18 @@ extension PenPal {
         PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
     }
     
+    static func fetch(withId id: UUID, from context: NSManagedObjectContext) -> PenPal? {
+        let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
+        let predicate = NSPredicate(format: "id = %@", id as CVarArg)
+        fetchRequest.predicate = predicate
+        do {
+            return try context.fetch(fetchRequest).first
+        } catch {
+            dataLogger.error("Could not fetch penpal with ID \(id): \(error.localizedDescription)")
+        }
+        return nil
+    }
+    
     static func fetch(withStatus eventType: EventType? = nil, all: Bool = false, from context: NSManagedObjectContext) -> [PenPal] {
         let fetchRequest = NSFetchRequest<PenPal>(entityName: PenPal.entityName)
         var predicates: [NSPredicate] = []
@@ -418,9 +446,9 @@ extension PenPal {
         return count
     }
     
-    func events(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
+    func events(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext, descending: Bool = false) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: !descending)]
         var predicates: [NSPredicate] = [
             self.ownEventsPredicate
         ]

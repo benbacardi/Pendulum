@@ -14,7 +14,8 @@ enum Route: Hashable {
     var view: some View {
         switch self {
         case let .penPalDetail(penpal):
-            PenPalView(penpal: penpal)
+//            PenPalView(penpal: penpal)
+            PenPalModelView(penpal.toPenPalModel())
         }
     }
     

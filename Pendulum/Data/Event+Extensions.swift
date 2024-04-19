@@ -9,6 +9,24 @@ import CoreData
 import Foundation
 
 extension Event {
+    func toEventModel() -> EventModel {
+        EventModel(
+            id: self.id ?? UUID(),
+            date: self.wrappedDate,
+            type: self.type,
+            letterType: self.letterType,
+            notes: self.notes,
+            noFurtherActions: self.noFurtherActions,
+            noResponseNeeded: self.ignore,
+            paper: self.papers,
+            pens: self.pens,
+            ink: self.inks,
+            trackingReference: self.trackingReference
+        )
+    }
+}
+
+extension Event {
     
     static let entityName: String = "Event"
     static let optionSeparators = CharacterSet(charactersIn: ";\n")
@@ -161,6 +179,18 @@ extension Event {
             dataLogger.error("Could not fetch events: \(error.localizedDescription)")
         }
         return []
+    }
+    
+    static func fetch(withId id: UUID, from context: NSManagedObjectContext) -> Event? {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        let predicate = NSPredicate(format: "id = %@", id as CVarArg)
+        fetchRequest.predicate = predicate
+        do {
+            return try context.fetch(fetchRequest).first
+        } catch {
+            dataLogger.error("Could not fetch event with ID \(id): \(error.localizedDescription)")
+        }
+        return nil
     }
     
     static func count(from context: NSManagedObjectContext) -> Int {

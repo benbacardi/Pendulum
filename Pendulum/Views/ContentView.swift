@@ -11,7 +11,11 @@ struct ContentView: View {
     
     @Environment(\.managedObjectContext) var moc
     
+//    #if DEBUG
+//    @State private var selectedTab: Tab = .debug
+//    #else
     @State private var selectedTab: Tab = .penPalList
+//    #endif
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
     @State private var showWhatsNewOverlay: Bool = false

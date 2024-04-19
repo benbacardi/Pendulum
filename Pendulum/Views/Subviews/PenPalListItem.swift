@@ -20,6 +20,24 @@ struct PenPalListItem: View {
     @State private var displayImage: Image?
     @State private var subHeader: String? = nil
     
+    var isSelectedInPath: Bool {
+        if DeviceType.isPhone() {
+            return false
+        } else {
+            for path in router.path {
+                switch path {
+                case .penPalDetail(let pathPenPal):
+                    if pathPenPal == penpal {
+                        return true
+                    }
+                default:
+                    continue
+                }
+            }
+            return false
+        }
+    }
+    
     @ViewBuilder
     var content: some View {
         HStack {
@@ -59,7 +77,7 @@ struct PenPalListItem: View {
                     .foregroundColor(.secondary)
             }
         }
-        .foregroundColor(.primary)
+        .foregroundColor(isSelectedInPath ? .black : .primary)
         .task {
             withAnimation {
                 if !penpal.archived && asListItem {
@@ -75,9 +93,19 @@ struct PenPalListItem: View {
         
     var body: some View {
         if asListItem {
-            GroupBox {
+            VStack {
                 content
             }
+            .padding()
+            .background {
+                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                    .strokeBorder(Color.accentColor, lineWidth: isSelectedInPath ? 2 : 0)
+                    .background {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                .fill(Color(uiColor: .secondarySystemBackground))
+                    }
+            }
+            .backgroundStyle(isSelectedInPath ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
             .opacity(penpal.archived ? 0.5 : 1)
         } else {
             content
