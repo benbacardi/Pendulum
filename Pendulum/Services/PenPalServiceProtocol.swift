@@ -26,6 +26,7 @@ protocol PenPalServiceProtocol {
     
     // MARK: Display functions
     func fetchSectionedEvents(for penPal: PenPalModel) async -> [EventSection]
+    func fetchPenPal(for id: UUID) -> PenPalModel?
     
     // MARK: Edit functions
     func deleteEvent(_ event: EventModel) async

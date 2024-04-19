@@ -10,13 +10,13 @@ import GRDBQuery
 
 class PenPalViewModel: ObservableObject {
     let penPalService: any PenPalServiceProtocol
-    let penPal: PenPalModel
     
     @Published var events: [EventSection] = []
+    @Published var penPal: PenPalModel
     
     init(for penPal: PenPalModel, penPalService: any PenPalServiceProtocol) {
-        self.penPalService = penPalService
         self.penPal = penPal
+        self.penPalService = penPalService
     }
     
     func loadEvents() async {
@@ -27,19 +27,20 @@ class PenPalViewModel: ObservableObject {
     }
     
     func delete(event: EventModel) {
-        print("CALLED")
-        self.events = self.events.map {
-            $0.removingEvent(event)
+        self.events = self.events.compactMap { eventSection in
+            let newSection = eventSection.removingEvent(event)
+            if newSection.events.isEmpty {
+                return nil
+            }
+            return newSection
         }
-        for event in self.events {
-            print(event)
-            print("--")
-        }
-//        self.events = self.penPalService.divideEvents(
-//            self.events.lazy.map { $0.0 }.filter { $0.id != event.id }
-//        )
         Task {
             await penPalService.deleteEvent(event)
+            if let refreshedPenPal = penPalService.fetchPenPal(for: penPal.id) {
+                DispatchQueue.main.async {
+                    self.penPal = refreshedPenPal
+                }
+            }
         }
     }
     

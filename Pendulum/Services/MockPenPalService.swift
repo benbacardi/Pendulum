@@ -24,6 +24,11 @@ class MockPenPalService: PenPalServiceProtocol {
     func fetchSectionedEvents(for penPal: PenPalModel) async -> [EventSection] {
         return sectionEvents(Self.events)
     }
+    
+    func fetchPenPal(for id: UUID) -> PenPalModel? {
+        Self.penPals.first
+    }
+    
 }
 
 // MARK: Edit functions

@@ -22,6 +22,13 @@ class CoreDataPenPalService: PenPalServiceProtocol {
         }
         return []
     }
+    
+    func fetchPenPal(for id: UUID) -> PenPalModel? {
+        if let coreDataPenPal = PenPal.fetch(withId: id, from: context) {
+            return coreDataPenPal.toPenPalModel()
+        }
+        return nil
+    }
 }
 
 // MARK: Edit functions

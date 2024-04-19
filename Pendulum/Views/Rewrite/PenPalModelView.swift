@@ -14,9 +14,6 @@ struct PenPalModelView: View {
     @EnvironmentStateObject var viewModel: PenPalViewModel
     @Environment(\.colorScheme) var colorScheme
     
-    // MARK: Parameters
-    let penPal: PenPalModel
-    
     // MARK: State
     @State private var buttonHeight: CGFloat?
     
@@ -25,7 +22,6 @@ struct PenPalModelView: View {
         self._viewModel = EnvironmentStateObject { env in
             PenPalViewModel(for: penPal, penPalService: env.penPalService)
         }
-        self.penPal = penPal
     }
     
     @ViewBuilder
@@ -67,18 +63,18 @@ struct PenPalModelView: View {
     @ViewBuilder
     var headerAndButtons: some View {
         VStack(spacing: 10) {
-            PenPalModelHeader(penPal: penPal)
+            PenPalModelHeader(penPal: viewModel.penPal)
                 .padding(.horizontal)
-            if penPal.lastEventType != .noEvent && !penPal.isArchived && penPal.lastEventType != .nothingToDo {
-                Text(penPal.lastEventType.phrase)
+            if viewModel.penPal.lastEventType != .noEvent && !viewModel.penPal.isArchived && viewModel.penPal.lastEventType != .nothingToDo {
+                Text(viewModel.penPal.lastEventType.phrase)
                     .fullWidth()
                     .padding(.horizontal)
             }
             HStack {
-                if penPal.isArchived {
+                if viewModel.penPal.isArchived {
                     actionButton(for: .archived, text: "Unarchive")
                 } else {
-                    ForEach(penPal.lastEventType.nextLogicalEventTypes) { eventType in
+                    ForEach(viewModel.penPal.lastEventType.nextLogicalEventTypes) { eventType in
                         actionButton(for: eventType)
                     }
                 }
@@ -108,7 +104,7 @@ struct PenPalModelView: View {
                         .aspectRatio(contentMode: .fit)
                         .frame(maxWidth: 200)
                 }
-                Text("You have no correspondence with \(penPal.name) yet!")
+                Text("You have no correspondence with \(viewModel.penPal.name) yet!")
                     .fullWidth(alignment: .center)
                     .padding()
                     .padding(.top)
