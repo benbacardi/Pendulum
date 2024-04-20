@@ -28,7 +28,11 @@ protocol PenPalServiceProtocol {
     func fetchSectionedEvents(for penPal: PenPalModel) async -> [EventSection]
     func fetchPenPal(for id: UUID) -> PenPalModel?
     
-    // MARK: Edit functions
+    // MARK: PenPal edit functions
+    func update(penPal: PenPalModel, with events: [EventModel]) async -> PenPalModel
+    func update(penPal: PenPalModel, isArchived: Bool) async -> PenPalModel
+    
+    // MARK: Event edit functions
     func deleteEvent(_ event: EventModel) async
     
 }
@@ -50,7 +54,9 @@ extension PenPalServiceProtocol {
             if daysBetween == 0 {
                 currentEvents.append(event)
             } else {
-                returnData.append(EventSection(dayInterval: priorDaysBetween, events: currentEvents, calculatedFromToday: returnData.isEmpty))
+                if !currentEvents.isEmpty {
+                    returnData.append(EventSection(dayInterval: priorDaysBetween, events: currentEvents, calculatedFromToday: returnData.isEmpty))
+                }
                 currentEvents = [event]
                 priorDaysBetween = daysBetween
             }

@@ -31,7 +31,17 @@ class MockPenPalService: PenPalServiceProtocol {
     
 }
 
-// MARK: Edit functions
+// MARK: Edit PenPal functions
+extension MockPenPalService {
+    func update(penPal: PenPalModel, with events: [EventModel]) async -> PenPalModel {
+        return penPal
+    }
+    func update(penPal: PenPalModel, isArchived: Bool) async -> PenPalModel {
+        return penPal
+    }
+}
+
+// MARK: Edit Event functions
 extension MockPenPalService {
     func deleteEvent(_ event: EventModel) async {
         print("Deleting!")

@@ -47,7 +47,7 @@ struct PenPalModelView: View {
     @ViewBuilder
     func actionButton(for eventType: EventType, text: String? = nil) -> some View {
         Button(action: {
-            
+            actionTapped(eventType)
         }) {
             Label(text ?? eventType.actionableTextShort, systemImage: eventType.icon)
                 .fullWidth(alignment: .center)
@@ -96,7 +96,7 @@ struct PenPalModelView: View {
     var body: some View {
         VStack(spacing: 10) {
             headerAndButtons
-            if viewModel.events.isEmpty {
+            if viewModel.eventsBySection.isEmpty {
                 Spacer()
                 if let image = UIImage(named: "undraw_letter_re_8m03") {
                     Image(uiImage: image)
@@ -111,7 +111,7 @@ struct PenPalModelView: View {
                 Spacer()
             } else {
                 List {
-                    ForEach(viewModel.events) { section in
+                    ForEach(viewModel.eventsBySection) { section in
                         Section(header: dateDivider(for: section.events.first!.date, withDifference: section.dayInterval, relativeToToday: section.calculatedFromToday)) {
                             ForEach(section.events) { event in
                                 EventModelCell(event: event, onDelete: { event in
@@ -139,6 +139,18 @@ struct PenPalModelView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
     }
+    
+    private func actionTapped(_ eventType: EventType) {
+        switch eventType {
+        case .archived:
+            withAnimation {
+                viewModel.toggleArchived()
+            }
+        default:
+            break
+        }
+    }
+    
 }
 
 private extension PenPalModelView {
