@@ -89,6 +89,9 @@
 		5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687229D1E43E00BC2687 /* UIImage.swift */; };
 		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
 		5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */; };
+		5EE56EF82BD6A0CC00FF9702 /* PenPalListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE56EF72BD6A0CC00FF9702 /* PenPalListViewModel.swift */; };
+		5EE56EFA2BD6A11300FF9702 /* PenPalModelListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE56EF92BD6A11300FF9702 /* PenPalModelListView.swift */; };
+		5EE56EFC2BD6A32600FF9702 /* PenPalModelCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE56EFB2BD6A32600FF9702 /* PenPalModelCell.swift */; };
 		5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787092AF2B61700CD3221 /* ExportButton.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
@@ -180,6 +183,9 @@
 		5EE5687229D1E43E00BC2687 /* UIImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIImage.swift; sourceTree = "<group>"; };
 		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerController.swift; sourceTree = "<group>"; };
+		5EE56EF72BD6A0CC00FF9702 /* PenPalListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListViewModel.swift; sourceTree = "<group>"; };
+		5EE56EF92BD6A11300FF9702 /* PenPalModelListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalModelListView.swift; sourceTree = "<group>"; };
+		5EE56EFB2BD6A32600FF9702 /* PenPalModelCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalModelCell.swift; sourceTree = "<group>"; };
 		5EE787092AF2B61700CD3221 /* ExportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportButton.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
@@ -408,6 +414,7 @@
 		5EA32C6E2BD1713B009374DC /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
+				5EE56EF72BD6A0CC00FF9702 /* PenPalListViewModel.swift */,
 				5EA32C6F2BD1716C009374DC /* PenPalViewModel.swift */,
 			);
 			path = Controllers;
@@ -416,9 +423,11 @@
 		5EA32C742BD1C103009374DC /* Rewrite */ = {
 			isa = PBXGroup;
 			children = (
+				5EE56EF92BD6A11300FF9702 /* PenPalModelListView.swift */,
+				5EE56EFB2BD6A32600FF9702 /* PenPalModelCell.swift */,
 				5EA32C772BD2605D009374DC /* PenPalModelView.swift */,
-				5EA32C752BD1C117009374DC /* EventModelCell.swift */,
 				5EA32C792BD26566009374DC /* PenPalModelHeader.swift */,
+				5EA32C752BD1C117009374DC /* EventModelCell.swift */,
 			);
 			path = Rewrite;
 			sourceTree = "<group>";
@@ -536,6 +545,7 @@
 			files = (
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
 				5EA32C7D2BD2758B009374DC /* PenPalServiceProtocol.swift in Sources */,
+				5EE56EF82BD6A0CC00FF9702 /* PenPalListViewModel.swift in Sources */,
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
@@ -551,6 +561,7 @@
 				5E625214292B999500A3EB86 /* Stationery+Extensions.swift in Sources */,
 				5EA81858291BFE170052F88E /* DeviceType.swift in Sources */,
 				5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */,
+				5EE56EFA2BD6A11300FF9702 /* PenPalModelListView.swift in Sources */,
 				5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */,
 				5E0A015E29AE8A1E00BADAC6 /* PenPalList.swift in Sources */,
 				5E625219292CBD2700A3EB86 /* Export.swift in Sources */,
@@ -561,6 +572,7 @@
 				5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */,
 				5E3461F02983BF6700BBD038 /* AppPreferences.swift in Sources */,
 				5E8A4A22298D9B8E00DD2493 /* TipJarView.swift in Sources */,
+				5EE56EFC2BD6A32600FF9702 /* PenPalModelCell.swift in Sources */,
 				5ED5A1642978430F0053B3D0 /* Date.swift in Sources */,
 				5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */,
 				5EE5687329D1E43E00BC2687 /* UIImage.swift in Sources */,

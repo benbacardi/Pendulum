@@ -24,7 +24,8 @@ struct PenPalTab: View {
                 } else if allPenPals.isEmpty {
                     AddFirstPenPalView()
                 } else {
-                    PenPalList()
+//                    PenPalList()
+                    PenPalModelListView()
                 }
             }
             .navigationTitle("Pen Pals")

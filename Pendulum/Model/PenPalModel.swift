@@ -18,6 +18,7 @@ struct PenPalModel: Identifiable {
     let lastEventLetterType: LetterType?
     let imageData: Data?
     let isArchived: Bool
+    var eventCount: Int = 0
     
     var displayImage: Image? {
         get async {
@@ -28,4 +29,34 @@ struct PenPalModel: Identifiable {
         }
     }
     
+}
+
+extension PenPalModel {
+    var groupingEventType: EventType {
+        if isArchived {
+            return EventType.archived
+        } else {
+            switch lastEventType {
+            case .noEvent:
+                return eventCount == 0 ? EventType.noEvent : EventType.nothingToDo
+            case .theyReceived:
+                return .sent
+            case .written:
+                if !UserDefaults.shared.trackPostingLetters {
+                    return .sent
+                }
+                return self.lastEventType
+            default:
+                return self.lastEventType
+            }
+        }
+    }
+}
+
+
+struct PenPalSection: Identifiable {
+    let eventType: EventType
+    let penPals: [PenPalModel]
+    
+    var id: EventType { eventType }
 }

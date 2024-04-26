@@ -23,13 +23,17 @@ protocol PenPalServiceProtocol {
     
     // MARK: Utility functions
     func sectionEvents(_ events: [EventModel]) -> [EventSection]
+    func sectionPenPals(_ penPals: [PenPalModel]) -> [PenPalSection]
     
     // MARK: Display functions
     func fetchSectionedEvents(for penPal: PenPalModel) async -> [EventSection]
     func fetchPenPal(for id: UUID) -> PenPalModel?
+    func fetchPenPals() async -> [PenPalModel]
+    func fetchSectionedPenPals() async -> [PenPalSection]
     
     // MARK: PenPal edit functions
     func update(penPal: PenPalModel, with events: [EventModel]) async -> PenPalModel
+    @discardableResult
     func update(penPal: PenPalModel, isArchived: Bool) async -> PenPalModel
     
     // MARK: Event edit functions
@@ -66,6 +70,19 @@ extension PenPalServiceProtocol {
             returnData.append(EventSection(dayInterval: priorDaysBetween, events: currentEvents, calculatedFromToday: returnData.isEmpty))
         }
         return returnData
+    }
+    
+    func sectionPenPals(_ penPals: [PenPalModel]) -> [PenPalSection] {
+        if penPals.isEmpty {
+            return []
+        }
+        let eventTypeMapping: [EventType: [PenPalModel]] = Dictionary(grouping: penPals, by: { $0.groupingEventType })
+        return EventType.allCases.compactMap { eventType in
+            if let penPals = eventTypeMapping[eventType] {
+                return PenPalSection(eventType: eventType, penPals: penPals)
+            }
+            return nil
+        }
     }
     
 }

@@ -32,11 +32,19 @@ extension CoreDataPenPalService {
         return []
     }
     
+    func fetchPenPals() async -> [PenPalModel] {
+        return PenPal.fetchAll(from: self.context).map { $0.toPenPalModel() }
+    }
+    
     func fetchPenPal(for id: UUID) -> PenPalModel? {
         if let coreDataPenPal = fetchCoreDataPenPal(with: id) {
             return coreDataPenPal.toPenPalModel()
         }
         return nil
+    }
+    
+    func fetchSectionedPenPals() async -> [PenPalSection] {
+        return sectionPenPals(await fetchPenPals())
     }
     
 }

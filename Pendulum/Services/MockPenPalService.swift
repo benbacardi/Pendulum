@@ -11,8 +11,9 @@ class MockPenPalService: PenPalServiceProtocol {
     let name = "MockPenPalService"
     
     static let penPals: [PenPalModel] = [
-        .init(id: UUID(), name: "Alex Faber", initials: "AF", notes: nil, lastEventDate: nil, lastEventType: .noEvent, lastEventLetterType: nil, imageData: nil, isArchived: false),
-        .init(id: UUID(), name: "Ben Cardy", initials: "BC", notes: nil, lastEventDate: nil, lastEventType: .noEvent, lastEventLetterType: nil, imageData: nil, isArchived: true)
+        .init(id: UUID(), name: "Alex Faber", initials: "AF", notes: nil, lastEventDate: .now.addingTimeInterval(-1000), lastEventType: .written, lastEventLetterType: .letter, imageData: nil, isArchived: false),
+        .init(id: UUID(), name: "Ben Cardy", initials: "BC", notes: nil, lastEventDate: nil, lastEventType: .noEvent, lastEventLetterType: nil, imageData: nil, isArchived: true),
+        .init(id: UUID(), name: "Ellen Durack", initials: "ED", notes: nil, lastEventDate: nil, lastEventType: .noEvent, lastEventLetterType: nil, imageData: nil, isArchived: true)
     ]
     
     static let events: [EventModel] = [
@@ -23,6 +24,14 @@ class MockPenPalService: PenPalServiceProtocol {
     
     func fetchSectionedEvents(for penPal: PenPalModel) async -> [EventSection] {
         return sectionEvents(Self.events)
+    }
+    
+    func fetchPenPals() async -> [PenPalModel] {
+        Self.penPals
+    }
+    
+    func fetchSectionedPenPals() async -> [PenPalSection] {
+        return sectionPenPals(Self.penPals)
     }
     
     func fetchPenPal(for id: UUID) -> PenPalModel? {

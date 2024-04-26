@@ -121,7 +121,8 @@ struct PenPalModelView: View {
                                 })
                                 .padding(.horizontal)
                             }
-                            .listRowSeparator(.hidden).listRowInsets(.init(top: 5, leading: 0, bottom: 5, trailing: 0))
+                            .listRowSeparator(.hidden)
+                            .listRowInsets(.init(top: 5, leading: 0, bottom: 5, trailing: 0))
                         }
                         .listSectionSpacing(0)
                         .listSectionSeparator(.hidden)

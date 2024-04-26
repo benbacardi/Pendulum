@@ -109,12 +109,12 @@ enum EventType: Int, CaseIterable, Identifiable {
     }
     
     var icon: String {
-        /// Displayed in laces such as the list of historical events for a Pen Pal
+        /// Displayed in places such as the list of historical events for a Pen Pal
         switch self {
         case .noEvent:
             return "hourglass"
         case .written:
-            return "pencil.line"
+            return "pencil"
         case .sent:
             return "paperplane"
         case .inbound:
@@ -157,21 +157,30 @@ enum EventType: Int, CaseIterable, Identifiable {
         /// Section headers on the Pen Pal list view
         switch self {
         case .noEvent:
-            return "hourglass"
+            return "hourglass.circle.fill"
         case .written:
-            return "envelope"
+            return "envelope.circle.fill"
         case .sent:
-            return "paperplane"
+            return "paperplane.circle.fill"
         case .inbound:
-            return "box.truck"
+            return "box.truck.fill"
         case .received:
-            return "pencil.line"
+            return "pencil.circle.fill"
         case .theyReceived:
-            return "envelope"
+            return "envelope.circle.fill"
         case .archived:
-            return "archivebox"
+            return "archivebox.circle.fill"
         case .nothingToDo:
             return "face.smiling.fill"
+        }
+    }
+    
+    var phraseImage: Image {
+        switch self {
+        case .inbound:
+            return Image("truck.box.circle.fill")
+        default:
+            return Image(systemName: phraseIcon)
         }
     }
     
