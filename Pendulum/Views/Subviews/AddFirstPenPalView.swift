@@ -10,7 +10,7 @@ import SwiftUI
 struct AddFirstPenPalView: View {
     
     @EnvironmentObject private var router: Router
-    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     
     var body: some View {
         VStack {

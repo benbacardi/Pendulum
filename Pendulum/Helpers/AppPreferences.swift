@@ -12,7 +12,7 @@ class AppPreferences: ObservableObject {
     
     static var shared = AppPreferences()
     
-    @AppStorage(UserDefaults.Key.trackPostingLetters.rawValue, store: UserDefaults.shared) var trackPostingLetters = true {
+    @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) var trackPostingLetters = true {
         didSet {
             objectWillChange.send()
         }

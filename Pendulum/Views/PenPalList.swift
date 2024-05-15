@@ -17,9 +17,9 @@ struct PenPalList: View {
     
     // MARK: State
     @State private var iconWidth: CGFloat = .zero
-    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
-    @AppStorage(UserDefaults.Key.groupPenPalsInListView.rawValue, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
-    @AppStorage(UserDefaults.Key.trackPostingLetters.rawValue, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
+    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
+    @AppStorage(UserDefaults.Key.groupPenPalsInListView, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
+    @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
     
     var body: some View {
         /// Changed from a List to a scrolling LazyVStack, because List didn't properly update within the sections when the underlying Fetch Request data updated

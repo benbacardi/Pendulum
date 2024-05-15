@@ -48,7 +48,7 @@ struct EventPropertyDetailsSheet: View {
     
     @State private var editingStationery: ParameterCount? = nil
     
-    @AppStorage(UserDefaults.Key.sortStationeryAlphabetically.rawValue, store: UserDefaults.shared) private var sortAlphabetically: Bool = false
+    @AppStorage(UserDefaults.Key.sortStationeryAlphabetically, store: UserDefaults.shared) private var sortAlphabetically: Bool = false
     @State private var outbound: Bool = true
     
     @State private var newPenEntry: String = ""

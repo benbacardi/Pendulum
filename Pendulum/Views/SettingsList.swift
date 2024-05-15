@@ -35,16 +35,16 @@ struct SettingsList: View {
     let motionManager = CMMotionManager()
     
     // MARK: State
-    @AppStorage(UserDefaults.Key.sendRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToWriteLetters: Bool = false
-    @AppStorage(UserDefaults.Key.sendRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var sendRemindersToPostLetters: Bool = false
-    @AppStorage(UserDefaults.Key.badgeRemindersToWriteLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToWriteLetters: Bool = false
-    @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters.rawValue, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
-    @AppStorage(UserDefaults.Key.enableQuickEntry.rawValue, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
-    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
-    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically.rawValue, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
-    @AppStorage(UserDefaults.Key.groupPenPalsInListView.rawValue, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
-    @AppStorage(UserDefaults.Key.shouldShowDebugView.rawValue, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
-    @AppStorage(UserDefaults.Key.trackPostingLetters.rawValue, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
+    @AppStorage(UserDefaults.Key.sendRemindersToWriteLetters, store: UserDefaults.shared) private var sendRemindersToWriteLetters: Bool = false
+    @AppStorage(UserDefaults.Key.sendRemindersToPostLetters, store: UserDefaults.shared) private var sendRemindersToPostLetters: Bool = false
+    @AppStorage(UserDefaults.Key.badgeRemindersToWriteLetters, store: UserDefaults.shared) private var badgeRemindersToWriteLetters: Bool = false
+    @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
+    @AppStorage(UserDefaults.Key.enableQuickEntry, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
+    @AppStorage(UserDefaults.Key.groupPenPalsInListView, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
+    @AppStorage(UserDefaults.Key.shouldShowDebugView, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
+    @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined

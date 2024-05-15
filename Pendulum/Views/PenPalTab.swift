@@ -13,7 +13,7 @@ struct PenPalTab: View {
     // MARK: State
     @StateObject var router = Router()
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
-    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
  
     var body: some View {

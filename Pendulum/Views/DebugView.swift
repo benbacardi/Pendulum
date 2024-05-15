@@ -13,7 +13,7 @@ struct DebugView: View {
     
     @ObservedObject var syncMonitor = SyncMonitor.shared
     
-    @AppStorage(UserDefaults.Key.hasPerformedCoreDataMigrationToAppGroup.rawValue, store: UserDefaults.shared) private var hasPerformedCoreDataMigrationToAppGroup: Bool = false
+    @AppStorage(UserDefaults.Key.hasPerformedCoreDataMigrationToAppGroup, store: UserDefaults.shared) private var hasPerformedCoreDataMigrationToAppGroup: Bool = false
     @AppStorage(UserDefaults.Key.lastSyncDate.rawValue) private var lastSyncDate: Date = .distantPast
     
     @State private var penpalCount: Int = 0

@@ -90,17 +90,8 @@ struct PenPalListSection: View {
     var sectionHeader: some View {
         if let eventType {
             HStack {
-                ZStack {
-                    Circle()
-                        .fill(eventType.color)
-                        .frame(width: iconWidth * 1.5, height: iconWidth * 1.5)
-                    Image(systemName: eventType.phraseIcon)
-                        .font(Font.caption.weight(.bold))
-                        .foregroundColor(.white)
-                        .background(GeometryReader { geo in
-                            Color.clear.preference(key: PenPalListIconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
-                        })
-                }
+                eventType.sectionHeaderIcon
+                    .font(.title)
                 Text(eventType.phrase)
                     .fullWidth()
                     .font(.body)

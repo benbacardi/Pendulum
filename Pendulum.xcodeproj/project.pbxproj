@@ -66,6 +66,7 @@
 		5EA81856291BB7AD0052F88E /* RoundedCorner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81855291BB7AD0052F88E /* RoundedCorner.swift */; };
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
 		5EBD28792BB37AD300746418 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */; };
+		5EC3DBE62BE6E0AE00693D1A /* AppStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC3DBE52BE6E0AE00693D1A /* AppStorage.swift */; };
 		5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */; };
 		5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A15E297815560053B3D0 /* StatsView.swift */; };
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
@@ -148,6 +149,7 @@
 		5EA81855291BB7AD0052F88E /* RoundedCorner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundedCorner.swift; sourceTree = "<group>"; };
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		5EC3DBE52BE6E0AE00693D1A /* AppStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorage.swift; sourceTree = "<group>"; };
 		5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStationerySheet.swift; sourceTree = "<group>"; };
 		5ED5A15E297815560053B3D0 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
@@ -271,6 +273,7 @@
 				5EE5687229D1E43E00BC2687 /* UIImage.swift */,
 				5EE0FED929DD670F00A1CF03 /* PHPickerResult.swift */,
 				5E2F86E42AF6FA6F00BEB28B /* URL.swift */,
+				5EC3DBE52BE6E0AE00693D1A /* AppStorage.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -494,6 +497,7 @@
 				5E7EC41F29801FD400C24189 /* SentByTypeChart.swift in Sources */,
 				5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */,
 				5E0A015E29AE8A1E00BADAC6 /* PenPalList.swift in Sources */,
+				5EC3DBE62BE6E0AE00693D1A /* AppStorage.swift in Sources */,
 				5E625219292CBD2700A3EB86 /* Export.swift in Sources */,
 				5E6252252932058B00A3EB86 /* ManualAddPenPalSheet.swift in Sources */,
 				5E263DFB2BB0A96200E3556A /* SyncMonitor.swift in Sources */,
