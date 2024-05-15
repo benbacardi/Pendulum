@@ -23,7 +23,7 @@ struct PenPalContactSheet: View {
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
     @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
-    @AppStorage(UserDefaults.Key.stopAskingAboutContacts.rawValue, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @State private var presentingEditSheet: Bool = false
     
     var body: some View {

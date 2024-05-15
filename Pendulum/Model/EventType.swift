@@ -90,13 +90,13 @@ enum EventType: Int, CaseIterable, Identifiable {
     var color: Color {
         switch self {
         case .noEvent:
-            return .pink
+            return .accentColor
         case .written:
             return .teal
         case .sent:
             return .indigo
         case .inbound:
-            return .orange
+            return .pink
         case .received:
             return .green
         case .theyReceived:
@@ -112,7 +112,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         /// Displayed in laces such as the list of historical events for a Pen Pal
         switch self {
         case .noEvent:
-            return "hourglass"
+            return "star"
         case .written:
             return "pencil.line"
         case .sent:
@@ -120,14 +120,32 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .inbound:
             return "airplane.departure"
         case .received:
-            return "envelope"
+            return "envelope.badge"
         case .theyReceived:
             return "airplane.arrival"
         case .archived:
             return "archivebox"
         case .nothingToDo:
-            return "face.smiling.fill"
+            return "hand.thumbsup"
         }
+    }
+    
+    var iconImage: some View {
+        let image: Image
+        switch self {
+        case .inbound:
+            image = Image(.airplaneDepartureCircleFill)
+        case .theyReceived:
+            image = Image(.airplaneArrivalCircleFill)
+        case .written:
+            image = Image(systemName: "pencil.circle.fill")
+        case .received:
+            image = Image(systemName: "envelope.circle.fill")
+        default:
+            image = Image(systemName: "\(icon).circle.fill")
+        }
+        return image
+            .foregroundColor(color)
     }
     
     var phrase: String {
@@ -153,26 +171,28 @@ enum EventType: Int, CaseIterable, Identifiable {
         }
     }
     
-    var phraseIcon: String {
+    var sectionHeaderIcon: some View {
         /// Section headers on the Pen Pal list view
+        let image: Image
         switch self {
         case .noEvent:
-            return "hourglass"
+            image = Image(systemName: "star.circle.fill")
         case .written:
-            return "envelope"
+            image = Image(systemName: "envelope.circle.fill")
         case .sent:
-            return "paperplane"
+            image = Image(systemName: "paperplane.circle.fill")
         case .inbound:
-            return "box.truck"
+            image = Image(.airplaneDepartureCircleFill)
         case .received:
-            return "pencil.line"
+            image = Image(systemName: "pencil.circle.fill")
         case .theyReceived:
-            return "envelope"
+            image = Image(systemName: "envelope.circle.fill")
         case .archived:
-            return "archivebox"
+            image = Image(systemName: "archivebox.circle.fill")
         case .nothingToDo:
-            return "face.smiling.fill"
+            image = Image(systemName: "hand.thumbsup.circle.fill")
         }
+        return image.foregroundStyle(color)
     }
     
     var datePrefix: String {

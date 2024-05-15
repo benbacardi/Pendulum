@@ -29,16 +29,8 @@ struct EventCell: View {
     
     @ViewBuilder
     var eventIcon: some View {
-        ZStack {
-            Circle()
-                .fill(event.type.color)
-            Image(systemName: event.type.icon)
-                .font(.caption)
-                .fontWeight(.bold)
-                .foregroundColor(.white)
-        }
-        .frame(width: 30, height: 30)
-        .padding(.top, 10)
+        event.type.iconImage
+            .font(.title)
     }
     
     @ViewBuilder

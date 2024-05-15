@@ -15,7 +15,7 @@ struct ContentView: View {
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
     @State private var showWhatsNewOverlay: Bool = false
-    @AppStorage(UserDefaults.Key.lastLaunchedVersion.rawValue, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
+    @AppStorage(UserDefaults.Key.lastLaunchedVersion, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
         
     var body: some View {
         Group {
@@ -24,7 +24,13 @@ struct ContentView: View {
             } else {
                 TabView(selection: $selectedTab) {
                     PenPalTab()
-                        .tabItem { Label("Pen Pals", systemImage: "pencil.line") }
+                        .tabItem {
+                            Label {
+                                Text("Pen Pals")
+                            } icon: {
+                                Image(.pendulumIcon)
+                            }
+                        }
                         .tag(Tab.penPalList)
                     #if DEBUG
                     DebugView()

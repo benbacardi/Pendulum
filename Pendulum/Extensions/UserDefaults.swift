@@ -36,15 +36,33 @@ extension UserDefaults {
     
     static let shared = UserDefaults(suiteName: APP_GROUP)!
     
+}
+
+extension UserDefaults {
+    func string(forKey key: UserDefaults.Key) -> String? { string(forKey: key.rawValue) }
+    func array(forKey key: UserDefaults.Key) -> [Any]? { array(forKey: key.rawValue) }
+    func dictionary(forKey key: UserDefaults.Key) -> [String : Any]? { dictionary(forKey: key.rawValue) }
+    func data(forKey key: UserDefaults.Key) -> Data? { data(forKey: key.rawValue) }
+    func stringArray(forKey key: UserDefaults.Key) -> [String]? { stringArray(forKey: key.rawValue) }
+    func integer(forKey key: UserDefaults.Key) -> Int { integer(forKey: key.rawValue) }
+    func float(forKey key: UserDefaults.Key) -> Float { float(forKey: key.rawValue) }
+    func double(forKey key: UserDefaults.Key) -> Double { double(forKey: key.rawValue) }
+    func bool(forKey key: UserDefaults.Key) -> Bool { bool(forKey: key.rawValue) }
+    func url(forKey key: UserDefaults.Key) -> URL? { url(forKey: key.rawValue) }
+    func setValue(_ value: Any?, forKey key: UserDefaults.Key) { setValue(value, forKey: key.rawValue) }
+}
+
+extension UserDefaults {
+    
     var exportURL: URL? {
         get {
-            guard let fileName = string(forKey: Key.exportURL.rawValue) else { return nil }
+            guard let fileName = string(forKey: Key.exportURL) else { return nil }
             guard let directory = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return nil }
             let fileURL = directory.appendingPathComponent(fileName)
             guard FileManager.default.fileExists(atPath: fileURL.path) else { return nil }
             return fileURL
         }
-        set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL.rawValue) }
+        set { setValue(newValue?.lastPathComponent, forKey: Key.exportURL) }
     }
     
 //    var lastSyncDate: Date? {
@@ -57,91 +75,91 @@ extension UserDefaults {
 //    }
     
     var hasGeneratedInitialBackup: Bool {
-        get { bool(forKey: Key.hasGeneratedInitialBackup.rawValue) }
-        set { setValue(newValue, forKey: Key.hasGeneratedInitialBackup.rawValue) }
+        get { bool(forKey: Key.hasGeneratedInitialBackup) }
+        set { setValue(newValue, forKey: Key.hasGeneratedInitialBackup) }
     }
     
     var shouldShowDebugView: Bool {
-        get { bool(forKey: Key.shouldShowDebugView.rawValue) }
-        set { setValue(newValue, forKey: Key.shouldShowDebugView.rawValue) }
+        get { bool(forKey: Key.shouldShowDebugView) }
+        set { setValue(newValue, forKey: Key.shouldShowDebugView) }
     }
     
     var groupPenPalsInListView: Bool {
-        get { bool(forKey: Key.groupPenPalsInListView.rawValue) }
-        set { setValue(newValue, forKey: Key.groupPenPalsInListView.rawValue) }
+        get { bool(forKey: Key.groupPenPalsInListView) }
+        set { setValue(newValue, forKey: Key.groupPenPalsInListView) }
     }
     
     var hasPerformedCoreDataMigrationToAppGroup: Bool {
-        get { bool(forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
-        set { setValue(newValue, forKey: Key.hasPerformedCoreDataMigrationToAppGroup.rawValue) }
+        get { bool(forKey: Key.hasPerformedCoreDataMigrationToAppGroup) }
+        set { setValue(newValue, forKey: Key.hasPerformedCoreDataMigrationToAppGroup) }
     }
     
     var trackPostingLetters: Bool {
-        get { bool(forKey: Key.trackPostingLetters.rawValue) }
-        set { setValue(newValue, forKey: Key.trackPostingLetters.rawValue) }
+        get { bool(forKey: Key.trackPostingLetters) }
+        set { setValue(newValue, forKey: Key.trackPostingLetters) }
     }
     
     var sortPenPalsAlphabetically: Bool {
-        get { bool(forKey: Key.sortPenPalsAlphabetically.rawValue) }
-        set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically.rawValue) }
+        get { bool(forKey: Key.sortPenPalsAlphabetically) }
+        set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically) }
     }
     
     var sortStationeryAlphabetically: Bool {
-        get { bool(forKey: Key.sortStationeryAlphabetically.rawValue) }
-        set { setValue(newValue, forKey: Key.sortStationeryAlphabetically.rawValue) }
+        get { bool(forKey: Key.sortStationeryAlphabetically) }
+        set { setValue(newValue, forKey: Key.sortStationeryAlphabetically) }
     }
     
     var sendRemindersToPostLetters: Bool {
-        get { bool(forKey: Key.sendRemindersToPostLetters.rawValue) }
-        set { setValue(newValue, forKey: Key.sendRemindersToPostLetters.rawValue) }
+        get { bool(forKey: Key.sendRemindersToPostLetters) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLetters) }
     }
     
     var sendRemindersToWriteLetters: Bool {
-        get { bool(forKey: Key.sendRemindersToWriteLetters.rawValue) }
-        set { setValue(newValue, forKey: Key.sendRemindersToWriteLetters.rawValue) }
+        get { bool(forKey: Key.sendRemindersToWriteLetters) }
+        set { setValue(newValue, forKey: Key.sendRemindersToWriteLetters) }
     }
     
     var badgeRemindersToPostLetters: Bool {
-        get { bool(forKey: Key.badgeRemindersToPostLetters.rawValue) }
-        set { setValue(newValue, forKey: Key.badgeRemindersToPostLetters.rawValue) }
+        get { bool(forKey: Key.badgeRemindersToPostLetters) }
+        set { setValue(newValue, forKey: Key.badgeRemindersToPostLetters) }
     }
     
     var badgeRemindersToWriteLetters: Bool {
-        get { bool(forKey: Key.badgeRemindersToWriteLetters.rawValue) }
-        set { setValue(newValue, forKey: Key.badgeRemindersToWriteLetters.rawValue) }
+        get { bool(forKey: Key.badgeRemindersToWriteLetters) }
+        set { setValue(newValue, forKey: Key.badgeRemindersToWriteLetters) }
     }
     
     var enableQuickEntry: Bool {
-        get { bool(forKey: Key.enableQuickEntry.rawValue) }
-        set { setValue(newValue, forKey: Key.enableQuickEntry.rawValue) }
+        get { bool(forKey: Key.enableQuickEntry) }
+        set { setValue(newValue, forKey: Key.enableQuickEntry) }
     }
     
     var sendRemindersToPostLettersAtHour: Int {
-        get { integer(forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
-        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtHour.rawValue) }
+        get { integer(forKey: Key.sendRemindersToPostLettersAtHour) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtHour) }
     }
     
     var sendRemindersToPostLettersAtMinute: Int {
-        get { integer(forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
-        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute.rawValue) }
+        get { integer(forKey: Key.sendRemindersToPostLettersAtMinute) }
+        set { setValue(newValue, forKey: Key.sendRemindersToPostLettersAtMinute) }
     }
     
     var stopAskingAboutContacts: Bool {
-        get { bool(forKey: Key.stopAskingAboutContacts.rawValue) }
-        set { setValue(newValue, forKey: Key.stopAskingAboutContacts.rawValue) }
+        get { bool(forKey: Key.stopAskingAboutContacts) }
+        set { setValue(newValue, forKey: Key.stopAskingAboutContacts) }
     }
     
     var penpalContactMap: [String: String] {
         get {
             do {
-                return try JSONDecoder().decode([String: String].self, from: data(forKey: Key.penpalContactMap.rawValue) ?? Data())
+                return try JSONDecoder().decode([String: String].self, from: data(forKey: Key.penpalContactMap) ?? Data())
             } catch {
                 return [:]
             }
         }
         set {
             do {
-                setValue(try JSONEncoder().encode(newValue), forKey: Key.penpalContactMap.rawValue)
+                setValue(try JSONEncoder().encode(newValue), forKey: Key.penpalContactMap)
             } catch {
                 appLogger.debug("Could not save penpalContactMap")
             }
