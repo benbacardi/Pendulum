@@ -21,9 +21,10 @@ extension EventPhoto {
         eventPhoto.dateAdded = dateAdded ?? Date()
         if let thumbnailData {
             eventPhoto.data = data
-            eventPhoto.thumbnailData = data
+            eventPhoto.thumbnailData = thumbnailData
+        } else {
+            eventPhoto.updateImage(data)
         }
-        eventPhoto.updateImage(data)
         return eventPhoto
     }
     
