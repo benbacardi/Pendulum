@@ -57,27 +57,30 @@ struct PenPalSplitView: View {
                     .withSheetDestinations(sheetDestination: $router.presentedSheet)
             }
         } content: {
-            if let destination = router.path.first {
-                NavigationStack {
+            NavigationStack {
+                if let destination = router.path.first {
                     destination.view
-                }
-            } else {
-                if contactsAccessStatus != .authorized && allPenPals.isEmpty {
-                    GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
-                } else if allPenPals.isEmpty {
-                    AddFirstPenPalView()
+                    .onAppear {
+                        appLogger.debug("Destination appeared!")
+                    }
                 } else {
-                    VStack {
-                        Spacer()
-                        if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
-                            Image(uiImage: image)
-                                .resizable()
-                                .aspectRatio(contentMode: .fit)
-                                .frame(maxWidth: 200)
-                                .padding(.bottom)
+                    if contactsAccessStatus != .authorized && allPenPals.isEmpty {
+                        GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
+                    } else if allPenPals.isEmpty {
+                        AddFirstPenPalView()
+                    } else {
+                        VStack {
+                            Spacer()
+                            if let image = UIImage(named: "undraw_just_saying_re_kw9c") {
+                                Image(uiImage: image)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(maxWidth: 200)
+                                    .padding(.bottom)
+                            }
+                            Text("No Pen Pal Selected")
+                            Spacer()
                         }
-                        Text("No Pen Pal Selected")
-                        Spacer()
                     }
                 }
             }

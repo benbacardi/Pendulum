@@ -15,6 +15,7 @@ enum Route: Hashable {
         switch self {
         case let .penPalDetail(penpal):
             PenPalView(penpal: penpal)
+                .id(penpal.id ?? UUID())
         }
     }
     
