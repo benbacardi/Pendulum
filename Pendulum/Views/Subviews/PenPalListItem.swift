@@ -20,6 +20,14 @@ struct PenPalListItem: View {
     @State private var displayImage: Image?
     @State private var subHeader: String? = nil
     
+    var isSelectedPenPal: Bool {
+        guard let view = router.path.first else { return false }
+        switch view {
+        case .penPalDetail(let selectedPenpal):
+            return selectedPenpal == penpal
+        }
+    }
+    
     @ViewBuilder
     var content: some View {
         HStack {
@@ -77,6 +85,12 @@ struct PenPalListItem: View {
         if asListItem {
             GroupBox {
                 content
+            }
+            .overlay {
+                if DeviceType.isPad() && isSelectedPenPal {
+                    RoundedRectangle(cornerRadius: 8)
+                        .stroke(Color.adequatelyGinger, lineWidth: 2)
+                }
             }
             .opacity(penpal.archived ? 0.5 : 1)
         } else {
