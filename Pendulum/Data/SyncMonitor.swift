@@ -5,6 +5,7 @@
 //  Created by Ben Cardy on 24/03/2024.
 //
 
+import UIKit
 import Combine
 import CoreData
 
@@ -64,6 +65,7 @@ class SyncMonitor: ObservableObject {
             if event.succeeded {
                 cloudKitLogger.debug("Sync succeeded: \(event.startDate) to \(endDate)")
                 syncState = .succeeded(started: event.startDate, ended: endDate)
+                UIApplication.shared.updateBadgeNumber()
             } else {
                 cloudKitLogger.debug("Sync failed: \(event.startDate) to \(endDate)")
                 syncState = .failed(started: event.startDate, ended: endDate, error: event.error)

@@ -97,13 +97,13 @@ struct SettingsList: View {
                 ) {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
-                        .disabled(trackPostingLetters)
+                        .disabled(!trackPostingLetters)
                         .foregroundColor(trackPostingLetters ? .primary : .secondary)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
                             DatePicker("Send reminders daily at", selection: $sendRemindersToPostLettersDate, displayedComponents: [.hourAndMinute])
-                                .disabled(trackPostingLetters)
+                                .disabled(!trackPostingLetters)
                         }
                         .padding(.leading, 4)
                         .foregroundColor(trackPostingLetters ? .primary : .secondary)
@@ -117,7 +117,7 @@ struct SettingsList: View {
                 }) {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
-                        .disabled(trackPostingLetters)
+                        .disabled(!trackPostingLetters)
                         .foregroundColor(trackPostingLetters ? .primary : .secondary)
                 }
                 
