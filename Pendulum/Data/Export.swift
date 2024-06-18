@@ -214,80 +214,82 @@ class ExportService {
     }
     
     func restore(from url: URL, to context: NSManagedObjectContext, overwritingExistingData: Bool = false) throws -> ImportResult {
-        if url.startAccessingSecurityScopedResource() {
-            appLogger.debug("Got URL: \(url)")
-            
-            let temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("restore")
-            appLogger.debug("Destination: \(temporaryDirectory)")
-            try? FileManager.default.removeItem(at: temporaryDirectory)
-            
-            do {
-                try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
-            } catch {
-                throw ExportRestoreError.fileSystemError
-            }
-            
-            do {
-                try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
-            } catch {
-                throw ExportRestoreError.invalidFormat
-            }
-            
-            if let folderName = try FileManager.default.contentsOfDirectory(atPath: temporaryDirectory.path).first {
-                
-                let decoder = JSONDecoder()
-                
-                let containingFolder = temporaryDirectory.appendingPathComponent(folderName)
-                
-                // Fetch metadata, if it exists
-                let metadataFilePath = containingFolder.appendingPathComponent("metadata").appendingPathExtension("json")
-                
-                let metadata: ExportMetadata
-                if !FileManager.default.fileExists(atPath: metadataFilePath.path) {
-                    metadata = .initialVersion
-                } else {
-                    do {
-                        metadata = try decoder.decode(ExportMetadata.self, from: Data(contentsOf: metadataFilePath))
-                    } catch {
-                        appLogger.error("Could not read metadata file")
-                        throw ExportRestoreError.invalidFormat
-                    }
-                }
-                
-                switch(metadata.majorVersion) {
-                    
-                case 1:
-                    
-                    let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
-                    
-                    let importData: Export
-                    
-                    do {
-                        importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
-                    } catch {
-                        throw ExportRestoreError.invalidFormat
-                    }
-                    
-                    let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
-                    let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
-                    
-                    PersistenceController.shared.save(context: context)
-                    
-                    return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
-                    
-                default:
-                    throw ExportRestoreError.unknownFormat(format: metadata)
-                    
-                }
-                
-            } else {
-                appLogger.error("No folder found inside ZIP file")
-                throw ExportRestoreError.invalidFormat
-            }
-            
+        
+        appLogger.debug("Got URL: \(url)")
+        
+        let temporaryDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("restore")
+        appLogger.debug("Destination: \(temporaryDirectory)")
+        try? FileManager.default.removeItem(at: temporaryDirectory)
+        
+        do {
+            try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
+        } catch {
+            throw ExportRestoreError.fileSystemError
         }
-        appLogger.debug("Could not open scoped security file.")
-        throw ExportRestoreError.fileSystemError
+        
+        do {
+            try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
+        } catch {
+            throw ExportRestoreError.invalidFormat
+        }
+        
+        if let folderName = try FileManager.default.contentsOfDirectory(atPath: temporaryDirectory.path).first {
+            
+            let decoder = JSONDecoder()
+            
+            let containingFolder = temporaryDirectory.appendingPathComponent(folderName)
+            
+            // Fetch metadata, if it exists
+            let metadataFilePath = containingFolder.appendingPathComponent("metadata").appendingPathExtension("json")
+            
+            let metadata: ExportMetadata
+            if !FileManager.default.fileExists(atPath: metadataFilePath.path) {
+                metadata = .initialVersion
+            } else {
+                do {
+                    metadata = try decoder.decode(ExportMetadata.self, from: Data(contentsOf: metadataFilePath))
+                } catch {
+                    appLogger.error("Could not read metadata file")
+                    throw ExportRestoreError.invalidFormat
+                }
+            }
+            
+            switch(metadata.majorVersion) {
+                
+            case 1:
+                
+                let dataFile = containingFolder.appendingPathComponent("data").appendingPathExtension("json")
+                
+                let importData: Export
+                
+                do {
+                    importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
+                } catch {
+                    throw ExportRestoreError.invalidFormat
+                }
+                
+                appLogger.debug("Import data: \(importData.penpals.count) PenPals, \(importData.stationery.count) Stationery")
+                
+//                    let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
+//                    let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
+//
+//                    PersistenceController.shared.save(context: context)
+                
+                let stationeryCount = 0
+                let penpalRestore = ImportResult(stationeryCount: 0, penPalCount: 0, eventCount: 0, photoCount: 0)
+                
+                return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
+                
+            default:
+                throw ExportRestoreError.unknownFormat(format: metadata)
+                
+            }
+            
+        } else {
+            appLogger.error("No folder found inside ZIP file")
+            throw ExportRestoreError.invalidFormat
+        }
+            
     }
     
 }
