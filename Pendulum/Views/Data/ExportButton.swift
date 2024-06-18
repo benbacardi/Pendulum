@@ -16,6 +16,9 @@ struct Backup: Transferable {
         FileRepresentation(exportedContentType: .zip) { backup in
             SentTransferredFile(backup.url)
         }
+        ProxyRepresentation { backup in
+            backup.url
+        }
     }
 }
 
