@@ -19,6 +19,7 @@ struct BackupAndRestoreView: View {
         .task {
             if let url = UserDefaults.shared.exportURL {
                 self.lastBackup = Backup(url: url)
+                appLogger.debug("Backup url: \(url)")
             }
         }
         .navigationTitle("Backup and Restore")

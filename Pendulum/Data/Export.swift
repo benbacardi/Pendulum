@@ -268,15 +268,10 @@ class ExportService {
                     throw ExportRestoreError.invalidFormat
                 }
                 
-                appLogger.debug("Import data: \(importData.penpals.count) PenPals, \(importData.stationery.count) Stationery")
-                
-//                    let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
-//                    let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
-//
-//                    PersistenceController.shared.save(context: context)
-                
-                let stationeryCount = 0
-                let penpalRestore = ImportResult(stationeryCount: 0, penPalCount: 0, eventCount: 0, photoCount: 0)
+                let stationeryCount = Stationery.restore(importData.stationery, to: context, saving: false)
+                let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
+
+                PersistenceController.shared.save(context: context)
                 
                 return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
                 
