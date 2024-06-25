@@ -69,13 +69,23 @@ struct PenPalListItem: View {
         }
         .foregroundColor(.primary)
         .task {
-            withAnimation {
-                if !penpal.archived && asListItem {
-                    if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
-                        self.subHeader = "\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))"
-                    } else if let lastEventDate = penpal.lastEventDate {
-                        self.subHeader = "\(penpal.lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))"
-                    }
+            updateSubHeader()
+        }
+        .onChange(of: penpal.lastEventDate) { _ in
+            updateSubHeader()
+        }
+        .onChange(of: penpal.lastEventType) { _ in
+            updateSubHeader()
+        }
+    }
+    
+    func updateSubHeader() {
+        withAnimation {
+            if !penpal.archived && asListItem {
+                if penpal.groupingEventType == .nothingToDo, let lastEvent = penpal.getLastEvent(includingIgnoredEvents: true, from: moc) {
+                    self.subHeader = "\(lastEvent.type.datePrefix(for: lastEvent.letterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEvent.wrappedDate, and: Date()))"
+                } else if let lastEventDate = penpal.lastEventDate {
+                    self.subHeader = "\(penpal.lastEventType.datePrefix(for: penpal.lastEventLetterType)) \(Calendar.current.verboseNumberOfDaysBetween(lastEventDate, and: Date()))"
                 }
             }
         }
