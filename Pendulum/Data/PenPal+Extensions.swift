@@ -232,6 +232,67 @@ extension PenPal {
         return nil
     }
     
+    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
+        let intermediate: [CustomStationeryType: [ParameterCount]] = PenPal.fetchDistinctCustomStationery(ofType: stationeryType, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
+        return intermediate.values.first ?? []
+    }
+    
+    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType? = nil, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [CustomStationeryType: [ParameterCount]] {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        var predicates: [NSCompoundPredicate] = []
+        if let penpal = penpal {
+            predicates.append(NSCompoundPredicate(type: .and, subpredicates: [penpal.ownEventsPredicate]))
+        }
+        if outbound {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [EventType.sent.predicate, EventType.written.predicate]))
+        } else {
+            predicates.append(NSCompoundPredicate(type: .or, subpredicates: [EventType.received.predicate]))
+        }
+        fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
+        do {
+            let results = try context.fetch(fetchRequest)
+            
+            let allDefinedTypes: [CustomStationeryType]
+            if let stationeryType {
+                allDefinedTypes = [stationeryType]
+            } else {
+                allDefinedTypes = CustomStationery.fetchDistinctTypes(from: context)
+            }
+            var allDefinedTypesByType: [String: CustomStationeryType] = [:]
+            var pending: [CustomStationeryType: [String: Int]] = [:]
+            for definedType in allDefinedTypes {
+                allDefinedTypesByType[definedType.type] = definedType
+                pending[definedType] = [:]
+            }
+            
+            for event in results {
+                for custom in event.allCustomStationery() {
+                    guard let definedType = allDefinedTypesByType[custom.wrappedType] else { continue }
+                    for value in custom.values {
+                        let currentCount = pending[definedType]?[value] ?? 0
+                        pending[definedType]?[value] = currentCount + 1
+                    }
+                }
+            }
+            
+            var intermediate: [CustomStationeryType: [ParameterCount]] = [:]
+            for (definedType, values) in pending {
+                let counts = values.map { ParameterCount(name: $0.key, count: $0.value, type: nil, customType: definedType) }
+                if sortAlphabetically {
+                    intermediate[definedType] = counts.sorted(using: KeyPathComparator(\.name))
+                } else {
+                    intermediate[definedType] = counts.sorted()
+                }
+            }
+            
+            return intermediate
+            
+        } catch {
+            dataLogger.error("Could not fetch distinct custom stationery: \(error.localizedDescription)")
+        }
+        return [:]
+    }
+    
     static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery.rawValue, ascending: true)]
@@ -270,14 +331,14 @@ extension PenPal {
                 }
             }
             
-            var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value, type: stationery) }
+            var intermediate = pending.map { ParameterCount(name: $0.key, count: $0.value, type: stationery, customType: nil) }
             
             if penpal == nil && outbound {
                 let unusedStationery = Stationery.fetchUnused(for: stationery, from: context)
                 let setOfResults = Set(intermediate.map { $0.name })
                 for item in unusedStationery {
                     if !setOfResults.contains(item) {
-                        intermediate.append(ParameterCount(name: item, count: 0, type: stationery))
+                        intermediate.append(ParameterCount(name: item, count: 0, type: stationery, customType: nil))
                     }
                 }
             }

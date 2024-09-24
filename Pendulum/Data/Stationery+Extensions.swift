@@ -91,9 +91,10 @@ extension Stationery {
     }
     
     static func delete(_ parameter: ParameterCount, in context: NSManagedObjectContext) {
+        guard let parameterType = parameter.type else { return }
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "type = %@", parameter.type.rawValue),
+            NSPredicate(format: "type = %@", parameterType.rawValue),
             NSPredicate(format: "value = %@", parameter.name),
         ])
         do {
@@ -114,9 +115,10 @@ extension Stationery {
     }
     
     static func update(_ parameter: ParameterCount, to newName: String, outbound: Bool = true, in context: NSManagedObjectContext) {
+        guard let parameterType = parameter.type else { return }
         let fetchRequest = NSFetchRequest<Stationery>(entityName: Stationery.entityName)
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-            NSPredicate(format: "type = %@", parameter.type.rawValue),
+            NSPredicate(format: "type = %@", parameterType.rawValue),
             NSPredicate(format: "value = %@", parameter.name),
         ])
         do {
@@ -126,7 +128,7 @@ extension Stationery {
             }
             dataLogger.debug("Saving")
             PersistenceController.shared.save(context: context)
-            Event.updateStationery(ofType: parameter.type, from: parameter.name, to: newName, outbound: outbound, in: context)
+            Event.updateStationery(ofType: parameterType, from: parameter.name, to: newName, outbound: outbound, in: context)
         } catch {
             dataLogger.error("Could not update stationery: \(parameter): \(error.localizedDescription)")
         }        

@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22225" systemVersion="22G313" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23F79" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithCloudKit="YES" userDefinedModelVersionIdentifier="">
+    <entity name="CustomStationery" representedClassName="CustomStationery" syncable="YES" codeGenerationType="class">
+        <attribute name="icon" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
+        <attribute name="type" optional="YES" attributeType="String"/>
+        <attribute name="value" optional="YES" attributeType="String"/>
+        <relationship name="event" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Event" inverseName="customStationery" inverseEntity="Event"/>
+    </entity>
     <entity name="Event" representedClassName="Event" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="id" optional="YES" attributeType="UUID" usesScalarValueType="NO"/>
@@ -12,6 +19,7 @@
         <attribute name="pen" optional="YES" attributeType="String"/>
         <attribute name="trackingReference" optional="YES" attributeType="String"/>
         <attribute name="typeValue" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <relationship name="customStationery" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="CustomStationery" inverseName="event" inverseEntity="CustomStationery"/>
         <relationship name="penpal" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="PenPal" inverseName="events" inverseEntity="PenPal"/>
         <relationship name="photos" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="EventPhoto" inverseName="event" inverseEntity="EventPhoto"/>
     </entity>

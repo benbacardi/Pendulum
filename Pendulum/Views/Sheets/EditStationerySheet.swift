@@ -26,12 +26,16 @@ struct EditStationerySheet: View {
                 TextField("Stationery", text: $changedStationery)
                     .focused($isFocused)
             } footer: {
-                Label("Updating this \(currentStationery.type.name.lowercased()) will also update all previously logged correspondence that uses the \(currentStationery.type.name.lowercased()).", systemImage: "exclamationmark.triangle")
+                Label("Updating this \(currentStationery.type?.name.lowercased() ?? "stationery") will also update all previously logged correspondence that uses the \(currentStationery.type?.name.lowercased() ?? "stationery").", systemImage: "exclamationmark.triangle")
             }
             
             Section {
                 Button(action: {
-                    Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound, in: moc)
+                    if let stationeryType = currentStationery.type {
+                        Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound, in: moc)
+                    } else if let stationeryType = currentStationery.customType {
+                        CustomStationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), in: moc)
+                    }
                     done()
                 }) {
                     Text("Update")
@@ -50,7 +54,7 @@ struct EditStationerySheet: View {
 
 struct EditStationerySheet_Previews: PreviewProvider {
     static var previews: some View {
-        EditStationerySheet(currentStationery: ParameterCount(name: "Foobar", count: 0, type: .ink), outbound: true) {
+        EditStationerySheet(currentStationery: ParameterCount(name: "Foobar", count: 0, type: .ink, customType: nil), outbound: true) {
             
         }
     }

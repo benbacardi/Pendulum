@@ -1,6 +1,15 @@
 {
-  "originHash" : "b26c070fd1f0b029780331f3cefa3909a6d58ea6b3ae242bffe49d6011fe06fe",
+  "originHash" : "e93e8bd220bc5abd6d362043e28b7993faca5b22680e3edd872a038bd5f76060",
   "pins" : [
+    {
+      "identity" : "sfsymbolspicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/alessiorubicini/SFSymbolsPicker",
+      "state" : {
+        "revision" : "73c909b8a7fc77a30dd04208e33f759f8b52c4c8",
+        "version" : "1.0.6"
+      }
+    },
     {
       "identity" : "zipfoundation",
       "kind" : "remoteSourceControl",

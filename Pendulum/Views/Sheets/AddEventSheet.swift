@@ -7,6 +7,153 @@
 
 import SwiftUI
 import PhotosUI
+import SFSymbolsPicker
+
+struct CustomStationeryTypeView: View {
+    @Environment(\.managedObjectContext) var moc
+    
+    @Binding var type: CustomStationeryType
+    @Binding var iconWidth: CGFloat
+    
+    @State private var suggestions: [String] = []
+    
+    var body: some View {
+        StationeryTypeView(icon: type.icon, title: type.type, text: $type.value, suggestions: suggestions, suggestionTitle: "Choose \(type.type)", iconWidth: $iconWidth)
+            .task {
+                suggestions = CustomStationery.fetchDistinctValues(ofType: type.type, from: moc)
+            }
+    }
+}
+
+struct StationeryTypeView: View {
+    
+    let icon: String
+    let title: String
+    @Binding var text: String
+    let suggestions: [String]
+    let suggestionTitle: String
+    @Binding var iconWidth: CGFloat
+    
+    @FocusState private var isTextFieldActive: Bool
+    @State private var presentSuggestionSheetFor: TextOptions? = nil
+    
+    var autoSuggestions: [String] {
+        let search = text.lowercased().trimmingCharacters(in: .whitespaces)
+        return suggestions.filter { $0.lowercased().contains(search) }
+    }
+    
+    var image: Image {
+        if icon == "pendulum" {
+            return Image(.pendulumIcon)
+        } else {
+            return Image(systemName: icon)
+        }
+    }
+    
+    var body: some View {
+        HStack(alignment: .top, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                image
+                    .foregroundColor(.secondary)
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear.preference(key: AddEventSheet.IconWidthPreferenceKey.self, value: geo.size.width)
+                        }
+                    }
+                    .frame(width: iconWidth)
+                Text("?")
+                    .accessibilityHidden(true)
+                    .opacity(0)
+            }
+            TextField(title, text: $text, axis: .vertical)
+                .focused($isTextFieldActive)
+            if !suggestions.isEmpty {
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text("?")
+                        .accessibilityHidden(true)
+                        .opacity(0)
+                    Button(action: {
+                        presentSuggestionSheetFor = TextOptions(text: $text, options: suggestions, title: suggestionTitle)
+                    }) {
+                        Image(systemName: "ellipsis")
+                    }
+                }
+            }
+        }
+        .toolbar {
+            if isTextFieldActive {
+                ToolbarItemGroup(placement: .keyboard) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(autoSuggestions, id: \.self) { suggestion in
+                                Button(action: {
+                                    text = suggestion
+                                }) {
+                                    Text(suggestion)
+                                }
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(5)
+                                .background {
+                                    Color(uiColor: UIColor.secondarySystemBackground)
+                                }
+                            }
+                        }
+                    }
+                    Button(action: {
+                        isTextFieldActive = false
+                    }) { Text("Done")}
+                }
+            }
+        }
+        .sheet(item: $presentSuggestionSheetFor) { option in
+            ChooseTextSheet(text: option.text, options: option.options, title: option.title)
+                .presentationDetents([.medium, .large])
+        }
+    }
+    
+}
+
+struct AddStationeryTypeForm: View {
+    @State private var typeName: String = ""
+    @State private var icon: String = "envelope"
+    @State private var showPicker: Bool = false
+    
+    let initial: CustomStationeryType?
+    let done: (CustomStationeryType) -> ()
+    
+    var body: some View {
+        Form {
+            HStack {
+                Button(action: { showPicker = true }) {
+                    Image(systemName: icon)
+                }
+                TextField("Name", text: $typeName)
+            }
+            
+            Section {
+                Button(action: {
+                    let type = CustomStationeryType(type: typeName, icon: icon, value: "")
+                    done(type)
+                }) {
+                    Text(initial == nil ? "Add" : "Update")
+                        .fullWidth(alignment: .center)
+                }
+                .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+        }
+        .sheet(isPresented: $showPicker) {
+            SymbolPicker(selectedSymbol: $icon) {
+                showPicker = false
+            }
+        }
+        .task {
+            if let initial {
+                self.typeName = initial.type
+                self.icon = initial.icon
+            }
+        }
+    }}
 
 struct AddEventSheet: View {
         
@@ -55,21 +202,23 @@ struct AddEventSheet: View {
     @State private var iconWidth: CGFloat = 20
     
     @FocusState private var isNotesFieldActive: Bool
-    @FocusState private var isPenFieldActive: Bool
-    @FocusState private var isInkFieldActive: Bool
-    @FocusState private var isPaperFieldActive: Bool
     @FocusState private var isTrackingFieldActive: Bool
     
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
     @State private var paperSuggestions: [String] = []
     
-    @State private var presentSuggestionSheetFor: TextOptions? = nil
+    @State private var showAddStationerySheet: Bool = false
     
     @State private var priorWrittenEvent: Event? = nil
     
     @State private var showEventTypeOptions: Bool = false
     @State private var thingsHaveChanged: Bool = false
+    
+    @State private var customStationeryTypes: [CustomStationeryType] = [
+//        .init(type: "Stamp", icon: "heart.rectangle"),
+//        .init(type: "Envelope", icon: "envelope"),
+    ]
     
     var priorWrittenEventHeaderText: String {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
@@ -92,41 +241,8 @@ struct AddEventSheet: View {
         stationery?.replacingOccurrences(of: ",", with: "\n")
     }
     
-    var autoSuggestions: [String] {
-        let suggestions: [String]
-        let st: String
-        if isPenFieldActive {
-            suggestions = penSuggestions
-            st = pen
-        }
-        else if isInkFieldActive {
-            suggestions = inkSuggestions
-            st = ink
-        }
-        else if isPaperFieldActive {
-            suggestions = paperSuggestions
-            st = paper
-        }
-        else {
-            suggestions = []
-            st = ""
-        }
-        let search = st.lowercased().trimmingCharacters(in: .whitespaces)
-        return suggestions.filter { $0.lowercased().contains(search) }
-    }
-    
-    func chooseSuggestion(_ suggestion: String) {
-        if isPenFieldActive { pen = suggestion }
-        else if isInkFieldActive { ink = suggestion }
-        else if isPaperFieldActive { paper = suggestion }
-        clearFocus()
-    }
-    
     func clearFocus() {
         isNotesFieldActive = false
-        isPenFieldActive = false
-        isInkFieldActive = false
-        isPaperFieldActive = false
         isTrackingFieldActive = false
     }
     
@@ -255,71 +371,39 @@ struct AddEventSheet: View {
                             EmptyView()
                         }
                     }) {
-                        HStack(alignment: .top) {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.secondary)
-                                .offset(y: 4)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                        StationeryTypeView(icon: "pendulum", title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: "drop", title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: "doc.plaintext", title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
+                        
+                        ForEach($customStationeryTypes) { $customStationeryType in
+                            CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)
+                        }
+                        
+                        Button(action: {
+                            showAddStationerySheet = true
+                        }) {
+                            Text("Add stationery type…")
+                        }
+                        .sheet(isPresented: $showAddStationerySheet) {
+                            NavigationStack {
+                                AddStationeryTypeForm(initial: nil) { newType in
+                                    customStationeryTypes.append(newType)
+                                    showAddStationerySheet = false
+                                }
+                                .navigationTitle("Add Stationery Type")
+                                .navigationBarTitleDisplayMode(.inline)
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarLeading) {
+                                        Button(action: {
+                                            self.showAddStationerySheet = false
+                                        }) {
+                                            Text("Cancel")
+                                        }
                                     }
                                 }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
-                                .focused($isPenFieldActive)
-                            if !penSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose Pens")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .foregroundColor(.accentColor)
-                                .offset(y: 8)
                             }
                         }
-                        .buttonStyle(.plain)
-                        HStack(alignment: .top) {
-                            Image(systemName: "drop")
-                                .foregroundColor(.secondary)
-                                .offset(y: 1)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                    }
-                                }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
-                                .focused($isInkFieldActive)
-                            if !inkSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose Inks")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .offset(y: 8)
-                            }
-                        }
-                        HStack(alignment: .top) {
-                            Image(systemName: "doc.plaintext")
-                                .foregroundColor(.secondary)
-                                .offset(y: 1)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                    }
-                                }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
-                                .focused($isPaperFieldActive)
-                            if !paperSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose Paper")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .offset(y: 8)
-                            }
-                        }
+                        
                     }
                     
                     Section {
@@ -420,7 +504,7 @@ struct AddEventSheet: View {
                     }) {
                         Button(action: {
                             if let event = event {
-                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
                             } else {
                                 penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
                             }
@@ -433,10 +517,10 @@ struct AddEventSheet: View {
                     }
                 }
             }
-            .sheet(item: $presentSuggestionSheetFor) { option in
-                ChooseTextSheet(text: option.text, options: option.options, title: option.title)
-                    .presentationDetents([.medium, .large])
-            }
+//            .sheet(item: $presentSuggestionSheetFor) { option in
+//                ChooseTextSheet(text: option.text, options: option.options, title: option.title)
+//                    .presentationDetents([.medium, .large])
+//            }
             .onChange(of: letterType) { newValue in
                 if self.setToDefaultIgnoreWhenChangingLetterType {
                     self.ignore = newValue.defaultIgnore
@@ -488,6 +572,7 @@ struct AddEventSheet: View {
                     self.ignore = event.ignore
                     self.noFurtherActions = event.noFurtherActions
                     self.eventPhotos = event.allPhotos()
+                    self.customStationeryTypes = event.allCustomStationeryTypes(from: moc)
                     appLogger.debug("Event photos: \(self.eventPhotos)")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.thingsHaveChanged = false
@@ -506,30 +591,6 @@ struct AddEventSheet: View {
                     }
                 }
             }
-            .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(autoSuggestions, id: \.self) { suggestion in
-                                Button(action: {
-                                    chooseSuggestion(suggestion)
-                                }) {
-                                    Text(suggestion)
-                                }
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(5)
-                                .background {
-                                    Color(uiColor: UIColor.secondarySystemBackground)
-                                }
-                            }
-                        }
-                    }
-                    Button(action: {
-                        clearFocus()
-                    }) { Text("Done")}
-                }
-            }
             .interactiveDismissDisabled(thingsHaveChanged)
         }
     }
@@ -543,7 +604,7 @@ struct AddEventSheet: View {
     
 }
 
-private extension AddEventSheet {
+extension AddEventSheet {
     struct IconWidthPreferenceKey: PreferenceKey {
         static let defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {

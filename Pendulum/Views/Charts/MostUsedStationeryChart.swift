@@ -12,7 +12,8 @@ struct MostUsedStationeryChart: View {
     
     @Environment(\.managedObjectContext) var moc
     
-    let stationeryType: StationeryType
+    let stationeryType: StationeryType?
+    let customStationeryType: CustomStationeryType?
     
     @State private var data: [ParameterCount] = [
 //        ParameterCount(name: "Lamy Safari Pink B", count: 3, type: .pen),
@@ -59,13 +60,20 @@ struct MostUsedStationeryChart: View {
                 .frame(height: CGFloat(parsedData.count * 50))
             }
             .task {
-                let data = PenPal.fetchDistinctStationery(ofType: self.stationeryType, from: moc)
+                let data: [ParameterCount]
+                if let stationeryType {
+                    data = PenPal.fetchDistinctStationery(ofType: stationeryType, from: moc)
+                } else if let customStationeryType {
+                    data = PenPal.fetchDistinctCustomStationery(ofType: customStationeryType, from: moc)
+                } else {
+                    data = []
+                }
                 DispatchQueue.main.async {
                     self.data = data
                 }
             }
             .padding()
-            .navigationTitle(stationeryType.namePlural)
+            .navigationTitle(stationeryType?.namePlural ?? customStationeryType?.type ?? "Stationery")
         }
     }
 }
@@ -73,7 +81,7 @@ struct MostUsedStationeryChart: View {
 struct MostUsedPenChart_Previews: PreviewProvider {
     static var previews: some View {
         NavigationView {
-            MostUsedStationeryChart(stationeryType: .pen)
+            MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil)
         }
     }
 }
