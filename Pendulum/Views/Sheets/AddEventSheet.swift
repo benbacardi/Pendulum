@@ -467,6 +467,9 @@ struct AddEventSheet: View {
             .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
                 self.iconWidth = value
             }
+            .onChange(of: eventType) { _ in
+                updateStationery()
+            }
             .onAppear {
                 if event == nil {
                     self.setToDefaultIgnoreWhenChangingLetterType = true
@@ -490,11 +493,7 @@ struct AddEventSheet: View {
                         self.thingsHaveChanged = false
                     }
                 }
-            }
-            .task {
-                self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen, from: moc).map { $0.name }
-                self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink, from: moc).map { $0.name }
-                self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper, from: moc).map { $0.name }
+                updateStationery()
             }
             .task {
                 if eventType == .sent && event == nil {
@@ -534,6 +533,14 @@ struct AddEventSheet: View {
             .interactiveDismissDisabled(thingsHaveChanged)
         }
     }
+    
+    func updateStationery() {
+        let outbound: Bool = eventType == .written || eventType == .sent
+        self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
+        self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
+        self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
+    }
+    
 }
 
 private extension AddEventSheet {
