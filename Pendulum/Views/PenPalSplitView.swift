@@ -16,6 +16,8 @@ struct PenPalSplitView: View {
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
     
+    @Namespace private var transition
+    
     var body: some View {
         SplitView {
             NavigationStack {
@@ -24,35 +26,38 @@ struct PenPalSplitView: View {
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {
-                                router.presentedSheet = .settings
+                                router.presentedSheet = .settings(namespace: transition)
                             }) {
                                 Label("Settings", systemImage: "gear")
                             }
                         }
+                        .matchedTransitionSourceIfPossible(id: "settings", in: transition)
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
-                                router.presentedSheet = .stationeryList
+                                router.presentedSheet = .stationeryList(namespace: transition)
                             }) {
                                 Label("Stationery", systemImage: "pencil.and.ruler")
                             }
                         }
+                        .matchedTransitionSourceIfPossible(id: "stationeryList", in: transition)
                         ToolbarItem(placement: .navigationBarTrailing) {
                             Button(action: {
                                 if self.stopAskingAboutContacts {
-                                    router.presentedSheet = .addPenPalManually { penpal in
+                                    router.presentedSheet = .addPenPalManually(namespace: transition) { penpal in
                                         router.presentedSheet = nil
                                         router.navigate(to: .penPalDetail(penpal: penpal))
                                     }
                                 } else {
-                                    router.presentedSheet = .addPenPalFromContacts { penpal in
+                                    router.presentedSheet = .addPenPalFromContacts(namespace: transition) { penpal in
                                         router.presentedSheet = nil
                                         router.navigate(to: .penPalDetail(penpal: penpal))
                                     }
                                 }
                             }) {
-                                Label("Add Pen Pal", systemImage: "plus.circle")
+                                Label("Add Pen Pal", systemImage: "plus")
                             }
                         }
+                        .matchedTransitionSourceIfPossible(id: "addPenPal", in: transition)
                     }
                     .withSheetDestinations(sheetDestination: $router.presentedSheet)
             }

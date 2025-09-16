@@ -22,10 +22,10 @@ enum Route: Hashable {
 }
 
 enum SheetDestination: Identifiable {
-    case stationeryList
-    case addPenPalFromContacts(done: (PenPal) -> ())
-    case addPenPalManually(done: (PenPal) -> ())
-    case settings
+    case stationeryList(namespace: Namespace.ID?)
+    case addPenPalFromContacts(namespace: Namespace.ID?, done: (PenPal) -> ())
+    case addPenPalManually(namespace: Namespace.ID?, done: (PenPal) -> ())
+    case settings(namespace: Namespace.ID)
     
     var id: String {
         switch self {
@@ -66,14 +66,46 @@ extension View {
     func withSheetDestinations(sheetDestination: Binding<SheetDestination?>) -> some View {
         sheet(item: sheetDestination) { destination in
             switch destination {
-            case .stationeryList:
-                EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
-            case let .addPenPalFromContacts(done):
-                AddPenPalSheet(done: done)
-            case let .addPenPalManually(done):
-                ManualAddPenPalSheet(done: done)
-            case .settings:
-                SettingsList()
+            case .stationeryList(let namespace):
+                if #available(iOS 26, *) {
+                    if let namespace {
+                        EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
+                            .navigationTransition(.zoom(sourceID: "stationeryList", in: namespace))
+                    } else {
+                        EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
+                    }
+                } else {
+                    EventPropertyDetailsSheet(penpal: nil, allowAdding: true)
+                }
+            case let .addPenPalFromContacts(namespace, done):
+                if #available(iOS 26, *) {
+                    if let namespace {
+                        AddPenPalSheet(done: done)
+                            .navigationTransition(.zoom(sourceID: "addPenPal", in: namespace))
+                    } else {
+                        AddPenPalSheet(done: done)
+                    }
+                } else {
+                    AddPenPalSheet(done: done)
+                }
+            case let .addPenPalManually(namespace, done):
+                if #available(iOS 26, *) {
+                    if let namespace {
+                        ManualAddPenPalSheet(done: done)
+                            .navigationTransition(.zoom(sourceID: "addPenPal", in: namespace))
+                    } else {
+                        ManualAddPenPalSheet(done: done)
+                    }
+                } else {
+                    ManualAddPenPalSheet(done: done)
+                }
+            case .settings(let namespace):
+                if #available(iOS 26, *) {
+                    SettingsList()
+                        .navigationTransition(.zoom(sourceID: "settings", in: namespace))
+                } else {
+                    SettingsList()
+                }
             }
         }
     }

@@ -132,10 +132,11 @@ struct ManualAddPenPalSheet: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Cancel")
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyleIconOnlyOn26()
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button(action: {
                         Task {
                             if let penpal = penpal {
@@ -157,7 +158,8 @@ struct ManualAddPenPalSheet: View {
                             }
                         }
                     }) {
-                        Text(self.penpal == nil ? "Add" : "Save")
+                        Label(self.penpal == nil ? "Add" : "Save", systemImage: "checkmark")
+                            .labelStyleIconOnlyOn26()
                     }
                     .disabled(self.name.isEmpty)
                 }

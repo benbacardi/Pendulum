@@ -114,8 +114,16 @@ struct AddPenPalSheet: View {
                             }
                         }
                         Spacer()
-                        Button(action: presentManualAddSheet) {
-                            Text("Add Pen Pal Manually")
+                        if #available(iOS 26, *) {
+                            Button(action: presentManualAddSheet) {
+                                Text("Add Pen Pal Manually")
+                            }
+                            .foregroundStyle(.white)
+                            .buttonStyle(.glass(.regular.tint(.accentColor)))
+                        } else {
+                            Button(action: presentManualAddSheet) {
+                                Text("Add Pen Pal Manually")
+                            }
                         }
                         Spacer()
                     }
@@ -164,7 +172,8 @@ struct AddPenPalSheet: View {
                     Button(action: {
                         router.presentedSheet = nil
                     }) {
-                        Text("Cancel")
+                        Label("Cancel", systemImage: "chevron.down")
+                            .labelStyleIconOnlyOn26()
                     }
                 }
             }
@@ -179,7 +188,7 @@ struct AddPenPalSheet: View {
     }
     
     func presentManualAddSheet() {
-        subRouter.presentedSheet = .addPenPalManually { newPenPal in
+        subRouter.presentedSheet = .addPenPalManually(namespace: nil) { newPenPal in
             subRouter.presentedSheet = nil
             router.presentedSheet = nil
             router.navigate(to: .penPalDetail(penpal: newPenPal))

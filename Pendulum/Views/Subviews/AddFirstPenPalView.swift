@@ -11,7 +11,7 @@ struct AddFirstPenPalView: View {
     
     @EnvironmentObject private var router: Router
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
-    
+        
     var body: some View {
         VStack {
             Spacer()
@@ -22,23 +22,34 @@ struct AddFirstPenPalView: View {
                     .frame(maxWidth: 200)
                     .padding(.bottom)
             }
-            Button(action: {
-                if self.stopAskingAboutContacts {
-                    router.presentedSheet = .addPenPalManually { penpal in
-                        router.presentedSheet = nil
-                        router.navigate(to: .penPalDetail(penpal: penpal))
-                    }
-                } else {
-                    router.presentedSheet = .addPenPalFromContacts { penpal in
-                        router.presentedSheet = nil
-                        router.navigate(to: .penPalDetail(penpal: penpal))
-                    }
+            if #available(iOS 26, *) {
+                Button(action: addPenPal) {
+                    Text("Add your first Pen Pal to get started!")
                 }
-            }) {
-                Text("Add your first Pen Pal to get started!")
+                .foregroundStyle(.white)
+                .buttonStyle(.glass(.regular.tint(.accentColor)))
+            } else {
+                Button(action: addPenPal) {
+                    Text("Add your first Pen Pal to get started!")
+                }
             }
             Spacer()
         }
         .padding()
     }
+    
+    func addPenPal() {
+        if self.stopAskingAboutContacts {
+            router.presentedSheet = .addPenPalManually(namespace: nil) { penpal in
+                router.presentedSheet = nil
+                router.navigate(to: .penPalDetail(penpal: penpal))
+            }
+        } else {
+            router.presentedSheet = .addPenPalFromContacts(namespace: nil) { penpal in
+                router.presentedSheet = nil
+                router.navigate(to: .penPalDetail(penpal: penpal))
+            }
+        }
+    }
+    
 }

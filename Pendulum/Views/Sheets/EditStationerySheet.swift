@@ -10,6 +10,7 @@ import SwiftUI
 struct EditStationerySheet: View {
     
     @Environment(\.managedObjectContext) var moc
+    @Environment(\.presentationMode) var presentationMode
     
     // MARK: Properties
     let currentStationery: ParameterCount
@@ -21,29 +22,42 @@ struct EditStationerySheet: View {
     @FocusState private var isFocused: Bool
     
     var body: some View {
-        Form {
-            Section {
-                TextField("Stationery", text: $changedStationery)
-                    .focused($isFocused)
-            } footer: {
-                Label("Updating this \(currentStationery.type.name.lowercased()) will also update all previously logged correspondence that uses the \(currentStationery.type.name.lowercased()).", systemImage: "exclamationmark.triangle")
-            }
-            
-            Section {
-                Button(action: {
-                    Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound, in: moc)
-                    done()
-                }) {
-                    Text("Update")
-                        .fullWidth(alignment: .center)
+        NavigationStack {
+            Form {
+                Section {
+                    TextField("Stationery", text: $changedStationery)
+                        .focused($isFocused)
+                } footer: {
+                    Label("Updating this \(currentStationery.type.name.lowercased()) will also update all previously logged correspondence that uses the \(currentStationery.type.name.lowercased()).", systemImage: "exclamationmark.triangle")
                 }
-                .disabled(changedStationery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+            }
+            .onAppear {
+                self.changedStationery = self.currentStationery.name
+                self.isFocused = true
+            }
+            .navigationTitle("Update \(currentStationery.type.name)")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyleIconOnlyOn26()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(action: {
+                        Stationery.update(currentStationery, to: changedStationery.trimmingCharacters(in: .whitespacesAndNewlines), outbound: outbound, in: moc)
+                        done()
+                    }) {
+                        Label("Save", systemImage: "checkmark")
+                            .labelStyleIconOnlyOn26()
+                    }
+                    .disabled(changedStationery.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
             }
             
-        }
-        .onAppear {
-            self.changedStationery = self.currentStationery.name
-            self.isFocused = true
         }
     }
 }

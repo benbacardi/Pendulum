@@ -131,12 +131,15 @@ struct PenPalContactSheet: View {
                 }
             }
             .toolbar {
-                Button(action: {
-                    penpal.notes = notes.isEmpty ? nil : notes
-                    PersistenceController.shared.save(context: moc)
-                    presentationMode.wrappedValue.dismiss()
-                }) {
-                    Text("Done")
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        penpal.notes = notes.isEmpty ? nil : notes
+                        PersistenceController.shared.save(context: moc)
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Label("Done", systemImage: "chevron.down")
+                            .labelStyleIconOnlyOn26()
+                    }
                 }
             }
             .navigationTitle("Contact Details")
