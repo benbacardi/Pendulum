@@ -522,6 +522,7 @@ struct AddEventSheet: View {
                                 .background {
                                     Color(uiColor: UIColor.secondarySystemBackground)
                                 }
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                             }
                         }
                     }

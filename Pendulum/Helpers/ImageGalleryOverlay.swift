@@ -16,7 +16,7 @@ struct PreviewController: UIViewControllerRepresentable {
         controller.dataSource = context.coordinator
         controller.delegate = context.coordinator
         controller.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            barButtonSystemItem: .done, target: context.coordinator,
+            barButtonSystemItem: .close, target: context.coordinator,
             action: #selector(context.coordinator.dismiss)
         )
         if let showParticularImage = self.imageViewerController.image {

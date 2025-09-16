@@ -25,20 +25,30 @@ struct GrantContactsAccessView: View {
                         .frame(maxWidth: 200)
                         .padding(.bottom)
                 }
-                Text("Add a Pen Pal to get started!")
+                Text("Add your first Pen Pal to get started!")
             } else {
                 ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus)
             }
             Spacer()
-            Button(action: {
-                router.presentedSheet = .addPenPalManually { penpal in
-                    router.presentedSheet = nil
-                    router.navigate(to: .penPalDetail(penpal: penpal))
+            if #available(iOS 26, *) {
+                Button(action: addPenPal) {
+                    Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
                 }
-            }) {
-                Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                .foregroundStyle(.white)
+                .buttonStyle(.glass(.regular.tint(.accentColor)))
+            } else {
+                Button(action: addPenPal) {
+                    Text(self.stopAskingAboutContacts ? "Add Pen Pal" : "Add Pen Pal Manually")
+                }
             }
             Spacer()
+        }
+    }
+    
+    func addPenPal() {
+        router.presentedSheet = .addPenPalManually(namespace: nil) { penpal in
+            router.presentedSheet = nil
+            router.navigate(to: .penPalDetail(penpal: penpal))
         }
     }
 }

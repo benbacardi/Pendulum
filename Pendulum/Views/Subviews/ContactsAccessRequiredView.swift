@@ -36,33 +36,28 @@ struct ContactsAccessRequiredView: View {
                 .padding(.horizontal, 20)
                 .padding(.bottom, 30)
             if contactsAccessStatus == .denied || contactsAccessStatus == .restricted {
-                Button(action: {
-                    if let url = UIApplication.systemSettingsURL {
-                        openURL(url)
+                if #available(iOS 26, *) {
+                    Button(action: openSettings) {
+                        Text("Enable Contacts Access in Settings")
                     }
-                }) {
-                    Text("Enable contacts access in Settings")
+                    .foregroundStyle(.white)
+                    .buttonStyle(.glass(.regular.tint(.accentColor)))
+                } else {
+                    Button(action: openSettings) {
+                        Text("Enable contacts access in Settings")
+                    }
                 }
             } else {
-                Button(action: {
-                    Task {
-                        let store = CNContactStore()
-                        do {
-                            let result = try await store.requestAccess(for: .contacts)
-                            if result {
-                                self.contactsAccessStatus = .authorized
-                            } else {
-                                self.contactsAccessStatus = .denied
-                                UserDefaults.shared.stopAskingAboutContacts = true
-                            }
-                        } catch {
-                            appLogger.debug("Could not request contacts access: \(error.localizedDescription)")
-                            self.contactsAccessStatus = .denied
-                            UserDefaults.shared.stopAskingAboutContacts = true
-                        }
+                if #available(iOS 26, *) {
+                    Button(action: grantAccess) {
+                        Text("Grant Contacts Access")
                     }
-                }) {
-                    Text("Grant contacts access")
+                    .foregroundStyle(.white)
+                    .buttonStyle(.glass(.regular.tint(.accentColor)))
+                } else {
+                    Button(action: grantAccess) {
+                        Text("Grant contacts access")
+                    }
                 }
             }
             
@@ -78,35 +73,90 @@ struct ContactsAccessRequiredView: View {
         }
         .sheet(isPresented: $presentInfoSheet) {
             ScrollView {
-                GroupBox {
-                    Text("Contacts Access")
-                        .fullWidth()
-                        .font(.headline)
-                        .padding(.bottom, 8)
-                    VStack(spacing: 10) {
-                        Text("Pendulum does not collect any data about you or your device.")
-                            .fullWidth()
-                        Text("Synced data uses private Apple-provided services that we have no access to, and only the name and profile picture of each contact you add is synced in this way. This data is not accessible to anybody other than you.")
-                            .fullWidth()
-                        Text("All other information about your contacts stays local to your device, and **no** data is available to anybody other than you.")
-                            .fullWidth()
-                        Text("You can turn off Contacts integration in Pendulum Settings to avoid seeing the prompts to grant access in future.")
-                            .fullWidth()
+                if #available(iOS 26, *) {
+                    VStack {
+                        infoSheetContent
                     }
-                    .foregroundColor(.secondary)
+                    .padding(.top)
+                    .padding()
+                } else {
+                    GroupBox {
+                        infoSheetContent
+                    }
+                    .padding()
                 }
-                .padding()
             }
             .presentationDetents([.medium])
             .presentationDragIndicator(.visible)
         }
         
-        
     }
+    
+    @ViewBuilder
+    var infoSheetContent: some View {
+        Text("Contacts Access")
+            .fullWidth()
+            .font(.headline)
+            .padding(.bottom, 8)
+        VStack(spacing: 10) {
+            Text("Pendulum does not collect any data about you or your device.")
+                .fullWidth()
+            Text("Synced data uses private Apple-provided services that we have no access to, and only the name and profile picture of each contact you add is synced in this way. This data is not accessible to anybody other than you.")
+                .fullWidth()
+            Text("All other information about your contacts stays local to your device, and **no** data is available to anybody other than you.")
+                .fullWidth()
+            Text("You can turn off Contacts integration in Pendulum Settings to avoid seeing the prompts to grant access in future.")
+                .fullWidth()
+        }
+        .foregroundColor(.secondary)
+        .padding(.bottom, 8)
+        if #available(iOS 26, *) {
+            Button(action: {
+                presentInfoSheet = false
+            }) {
+                Text("Got it!")
+            }
+            .buttonStyle(.glass)
+        } else {
+            Button(action: {
+                presentInfoSheet = false
+            }) {
+                Text("Got it!")
+            }
+        }
+    }
+    
+    func openSettings() {
+        if let url = UIApplication.systemSettingsURL {
+            openURL(url)
+        }
+    }
+    
+    func grantAccess() {
+        Task {
+            let store = CNContactStore()
+            do {
+                let result = try await store.requestAccess(for: .contacts)
+                if result {
+                    self.contactsAccessStatus = .authorized
+                } else {
+                    self.contactsAccessStatus = .denied
+                    UserDefaults.shared.stopAskingAboutContacts = true
+                }
+            } catch {
+                appLogger.debug("Could not request contacts access: \(error.localizedDescription)")
+                self.contactsAccessStatus = .denied
+                UserDefaults.shared.stopAskingAboutContacts = true
+            }
+        }
+    }
+    
 }
 
 struct ContactsAccessRequiredView_Previews: PreviewProvider {
     static var previews: some View {
-        ContactsAccessRequiredView(contactsAccessStatus: .constant(.notDetermined))
+        VStack {
+            ContactsAccessRequiredView(contactsAccessStatus: .constant(.notDetermined))
+        }
     }
 }

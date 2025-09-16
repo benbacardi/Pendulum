@@ -81,6 +81,9 @@
 		5EE5687529D1E75A00BC2687 /* ImagePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */; };
 		5EE5687A29D1E9A200BC2687 /* ImageViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */; };
 		5EE7870A2AF2B61700CD3221 /* ExportButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE787092AF2B61700CD3221 /* ExportButton.swift */; };
+		5EE97E842E797A0D00FD6B1D /* LabelStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE97E832E797A0A00FD6B1D /* LabelStyle.swift */; };
+		5EE97E862E79896A00FD6B1D /* PenPalListSection26.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE97E852E79896600FD6B1D /* PenPalListSection26.swift */; };
+		5EE97E8A2E79AE2F00FD6B1D /* MatchedTransitionSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE97E892E79AE2C00FD6B1D /* MatchedTransitionSource.swift */; };
 		5EEF49FA291CDF14000528C6 /* ChooseTextSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */; };
 		5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */; };
 		5EEF49FE291D1218000528C6 /* Orientation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EEF49FD291D1218000528C6 /* Orientation.swift */; };
@@ -164,6 +167,9 @@
 		5EE5687429D1E75A00BC2687 /* ImagePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePickerView.swift; sourceTree = "<group>"; };
 		5EE5687929D1E9A200BC2687 /* ImageViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerController.swift; sourceTree = "<group>"; };
 		5EE787092AF2B61700CD3221 /* ExportButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportButton.swift; sourceTree = "<group>"; };
+		5EE97E832E797A0A00FD6B1D /* LabelStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LabelStyle.swift; sourceTree = "<group>"; };
+		5EE97E852E79896600FD6B1D /* PenPalListSection26.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PenPalListSection26.swift; sourceTree = "<group>"; };
+		5EE97E892E79AE2C00FD6B1D /* MatchedTransitionSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchedTransitionSource.swift; sourceTree = "<group>"; };
 		5EEF49F9291CDF14000528C6 /* ChooseTextSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChooseTextSheet.swift; sourceTree = "<group>"; };
 		5EEF49FB291D0151000528C6 /* EventPropertyDetailsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EventPropertyDetailsSheet.swift; sourceTree = "<group>"; };
 		5EEF49FD291D1218000528C6 /* Orientation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Orientation.swift; sourceTree = "<group>"; };
@@ -281,6 +287,8 @@
 		5E40551929151B6C00BD52BF /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5EE97E892E79AE2C00FD6B1D /* MatchedTransitionSource.swift */,
+				5EE97E832E797A0A00FD6B1D /* LabelStyle.swift */,
 				5E40554129166EBE00BD52BF /* FullWidthText.swift */,
 				5EA81851291BB0C50052F88E /* BackgroundCircle.swift */,
 				5EA81855291BB7AD0052F88E /* RoundedCorner.swift */,
@@ -334,6 +342,7 @@
 				5E62521A292CDE8000A3EB86 /* ContactAddress.swift */,
 				5E62521E292E75E000A3EB86 /* PenPalListItem.swift */,
 				5E0A016929AFA9E400BADAC6 /* PenPalListSection.swift */,
+				5EE97E852E79896600FD6B1D /* PenPalListSection26.swift */,
 			);
 			path = Subviews;
 			sourceTree = "<group>";
@@ -484,6 +493,7 @@
 			files = (
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
+				5EE97E8A2E79AE2F00FD6B1D /* MatchedTransitionSource.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
 				5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */,
@@ -536,6 +546,7 @@
 				406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */,
 				5E62520A292B76FA00A3EB86 /* PenPalView.swift in Sources */,
 				5E6252082928C20600A3EB86 /* PenPal+Extensions.swift in Sources */,
+				5EE97E842E797A0D00FD6B1D /* LabelStyle.swift in Sources */,
 				5E2F86E52AF6FA6F00BEB28B /* URL.swift in Sources */,
 				5E62521F292E75E000A3EB86 /* PenPalListItem.swift in Sources */,
 				5E40554229166EBE00BD52BF /* FullWidthText.swift in Sources */,
@@ -550,6 +561,7 @@
 				5E6252042927D83200A3EB86 /* PersistenceController.swift in Sources */,
 				5E0A016429AFA68C00BADAC6 /* GrantContactsAccessView.swift in Sources */,
 				5EDFFA3E2AF30114008530A1 /* BackupAndRestoreView.swift in Sources */,
+				5EE97E862E79896A00FD6B1D /* PenPalListSection26.swift in Sources */,
 				5E62520C292B7A2A00A3EB86 /* Event+Extensions.swift in Sources */,
 				5EDFFA442AF4546C008530A1 /* DebugView.swift in Sources */,
 				5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */,

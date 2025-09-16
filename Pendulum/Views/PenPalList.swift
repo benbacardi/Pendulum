@@ -27,8 +27,14 @@ struct PenPalList: View {
             LazyVStack(spacing: 0) {
                 if groupPenPalsInListView {
                     ForEach(EventType.allCases) { eventType in
-                        PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
-                            .padding(.horizontal)
+                        if #available(iOS 26, *) {
+                            PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
+                                .padding(.horizontal)
+                            
+                        } else {
+                            PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
+                                .padding(.horizontal)
+                        }
                     }
                 } else {
                     PenPalListSection(eventType: nil, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)

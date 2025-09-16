@@ -40,6 +40,17 @@ struct PenPalView: View {
     }
     
     @ViewBuilder
+    var eventTypeMenu: some View {
+        ForEach(EventType.actionableCases, id: \.self) { eventType in
+            Button(action: {
+                self.userTappedAddEvent(ofType: eventType)
+            }) {
+                Label(eventType.actionableText, systemImage: eventType.icon)
+            }
+        }
+    }
+    
+    @ViewBuilder
     func headerAndButtons() -> some View {
         Group {
             
@@ -52,52 +63,79 @@ struct PenPalView: View {
                     .padding(.horizontal)
             }
             
-            HStack(alignment: .top) {
-                if penpal.archived {
-                    Button(action: {
-                        withAnimation {
-                            penpal.archive(false, in: moc)
-                        }
-                    }) {
-                        Label("Unarchive", systemImage: EventType.archived.icon)
-                            .fullWidth(alignment: .center)
-                            .font(.headline)
-                            .background(GeometryReader { geometry in
-                                Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
-                            })
-                    }
-                    .tint(EventType.archived.color)
-                    .buttonStyle(.borderedProminent)
-                } else {
-                    ForEach(penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+            Grid {
+                GridRow {
+                    
+                    if penpal.archived {
                         Button(action: {
-                            self.userTappedAddEvent(ofType: eventType)
+                            withAnimation {
+                                penpal.archive(false, in: moc)
+                            }
                         }) {
-                            Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                            Label("Unarchive", systemImage: EventType.archived.icon)
                                 .fullWidth(alignment: .center)
                                 .font(.headline)
                                 .background(GeometryReader { geometry in
                                     Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
                                 })
                         }
-                        .tint(eventType.color)
+                        .tint(EventType.archived.color)
                         .buttonStyle(.borderedProminent)
-                    }
-                }
-                Menu {
-                    ForEach(EventType.actionableCases, id: \.self) { eventType in
-                        Button(action: {
-                            self.userTappedAddEvent(ofType: eventType)
-                        }) {
-                            Label(eventType.actionableText, systemImage: eventType.icon)
+                    } else {
+                        ForEach(penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                            if #available(iOS 26, *) {
+                                Button(action: {
+                                    self.userTappedAddEvent(ofType: eventType)
+                                }) {
+                                    Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                                        .fullWidth(alignment: .center)
+                                        .foregroundStyle(.white)
+                                }
+                                .buttonStyle(.glass(.regular.tint(eventType.color)))
+                                .background(GeometryReader { geometry in
+                                    Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
+                                })
+                            } else {
+                                EmptyView()
+                            }
                         }
+                        //                    ForEach(penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
+                        //                        Button(action: {
+                        //                            self.userTappedAddEvent(ofType: eventType)
+                        //                        }) {
+                        //                            Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                        //                                .fullWidth(alignment: .center)
+                        //                                .font(.headline)
+                        //                                .background(GeometryReader { geometry in
+                        //                                    Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
+                        //                                })
+                        //                        }
+                        //                        .tint(eventType.color)
+                        //                        .buttonStyle(.borderedProminent)
+                        //                    }
                     }
-                } label: {
-                    Label("More actions", systemImage: "ellipsis")
-                        .labelStyle(.iconOnly)
-                        .frame(height: buttonHeight)
+                    if #available(iOS 26, *) {
+                        Menu {
+                            eventTypeMenu
+                        } label: {
+                            ZStack {
+                                Text(" ")
+                                Label("More actions", systemImage: "ellipsis")
+                                    .labelStyle(.iconOnly)
+                            }
+                        }
+                        .buttonStyle(.glass)
+                    } else {
+                        Menu {
+                            eventTypeMenu
+                        } label: {
+                            Label("More actions", systemImage: "ellipsis")
+                                .labelStyle(.iconOnly)
+                        }
+                        .buttonStyle(.bordered)
+                    }
+                    
                 }
-                .buttonStyle(.bordered)
             }
             .padding(.horizontal)
         }

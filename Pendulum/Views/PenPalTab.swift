@@ -15,6 +15,8 @@ struct PenPalTab: View {
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
+    
+    @Namespace private var transition
  
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -31,28 +33,31 @@ struct PenPalTab: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
-                        router.presentedSheet = .stationeryList
+                        router.presentedSheet = .stationeryList(namespace: transition)
                     }) {
                         Label("Stationery", systemImage: "pencil.and.ruler")
                     }
                 }
+                .matchedTransitionSourceIfPossible(id: "stationeryList", in: transition)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         if self.stopAskingAboutContacts {
-                            router.presentedSheet = .addPenPalManually { penpal in
+                            router.presentedSheet = .addPenPalManually(namespace: transition) { penpal in
                                 router.presentedSheet = nil
                                 router.navigate(to: .penPalDetail(penpal: penpal))
                             }
                         } else {
-                            router.presentedSheet = .addPenPalFromContacts { penpal in
+                            // TODO: fix
+                            router.presentedSheet = .addPenPalFromContacts(namespace: transition) { penpal in
                                 router.presentedSheet = nil
                                 router.navigate(to: .penPalDetail(penpal: penpal))
                             }
                         }
                     }) {
-                        Label("Add Pen Pal", systemImage: "plus.circle")
+                        Label("Add Pen Pal", systemImage: "plus")
                     }
                 }
+                .matchedTransitionSourceIfPossible(id: "addPenPal", in: transition)
             }
             .withAppRouter()
             .withSheetDestinations(sheetDestination: $router.presentedSheet)

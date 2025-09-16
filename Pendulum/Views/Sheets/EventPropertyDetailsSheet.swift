@@ -183,7 +183,7 @@ struct EventPropertyDetailsSheet: View {
             .navigationTitle("Stationery")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         withAnimation {
                             self.sortAlphabetically.toggle()
@@ -192,11 +192,12 @@ struct EventPropertyDetailsSheet: View {
                         Label("Sort Alphabetically", systemImage: self.sortAlphabetically ? "textformat.123" : "textformat")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Close")
+                        Label("Close", systemImage: "chevron.down")
+                            .labelStyleIconOnlyOn26()
                     }
                 }
             }
@@ -214,24 +215,11 @@ struct EventPropertyDetailsSheet: View {
                 }
             }
             .sheet(item: $editingStationery) { item in
-                NavigationStack {
-                    EditStationerySheet(currentStationery: item, outbound: outbound) {
-                        self.editingStationery = nil
-                        withAnimation {
-                            dataLogger.debug("Updating!")
-                            self.updateStationery()
-                        }
-                    }
-                    .navigationTitle("Update \(item.type.name)")
-                    .navigationBarTitleDisplayMode(.inline)
-                    .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
-                            Button(action: {
-                                self.editingStationery = nil
-                            }) {
-                                Text("Cancel")
-                            }
-                        }
+                EditStationerySheet(currentStationery: item, outbound: outbound) {
+                    self.editingStationery = nil
+                    withAnimation {
+                        dataLogger.debug("Updating!")
+                        self.updateStationery()
                     }
                 }
             }
