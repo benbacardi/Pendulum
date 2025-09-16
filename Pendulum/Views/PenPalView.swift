@@ -96,23 +96,20 @@ struct PenPalView: View {
                                     Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
                                 })
                             } else {
-                                EmptyView()
+                                Button(action: {
+                                    self.userTappedAddEvent(ofType: eventType)
+                                }) {
+                                    Label(eventType.actionableTextShort, systemImage: eventType.icon)
+                                        .fullWidth(alignment: .center)
+                                        .font(.headline)
+                                        .background(GeometryReader { geometry in
+                                            Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
+                                        })
+                                }
+                                .tint(eventType.color)
+                                .buttonStyle(.borderedProminent)
                             }
                         }
-                        //                    ForEach(penpal.lastEventType.nextLogicalEventTypes, id: \.self) { eventType in
-                        //                        Button(action: {
-                        //                            self.userTappedAddEvent(ofType: eventType)
-                        //                        }) {
-                        //                            Label(eventType.actionableTextShort, systemImage: eventType.icon)
-                        //                                .fullWidth(alignment: .center)
-                        //                                .font(.headline)
-                        //                                .background(GeometryReader { geometry in
-                        //                                    Color.clear.preference(key: ButtonHeightPreferenceKey.self, value: geometry.size.height)
-                        //                                })
-                        //                        }
-                        //                        .tint(eventType.color)
-                        //                        .buttonStyle(.borderedProminent)
-                        //                    }
                     }
                     if #available(iOS 26, *) {
                         Menu {
@@ -129,8 +126,11 @@ struct PenPalView: View {
                         Menu {
                             eventTypeMenu
                         } label: {
-                            Label("More actions", systemImage: "ellipsis")
-                                .labelStyle(.iconOnly)
+                            ZStack {
+                                Text(" ")
+                                Label("More actions", systemImage: "ellipsis")
+                                    .labelStyle(.iconOnly)
+                            }
                         }
                         .buttonStyle(.bordered)
                     }
