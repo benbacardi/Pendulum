@@ -72,6 +72,9 @@ struct EventPropertyDetailsSheet: View {
     @State private var toDelete: ParameterCount? = nil
     @State private var showDeleteAlert: Bool = false
     
+    @State private var customTypeToDelete: CustomStationeryType? = nil
+    @State private var showDeleteCustomTypeAlert: Bool = false
+    
     @ViewBuilder
     func deleteButton(for option: ParameterCount) -> some View {
         if option.count == 0 {
@@ -182,6 +185,14 @@ struct EventPropertyDetailsSheet: View {
                                         Text("Edit")
                                             .font(.caption)
                                     }
+                                    Button(role: .destructive, action: {
+                                        customTypeToDelete = key
+                                        showDeleteCustomTypeAlert = true
+                                    }) {
+                                        Image(systemName: "trash")
+                                            .foregroundColor(.red)
+                                    }
+                                    .buttonStyle(.plain)
                                 }) {
                                     ForEach(parameterCounts, id: \.name) { option in
                                         HStack {
@@ -227,6 +238,20 @@ struct EventPropertyDetailsSheet: View {
                                     }
                                 }
                             }
+                        }
+                    }
+                    .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCustomTypeAlert, titleVisibility: .visible, presenting: customTypeToDelete) { customType in
+                        Button("Delete \(customType.type)", role: .destructive) {
+                            CustomStationery.delete(customType, in: moc)
+                            self.customTypeToDelete = nil
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    self.updateStationery()
+                                }
+                            }
+                        }
+                        Button("Cancel", role: .cancel) {
+                            self.customTypeToDelete = nil
                         }
                     }
                 }

@@ -103,4 +103,18 @@ extension CustomStationery {
         }
     }
     
+    static func delete(_ type: CustomStationeryType, in context: NSManagedObjectContext) {
+        let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
+        fetchRequest.predicate = NSPredicate(format: "type = %@", type.type)
+        do {
+            let results = try context.fetch(fetchRequest)
+            for result in results {
+                context.delete(result)
+            }
+            PersistenceController.shared.save(context: context)
+        } catch {
+            dataLogger.error("Could not delete custom stationery type \(type.type): \(error.localizedDescription)")
+        }
+    }
+    
 }

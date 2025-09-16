@@ -118,10 +118,16 @@ struct AddStationeryTypeForm: View {
     @State private var typeName: String = ""
     @State private var icon: String = "envelope"
     @State private var showPicker: Bool = false
-    
+    @Environment(\.managedObjectContext) private var moc
+    @State private var existingTypeNames: [String] = []
     let initial: CustomStationeryType?
     let done: (CustomStationeryType) -> ()
-    
+
+    var isDuplicate: Bool {
+        let trimmed = typeName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return existingTypeNames.contains { $0.lowercased() == trimmed }
+    }
+
     var body: some View {
         Form {
             HStack {
@@ -130,7 +136,11 @@ struct AddStationeryTypeForm: View {
                 }
                 TextField("Name", text: $typeName)
             }
-            
+            if isDuplicate {
+                Text("A category with this name already exists.")
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
             Section {
                 Button(action: {
                     let type = CustomStationeryType(type: typeName, icon: icon, value: "")
@@ -139,7 +149,7 @@ struct AddStationeryTypeForm: View {
                     Text(initial == nil ? "Add" : "Update")
                         .fullWidth(alignment: .center)
                 }
-                .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isDuplicate)
             }
         }
         .sheet(isPresented: $showPicker) {
@@ -151,6 +161,13 @@ struct AddStationeryTypeForm: View {
             if let initial {
                 self.typeName = initial.type
                 self.icon = initial.icon
+            }
+            // Fetch all existing types except the current one (if editing)
+            let allTypes = CustomStationery.fetchDistinctTypes(from: moc).map { $0.type }
+            if let initial {
+                self.existingTypeNames = allTypes.filter { $0.caseInsensitiveCompare(initial.type) != .orderedSame }
+            } else {
+                self.existingTypeNames = allTypes
             }
         }
     }}

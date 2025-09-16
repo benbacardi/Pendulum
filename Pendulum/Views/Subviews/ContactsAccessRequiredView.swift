@@ -64,7 +64,7 @@ struct ContactsAccessRequiredView: View {
                 }) {
                     Text("Grant contacts access")
                 }
-            }
+            
             
             Button(action: {
                 self.presentInfoSheet = true
