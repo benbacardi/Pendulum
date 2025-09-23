@@ -131,13 +131,21 @@ struct PenPalContactSheet: View {
                 }
             }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyleIconOnlyOn26()
+                    }
+                }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         penpal.notes = notes.isEmpty ? nil : notes
                         PersistenceController.shared.save(context: moc)
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Label("Done", systemImage: "chevron.down")
+                        Label("Done", systemImage: "checkmark")
                             .labelStyleIconOnlyOn26()
                     }
                 }

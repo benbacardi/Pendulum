@@ -172,15 +172,15 @@ struct AddPenPalSheet: View {
                     Button(action: {
                         router.presentedSheet = nil
                     }) {
-                        Label("Cancel", systemImage: "chevron.down")
+                        Label("Cancel", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()
                     }
                 }
             }
-            .onChange(of: contactsFetched) { _ in
+            .onChange(of: contactsFetched) {
                 self.filterContacts()
             }
-            .onChange(of: searchText) { searchText in
+            .onChange(of: searchText) {
                 self.filterContacts(with: searchText)
             }
         }

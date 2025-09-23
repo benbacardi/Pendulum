@@ -196,7 +196,7 @@ struct EventPropertyDetailsSheet: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Label("Close", systemImage: "chevron.down")
+                        Label("Close", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()
                     }
                 }

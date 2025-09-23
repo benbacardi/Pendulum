@@ -29,7 +29,7 @@ struct PenPalTab: View {
                     PenPalList()
                 }
             }
-            .navigationTitle("Pen Pals")
+            .navigationTitle("Pendulum")
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {

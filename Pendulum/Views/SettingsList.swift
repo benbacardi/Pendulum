@@ -291,7 +291,7 @@ struct SettingsList: View {
                 self.showStatsLink = Event.count(from: moc) != 0
             }
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
