@@ -28,6 +28,8 @@ struct PenPalView: View {
     
     @State private var eventsWithDifferences: [(Event, Int)] = []
     
+    @Namespace private var transition
+    
     init(penpal: PenPal) {
         self.penpal = penpal
         self._events = FetchRequest<Event>(
@@ -205,10 +207,20 @@ struct PenPalView: View {
             }
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
-            PenPalContactSheet(penpal: penpal)
+            if #available(iOS 26, *) {
+                PenPalContactSheet(penpal: penpal)
+                    .navigationTransition(.zoom(sourceID: "contactSheet", in: transition))
+            } else {
+                PenPalContactSheet(penpal: penpal)
+            }
         }
         .sheet(isPresented: $presentPropertyDetailsSheet) {
-            EventPropertyDetailsSheet(penpal: penpal)
+            if #available(iOS 26, *) {
+                EventPropertyDetailsSheet(penpal: penpal)
+                    .navigationTransition(.zoom(sourceID: "eventPropertyDetails", in: transition))
+            } else {
+                EventPropertyDetailsSheet(penpal: penpal)
+            }
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, eventType: eventType) {
@@ -219,16 +231,22 @@ struct PenPalView: View {
             }
         }
         .toolbar {
-            Button(action: {
-                self.presentPropertyDetailsSheet = true
-            }) {
-                Label("Stationery", systemImage: "pencil.and.ruler")
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    self.presentPropertyDetailsSheet = true
+                }) {
+                    Label("Stationery", systemImage: "pencil.and.ruler")
+                }
             }
-            Button(action: {
-                self.showingPenPalContactSheet = true
-            }){
-                Label("Pen Pal Addresses", systemImage:"person.crop.circle")
+            .matchedTransitionSourceIfPossible(id: "eventPropertyDetails", in: transition)
+            ToolbarItem(placement: .topBarTrailing) {
+                Button(action: {
+                    self.showingPenPalContactSheet = true
+                }){
+                    Label("Pen Pal Addresses", systemImage:"person.crop.circle")
+                }
             }
+            .matchedTransitionSourceIfPossible(id: "contactSheet", in: transition)
         }
         .onReceive(self.didSave) { _ in
             Task {
