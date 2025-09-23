@@ -65,11 +65,12 @@ struct ChooseTextSheet: View {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
-                        Text("Done")
+                        Label("Done", systemImage: "xmark")
+                            .labelStyleIconOnlyOn26()
                     }
                 }
             }
-            .onChange(of: chosenOptions) { newValue in
+            .onChange(of: chosenOptions) {
                 guard self.loaded else { return }
                 self.text = self.chosenOptions.joined(separator: "\n")
             }
