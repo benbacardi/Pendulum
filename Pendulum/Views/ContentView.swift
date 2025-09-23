@@ -22,25 +22,7 @@ struct ContentView: View {
             if DeviceType.isPad() && horizontalSizeClass != .compact {
                 PenPalSplitView()
             } else {
-                TabView(selection: $selectedTab) {
-                    PenPalTab()
-                        .tabItem {
-                            Label {
-                                Text("Pen Pals")
-                            } icon: {
-                                Image(.pendulumIcon)
-                            }
-                        }
-                        .tag(Tab.penPalList)
-                    #if DEBUG
-                    DebugView()
-                        .tabItem { Label("Debug", systemImage: "ant") }
-                        .tag(Tab.debug)
-                    #endif
-                    SettingsList()
-                        .tabItem { Label("Settings", systemImage: "gear") }
-                        .tag(Tab.settings)
-                }
+                PenPalTab()
             }
         }
         .sheet(isPresented: $showWhatsNewOverlay) {

@@ -31,6 +31,14 @@ struct PenPalTab: View {
             }
             .navigationTitle("Pen Pals")
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        router.presentedSheet = .settings(namespace: transition)
+                    }) {
+                        Label("Settings", systemImage: "gear")
+                    }
+                }
+                .matchedTransitionSourceIfPossible(id: "settings", in: transition)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button(action: {
                         router.presentedSheet = .stationeryList(namespace: transition)
