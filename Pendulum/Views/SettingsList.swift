@@ -31,6 +31,7 @@ struct SettingsList: View {
     @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
     @EnvironmentObject var appPreferences: AppPreferences
+    @Environment(\.presentationMode) var presentationMode
     
     let motionManager = CMMotionManager()
     
@@ -288,6 +289,15 @@ struct SettingsList: View {
             }
             .task {
                 self.showStatsLink = Event.count(from: moc) != 0
+            }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        presentationMode.wrappedValue.dismiss()
+                    }) {
+                        Label("Close", systemImage: "xmark")
+                    }
+                }
             }
         }
     }
