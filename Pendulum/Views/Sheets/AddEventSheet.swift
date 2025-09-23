@@ -179,39 +179,72 @@ struct AddEventSheet: View {
     /// See https://stackoverflow.com/questions/77238131/placing-the-toolbar-above-keyboard-does-not-work-in-ios-17
     @State private var path = NavigationPath()
     
+    @ViewBuilder
+    var largeHeaderText: some View {
+        VStack(spacing: 4) {
+            Image(systemName: eventType.icon)
+                .font(.largeTitle)
+            Text("\(eventType.description(for: letterType))!")
+                .font(.largeTitle)
+                .bold()
+                .fullWidth(alignment: .center)
+        }
+    }
+    
+    @ViewBuilder
+    var formHeaderPadding: some View {
+        largeHeaderText
+            .padding(.bottom, 48)
+            .opacity(0)
+    }
+    
+    @ViewBuilder
+    var formHeaderPaddingOrNone: some View {
+        Group {
+            if !hasSendButton {
+                formHeaderPadding
+            }
+        }
+    }
+    
+    var hasSendButton: Bool {
+        if let event = event, eventType == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
+            return true
+        }
+        return false
+    }
+    
+    @ViewBuilder
+    var largeHeaderButton: some View {
+        Button(action: {
+            self.showEventTypeOptions = true
+        }) {
+            largeHeaderText
+                .foregroundColor(.white)
+                .padding()
+                .padding(.top, 48)
+                .padding(.vertical)
+        }
+        .confirmationDialog("Change log type", isPresented: $showEventTypeOptions, titleVisibility: .visible) {
+            ForEach(EventType.actionableCases) { eventType in
+                Button(action: {
+                    withAnimation {
+                        self.eventType = eventType
+                    }
+                }) {
+                    Label(" \(eventType.actionableText)", systemImage: eventType.icon).tag(eventType)
+                }
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack(path: $path) {
-            VStack(spacing: 0) {
-                Button(action: {
-                    self.showEventTypeOptions = true
-                }) {
-                    VStack(spacing: 4) {
-                        Image(systemName: eventType.icon)
-                            .font(.largeTitle)
-                        Text("\(eventType.description(for: letterType))!")
-                            .font(.largeTitle)
-                            .bold()
-                            .fullWidth(alignment: .center)
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .padding(.vertical)
-                    .background(eventType.color)
-                }
-                .confirmationDialog("Change log type", isPresented: $showEventTypeOptions, titleVisibility: .visible) {
-                    ForEach(EventType.actionableCases) { eventType in
-                        Button(action: {
-                            withAnimation {
-                                self.eventType = eventType
-                            }
-                        }) {
-                            Label(" \(eventType.actionableText)", systemImage: eventType.icon).tag(eventType)
-                        }
-                    }
-                }
+            ZStack(alignment: .top) {
                 Form {
-                    if let event = event, eventType == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
-                        Section {
+                    
+                    if hasSendButton {
+                        Section(header: formHeaderPadding) {
                             Button(action: {
                                 withAnimation {
                                     penpal.sendLastWrittenEvent(in: moc, from: event)
@@ -229,7 +262,7 @@ struct AddEventSheet: View {
                         }
                     }
                     
-                    Section {
+                    Section(header: formHeaderPaddingOrNone) {
                         DatePicker("Date", selection: $date)
                         Picker(selection: $letterType) {
                             ForEach(LetterType.allCases) { letterType in
@@ -247,7 +280,7 @@ struct AddEventSheet: View {
                         TextField("Notes", text: $notes, axis: .vertical)
                             .focused($isNotesFieldActive)
                     }
-                        
+                                            
                     Section(header: Group {
                         if let priorWrittenEvent = priorWrittenEvent {
                             Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
@@ -408,30 +441,18 @@ struct AddEventSheet: View {
                             Toggle("No response needed", isOn: $ignore)
                         }
                     }
-                    
-                    Section(footer: Group {
-                        Button(action: {
-                            done()
-                        }) {
-                            Text("Cancel")
-                                .fullWidth(alignment: .center)
-                        }
-                        .padding()
-                    }) {
-                        Button(action: {
-                            if let event = event {
-                                event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
-                            } else {
-                                penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
-                            }
-                            done()
-                        }) {
-                            Text(event == nil ? "Save" : "Update")
-                                .fullWidth(alignment: .center)
-                        }
-                        .tint(eventType.color)
-                    }
                 }
+                
+                if #available(iOS 26, *) {
+                    largeHeaderButton
+                        .glassEffect(.clear.tint(eventType.color).interactive(), in: .rect)
+                        .edgesIgnoringSafeArea(.top)
+                } else {
+                    largeHeaderButton
+                        .background(eventType.color)
+                        .edgesIgnoringSafeArea(.top)
+                }
+                    
             }
             .sheet(item: $presentSuggestionSheetFor) { option in
                 ChooseTextSheet(text: option.text, options: option.options, title: option.title)
@@ -530,6 +551,30 @@ struct AddEventSheet: View {
                         clearFocus()
                     }) { Text("Done")}
                 }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: {
+                        done()
+                    }) {
+                        Label("Cancel", systemImage: "xmark")
+                            .labelStyleIconOnlyOn26()
+                    }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button(action: {
+                        if let event = event {
+                            event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                        } else {
+                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                        }
+                        done()
+                    }) {
+                        Label(event == nil ? "Save" : "Update", systemImage: "checkmark")
+                            .labelStyleIconOnlyOn26()
+                    }
+                }
+                
             }
             .interactiveDismissDisabled(thingsHaveChanged)
         }
