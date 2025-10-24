@@ -22,6 +22,17 @@ enum EventType: Int, CaseIterable, Identifiable {
     
     var id: Int { rawValue }
     
+    static var orderedCases: [EventType] = [
+        .written,
+        .received,
+        .inbound,
+        .sent,
+        .theyReceived,
+        .noEvent,
+        .nothingToDo,
+        .archived,
+    ]
+    
     static func from(_ value: Int16) -> EventType {
         EventType(rawValue: Int(value)) ?? .noEvent
     }
@@ -167,7 +178,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .archived:
             return "Archived"
         case .nothingToDo:
-            return "No actions pending"
+            return "Previous Pen Pals"
         }
     }
     
@@ -176,23 +187,23 @@ enum EventType: Int, CaseIterable, Identifiable {
         let image: Image
         switch self {
         case .noEvent:
-            image = Image(systemName: "star.circle.fill")
+            image = Image(systemName: "star.fill")
         case .written:
-            image = Image(systemName: "envelope.circle.fill")
+            image = Image(systemName: "envelope.fill")
         case .sent:
-            image = Image(systemName: "paperplane.circle.fill")
+            image = Image(systemName: "paperplane.fill")
         case .inbound:
-            image = Image(.airplaneDepartureCircleFill)
+            image = Image(systemName: "airplane.departure.fill")
         case .received:
-            image = Image(systemName: "pencil.circle.fill")
+            image = Image(systemName: "pencil.fill")
         case .theyReceived:
-            image = Image(systemName: "envelope.circle.fill")
+            image = Image(systemName: "envelope.fill")
         case .archived:
-            image = Image(systemName: "archivebox.circle.fill")
+            image = Image(systemName: "archivebox.fill")
         case .nothingToDo:
-            image = Image(systemName: "hand.thumbsup.circle.fill")
+            image = Image(systemName: "hand.thumbsup.fill")
         }
-        return image.foregroundStyle(color)
+        return image
     }
     
     var datePrefix: String {

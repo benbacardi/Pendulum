@@ -627,3 +627,20 @@ extension PenPal {
         return ImportResult(stationeryCount: 0, penPalCount: penPalCount, eventCount: eventCount, photoCount: photoCount)
     }
 }
+
+extension PenPal {
+    func getAddresses() -> [CNLabeledValue<CNPostalAddress>] {
+        if let contactID = UserDefaults.shared.getContactID(for: self) {
+            let store = CNContactStore()
+            let keys = [
+                CNContactPostalAddressesKey,
+            ] as! [CNKeyDescriptor]
+            do {
+                return try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys).postalAddresses
+            } catch {
+                dataLogger.error("Could not fetch contact with ID \(contactID): \(error.localizedDescription)")
+            }
+        }
+        return []
+    }
+}

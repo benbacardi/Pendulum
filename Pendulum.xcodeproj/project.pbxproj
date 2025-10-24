@@ -67,6 +67,7 @@
 		5EA81858291BFE170052F88E /* DeviceType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA81857291BFE170052F88E /* DeviceType.swift */; };
 		5EBD28792BB37AD300746418 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */; };
 		5EC3DBE62BE6E0AE00693D1A /* AppStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC3DBE52BE6E0AE00693D1A /* AppStorage.swift */; };
+		5EC5F1962EABBDDD00E1FCC9 /* AddressLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC5F1952EABBDD700E1FCC9 /* AddressLookup.swift */; };
 		5EC90C0829D0E2F100C9BF89 /* EditStationerySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */; };
 		5ED5A15F297815560053B3D0 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A15E297815560053B3D0 /* StatsView.swift */; };
 		5ED5A1622978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */; };
@@ -153,6 +154,7 @@
 		5EA81857291BFE170052F88E /* DeviceType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceType.swift; sourceTree = "<group>"; };
 		5EBD28712BB3361C00746418 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		5EC3DBE52BE6E0AE00693D1A /* AppStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorage.swift; sourceTree = "<group>"; };
+		5EC5F1952EABBDD700E1FCC9 /* AddressLookup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddressLookup.swift; sourceTree = "<group>"; };
 		5EC90C0729D0E2F100C9BF89 /* EditStationerySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditStationerySheet.swift; sourceTree = "<group>"; };
 		5ED5A15E297815560053B3D0 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		5ED5A1612978423E0053B3D0 /* SentAndWrittenByDayOfWeekChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SentAndWrittenByDayOfWeekChart.swift; sourceTree = "<group>"; };
@@ -287,6 +289,7 @@
 		5E40551929151B6C00BD52BF /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
+				5EC5F1952EABBDD700E1FCC9 /* AddressLookup.swift */,
 				5EE97E892E79AE2C00FD6B1D /* MatchedTransitionSource.swift */,
 				5EE97E832E797A0A00FD6B1D /* LabelStyle.swift */,
 				5E40554129166EBE00BD52BF /* FullWidthText.swift */,
@@ -494,6 +497,7 @@
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EE97E8A2E79AE2F00FD6B1D /* MatchedTransitionSource.swift in Sources */,
+				5EC5F1962EABBDDD00E1FCC9 /* AddressLookup.swift in Sources */,
 				5EA81852291BB0C50052F88E /* BackgroundCircle.swift in Sources */,
 				5ED5A166297843A10053B3D0 /* MostUsedStationeryChart.swift in Sources */,
 				5EE0FEDA29DD670F00A1CF03 /* PHPickerResult.swift in Sources */,
