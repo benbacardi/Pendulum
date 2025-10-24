@@ -64,17 +64,17 @@ struct PenPalListItem: View {
             if asListItem && !DeviceType.isPad() {
                 Spacer()
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.secondary)
+                    .opacity(0.8)
             }
         }
-        .foregroundColor(.primary)
+//        .foregroundColor(.primary)
         .task {
             updateSubHeader()
         }
-        .onChange(of: penpal.lastEventDate) { _ in
+        .onChange(of: penpal.lastEventDate) {
             updateSubHeader()
         }
-        .onChange(of: penpal.lastEventType) { _ in
+        .onChange(of: penpal.lastEventType) {
             updateSubHeader()
         }
     }
@@ -93,16 +93,17 @@ struct PenPalListItem: View {
         
     var body: some View {
         if asListItem {
-            GroupBox {
+//            GroupBox {
                 content
-            }
-            .overlay {
-                if DeviceType.isPad() && isSelectedPenPal {
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(Color.adequatelyGinger, lineWidth: 2)
-                }
-            }
-            .opacity(penpal.archived ? 0.5 : 1)
+                    .padding()
+//            }
+//            .overlay {
+//                if DeviceType.isPad() && isSelectedPenPal {
+//                    RoundedRectangle(cornerRadius: 8)
+//                        .stroke(Color.adequatelyGinger, lineWidth: 2)
+//                }
+//            }
+//            .opacity(penpal.archived ? 0.5 : 1)
         } else {
             content
         }

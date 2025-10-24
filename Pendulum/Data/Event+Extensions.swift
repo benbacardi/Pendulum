@@ -7,6 +7,7 @@
 
 import CoreData
 import Foundation
+import CoreLocation
 
 extension Event {
     
@@ -148,6 +149,7 @@ extension Event {
     
     static func fetch(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         var predicates: [NSPredicate] = []
         if let eventTypes = eventTypes {
             predicates.append(
@@ -225,4 +227,20 @@ func parseStationery(_ data: String?, replacing oldName: String, with newName: S
         .map { $0 == oldName ? newName : $0 }
         .uniqued()
         .joined(separator: "\n")
+}
+
+extension Event {
+    static func getLatestRelevantAddress() async -> CLPlacemark? {
+        for event in fetch(withStatus: [.sent, .written, .received], from: PersistenceController.shared.container.viewContext) {
+            if let penpal = event.penpal {
+                let addresses = penpal.getAddresses()
+                if let firstAddress = addresses.first {
+                    if let placemark = await getLocationFromAddress(firstAddress) {
+                        return placemark
+                    }
+                }
+            }
+        }
+        return nil
+    }
 }

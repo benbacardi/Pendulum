@@ -24,6 +24,8 @@ extension UserDefaults {
         case sortPenPalsAlphabetically
         case sortStationeryAlphabetically
         case groupPenPalsInListView
+        case hideMap
+        case mapCoordinates
         
         case hasPerformedCoreDataMigrationToAppGroup
         case shouldShowDebugView
@@ -77,6 +79,11 @@ extension UserDefaults {
     var hasGeneratedInitialBackup: Bool {
         get { bool(forKey: Key.hasGeneratedInitialBackup) }
         set { setValue(newValue, forKey: Key.hasGeneratedInitialBackup) }
+    }
+    
+    var hideMap: Bool {
+        get { bool(forKey: Key.hideMap) }
+        set { setValue(newValue, forKey: Key.hideMap) }
     }
     
     var shouldShowDebugView: Bool {

@@ -46,6 +46,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.groupPenPalsInListView, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
     @AppStorage(UserDefaults.Key.shouldShowDebugView, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
     @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
+    @AppStorage(UserDefaults.Key.hideMap, store: UserDefaults.shared) private var hideMap: Bool = false
     
     @State private var sendRemindersToPostLettersDate: Date = Date()
     @State private var notificationsAuthorizationStatus: UNAuthorizationStatus = .notDetermined
@@ -138,6 +139,10 @@ struct SettingsList: View {
                 
                 Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
+                }
+                
+                Section {
+                    Toggle("Disable Background Map", isOn: $hideMap)
                 }
                 
                 Section {
