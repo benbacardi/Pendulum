@@ -193,9 +193,9 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .sent:
             image = Image(systemName: "paperplane.fill")
         case .inbound:
-            image = Image(systemName: "airplane.departure.fill")
+            image = Image(systemName: "airplane.departure")
         case .received:
-            image = Image(systemName: "pencil.fill")
+            image = Image(systemName: "pencil")
         case .theyReceived:
             image = Image(systemName: "envelope.fill")
         case .archived:

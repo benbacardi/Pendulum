@@ -231,7 +231,7 @@ func parseStationery(_ data: String?, replacing oldName: String, with newName: S
 
 extension Event {
     static func getLatestRelevantAddress() async -> CLPlacemark? {
-        for event in fetch(withStatus: [.sent, .written, .received], from: PersistenceController.shared.container.viewContext) {
+        for event in fetch(withStatus: [.sent, .written, .received], from: PersistenceController.shared.container.newBackgroundContext()) {
             if let penpal = event.penpal {
                 let addresses = penpal.getAddresses()
                 if let firstAddress = addresses.first {

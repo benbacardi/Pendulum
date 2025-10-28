@@ -141,8 +141,10 @@ struct SettingsList: View {
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
                 }
                 
-                Section {
-                    Toggle("Disable Background Map", isOn: $hideMap)
+                if #available(iOS 26, *) {
+                    Section {
+                        Toggle("Disable Background Map", isOn: $hideMap)
+                    }
                 }
                 
                 Section {

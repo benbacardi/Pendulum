@@ -17,6 +17,20 @@ struct PenPalTab: View {
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
     
     @Namespace private var transition
+    
+    var navBarDisplayMode: NavigationBarItem.TitleDisplayMode {
+        if #available(iOS 26, *) {
+            return .inline
+        }
+        return .large
+    }
+    
+    var navBarTitle: String {
+        if #available(iOS 26, *) {
+            return ""
+        }
+        return "Pendulum"
+    }
  
     var body: some View {
         NavigationStack(path: $router.path) {
@@ -29,7 +43,8 @@ struct PenPalTab: View {
                     PenPalList()
                 }
             }
-            .navigationTitle("Pendulum")
+            .navigationTitle(navBarTitle)
+            .navigationBarTitleDisplayMode(navBarDisplayMode)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
