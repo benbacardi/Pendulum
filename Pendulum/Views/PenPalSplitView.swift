@@ -18,11 +18,26 @@ struct PenPalSplitView: View {
     
     @Namespace private var transition
     
+    var navBarDisplayMode: NavigationBarItem.TitleDisplayMode {
+        if #available(iOS 26, *) {
+            return .inline
+        }
+        return .large
+    }
+    
+    var navBarTitle: String {
+        if #available(iOS 26, *) {
+            return ""
+        }
+        return "Pendulum"
+    }
+    
     var body: some View {
         SplitView {
             NavigationStack {
                 PenPalList()
-                    .navigationTitle("Pen Pals")
+                    .navigationTitle(navBarTitle)
+                    .navigationBarTitleDisplayMode(navBarDisplayMode)
                     .toolbar {
                         ToolbarItem(placement: .navigationBarLeading) {
                             Button(action: {
