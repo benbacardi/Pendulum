@@ -135,66 +135,77 @@ struct PenPalListSection: View {
         .tint(.red)
     }
     
+    var foregroundColor: Color {
+        if #available(iOS 26, *) {
+            return eventType == .written ? .white : eventType?.color ?? EventType.nothingToDo.color
+        }
+        return eventType?.color ?? EventType.nothingToDo.color
+    }
+    
+    var primaryColor: Color {
+        if #available(iOS 26, *) {
+            return eventType == .written ? .white : .primary
+        }
+        return .primary
+    }
+    
     var body: some View {
         if !penpals.isEmpty {
-            if #available(iOS 26, *) {
-                    VStack(spacing: 0) {
-                        if let eventType {
-                            HStack(alignment: .top) {
-                                Text(eventType.phrase)
-                                    .font(.headline)
-                                    .fullWidth()
-                                if eventType != .nothingToDo {
-                                    eventType.sectionHeaderIcon
-                                }
-                            }
-                            .padding([.horizontal, .top])
-                        }
-                        VStack(spacing: 0) {
-                            ForEach(penpals) { penpal in
-                                Button(action: {
-                                    router.replace(with: .penPalDetail(penpal: penpal))
-                                }) {
-                                    PenPalListItem(penpal: penpal)
-                                        .foregroundStyle(eventType == .written ? .white : .primary)
-                                }
-                                .animation(.default, value: penpal)
-                                .contextMenu {
-                                    if penpal.groupingEventType == .written {
-                                        sendButton(for: penpal)
-                                        Divider()
-                                    }
-                                    archiveButton(for: penpal)
-                                    deleteButton(for: penpal)
-                                }
-                                .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
-                                    Button("Delete \(penpal.wrappedName)", role: .destructive) {
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                            penpal.delete(in: moc)
-                                            if let path = router.path.first {
-                                                switch path {
-                                                case let .penPalDetail(pathPenPal):
-                                                    if pathPenPal == penpal {
-                                                        router.path.removeFirst()
-                                                    }
-                                                }
-                                            }
-                                            self.currentPenPal = nil
-                                        }
-                                    }
-                                }
-                                if penpal != penpals.last {
-                                    Divider()
-                                        .padding(.horizontal)
-                                }
-                            }
+            VStack(spacing: 0) {
+                if let eventType {
+                    HStack(alignment: .top) {
+                        Text(eventType.phrase)
+                            .font(.headline)
+                            .fullWidth()
+                        if eventType != .nothingToDo {
+                            eventType.sectionHeaderIcon
                         }
                     }
-                    .foregroundStyle(eventType == .written ? .white : eventType?.color ?? EventType.nothingToDo.color)
-//                    .padding()
-                    .glassEffect(eventType == .written ? .regular.tint(eventType?.color ?? .white) : .regular, in: .rect(cornerRadius: 16))
-                    .padding(.bottom)
+                    .padding([.horizontal, .top])
+                }
+                VStack(spacing: 0) {
+                    ForEach(penpals) { penpal in
+                        Button(action: {
+                            router.replace(with: .penPalDetail(penpal: penpal))
+                        }) {
+                            PenPalListItem(penpal: penpal)
+                                .foregroundStyle(primaryColor)
+                        }
+                        .animation(.default, value: penpal)
+                        .contextMenu {
+                            if penpal.groupingEventType == .written {
+                                sendButton(for: penpal)
+                                Divider()
+                            }
+                            archiveButton(for: penpal)
+                            deleteButton(for: penpal)
+                        }
+                        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+                            Button("Delete \(penpal.wrappedName)", role: .destructive) {
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                                    penpal.delete(in: moc)
+                                    if let path = router.path.first {
+                                        switch path {
+                                        case let .penPalDetail(pathPenPal):
+                                            if pathPenPal == penpal {
+                                                router.path.removeFirst()
+                                            }
+                                        }
+                                    }
+                                    self.currentPenPal = nil
+                                }
+                            }
+                        }
+                        if penpal != penpals.last {
+                            Divider()
+                                .padding(.horizontal)
+                        }
+                    }
+                }
             }
+            .foregroundStyle(foregroundColor)
+            .backport.glassEffect(eventType == .written ? .tint(eventType?.color ?? .white) : .regular, cornerRadius: 16)
+            .padding(.bottom)
         } else {
             EmptyView()
         }
