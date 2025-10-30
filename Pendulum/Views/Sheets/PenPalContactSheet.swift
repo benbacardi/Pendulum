@@ -21,8 +21,9 @@ struct PenPalContactSheet: View {
     @State private var contactID: String? = nil
     @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @State private var addresses: [CNLabeledValue<CNPostalAddress>] = []
-    @State private var maps: [CLPlacemark?] = []
     @State private var notes: String = ""
+    @State private var localAddress: String = ""
+    @State private var localLocation: CLPlacemark? = nil
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @State private var presentingEditSheet: Bool = false
     
@@ -44,6 +45,8 @@ struct PenPalContactSheet: View {
                     } else {
                         
                         if self.stopAskingAboutContacts {
+                            
+                            ContactAddress(localAddress: $localAddress)
                             
                             Button(action: {
                                 self.presentingEditSheet = true
@@ -75,8 +78,8 @@ struct PenPalContactSheet: View {
                                         .fullWidth(alignment: .center)
                                         .padding()
                                 } else {
-                                    ForEach(Array(zip(addresses, maps)), id: \.0) { address, placemark in
-                                        ContactAddress(address: address, placemark: placemark)
+                                    ForEach(addresses, id: \.self) { address in
+                                        ContactAddress(address: address, localAddress: .constant(""))
                                     }
                                 }
                                 
@@ -98,17 +101,19 @@ struct PenPalContactSheet: View {
             }
             .task {
                 self.notes = penpal.notes ?? ""
+                self.localAddress = penpal.address ?? ""
                 if !self.stopAskingAboutContacts {
-                    self.contactID = UserDefaults.shared.getContactID(for: penpal)
-                    self.addresses = penpal.getAddresses()
-                    self.maps = self.addresses.map { _ in
-                        nil
+                    let contactID = UserDefaults.shared.getContactID(for: penpal)
+                    let addresses = penpal.getContactAddresses()
+                    print("BEN: \(addresses)")
+                    DispatchQueue.main.async {
+                        self.contactID = contactID
+                        self.addresses = addresses
                     }
-                    for (index, address) in self.addresses.enumerated() {
-                        let location = await getLocationFromAddress(address)
-                        withAnimation {
-                            self.maps[index] = location
-                        }
+                } else {
+                    let location = await getLocationFromAddress(localAddress)
+                    DispatchQueue.main.async {
+                        self.localLocation = location
                     }
                 }
             }
@@ -124,6 +129,7 @@ struct PenPalContactSheet: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         penpal.notes = notes.isEmpty ? nil : notes
+                        penpal.address = localAddress.isEmpty ? nil : localAddress
                         PersistenceController.shared.save(context: moc)
                         presentationMode.wrappedValue.dismiss()
                     }) {
