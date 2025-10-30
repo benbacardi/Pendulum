@@ -44,7 +44,8 @@ struct PenPalContactSheet: View {
                             .padding(.top)
                     } else {
                         
-                        if self.stopAskingAboutContacts {
+                        
+                        if self.stopAskingAboutContacts || contactID == nil {
                             
                             ContactAddress(localAddress: $localAddress)
                             
@@ -56,40 +57,22 @@ struct PenPalContactSheet: View {
                             .padding()
                             
                         } else {
-                            
-                            if contactID == nil {
-                                
-                                Text("\(penpal.wrappedName) is not currently associated with one of your contacts, so Pendulum cannot fetch any addresses.")
+
+                            if addresses.isEmpty {
+                                Text("You have no addresses saved for \(penpal.wrappedName)!")
                                     .fullWidth(alignment: .center)
-                                    .foregroundColor(.secondary)
                                     .padding()
-                                
-                                Button(action: {
-                                    self.presentingEditSheet = true
-                                }) {
-                                    Text("Edit Name and Photo")
-                                }
-                                .padding()
-                                
                             } else {
-                                
-                                if addresses.isEmpty {
-                                    Text("You have no addresses saved for \(penpal.wrappedName)!")
-                                        .fullWidth(alignment: .center)
-                                        .padding()
-                                } else {
-                                    ForEach(addresses, id: \.self) { address in
-                                        ContactAddress(address: address, localAddress: .constant(""))
-                                    }
+                                ForEach(addresses, id: \.self) { address in
+                                    ContactAddress(address: address, localAddress: .constant(""))
                                 }
-                                
-                                Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
-                                    .fullWidth(alignment: .center)
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                                    .padding()
-                                
                             }
+                            
+                            Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
+                                .fullWidth(alignment: .center)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding()
                             
                         }
                     }
