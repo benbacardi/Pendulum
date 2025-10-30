@@ -59,7 +59,7 @@ struct WhatsNew: View {
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
-            WhatsNewGridRow(icon: "sparkles", iconColor: .yellow, title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or from!")
+            WhatsNewGridRow(icon: "sparkles", iconColor: .accentColor, title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or coming from.")
             WhatsNewGridRow(icon: "mappin.and.ellipse", iconColor: .green, title: "Local Addresses", summary: "For those of you who choose not to sync your Pen Pals with your device contacts, you can now store their addresses directly in Pendulum for easy access.")
         }
         .padding(.horizontal, 20)
