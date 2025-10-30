@@ -27,7 +27,7 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showWhatsNewOverlay) {
             WhatsNew()
-                .presentationDetents([.medium])
+                .presentationDetents([.fraction(0.75)])
                 .ignoresSafeArea(.container, edges: .bottom)
         }
         .overlay {
