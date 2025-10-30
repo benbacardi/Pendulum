@@ -629,7 +629,17 @@ extension PenPal {
 }
 
 extension PenPal {
-    func getAddresses() -> [CNLabeledValue<CNPostalAddress>] {
+    func getAddresses() -> [String] {
+        if UserDefaults.shared.stopAskingAboutContacts {
+            if let address, !address.isEmpty {
+                return [address]
+            }
+            return []
+        } else {
+            return getContactAddresses().map { $0.value.getFullAddress() }
+        }
+    }
+    func getContactAddresses() -> [CNLabeledValue<CNPostalAddress>] {
         if let contactID = UserDefaults.shared.getContactID(for: self) {
             let store = CNContactStore()
             let keys = [

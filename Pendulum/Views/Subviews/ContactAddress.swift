@@ -25,39 +25,77 @@ struct ContactAddress: View {
     @Environment(\.openURL) private var openURL
     
     // MARK: Parameters
-    let address: CNLabeledValue<CNPostalAddress>
-    let placemark: CLPlacemark?
+    var address: CNLabeledValue<CNPostalAddress>? = nil
+    @Binding var localAddress: String
+    @State private var placemark: CLPlacemark? = nil
+    @State private var cameraPosition: MapCameraPosition = .automatic
+    @FocusState private var addressFieldIsFocused
+    
+    var resolvedAddress: String {
+        address?.value.getFullAddress() ?? localAddress
+    }
     
     var body: some View {
-        Button(action: {
-            var urlComponents = URLComponents()
-            urlComponents.scheme = "maps"
-            urlComponents.host = ""
-            urlComponents.path = ""
-            urlComponents.queryItems = [URLQueryItem(name: "address", value: address.value.getFullAddress(separator: ", "))]
-            if let url = urlComponents.url {
-                openURL(url)
-            }
-        }) {
-            GroupBox {
+        GroupBox {
+            if let address {
                 Text(CNLabeledValue<NSString>.localizedString(forLabel: address.label ?? "No label"))
                     .font(.caption)
                     .fullWidth()
-                Text(address.value.getFullAddress())
+                Text(resolvedAddress)
                     .fullWidth()
-                ZStack {
-                    Rectangle()
-                        .fill(Color.black.opacity(0.05))
-                        .frame(height: 100)
-                    if let placemark = placemark, let location = placemark.location {
-                        Map(coordinateRegion: .constant(MKCoordinateRegion(center: location.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005))), interactionModes: [], annotationItems: [IdentifiableLocation(location: location)]) { pin in
-                            MapMarker(coordinate: pin.location.coordinate, tint: .orange)
+            } else {
+                Text("Address")
+                    .font(.caption)
+                    .fullWidth()
+                TextField("Enter an address", text: $localAddress, axis: .vertical)
+                    .multilineTextAlignment(.leading)
+                    .fullWidth()
+                    .focused($addressFieldIsFocused)
+            }
+            ZStack {
+                Rectangle()
+                    .fill(Color.black.opacity(0.05))
+                    .frame(height: 100)
+                if let placemark = placemark, let location = placemark.location {
+                    Button(action: {
+                        var urlComponents = URLComponents()
+                        urlComponents.scheme = "maps"
+                        urlComponents.host = ""
+                        urlComponents.path = ""
+                        urlComponents.queryItems = [URLQueryItem(name: "address", value: resolvedAddress.replacingOccurrences(of: "\n", with: ", "))]
+                        if let url = urlComponents.url {
+                            openURL(url)
+                        }
+                    }) {
+                        Map(position: $cameraPosition, interactionModes: []) {
+                            Marker("", coordinate: location.coordinate)
                         }
                         .frame(height: 100)
                     }
                 }
             }
-            .foregroundColor(.primary)
+        }
+        .foregroundColor(.primary)
+        .task {
+            await updatePlacemark()
+        }
+        .onChange(of: addressFieldIsFocused) {
+            if !addressFieldIsFocused {
+                Task {
+                    await updatePlacemark()
+                }
+            }
         }
     }
+    
+    func updatePlacemark() async {
+        let location = await getLocationFromAddress(resolvedAddress)
+        DispatchQueue.main.async {
+            self.placemark = location
+            if let loc = location?.location {
+                self.cameraPosition = MapCameraPosition.region(.init(center: loc.coordinate, span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)))
+            }
+        }
+    }
+    
 }
