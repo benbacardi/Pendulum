@@ -59,26 +59,33 @@ struct WhatsNew: View {
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
-            WhatsNewGridRow(icon: "arrow.down.circle", iconColor: .pink, title: "Backup and Restore", summary: "From Settings, you can now generate an archive of your current data—including Pen Pals, events, photos, and stationery—that can be restored at any point.")
-            GroupBox {
-                WhatsNewGridRow(title: "Just so you know…", summary: "An initial archive has been created for you already. If you need to free up storage or do not wish to keep it around, it can be exported or deleted from the Backup and Restore settings.")
-            }
+            WhatsNewGridRow(icon: "sparkles", iconColor: .yellow, title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or from!")
+            WhatsNewGridRow(icon: "mappin.and.ellipse", iconColor: .green, title: "Local Addresses", summary: "For those of you who choose not to sync your Pen Pals with your device contacts, you can now store their addresses directly in Pendulum for easy access.")
         }
         .padding(.horizontal, 20)
         .padding(.top, 30)
     }
     
+    @ViewBuilder
     var dismissButton: some View {
-        Button(action: {
-            dismiss()
-        }) {
-            Text("Continue")
-                .font(.headline)
-                .fullWidth(alignment: .center)
-                .padding(5)
+        if #available(iOS 26.0, *) {
+            Button(action: { dismiss() }) {
+                Text("Continue")
+                    .font(.headline)
+                    .fullWidth(alignment: .center)
+                    .padding(5)
+            }
+            .foregroundStyle(.white)
+            .buttonStyle(.glass(.regular.tint(.accentColor)))
+        } else {
+            Button(action: { dismiss() }) {
+                Text("Continue")
+                    .font(.headline)
+                    .fullWidth(alignment: .center)
+                    .padding(5)
+            }
+            .buttonStyle(.borderedProminent)
         }
-        .buttonStyle(.borderedProminent)
-        .padding(.horizontal)
     }
     
     var header: some View {
@@ -107,6 +114,7 @@ struct WhatsNew: View {
                 }
                 Spacer()
                 dismissButton
+                    .padding(.horizontal)
                     .padding(20)
                 
             } else {
