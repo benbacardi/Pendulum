@@ -340,7 +340,7 @@ extension PenPal {
         if self.image != contact.thumbnailImageData { self.image = contact.thumbnailImageData }
         if self.initials != contact.initials { self.initials = contact.initials }
         if self.name != contact.fullName { self.name = contact.fullName }
-        if self.nickname != contact.nickname { self.nickname = contact.nickname }
+        if self.nickname != contact.nickname && !contact.nickname.isEmpty { self.nickname = contact.nickname }
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
         self.updateLastEventType(in: context)
         if saving {
