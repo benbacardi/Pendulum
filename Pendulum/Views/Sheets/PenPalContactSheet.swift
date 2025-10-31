@@ -31,7 +31,7 @@ struct PenPalContactSheet: View {
         NavigationStack {
             VStack {
                 
-                PenPalHeader(penpal: penpal)
+                PenPalHeader(penpal: penpal, useFullName: true)
                 
                 ScrollView {
                     

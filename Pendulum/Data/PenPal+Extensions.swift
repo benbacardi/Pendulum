@@ -20,6 +20,14 @@ extension PenPal {
     var wrappedInitials: String {
         self.initials ?? "?"
     }
+    
+    var preferredName: String {
+        if UserDefaults.shared.preferNicknames {
+            return self.nickname ?? self.wrappedName
+        } else {
+            return self.wrappedName
+        }
+    }
  
     var lastEventType: EventType {
         get { return EventType.from(self.lastEventTypeValue) }
@@ -328,10 +336,11 @@ extension PenPal {
     }
     
     func update(from contact: CNContact, saving: Bool = true, in context: NSManagedObjectContext) {
-        dataLogger.debug("Updating \(self.wrappedName) using \(contact.fullName ?? "UNKNOWN CONTACT")")
+        dataLogger.debug("Updating \(self.wrappedName) using \(contact.fullName ?? "UNKNOWN CONTACT") - \(contact.nickname)")
         if self.image != contact.thumbnailImageData { self.image = contact.thumbnailImageData }
         if self.initials != contact.initials { self.initials = contact.initials }
         if self.name != contact.fullName { self.name = contact.fullName }
+        if self.nickname != contact.nickname { self.nickname = contact.nickname }
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
         self.updateLastEventType(in: context)
         if saving {
@@ -364,6 +373,7 @@ extension PenPal {
             let store = CNContactStore()
             let keys = [
                 CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                CNContactNicknameKey,
                 CNContactOrganizationNameKey,
                 CNContactImageDataAvailableKey,
                 CNContactThumbnailImageDataKey

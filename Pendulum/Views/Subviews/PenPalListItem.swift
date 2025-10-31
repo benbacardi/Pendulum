@@ -13,6 +13,8 @@ struct PenPalListItem: View {
     @EnvironmentObject private var router: Router
     @Environment(\.managedObjectContext) var moc
     
+    @AppStorage(UserDefaults.Key.preferNicknames, store: UserDefaults.shared) private var preferNicknames: Bool = true
+    
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     var asListItem: Bool = true
@@ -47,7 +49,7 @@ struct PenPalListItem: View {
                 .task { displayImage = await penpal.displayImage }
             }
             VStack {
-                Text(penpal.wrappedName)
+                Text(preferNicknames ? penpal.preferredName : penpal.wrappedName)
                     .font(.headline)
                     .fullWidth()
                 if let subHeader {
