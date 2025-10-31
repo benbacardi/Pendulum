@@ -22,8 +22,8 @@ extension PenPal {
     }
     
     var preferredName: String {
-        if UserDefaults.shared.preferNicknames {
-            return self.nickname ?? self.wrappedName
+        if UserDefaults.shared.preferNicknames, let nickname = self.nickname, !nickname.isEmpty {
+            return nickname
         } else {
             return self.wrappedName
         }
