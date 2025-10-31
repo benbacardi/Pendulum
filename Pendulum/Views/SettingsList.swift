@@ -42,6 +42,7 @@ struct SettingsList: View {
     @AppStorage(UserDefaults.Key.badgeRemindersToPostLetters, store: UserDefaults.shared) private var badgeRemindersToPostLetters: Bool = false
     @AppStorage(UserDefaults.Key.enableQuickEntry, store: UserDefaults.shared) private var enableQuickEntry: Bool = false
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.preferNicknames, store: UserDefaults.shared) private var preferNicknames: Bool = true
     @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
     @AppStorage(UserDefaults.Key.groupPenPalsInListView, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
     @AppStorage(UserDefaults.Key.shouldShowDebugView, store: UserDefaults.shared) private var shouldShowDebugView: Bool = false
@@ -138,6 +139,8 @@ struct SettingsList: View {
                 }
                 
                 Section(footer: Text("If you don't store your Pen Pal information in Contacts, Pendulum can stop prompting for access and rely on manual Pen Pal entry.")) {
+                    Toggle("Prefer Nicknames", isOn: $preferNicknames)
+                        .disabled(stopAskingAboutContacts)
                     Toggle("Turn off Contacts integration", isOn: $stopAskingAboutContacts)
                 }
                 

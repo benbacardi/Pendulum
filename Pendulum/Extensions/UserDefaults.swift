@@ -20,6 +20,7 @@ extension UserDefaults {
         case sendRemindersToPostLettersAtMinute
         case penpalContactMap
         case stopAskingAboutContacts
+        case preferNicknames
         case trackPostingLetters
         case sortPenPalsAlphabetically
         case sortStationeryAlphabetically
@@ -154,6 +155,11 @@ extension UserDefaults {
     var stopAskingAboutContacts: Bool {
         get { bool(forKey: Key.stopAskingAboutContacts) }
         set { setValue(newValue, forKey: Key.stopAskingAboutContacts) }
+    }
+    
+    var preferNicknames: Bool {
+        get { bool(forKey: Key.preferNicknames) }
+        set { setValue(newValue, forKey: Key.preferNicknames) }
     }
     
     var penpalContactMap: [String: String] {

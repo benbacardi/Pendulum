@@ -12,8 +12,10 @@ struct PenPalHeader: View {
     @ObservedObject var penpal: PenPal
     @State private var displayImage: Image?
     
+    var useFullName: Bool = false
+    
     var body: some View {
-        HStack {
+        HStack(alignment: .center) {
             if let displayImage {
                 displayImage
                     .clipShape(Circle())
@@ -31,10 +33,18 @@ struct PenPalHeader: View {
                     self.displayImage = await penpal.displayImage
                 }
             }
-            Text(penpal.wrappedName)
-                .font(.largeTitle)
-                .bold()
-                .fullWidth(alignment: .leading)
+            VStack(spacing: 0) {
+                if useFullName && penpal.wrappedName != penpal.preferredName {
+                    Text("“\(penpal.preferredName)”")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .fullWidth(alignment: .leading)
+                }
+                Text(useFullName ? penpal.wrappedName : penpal.preferredName)
+                    .font(.largeTitle)
+                    .bold()
+                    .fullWidth(alignment: .leading)
+            }
         }
     }
 }
