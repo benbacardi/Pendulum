@@ -6,6 +6,9 @@
 //
 
 import SwiftUI
+#if DEBUG
+import Contacts
+#endif
 
 struct DebugView: View {
     
@@ -25,6 +28,14 @@ struct DebugView: View {
         Form {
             #if DEBUG
             Text("You are running an Xcode debug build.")
+            Button(action: { Task { await CNContact.addDummyData() } }) {
+                Text("Add Contacts")
+            }
+            Button(action: {
+                Task { await PenPal.addDummyData() }
+            }) {
+                Text("Add PenPals")
+            }
             #endif
             Text("\(syncMonitor.state)")
             Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
