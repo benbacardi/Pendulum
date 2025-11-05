@@ -12,7 +12,7 @@ struct WhatsNewGridRow: View {
     @Environment(\.dynamicTypeSize) var dynamicTypeSize
     
     var icon: String? = nil
-    var iconColor: Color? = nil
+    var iconColor: Color = .accentColor
     let title: String
     let summary: String
     var suffix: String? = nil
@@ -22,7 +22,7 @@ struct WhatsNewGridRow: View {
         if let icon {
             Image(systemName: icon)
                 .font(.title)
-                .foregroundColor(iconColor ?? .primary)
+                .foregroundColor(iconColor)
         } else {
             EmptyView()
         }
@@ -67,11 +67,11 @@ struct WhatsNew: View {
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
-            WhatsNewGridRow(icon: "sparkles", iconColor: .accentColor, title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or coming from.")
-            WhatsNewGridRow(icon: "mappin.and.ellipse", iconColor: .green, title: "Local Addresses", summary: "For those of you who choose not to sync your Pen Pals with your device contacts, you can now store their addresses directly in Pendulum for easy access.")
-            WhatsNewGridRow(icon: "person.crop.circle", iconColor: .pink, title: "What's in a name?", summary: "If any of your Pen Pal contacts have nicknames, they'll now be displayed instead of their full name.", suffix: "This can be disabled in Settings.")
+            WhatsNewGridRow(icon: "sparkles", title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or coming from.")
+            WhatsNewGridRow(icon: "mappin.and.ellipse", title: "Local Addresses", summary: "For those of you who choose not to sync your Pen Pals with your device contacts, you can now store their addresses directly in Pendulum for easy access.")
+            WhatsNewGridRow(icon: "person.crop.circle", title: "What's in a name?", summary: "If any of your Pen Pal contacts have nicknames, they'll now be displayed instead of their full name.", suffix: "This can be disabled in Settings.")
         }
-        .padding(.horizontal, 20)
+        .padding(.horizontal, 40)
         .padding(.top, 30)
     }
     
@@ -98,17 +98,24 @@ struct WhatsNew: View {
     }
     
     var header: some View {
-        VStack(spacing: 4) {
-            Text("What's New")
-                .font(.largeTitle)
+        VStack(spacing: 0) {
+            Text("What's new in")
+                .font(.title)
                 .bold()
-                .fullWidth(alignment: .center)
-            Text("Version \(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
+                .fullWidth(alignment: .leading)
+                .foregroundColor(.accentColor)
+            HStack(spacing: 0) {
+                Text("Pendulum ")
+                Text(Bundle.main.appVersionNumber)
+                    .fullWidth(alignment: .leading)
+                    .foregroundStyle(.secondary)
+            }
+            .font(.title)
+            .bold()
         }
-        .foregroundColor(.white)
         .padding()
-        .padding(.vertical)
-        .background(Color.accentColor)
+        .padding(.top, 60)
+        .padding(.horizontal, 20)
     }
     
     var body: some View {
@@ -138,7 +145,7 @@ struct WhatsNew: View {
                     }
                     Spacer()
                     dismissButton
-                        .padding(20)
+                        .padding(40)
                 }
                 
             }
@@ -148,6 +155,9 @@ struct WhatsNew: View {
 
 struct WhatsNew_Previews: PreviewProvider {
     static var previews: some View {
-        WhatsNew()
+        Text("Hello")
+            .sheet(isPresented: .constant(true)) {
+                WhatsNew()
+            }
     }
 }
