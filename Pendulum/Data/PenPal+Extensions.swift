@@ -499,7 +499,7 @@ extension PenPal {
 extension PenPal {
     
     @discardableResult
-    static func add(id: UUID? = nil, name: String, initials: String, image: Data? = nil, notes: String? = nil, archived: Bool = false, to context: NSManagedObjectContext, saving: Bool = true) -> PenPal {
+    static func add(id: UUID? = nil, name: String, initials: String, image: Data? = nil, notes: String? = nil, archived: Bool = false, nickname: String? = nil, address: String? = nil, to context: NSManagedObjectContext, saving: Bool = true) -> PenPal {
         let newPenPal = PenPal(context: context)
         newPenPal.id = id ?? UUID()
         newPenPal.name = name
@@ -508,6 +508,8 @@ extension PenPal {
         newPenPal.lastEventType = EventType.noEvent
         newPenPal.notes = notes
         newPenPal.archived = archived
+        newPenPal.nickname = nickname
+        newPenPal.address = address
         if saving {
             PersistenceController.shared.save(context: context)
         }
@@ -544,10 +546,12 @@ extension PenPal {
                     penPal.notes = importItem.notes
                     penPal.archived = importItem.archived
                     penPal.image = importItem.loadImage(fromArchive: archiveDirectory)
+                    penPal.nickname = importItem.nickname
+                    penPal.address = importItem.address
                 }
             } else {
                 appLogger.debug("Not found locally, creating...")
-                penPal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.loadImage(fromArchive: archiveDirectory), notes: importItem.notes, archived: importItem.archived, to: context, saving: false)
+                penPal = PenPal.add(id: importItem.id, name: importItem.name, initials: importItem.initials, image: importItem.loadImage(fromArchive: archiveDirectory), notes: importItem.notes, archived: importItem.archived, nickname: importItem.nickname, address: importItem.address, to: context, saving: false)
             }
             penPalCount += 1
             
