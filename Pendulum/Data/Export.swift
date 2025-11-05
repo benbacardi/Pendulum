@@ -69,6 +69,8 @@ struct ExportedPenPal: Codable {
     let notes: String?
     let events: [ExportedEvent]
     let archived: Bool
+    let nickname: String?
+    let address: String?
     
     init(from: PenPal, in context: NSManagedObjectContext) {
         self.id = from.id ?? UUID()
@@ -77,6 +79,8 @@ struct ExportedPenPal: Codable {
         self.notes = from.notes
         self.archived = from.archived
         self.events = from.events(from: context).map { ExportedEvent(from: $0) }
+        self.nickname = from.nickname
+        self.address = from.address
     }
     
     func loadImage(fromArchive archiveDirectory: URL) -> Data? {
