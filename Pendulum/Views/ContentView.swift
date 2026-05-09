@@ -34,7 +34,7 @@ struct ContentView: View {
         }
         .onAppear {
             if lastLaunchedVersion != Bundle.main.appBuildNumber {
-                showWhatsNewOverlay = true
+//                showWhatsNewOverlay = true
                 lastLaunchedVersion = Bundle.main.appBuildNumber
             }
             if !UserDefaults.shared.hasGeneratedInitialBackup && UserDefaults.shared.exportURL == nil {
