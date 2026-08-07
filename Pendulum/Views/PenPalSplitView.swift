@@ -84,7 +84,7 @@ struct PenPalSplitView: View {
                         appLogger.debug("Destination appeared!")
                     }
                 } else {
-                    if contactsAccessStatus != .authorized && allPenPals.isEmpty {
+                    if CNContactStore.canReadContacts(contactsAccessStatus) && allPenPals.isEmpty {
                         GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
                     } else if allPenPals.isEmpty {
                         AddFirstPenPalView()

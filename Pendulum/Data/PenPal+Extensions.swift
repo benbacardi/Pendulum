@@ -366,7 +366,7 @@ extension PenPal {
         
         appLogger.debug("Syncing \(self.wrappedName) with contacts")
         
-        if CNContactStore.authorizationStatus(for: .contacts) == .authorized && !UserDefaults.shared.stopAskingAboutContacts {
+        if CNContactStore.canReadContacts(CNContactStore.authorizationStatus(for: .contacts)) && !UserDefaults.shared.stopAskingAboutContacts {
             
             appLogger.debug("Authorisation")
             

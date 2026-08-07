@@ -35,7 +35,7 @@ struct PenPalTab: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             Group {
-                if contactsAccessStatus != .authorized && allPenPals.isEmpty {
+                if !CNContactStore.canReadContacts(contactsAccessStatus) && allPenPals.isEmpty {
                     GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
                 } else if allPenPals.isEmpty {
                     AddFirstPenPalView()
