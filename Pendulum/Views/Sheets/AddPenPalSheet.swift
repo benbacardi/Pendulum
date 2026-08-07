@@ -11,6 +11,7 @@ import Contacts
 struct AddPenPalSheet: View {
     
     // MARK: Environment
+    @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var router: Router
@@ -55,6 +56,23 @@ struct AddPenPalSheet: View {
         .foregroundColor(.primary)
     }
     
+    @ViewBuilder
+    var limitedContactsLink: some View {
+        if #available(iOS 18, *), contactsAccessStatus == .limited {
+            if let url = UIApplication.systemSettingsURL {
+                Button(action: {
+                    openURL(url)
+                }) {
+                    Text("You previously restricted Pendulum's access to limited contacts. You can choose to add more in ") + Text("Settings.").foregroundColor(.accentColor)
+                }
+                .fullWidth(alignment: .center)
+                .foregroundStyle(.secondary)
+                .font(.caption)
+                .buttonStyle(.plain)
+            }
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             Group {
@@ -86,6 +104,7 @@ struct AddPenPalSheet: View {
                                 }
                             }
                         }
+                        limitedContactsLink
                     }
                     .searchable(text: $searchText)
                 } else {
@@ -108,6 +127,8 @@ struct AddPenPalSheet: View {
                                         Text("Holy prolific writer, Batman!\nYou've added all your contacts as Pen Pals already!")
                                             .fullWidth(alignment: .center)
                                     }
+                                    limitedContactsLink
+                                        .padding(.top, 20)
                                 }
                             } else {
                                 ProgressView()
