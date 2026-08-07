@@ -91,7 +91,7 @@ struct AddPenPalSheet: View {
                 } else {
                     VStack {
                         Spacer()
-                        if contactsAccessStatus != .authorized {
+                        if !CNContactStore.canReadContacts(contactsAccessStatus) {
                             ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, alwaysShowImage: true)
                         } else {
                             if contactsFetched {
@@ -135,7 +135,7 @@ struct AddPenPalSheet: View {
                 self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
             .task {
-                if self.contactsAccessStatus == .authorized {
+                if CNContactStore.canReadContacts(self.contactsAccessStatus) {
                     let store = CNContactStore()
                     let keys = [
                         CNContactFormatter.descriptorForRequiredKeys(for: .fullName),

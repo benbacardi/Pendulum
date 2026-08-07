@@ -39,7 +39,7 @@ struct PenPalContactSheet: View {
                         TextField("Notes - postage cost, etc", text: $notes, axis: .vertical)
                     }
                     
-                    if contactsAccessStatus != .authorized && !self.stopAskingAboutContacts {
+                    if !CNContactStore.canReadContacts(contactsAccessStatus) && !self.stopAskingAboutContacts {
                         ContactsAccessRequiredView(contactsAccessStatus: $contactsAccessStatus, reason: "to fetch any addresses for \(penpal.wrappedName).")
                             .padding(.top)
                     } else {

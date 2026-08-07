@@ -42,6 +42,16 @@ extension CNContact {
     
 }
 
+extension CNContactStore {
+    static func canReadContacts(_ status: CNAuthorizationStatus) -> Bool {
+        if #available(iOS 18, *) {
+            return status == .authorized || status == .limited
+        } else {
+            return status == .authorized
+        }
+    }
+}
+
 #if DEBUG
 extension CNContact {
     static func create(
