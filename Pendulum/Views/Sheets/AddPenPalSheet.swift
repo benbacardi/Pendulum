@@ -56,6 +56,38 @@ struct AddPenPalSheet: View {
         .foregroundColor(.primary)
     }
     
+    func fetchContacts() {
+        if CNContactStore.canReadContacts(self.contactsAccessStatus) {
+            let store = CNContactStore()
+            let keys = [
+                CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+                CNContactFormatter.descriptorForRequiredKeysForNameOrder,
+                CNContactOrganizationNameKey,
+                CNContactImageDataAvailableKey,
+                CNContactThumbnailImageDataKey
+            ] as! [CNKeyDescriptor]
+            let request = CNContactFetchRequest(keysToFetch: keys)
+            request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+            let identifiers = existingPenPalIdentifiers
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try store.enumerateContacts(with: request) { (contact, stop) in
+                        if !identifiers.contains(contact.identifier) {
+                            DispatchQueue.main.async {
+                                self.contactDetails.append(contact)
+                            }
+                        }
+                    }
+                    DispatchQueue.main.async {
+                        self.contactsFetched = true
+                    }
+                } catch {
+                    dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
+                }
+            }
+        }
+    }
+    
     @ViewBuilder
     var limitedContactsLink: some View {
         if #available(iOS 18, *), contactsAccessStatus == .limited {
@@ -155,36 +187,8 @@ struct AddPenPalSheet: View {
                 self.existingPenPalIdentifiers = Set(existingPenPals.compactMap { UserDefaults.shared.getContactID(for: $0) })
                 self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
             }
-            .task {
-                if CNContactStore.canReadContacts(self.contactsAccessStatus) {
-                    let store = CNContactStore()
-                    let keys = [
-                        CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                        CNContactFormatter.descriptorForRequiredKeysForNameOrder,
-                        CNContactOrganizationNameKey,
-                        CNContactImageDataAvailableKey,
-                        CNContactThumbnailImageDataKey
-                    ] as! [CNKeyDescriptor]
-                    let request = CNContactFetchRequest(keysToFetch: keys)
-                    request.sortOrder = CNContactsUserDefaults.shared().sortOrder
-                    let identifiers = existingPenPalIdentifiers
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        do {
-                            try store.enumerateContacts(with: request) { (contact, stop) in
-                                if !identifiers.contains(contact.identifier) {
-                                    DispatchQueue.main.async {
-                                        self.contactDetails.append(contact)
-                                    }
-                                }
-                            }
-                            DispatchQueue.main.async {
-                                self.contactsFetched = true
-                            }
-                        } catch {
-                            dataLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
-                        }
-                    }
-                }
+            .onChange(of: contactsAccessStatus) {
+                fetchContacts()
             }
             .navigationBarTitle("Add Pen Pal")
             .navigationBarTitleDisplayMode(.inline)

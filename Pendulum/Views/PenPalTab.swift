@@ -12,7 +12,6 @@ struct PenPalTab: View {
     
     // MARK: State
     @StateObject var router = Router()
-    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
     
@@ -35,9 +34,7 @@ struct PenPalTab: View {
     var body: some View {
         NavigationStack(path: $router.path) {
             Group {
-                if !CNContactStore.canReadContacts(contactsAccessStatus) && allPenPals.isEmpty {
-                    GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
-                } else if allPenPals.isEmpty {
+                if allPenPals.isEmpty {
                     AddFirstPenPalView()
                 } else {
                     PenPalList()
@@ -84,9 +81,6 @@ struct PenPalTab: View {
             }
             .withAppRouter()
             .withSheetDestinations(sheetDestination: $router.presentedSheet)
-        }
-        .onAppear {
-            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .environmentObject(router)
     }

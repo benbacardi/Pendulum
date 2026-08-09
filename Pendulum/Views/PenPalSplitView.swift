@@ -12,7 +12,6 @@ struct PenPalSplitView: View {
     
     // MARK: State
     @StateObject private var router = Router()
-    @State private var contactsAccessStatus: CNAuthorizationStatus = .notDetermined
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
     
@@ -84,9 +83,7 @@ struct PenPalSplitView: View {
                         appLogger.debug("Destination appeared!")
                     }
                 } else {
-                    if CNContactStore.canReadContacts(contactsAccessStatus) && allPenPals.isEmpty {
-                        GrantContactsAccessView(contactsAccessStatus: $contactsAccessStatus)
-                    } else if allPenPals.isEmpty {
+                    if allPenPals.isEmpty {
                         AddFirstPenPalView()
                     } else {
                         VStack {
@@ -104,9 +101,6 @@ struct PenPalSplitView: View {
                     }
                 }
             }
-        }
-        .onAppear {
-            self.contactsAccessStatus = CNContactStore.authorizationStatus(for: .contacts)
         }
         .environmentObject(router)
     }
