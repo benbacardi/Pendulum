@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5EE723932C32ECB60019D3A3 /* CustomStationery+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EE723922C32ECB50019D3A3 /* CustomStationery+Extensions.swift */; };
+		5E2054B72C3EDB0B000DD4EC /* SymbolPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2054B62C3EDB0B000DD4EC /* SymbolPicker.swift */; };
 		406626EB2916E24E00CA0BD7 /* SettingsList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626EA2916E24E00CA0BD7 /* SettingsList.swift */; };
 		406626EE2916E98B00CA0BD7 /* Bundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 406626ED2916E98B00CA0BD7 /* Bundle.swift */; };
 		5E0A015A29AD0A0F00BADAC6 /* AppRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0A015929AD0A0F00BADAC6 /* AppRouter.swift */; };
@@ -93,6 +95,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5EE723922C32ECB50019D3A3 /* CustomStationery+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CustomStationery+Extensions.swift"; sourceTree = "<group>"; };
+		5E2054B62C3EDB0B000DD4EC /* SymbolPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolPicker.swift; sourceTree = "<group>"; };
 		406626EA2916E24E00CA0BD7 /* SettingsList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsList.swift; sourceTree = "<group>"; };
 		406626ED2916E98B00CA0BD7 /* Bundle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bundle.swift; sourceTree = "<group>"; };
 		5E0A015929AD0A0F00BADAC6 /* AppRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppRouter.swift; sourceTree = "<group>"; };
@@ -261,6 +265,7 @@
 				5ED5A15E297815560053B3D0 /* StatsView.swift */,
 				5E8A4A21298D9B8E00DD2493 /* TipJarView.swift */,
 				5EDFFA432AF4546C008530A1 /* DebugView.swift */,
+				5E2054B62C3EDB0B000DD4EC /* SymbolPicker.swift */,
 				5ED5A160297842220053B3D0 /* Charts */,
 				5E405543291671B800BD52BF /* Sheets */,
 				5E40553C29165ED500BD52BF /* Subviews */,
@@ -383,6 +388,7 @@
 				5E6252072928C20600A3EB86 /* PenPal+Extensions.swift */,
 				5E62520B292B7A2A00A3EB86 /* Event+Extensions.swift */,
 				5E625213292B999500A3EB86 /* Stationery+Extensions.swift */,
+				5EE723922C32ECB50019D3A3 /* CustomStationery+Extensions.swift */,
 				5EE5687029D1D63400BC2687 /* EventPhoto+Extensions.swift */,
 				5E625218292CBD2700A3EB86 /* Export.swift */,
 				5E263DFA2BB0A96200E3556A /* SyncMonitor.swift */,
@@ -505,6 +511,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5EE723932C32ECB60019D3A3 /* CustomStationery+Extensions.swift in Sources */,
+				5E2054B72C3EDB0B000DD4EC /* SymbolPicker.swift in Sources */,
 				5EEF49FC291D0151000528C6 /* EventPropertyDetailsSheet.swift in Sources */,
 				5E3461F22983F6A200BBD038 /* SentAndWrittenByMonthChart.swift in Sources */,
 				5EE97E8A2E79AE2F00FD6B1D /* MatchedTransitionSource.swift in Sources */,

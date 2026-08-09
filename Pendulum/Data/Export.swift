@@ -31,6 +31,21 @@ struct ExportedPhoto: Codable {
     
 }
 
+struct ExportedCustomStationery: Codable {
+    let id: UUID
+    let icon: String
+    let type: String
+    let value: String
+
+    init(from: CustomStationery) {
+        self.id = from.id ?? UUID()
+        self.icon = from.wrappedIcon
+        self.type = from.wrappedType
+        self.value = from.wrappedValue
+    }
+
+}
+
 struct ExportedEvent: Codable {
     let id: UUID
     let type: Int
@@ -44,7 +59,8 @@ struct ExportedEvent: Codable {
     let ignore: Bool
     let noFurtherActions: Bool?
     let photos: [ExportedPhoto]
-    
+    let customStationery: [ExportedCustomStationery]?
+
     init(from: Event) {
         self.id = from.id ?? UUID()
         self.type = from.type.rawValue
@@ -58,8 +74,9 @@ struct ExportedEvent: Codable {
         self.noFurtherActions = from.noFurtherActions
         self.letterType = from.letterType.rawValue
         self.photos = from.allPhotos().map { ExportedPhoto(from: $0) }
+        self.customStationery = from.allCustomStationery().map { ExportedCustomStationery(from: $0) }
     }
-    
+
 }
 
 struct ExportedPenPal: Codable {
@@ -122,13 +139,14 @@ struct Export: Codable {
 /// Export Metadata Versions
 /// 1.0: initial
 ///     1.1: added `noFurtherActions` to `ExportedEvent`
+///     1.2: added `customStationery` to `ExportedEvent`
 
 struct ExportMetadata: Codable {
     let majorVersion: Int
     let minorVersion: Int
-    
+
     static var currentVersion: ExportMetadata {
-        ExportMetadata(majorVersion: 1, minorVersion: 1)
+        ExportMetadata(majorVersion: 1, minorVersion: 2)
     }
     
     static var initialVersion: ExportMetadata {
