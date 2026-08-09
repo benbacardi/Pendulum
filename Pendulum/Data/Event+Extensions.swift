@@ -37,7 +37,7 @@ extension Event {
     }
     
     var hasStationery: Bool {
-        !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true)
+        !(self.pen?.isEmpty ?? true) || !(self.ink?.isEmpty ?? true) || !(self.paper?.isEmpty ?? true) || !self.allCustomStationery().isEmpty
     }
     
     var inks: [String] {
@@ -59,7 +59,7 @@ extension Event {
 
 extension Event {
     
-    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, noFurtherActions: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
+    func update(type: EventType, date: Date, notes: String?, pen: String?, ink: String?, paper: String?, letterType: LetterType, ignore: Bool, noFurtherActions: Bool, trackingReference: String? = nil, withPhotos photos: [EventPhoto]? = nil, withCustomStationeryTypes customStationery: [CustomStationeryType]? = nil, in context: NSManagedObjectContext, recalculatePenPalEvent: Bool = true, saving: Bool = true) {
         self.date = date
         self.type = type
         self.notes = notes?.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -70,7 +70,7 @@ extension Event {
         self.letterType = letterType
         self.ignore = ignore
         self.noFurtherActions = noFurtherActions
-        
+
         if let photos {
             dataLogger.debug("There are photos for the event \(self.id?.uuidString ?? "NO ID"): \(photos.count)")
             for photo in photos {
@@ -82,7 +82,11 @@ extension Event {
             let deletedCount = self.deletePhotos(notMatching: photos.compactMap { $0.id }, saving: false, in: context)
             dataLogger.debug("Deleted \(deletedCount) old photos")
         }
-        
+
+        if let customStationery {
+            self.updateStationery(to: customStationery, in: context, saving: false)
+        }
+
         if recalculatePenPalEvent {
             self.penpal?.updateLastEventType(in: context)
         }
@@ -90,7 +94,42 @@ extension Event {
             PersistenceController.shared.save(context: context)
         }
     }
-    
+
+    func updateStationery(to customStationeryTypes: [CustomStationeryType], in context: NSManagedObjectContext, saving: Bool = true) {
+        let existingCustomStationery = self.allCustomStationeryByType()
+        var updatedTypes: Set<String> = Set()
+        for customStationeryType in customStationeryTypes.filter({ !$0.value.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }) {
+            if let existingStationery = existingCustomStationery[customStationeryType.type] {
+                // Update existing stationery type with new value if it has changed
+                if existingStationery.wrappedValue != customStationeryType.value {
+                    dataLogger.debug("Changing CustomStationery \(existingStationery.wrappedType) from \(existingStationery.wrappedValue) to \(customStationeryType.value)")
+                    existingStationery.value = customStationeryType.value
+                } else {
+                    dataLogger.debug("Not updating CustomStationery \(existingStationery.wrappedType) (\(existingStationery.wrappedValue)")
+                }
+            } else {
+                // Create new stationery type
+                let newStationery = CustomStationery(context: context)
+                newStationery.id = UUID()
+                newStationery.icon = customStationeryType.icon
+                newStationery.type = customStationeryType.type
+                newStationery.value = customStationeryType.value
+                self.addToCustomStationery(newStationery)
+                dataLogger.debug("Created CustomStationery \(newStationery.wrappedType) [\(newStationery.wrappedIcon)] (\(newStationery.wrappedValue))")
+            }
+            updatedTypes.insert(customStationeryType.type)
+        }
+        for stationery in existingCustomStationery.values {
+            if !updatedTypes.contains(stationery.wrappedType) {
+                dataLogger.debug("Deleting CustomStationery \(stationery.wrappedType) [\(stationery.wrappedIcon)] (\(stationery.wrappedValue))")
+                context.delete(stationery)
+            }
+        }
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+    }
+
     func delete(in context: NSManagedObjectContext, saving: Bool = true) {
         context.delete(self)
         self.penpal?.updateLastEventType(in: context)
@@ -115,6 +154,32 @@ extension Event {
     
     func allPhotos() -> [EventPhoto] {
         Array(photos as? Set<EventPhoto> ?? []).sorted(using: KeyPathComparator(\.dateAdded))
+    }
+
+    func allCustomStationeryTypes(from context: NSManagedObjectContext) -> [CustomStationeryType] {
+        let allTypes = CustomStationery.fetchDistinctTypes(from: context)
+        let existingCustom = self.allCustomStationeryByType()
+        var typesToReturn: [CustomStationeryType] = []
+        for stationeryType in allTypes {
+            if let existing = existingCustom[stationeryType.type] {
+                typesToReturn.append(CustomStationeryType(type: stationeryType.type, icon: stationeryType.icon, value: existing.wrappedValue))
+            } else {
+                typesToReturn.append(stationeryType)
+            }
+        }
+        return typesToReturn
+    }
+
+    func allCustomStationery() -> [CustomStationery] {
+        Array(customStationery as? Set<CustomStationery> ?? []).sorted(using: KeyPathComparator(\.type))
+    }
+
+    func allCustomStationeryByType() -> [String: CustomStationery] {
+        var existingCustomStationery: [String: CustomStationery] = [:]
+        for customStationery in self.allCustomStationery() {
+            existingCustomStationery[customStationery.wrappedType] = customStationery
+        }
+        return existingCustomStationery
     }
     
     func photoInformationForExport() -> [EventPhoto] {

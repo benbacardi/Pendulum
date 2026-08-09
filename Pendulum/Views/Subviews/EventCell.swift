@@ -132,7 +132,8 @@ struct EventCell: View {
                                 Grid(alignment: .topLeading, verticalSpacing: 4) {
                                     if let pen = event.pen, !pen.isEmpty {
                                         GridRow {
-                                            Image(systemName: "pencil")
+                                            Image(.pendulumIcon)
+                                                .gridColumnAlignment(.center)
                                             VStack(spacing: 2) {
                                                 ForEach(event.pens, id: \.self) { pen in
                                                     Text(pen).fullWidth()
@@ -143,6 +144,7 @@ struct EventCell: View {
                                     if let ink = event.ink, !ink.isEmpty {
                                         GridRow {
                                             Image(systemName: "drop")
+                                                .gridColumnAlignment(.center)
                                             VStack(spacing: 2) {
                                                 ForEach(event.inks, id: \.self) { ink in
                                                     Text(ink).fullWidth()
@@ -153,6 +155,7 @@ struct EventCell: View {
                                     if let paper = event.paper, !paper.isEmpty {
                                         GridRow {
                                             Image(systemName: "doc.plaintext")
+                                                .gridColumnAlignment(.center)
                                             VStack(spacing: 2) {
                                                 ForEach(event.papers, id: \.self) { paper in
                                                     Text(paper).fullWidth()
@@ -160,7 +163,19 @@ struct EventCell: View {
                                             }
                                         }
                                     }
-                                    
+
+                                    ForEach(event.allCustomStationery(), id: \.self) { customStationery in
+                                        GridRow {
+                                            Image(systemName: customStationery.wrappedIcon)
+                                                .gridColumnAlignment(.center)
+                                            VStack(spacing: 2){
+                                                ForEach(customStationery.values, id: \.self) { value in
+                                                    Text(value).fullWidth()
+                                                }
+                                            }
+                                        }
+                                    }
+
                                     if let trackingReference = event.trackingReference, !trackingReference.isEmpty {
                                         GridRow {
                                             Image(systemName: "smallcircle.filled.circle")

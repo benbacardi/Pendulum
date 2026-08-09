@@ -11,8 +11,9 @@ struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
     let id = UUID()
     let name: String
     let count: Int
-    let type: StationeryType
-    
+    let type: StationeryType?
+    let customType: CustomStationeryType?
+
     static func < (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
         if lhs.count != rhs.count {
             return lhs.count > rhs.count
@@ -20,50 +21,63 @@ struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
             return lhs.name < rhs.name
         }
     }
-    
+
     static func == (lhs: ParameterCount, rhs: ParameterCount) -> Bool {
         return lhs.count == rhs.count && lhs.name == rhs.name
     }
-    
-    var description: String {
-        "\(type.rawValue): \(name) (\(count))"
+
+    var typeName: String {
+        type?.rawValue ?? customType?.type ?? "unknown"
     }
-    
+
+    var description: String {
+        "\(typeName): \(name) (\(count))"
+    }
+
+    var icon: String {
+        type?.icon ?? customType?.icon ?? "pencil"
+    }
+
 }
 
 struct EventPropertyDetailsSheet: View {
-    
+
     // MARK: Environment
     @Environment(\.presentationMode) var presentationMode
     @Environment(\.managedObjectContext) var moc
-    
+
     // MARK: Properties
     let penpal: PenPal?
     var allowAdding: Bool = false
-    
+
     // MARK: State
     @State private var pens: [ParameterCount] = []
     @State private var inks: [ParameterCount] = []
     @State private var papers: [ParameterCount] = []
-    
+    @State private var custom: [CustomStationeryType: [ParameterCount]] = [:]
+
     @State private var editingStationery: ParameterCount? = nil
-    
+    @State private var editingCustomStationery: CustomStationeryType? = nil
+
     @AppStorage(UserDefaults.Key.sortStationeryAlphabetically, store: UserDefaults.shared) private var sortAlphabetically: Bool = false
     @State private var outbound: Bool = true
-    
+
     @State private var newPenEntry: String = ""
     @FocusState private var newPenEntryIsFocused: Bool
     @State private var newInkEntry: String = ""
     @FocusState private var newInkEntryIsFocused: Bool
     @State private var newPaperEntry: String = ""
     @FocusState private var newPaperEntryIsFocused: Bool
-    
+
     @State private var toDelete: ParameterCount? = nil
     @State private var showDeleteAlert: Bool = false
-    
+
+    @State private var customTypeToDelete: CustomStationeryType? = nil
+    @State private var showDeleteCustomTypeAlert: Bool = false
+
     @ViewBuilder
     func deleteButton(for option: ParameterCount) -> some View {
-        if option.count == 0 {
+        if option.count == 0 || option.customType != nil {
             Button(role: .destructive) {
                 self.toDelete = option
                 self.showDeleteAlert = true
@@ -75,7 +89,7 @@ struct EventPropertyDetailsSheet: View {
             EmptyView()
         }
     }
-    
+
     @ViewBuilder
     func editButton(for option: ParameterCount) -> some View {
         Button(action: {
@@ -84,7 +98,7 @@ struct EventPropertyDetailsSheet: View {
             Label("Edit", systemImage: "pencil")
         }
     }
-    
+
     @ViewBuilder
     func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
         Section(header: HStack {
@@ -127,7 +141,7 @@ struct EventPropertyDetailsSheet: View {
                             stationery.type = type.recordType
                             withAnimation {
                                 PersistenceController.shared.save(context: moc)
-                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0, type: type))
+                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0, type: type, customType: nil))
                                 focused.wrappedValue = false
                                 newEntry.wrappedValue = ""
                             }
@@ -142,7 +156,53 @@ struct EventPropertyDetailsSheet: View {
             }
         }
     }
-        
+
+    @ViewBuilder
+    func customSection(for key: CustomStationeryType, options: [ParameterCount]) -> some View {
+        if !options.isEmpty {
+            Section(header: HStack {
+                Image(systemName: key.icon)
+                Text(key.type)
+                Spacer()
+                Button(action: {
+                    editingCustomStationery = key
+                }) {
+                    Text("Edit")
+                        .font(.caption)
+                }
+                Button(role: .destructive, action: {
+                    customTypeToDelete = key
+                    showDeleteCustomTypeAlert = true
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                }
+                .buttonStyle(.plain)
+            }) {
+                ForEach(options, id: \.name) { option in
+                    HStack {
+                        Text(option.name)
+                            .fullWidth()
+                        if option.count > 0 {
+                            Text("\(option.count)")
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .swipeActions(edge: .leading) {
+                        editButton(for: option)
+                    }
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        deleteButton(for: option)
+                    }
+                    .contextMenu {
+                        editButton(for: option)
+                        deleteButton(for: option)
+                    }
+                }
+            }
+        }
+    }
+
     var body: some View {
         NavigationStack {
             Group {
@@ -158,23 +218,48 @@ struct EventPropertyDetailsSheet: View {
                         section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
                         section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
                         section(for: .paper, with: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused)
+                        ForEach(Array(custom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { key in
+                            customSection(for: key, options: custom[key] ?? [])
+                        }
                     }
                     .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
                         Button("Delete \(parameter.name)", role: .destructive) {
-                            Stationery.delete(parameter, in: moc)
+                            if parameter.type != nil {
+                                Stationery.delete(parameter, in: moc)
+                            } else if parameter.customType != nil {
+                                CustomStationery.delete(parameter, in: moc)
+                            }
                             self.toDelete = nil
                             DispatchQueue.main.async {
                                 withAnimation {
-                                    switch parameter.type {
-                                    case .pen:
-                                        self.pens = self.pens.filter { $0 != parameter }
-                                    case .ink:
-                                        self.inks = self.inks.filter { $0 != parameter }
-                                    case .paper:
-                                        self.papers = self.papers.filter { $0 != parameter }
+                                    if let type = parameter.type {
+                                        switch type {
+                                        case .pen:
+                                            self.pens = self.pens.filter { $0 != parameter }
+                                        case .ink:
+                                            self.inks = self.inks.filter { $0 != parameter }
+                                        case .paper:
+                                            self.papers = self.papers.filter { $0 != parameter }
+                                        }
+                                    } else {
+                                        self.updateStationery()
                                     }
                                 }
                             }
+                        }
+                    }
+                    .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCustomTypeAlert, titleVisibility: .visible, presenting: customTypeToDelete) { customType in
+                        Button("Delete \(customType.type)", role: .destructive) {
+                            CustomStationery.delete(customType, in: moc)
+                            self.customTypeToDelete = nil
+                            DispatchQueue.main.async {
+                                withAnimation {
+                                    self.updateStationery()
+                                }
+                            }
+                        }
+                        Button("Cancel", role: .cancel) {
+                            self.customTypeToDelete = nil
                         }
                     }
                 }
@@ -223,16 +308,41 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
             }
+            .sheet(item: $editingCustomStationery) { item in
+                NavigationStack {
+                    AddStationeryTypeForm(initial: item) { newItem in
+                        self.editingCustomStationery = nil
+                        CustomStationery.update(item, to: newItem, in: moc)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation {
+                                self.updateStationery()
+                            }
+                        }
+                    }
+                    .navigationTitle("Edit Stationery Type")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.editingCustomStationery = nil
+                            }) {
+                                Text("Cancel")
+                            }
+                        }
+                    }
+                }
+            }
         }
-        
+
     }
-    
+
     private func updateStationery() {
         pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
         inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
         papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
+        custom = PenPal.fetchDistinctCustomStationery(for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
     }
-    
+
 }
 
 

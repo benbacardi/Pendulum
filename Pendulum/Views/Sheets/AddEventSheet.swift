@@ -8,29 +8,194 @@
 import SwiftUI
 import PhotosUI
 
-struct AddEventSheet: View {
-        
+struct CustomStationeryTypeView: View {
     @Environment(\.managedObjectContext) var moc
-    
+
+    @Binding var type: CustomStationeryType
+    @Binding var iconWidth: CGFloat
+
+    @State private var suggestions: [String] = []
+
+    var body: some View {
+        StationeryTypeView(icon: type.icon, title: type.type, text: $type.value, suggestions: suggestions, suggestionTitle: "Choose \(type.type)", iconWidth: $iconWidth)
+            .task {
+                suggestions = CustomStationery.fetchDistinctValues(ofType: type.type, from: moc)
+            }
+    }
+}
+
+struct StationeryTypeView: View {
+
+    let icon: String
+    let title: String
+    @Binding var text: String
+    let suggestions: [String]
+    let suggestionTitle: String
+    @Binding var iconWidth: CGFloat
+
+    @FocusState private var isTextFieldActive: Bool
+    @State private var presentSuggestionSheetFor: TextOptions? = nil
+
+    var autoSuggestions: [String] {
+        let search = text.lowercased().trimmingCharacters(in: .whitespaces)
+        return suggestions.filter { $0.lowercased().contains(search) }
+    }
+
+    var image: Image {
+        if icon == "pendulum" {
+            return Image(.pendulumIcon)
+        } else {
+            return Image(systemName: icon)
+        }
+    }
+
+    var body: some View {
+        HStack(alignment: .top, spacing: 0) {
+            HStack(alignment: .firstTextBaseline, spacing: 0) {
+                image
+                    .foregroundColor(.secondary)
+                    .background {
+                        GeometryReader { geo in
+                            Color.clear.preference(key: AddEventSheet.IconWidthPreferenceKey.self, value: geo.size.width)
+                        }
+                    }
+                    .frame(width: iconWidth)
+                Text("?")
+                    .accessibilityHidden(true)
+                    .opacity(0)
+            }
+            TextField(title, text: $text, axis: .vertical)
+                .focused($isTextFieldActive)
+            if !suggestions.isEmpty {
+                HStack(alignment: .firstTextBaseline, spacing: 0) {
+                    Text("?")
+                        .accessibilityHidden(true)
+                        .opacity(0)
+                    Button(action: {
+                        presentSuggestionSheetFor = TextOptions(text: $text, options: suggestions, title: suggestionTitle)
+                    }) {
+                        Image(systemName: "ellipsis")
+                    }
+                }
+            }
+        }
+        .toolbar {
+            if isTextFieldActive {
+                ToolbarItemGroup(placement: .keyboard) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack {
+                            ForEach(autoSuggestions, id: \.self) { suggestion in
+                                Button(action: {
+                                    text = suggestion
+                                }) {
+                                    Text(suggestion)
+                                }
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                                .padding(5)
+                                .background {
+                                    Color(uiColor: UIColor.secondarySystemBackground)
+                                }
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+                    Button(action: {
+                        isTextFieldActive = false
+                    }) { Text("Done")}
+                }
+            }
+        }
+        .sheet(item: $presentSuggestionSheetFor) { option in
+            ChooseTextSheet(text: option.text, options: option.options, title: option.title)
+                .presentationDetents([.medium, .large])
+        }
+    }
+
+}
+
+struct AddStationeryTypeForm: View {
+    @State private var typeName: String = ""
+    @State private var icon: String = "envelope"
+    @State private var showPicker: Bool = false
+    @Environment(\.managedObjectContext) private var moc
+    @State private var existingTypeNames: [String] = []
+    let initial: CustomStationeryType?
+    let done: (CustomStationeryType) -> ()
+
+    var isDuplicate: Bool {
+        let trimmed = typeName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        return existingTypeNames.contains { $0.lowercased() == trimmed }
+    }
+
+    var body: some View {
+        Form {
+            HStack {
+                Button(action: { showPicker = true }) {
+                    Image(systemName: icon)
+                }
+                TextField("Name", text: $typeName)
+            }
+            if isDuplicate {
+                Text("A category with this name already exists.")
+                    .foregroundColor(.red)
+                    .font(.caption)
+            }
+            Section {
+                Button(action: {
+                    let type = CustomStationeryType(type: typeName, icon: icon, value: "")
+                    done(type)
+                }) {
+                    Text(initial == nil ? "Add" : "Update")
+                        .fullWidth(alignment: .center)
+                }
+                .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isDuplicate)
+            }
+        }
+        .sheet(isPresented: $showPicker) {
+            SymbolPicker(selectedSymbol: $icon) {
+                showPicker = false
+            }
+        }
+        .task {
+            if let initial {
+                self.typeName = initial.type
+                self.icon = initial.icon
+            }
+            // Fetch all existing types except the current one (if editing)
+            let allTypes = CustomStationery.fetchDistinctTypes(from: moc).map { $0.type }
+            if let initial {
+                self.existingTypeNames = allTypes.filter { $0.caseInsensitiveCompare(initial.type) != .orderedSame }
+            } else {
+                self.existingTypeNames = allTypes
+            }
+        }
+    }
+}
+
+struct AddEventSheet: View {
+
+    @Environment(\.managedObjectContext) var moc
+
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
     let event: Event?
     let done: () -> ()
-    
+
     init(penpal: PenPal, eventType: EventType, done: @escaping () -> ()) {
         self._penpal = ObservedObject(wrappedValue: penpal)
         self.event = nil
         self._eventType = State(wrappedValue: eventType)
         self.done = done
     }
-    
+
     init(penpal: PenPal, event: Event, done: @escaping () -> ()) {
         self._penpal = ObservedObject(wrappedValue: penpal)
         self.event = event
         self._eventType = State(wrappedValue: event.type)
         self.done = done
     }
-    
+
     // MARK: State
     @State private var eventType: EventType = .written
     @State private var date: Date = Date()
@@ -43,39 +208,38 @@ struct AddEventSheet: View {
     @State private var ignore: Bool = false
     @State private var noFurtherActions: Bool = false
     @State private var setToDefaultIgnoreWhenChangingLetterType: Bool = false
-    
+
     @State private var eventPhotos: [EventPhoto] = []
     @State private var photoLoadPending: Bool = false
     @State private var photosLoadingCount: Int = 0
-    
+
     @State private var showPickerChoice: Bool = false
     @State private var showPhotoPicker: Bool = false
     @State private var pickerType: UIImagePickerController.SourceType = .photoLibrary
-    
+
     @State private var iconWidth: CGFloat = 20
-    
+
     @FocusState private var isNotesFieldActive: Bool
-    @FocusState private var isPenFieldActive: Bool
-    @FocusState private var isInkFieldActive: Bool
-    @FocusState private var isPaperFieldActive: Bool
     @FocusState private var isTrackingFieldActive: Bool
-    
+
     @State private var penSuggestions: [String] = []
     @State private var inkSuggestions: [String] = []
     @State private var paperSuggestions: [String] = []
-    
-    @State private var presentSuggestionSheetFor: TextOptions? = nil
-    
+
+    @State private var showAddStationerySheet: Bool = false
+
     @State private var priorWrittenEvent: Event? = nil
-    
+
     @State private var showEventTypeOptions: Bool = false
     @State private var thingsHaveChanged: Bool = false
-    
+
+    @State private var customStationeryTypes: [CustomStationeryType] = []
+
     var priorWrittenEventHeaderText: String {
         guard let priorWrittenEvent = priorWrittenEvent else { return "" }
         return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.wrappedDate, and: Date())
     }
-    
+
     var ignoreFooterText: String {
         if noFurtherActions {
             return "Pendulum will move \(penpal.wrappedName) to the \"No actions pending\" section if this is the most recent event."
@@ -87,49 +251,16 @@ struct AddEventSheet: View {
             }
         }
     }
-    
+
     func parseStationery(for stationery: String?) -> String? {
         stationery?.replacingOccurrences(of: ",", with: "\n")
     }
-    
-    var autoSuggestions: [String] {
-        let suggestions: [String]
-        let st: String
-        if isPenFieldActive {
-            suggestions = penSuggestions
-            st = pen
-        }
-        else if isInkFieldActive {
-            suggestions = inkSuggestions
-            st = ink
-        }
-        else if isPaperFieldActive {
-            suggestions = paperSuggestions
-            st = paper
-        }
-        else {
-            suggestions = []
-            st = ""
-        }
-        let search = st.lowercased().trimmingCharacters(in: .whitespaces)
-        return suggestions.filter { $0.lowercased().contains(search) }
-    }
-    
-    func chooseSuggestion(_ suggestion: String) {
-        if isPenFieldActive { pen = suggestion }
-        else if isInkFieldActive { ink = suggestion }
-        else if isPaperFieldActive { paper = suggestion }
-        clearFocus()
-    }
-    
+
     func clearFocus() {
         isNotesFieldActive = false
-        isPenFieldActive = false
-        isInkFieldActive = false
-        isPaperFieldActive = false
         isTrackingFieldActive = false
     }
-    
+
     @ViewBuilder
     var imagePickerView: some View {
         if pickerType == .camera {
@@ -172,13 +303,13 @@ struct AddEventSheet: View {
             }
         }
     }
-    
+
     /// This path is not used, but an issue with iOS 17 prevents
     /// the keyboard toolbar from functioning correctly unless
     /// NavigationStack(path:) is used.
     /// See https://stackoverflow.com/questions/77238131/placing-the-toolbar-above-keyboard-does-not-work-in-ios-17
     @State private var path = NavigationPath()
-    
+
     @ViewBuilder
     var largeHeaderText: some View {
         VStack(spacing: 4) {
@@ -190,14 +321,14 @@ struct AddEventSheet: View {
                 .fullWidth(alignment: .center)
         }
     }
-    
+
     @ViewBuilder
     var formHeaderPadding: some View {
         largeHeaderText
             .padding(.bottom, 48)
             .opacity(0)
     }
-    
+
     @ViewBuilder
     var formHeaderPaddingOrNone: some View {
         Group {
@@ -206,14 +337,14 @@ struct AddEventSheet: View {
             }
         }
     }
-    
+
     var hasSendButton: Bool {
         if let event = event, eventType == .written && event.wrappedDate == penpal.lastEventDate && penpal.lastEventType == .written {
             return true
         }
         return false
     }
-    
+
     @ViewBuilder
     var largeHeaderButton: some View {
         Button(action: {
@@ -237,12 +368,12 @@ struct AddEventSheet: View {
             }
         }
     }
-    
+
     var body: some View {
         NavigationStack(path: $path) {
             ZStack(alignment: .top) {
                 Form {
-                    
+
                     if hasSendButton {
                         Section(header: formHeaderPadding) {
                             Button(action: {
@@ -261,7 +392,7 @@ struct AddEventSheet: View {
                             .foregroundColor(EventType.sent.color)
                         }
                     }
-                    
+
                     Section(header: formHeaderPaddingOrNone) {
                         DatePicker("Date", selection: $date)
                         Picker(selection: $letterType) {
@@ -275,12 +406,12 @@ struct AddEventSheet: View {
                                 .layoutPriority(0)
                         }
                     }
-                    
+
                     Section {
                         TextField("Notes", text: $notes, axis: .vertical)
                             .focused($isNotesFieldActive)
                     }
-                                            
+
                     Section(header: Group {
                         if let priorWrittenEvent = priorWrittenEvent {
                             Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
@@ -288,73 +419,41 @@ struct AddEventSheet: View {
                             EmptyView()
                         }
                     }) {
-                        HStack(alignment: .top) {
-                            Image(systemName: "pencil")
-                                .foregroundColor(.secondary)
-                                .offset(y: 4)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
+                        StationeryTypeView(icon: "pendulum", title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: "drop", title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: "doc.plaintext", title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
+
+                        ForEach($customStationeryTypes) { $customStationeryType in
+                            CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)
+                        }
+
+                        Button(action: {
+                            showAddStationerySheet = true
+                        }) {
+                            Text("Add stationery type…")
+                        }
+                        .sheet(isPresented: $showAddStationerySheet) {
+                            NavigationStack {
+                                AddStationeryTypeForm(initial: nil) { newType in
+                                    customStationeryTypes.append(newType)
+                                    showAddStationerySheet = false
+                                }
+                                .navigationTitle("Add Stationery Type")
+                                .navigationBarTitleDisplayMode(.inline)
+                                .toolbar {
+                                    ToolbarItem(placement: .navigationBarLeading) {
+                                        Button(action: {
+                                            self.showAddStationerySheet = false
+                                        }) {
+                                            Text("Cancel")
+                                        }
                                     }
                                 }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.pen ?? "Pen", text: $pen, axis: .vertical)
-                                .focused($isPenFieldActive)
-                            if !penSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $pen, options: penSuggestions, title: "Choose Pens")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .foregroundColor(.accentColor)
-                                .offset(y: 8)
                             }
                         }
-                        .buttonStyle(.plain)
-                        HStack(alignment: .top) {
-                            Image(systemName: "drop")
-                                .foregroundColor(.secondary)
-                                .offset(y: 1)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                    }
-                                }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.ink ?? "Ink", text: $ink, axis: .vertical)
-                                .focused($isInkFieldActive)
-                            if !inkSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $ink, options: inkSuggestions, title: "Choose Inks")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .offset(y: 8)
-                            }
-                        }
-                        HStack(alignment: .top) {
-                            Image(systemName: "doc.plaintext")
-                                .foregroundColor(.secondary)
-                                .offset(y: 1)
-                                .background {
-                                    GeometryReader { geo in
-                                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: geo.size.width)
-                                    }
-                                }
-                                .frame(width: iconWidth)
-                            TextField(priorWrittenEvent?.paper ?? "Paper", text: $paper, axis: .vertical)
-                                .focused($isPaperFieldActive)
-                            if !paperSuggestions.isEmpty {
-                                Button(action: {
-                                    presentSuggestionSheetFor = TextOptions(text: $paper, options: paperSuggestions, title: "Choose Paper")
-                                }) {
-                                    Image(systemName: "ellipsis")
-                                }
-                                .offset(y: 8)
-                            }
-                        }
+
                     }
-                    
+
                     Section {
                         Button(action: {
                             self.showPickerChoice = true
@@ -429,12 +528,12 @@ struct AddEventSheet: View {
                         imagePickerView
                             .edgesIgnoringSafeArea(.all)
                     }
-                    
+
                     Section {
                         TextField("Tracking Reference", text: $trackingReference)
                             .focused($isTrackingFieldActive)
                     }
-                    
+
                     Section(footer: Text(ignoreFooterText)) {
                         Toggle("No further actions", isOn: $noFurtherActions.animation())
                         if !noFurtherActions {
@@ -442,7 +541,7 @@ struct AddEventSheet: View {
                         }
                     }
                 }
-                
+
                 if #available(iOS 26, *) {
                     largeHeaderButton
                         .glassEffect(.clear.tint(eventType.color).interactive(), in: .rect)
@@ -452,11 +551,7 @@ struct AddEventSheet: View {
                         .background(eventType.color)
                         .edgesIgnoringSafeArea(.top)
                 }
-                    
-            }
-            .sheet(item: $presentSuggestionSheetFor) { option in
-                ChooseTextSheet(text: option.text, options: option.options, title: option.title)
-                    .presentationDetents([.medium, .large])
+
             }
             .onChange(of: letterType) { newValue in
                 if self.setToDefaultIgnoreWhenChangingLetterType {
@@ -509,6 +604,7 @@ struct AddEventSheet: View {
                     self.ignore = event.ignore
                     self.noFurtherActions = event.noFurtherActions
                     self.eventPhotos = event.allPhotos()
+                    self.customStationeryTypes = event.allCustomStationeryTypes(from: moc)
                     appLogger.debug("Event photos: \(self.eventPhotos)")
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.thingsHaveChanged = false
@@ -528,30 +624,6 @@ struct AddEventSheet: View {
                 }
             }
             .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    ScrollView(.horizontal, showsIndicators: false) {
-                        HStack {
-                            ForEach(autoSuggestions, id: \.self) { suggestion in
-                                Button(action: {
-                                    chooseSuggestion(suggestion)
-                                }) {
-                                    Text(suggestion)
-                                }
-                                .font(.caption)
-                                .foregroundColor(.secondary)
-                                .padding(5)
-                                .background {
-                                    Color(uiColor: UIColor.secondarySystemBackground)
-                                }
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                        }
-                    }
-                    Button(action: {
-                        clearFocus()
-                    }) { Text("Done")}
-                }
-                
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         done()
@@ -560,13 +632,13 @@ struct AddEventSheet: View {
                             .labelStyleIconOnlyOn26()
                     }
                 }
-                
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         if let event = event {
-                            event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                            event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
                         } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, in: moc)
+                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
                         }
                         done()
                     }) {
@@ -574,19 +646,19 @@ struct AddEventSheet: View {
                             .labelStyleIconOnlyOn26()
                     }
                 }
-                
+
             }
             .interactiveDismissDisabled(thingsHaveChanged)
         }
     }
-    
+
     func updateStationery() {
         let outbound: Bool = eventType == .written || eventType == .sent
         self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
         self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
         self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
     }
-    
+
 }
 
 private extension AddEventSheet {

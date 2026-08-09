@@ -18,7 +18,9 @@ struct StatsView: View {
     @State private var mostUsedPen: ParameterCount? = nil
     @State private var mostUsedInk: ParameterCount? = nil
     @State private var mostUsedPaper: ParameterCount? = nil
-    
+
+    @State private var mostUsedCustom: [CustomStationeryType: ParameterCount?] = [:]
+
     @State private var averageTimeToReply: Double = 0
     @State private var numberReceived: Int = 0
     @State private var numberSent: Int = 0
@@ -37,7 +39,7 @@ struct StatsView: View {
     func mostUsed(_ parameter: ParameterCount? = nil, placeholder: StationeryType? = nil) -> some View {
         GroupBox {
             HStack {
-                Image(systemName: (parameter?.type ?? placeholder ?? .pen).icon)
+                Image(systemName: parameter?.icon ?? placeholder?.icon ?? StationeryType.pen.icon)
                     .frame(width: iconWidth)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
@@ -123,25 +125,33 @@ struct StatsView: View {
                         .font(.headline)
                         .fullWidth()
                     if let pen = mostUsedPen {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .pen)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil)) {
                             mostUsed(pen)
                         }
                     } else {
                         mostUsed(placeholder: .pen)
                     }
                     if let ink = mostUsedInk {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .ink)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .ink, customStationeryType: nil)) {
                             mostUsed(ink)
                         }
                     } else {
                         mostUsed(placeholder: .ink)
                     }
                     if let paper = mostUsedPaper {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .paper)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .paper, customStationeryType: nil)) {
                             mostUsed(paper)
                         }
                     } else {
                         mostUsed(placeholder: .paper)
+                    }
+
+                    ForEach(Array(mostUsedCustom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { stationeryType in
+                        if let count = mostUsedCustom[stationeryType] {
+                            NavigationLink(destination: MostUsedStationeryChart(stationeryType: nil, customStationeryType: stationeryType)) {
+                                mostUsed(count)
+                            }
+                        }
                     }
                 }
                 
@@ -189,12 +199,15 @@ struct StatsView: View {
             let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, from: moc).filter { $0.count != 0 }.first
             let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, from: moc).filter { $0.count != 0 }.first
             let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, from: moc).filter { $0.count != 0 }.first
-            
+
+            let mostUsedCustom = PenPal.fetchDistinctCustomStationery(from: moc).filter { !$0.value.isEmpty }.mapValues { $0.first }
+
             DispatchQueue.main.async {
                 withAnimation {
                     self.mostUsedPen = mostUsedPen
                     self.mostUsedInk = mostUsedInk
                     self.mostUsedPaper = mostUsedPaper
+                    self.mostUsedCustom = mostUsedCustom
                 }
             }
             
