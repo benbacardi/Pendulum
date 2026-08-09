@@ -226,8 +226,6 @@ struct AddEventSheet: View {
     @State private var inkSuggestions: [String] = []
     @State private var paperSuggestions: [String] = []
 
-    @State private var showAddStationerySheet: Bool = false
-
     @State private var priorWrittenEvent: Event? = nil
 
     @State private var showEventTypeOptions: Bool = false
@@ -426,32 +424,6 @@ struct AddEventSheet: View {
                         ForEach($customStationeryTypes) { $customStationeryType in
                             CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)
                         }
-
-                        Button(action: {
-                            showAddStationerySheet = true
-                        }) {
-                            Text("Add stationery type…")
-                        }
-                        .sheet(isPresented: $showAddStationerySheet) {
-                            NavigationStack {
-                                AddStationeryTypeForm(initial: nil) { newType in
-                                    customStationeryTypes.append(newType)
-                                    showAddStationerySheet = false
-                                }
-                                .navigationTitle("Add Stationery Type")
-                                .navigationBarTitleDisplayMode(.inline)
-                                .toolbar {
-                                    ToolbarItem(placement: .navigationBarLeading) {
-                                        Button(action: {
-                                            self.showAddStationerySheet = false
-                                        }) {
-                                            Text("Cancel")
-                                        }
-                                    }
-                                }
-                            }
-                        }
-
                     }
 
                     Section {
@@ -609,6 +581,8 @@ struct AddEventSheet: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         self.thingsHaveChanged = false
                     }
+                } else {
+                    self.customStationeryTypes = CustomStationery.fetchDistinctTypes(from: moc)
                 }
                 updateStationery()
             }

@@ -103,6 +103,19 @@ extension CustomStationery {
         }
     }
     
+    /// Registers a new stationery category with no values yet, so it shows up as a fillable
+    /// field on future events even before it's actually been used on one.
+    static func createType(_ type: CustomStationeryType, in context: NSManagedObjectContext, saving: Bool = true) {
+        let newStationery = CustomStationery(context: context)
+        newStationery.id = UUID()
+        newStationery.type = type.type
+        newStationery.icon = type.icon
+        dataLogger.debug("Created CustomStationery type \(type.type) [\(type.icon)] with no value")
+        if saving {
+            PersistenceController.shared.save(context: context)
+        }
+    }
+
     static func delete(_ type: CustomStationeryType, in context: NSManagedObjectContext) {
         let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
         fetchRequest.predicate = NSPredicate(format: "type = %@", type.type)
@@ -118,25 +131,45 @@ extension CustomStationery {
     }
 
     /// Removes a single value from every event that references it, deleting the underlying
-    /// `CustomStationery` record entirely if that was its only value.
+    /// `CustomStationery` record if that was its only value - unless doing so would leave the
+    /// category with no records at all, in which case one emptied record is kept as a
+    /// placeholder so the category itself stays registered (see `createType`).
     static func delete(_ parameter: ParameterCount, in context: NSManagedObjectContext) {
         guard let parameterType = parameter.customType else { return }
-        let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
-        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+        let typeFetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
+        typeFetchRequest.predicate = NSPredicate(format: "type = %@", parameterType.type)
+        let matchFetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
+        matchFetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
             NSPredicate(format: "type = %@", parameterType.type),
             NSPredicate(format: "value CONTAINS %@", parameter.name),
         ])
         do {
-            for result in try context.fetch(fetchRequest) {
+            let allOfType = try context.fetch(typeFetchRequest)
+            let matches = try context.fetch(matchFetchRequest)
+
+            var toDelete: [CustomStationery] = []
+            for result in matches {
                 let remainingValues = result.values.filter { $0 != parameter.name }.uniqued()
                 if remainingValues.isEmpty {
-                    dataLogger.debug("Deleting CustomStationery \(result.wrappedType) [\(result.wrappedIcon)] as its only value was removed")
-                    context.delete(result)
+                    toDelete.append(result)
                 } else {
                     dataLogger.debug("Removing value \(parameter.name) from CustomStationery \(result.wrappedType)")
                     result.value = remainingValues.joined(separator: "\n")
                 }
             }
+
+            if allOfType.count - toDelete.count <= 0, let placeholder = toDelete.first {
+                dataLogger.debug("Keeping CustomStationery type \(placeholder.wrappedType) registered with no values")
+                placeholder.event = nil
+                placeholder.value = nil
+                toDelete.removeFirst()
+            }
+
+            for result in toDelete {
+                dataLogger.debug("Deleting CustomStationery \(result.wrappedType) [\(result.wrappedIcon)] as its only value was removed")
+                context.delete(result)
+            }
+
             PersistenceController.shared.save(context: context)
         } catch {
             dataLogger.error("Could not delete custom stationery value: \(parameter): \(error.localizedDescription)")
