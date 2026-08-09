@@ -75,6 +75,8 @@ struct EventPropertyDetailsSheet: View {
     @State private var customTypeToDelete: CustomStationeryType? = nil
     @State private var showDeleteCustomTypeAlert: Bool = false
 
+    @State private var showAddStationerySheet: Bool = false
+
     @ViewBuilder
     func deleteButton(for option: ParameterCount) -> some View {
         if option.count == 0 || option.customType != nil {
@@ -159,45 +161,51 @@ struct EventPropertyDetailsSheet: View {
 
     @ViewBuilder
     func customSection(for key: CustomStationeryType, options: [ParameterCount]) -> some View {
-        if !options.isEmpty {
-            Section(header: HStack {
-                Image(systemName: key.icon)
-                Text(key.type)
-                Spacer()
+        Section(header: HStack {
+            Image(systemName: key.icon)
+            Text(key.type)
+            Spacer()
+            Menu {
                 Button(action: {
                     editingCustomStationery = key
                 }) {
-                    Text("Edit")
-                        .font(.caption)
+                    Label("Edit", systemImage: "pencil")
                 }
                 Button(role: .destructive, action: {
                     customTypeToDelete = key
                     showDeleteCustomTypeAlert = true
                 }) {
-                    Image(systemName: "trash")
-                        .foregroundColor(.red)
+                    Label("Delete", systemImage: "trash")
                 }
-                .buttonStyle(.plain)
-            }) {
-                ForEach(options, id: \.name) { option in
-                    HStack {
-                        Text(option.name)
-                            .fullWidth()
-                        if option.count > 0 {
-                            Text("\(option.count)")
-                                .foregroundColor(.secondary)
-                        }
+            } label: {
+                Label("More actions", systemImage: "ellipsis")
+                    .labelStyle(.iconOnly)
+                    .foregroundColor(.secondary)
+            }
+            .buttonStyle(.plain)
+        }) {
+            if options.isEmpty {
+                Text("None recorded yet")
+                    .foregroundColor(.secondary)
+            }
+            ForEach(options, id: \.name) { option in
+                HStack {
+                    Text(option.name)
+                        .fullWidth()
+                    if option.count > 0 {
+                        Text("\(option.count)")
+                            .foregroundColor(.secondary)
                     }
-                    .swipeActions(edge: .leading) {
-                        editButton(for: option)
-                    }
-                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                        deleteButton(for: option)
-                    }
-                    .contextMenu {
-                        editButton(for: option)
-                        deleteButton(for: option)
-                    }
+                }
+                .swipeActions(edge: .leading) {
+                    editButton(for: option)
+                }
+                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                    deleteButton(for: option)
+                }
+                .contextMenu {
+                    editButton(for: option)
+                    deleteButton(for: option)
                 }
             }
         }
@@ -220,6 +228,13 @@ struct EventPropertyDetailsSheet: View {
                         section(for: .paper, with: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused)
                         ForEach(Array(custom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { key in
                             customSection(for: key, options: custom[key] ?? [])
+                        }
+                        Section {
+                            Button(action: {
+                                showAddStationerySheet = true
+                            }) {
+                                Text("Add stationery type…")
+                            }
                         }
                     }
                     .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
@@ -308,6 +323,31 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
             }
+            .sheet(isPresented: $showAddStationerySheet) {
+                NavigationStack {
+                    AddStationeryTypeForm(initial: nil) { newType in
+                        self.showAddStationerySheet = false
+                        CustomStationery.createType(newType, in: moc)
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                            withAnimation {
+                                self.updateStationery()
+                            }
+                        }
+                    }
+                    .navigationTitle("Add Stationery Type")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .navigationBarLeading) {
+                            Button(action: {
+                                self.showAddStationerySheet = false
+                            }) {
+                                Label("Cancel", systemImage: "xmark")
+                                    .labelStyleIconOnlyOn26()
+                            }
+                        }
+                    }
+                }
+            }
             .sheet(item: $editingCustomStationery) { item in
                 NavigationStack {
                     AddStationeryTypeForm(initial: item) { newItem in
@@ -326,7 +366,8 @@ struct EventPropertyDetailsSheet: View {
                             Button(action: {
                                 self.editingCustomStationery = nil
                             }) {
-                                Text("Cancel")
+                                Label("Cancel", systemImage: "xmark")
+                                    .labelStyleIconOnlyOn26()
                             }
                         }
                     }
