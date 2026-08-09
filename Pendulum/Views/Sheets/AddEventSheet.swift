@@ -128,18 +128,40 @@ struct AddStationeryTypeForm: View {
         return existingTypeNames.contains { $0.lowercased() == trimmed }
     }
 
+    @ViewBuilder
+    var iconHeader: some View {
+        HStack {
+            Spacer()
+            Button(action: { showPicker = true }) {
+                VStack(spacing: 8) {
+                    ZStack {
+                        Circle()
+                            .fill(Color.accentColor)
+                            .frame(width: 80, height: 80)
+                        Image(systemName: icon)
+                            .font(.system(size: 32))
+                            .foregroundColor(.white)
+                    }
+                    Text("Change Icon")
+                        .font(.caption)
+                }
+            }
+            .buttonStyle(.plain)
+            Spacer()
+        }
+        .padding(.bottom)
+        .textCase(nil)
+    }
+
     var body: some View {
         Form {
-            HStack {
-                Button(action: { showPicker = true }) {
-                    Image(systemName: icon)
-                }
+            Section(header: iconHeader) {
                 TextField("Name", text: $typeName)
-            }
-            if isDuplicate {
-                Text("A category with this name already exists.")
-                    .foregroundColor(.red)
-                    .font(.caption)
+                if isDuplicate {
+                    Text("A category with this name already exists.")
+                        .foregroundColor(.red)
+                        .font(.caption)
+                }
             }
             Section {
                 Button(action: {
