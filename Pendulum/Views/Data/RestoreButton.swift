@@ -104,6 +104,12 @@ struct RestoreButton: View {
     
     func importURL(_ url: URL) {
         let exportService = ExportService()
+        let isAccessingSecurityScopedResource = url.startAccessingSecurityScopedResource()
+        defer {
+            if isAccessingSecurityScopedResource {
+                url.stopAccessingSecurityScopedResource()
+            }
+        }
         do {
             self.importResult = try exportService.restore(from: url, to: moc, overwritingExistingData: self.overwrite)
             self.showImportResult = true

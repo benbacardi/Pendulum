@@ -244,14 +244,18 @@ class ExportService {
         try? FileManager.default.removeItem(at: temporaryDirectory)
         
         do {
+            appLogger.debug("Creating a temp directory: \(temporaryDirectory)")
             try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
         } catch {
+            appLogger.debug("Creating temp directory failed, throwing .fileSystemError: \(error.localizedDescription)")
             throw ExportRestoreError.fileSystemError
         }
         
         do {
+            appLogger.debug("Unzipping item at \(url) to \(temporaryDirectory)")
             try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
         } catch {
+            appLogger.debug("Unzipping failed, throwing .invalidFormat: \(error.localizedDescription)")
             throw ExportRestoreError.invalidFormat
         }
         
@@ -271,10 +275,12 @@ class ExportService {
                 do {
                     metadata = try decoder.decode(ExportMetadata.self, from: Data(contentsOf: metadataFilePath))
                 } catch {
-                    appLogger.error("Could not read metadata file")
+                    appLogger.error("Could not read metadata file, throwing .invalidFormat")
                     throw ExportRestoreError.invalidFormat
                 }
             }
+            
+            appLogger.debug("Restoring version \(metadata.majorVersion).")
             
             switch(metadata.majorVersion) {
                 
@@ -285,8 +291,10 @@ class ExportService {
                 let importData: Export
                 
                 do {
+                    appLogger.debug("Reading data from \(dataFile)")
                     importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
                 } catch {
+                    appLogger.debug("Reading failed: throwing .invalidFormat: \(error.localizedDescription)")
                     throw ExportRestoreError.invalidFormat
                 }
                 
@@ -298,6 +306,7 @@ class ExportService {
                 return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
                 
             default:
+                appLogger.debug("Unknown format: throwing .unknownFormat(format: \(metadata.majorVersion).\(metadata.minorVersion))")
                 throw ExportRestoreError.unknownFormat(format: metadata)
                 
             }

@@ -6,16 +6,12 @@
 //
 
 import SwiftUI
-import UniformTypeIdentifiers
 
 
 struct Backup: Transferable {
     let url: URL
     var name: String { url.lastPathComponent }
     static var transferRepresentation: some TransferRepresentation {
-        FileRepresentation(exportedContentType: .zip) { backup in
-            SentTransferredFile(backup.url)
-        }
         ProxyRepresentation { backup in
             backup.url
         }

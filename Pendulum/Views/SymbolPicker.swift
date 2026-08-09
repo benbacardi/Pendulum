@@ -42,6 +42,7 @@ struct SymbolPicker: View {
                 .foregroundColor(.secondary)
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
+                .padding(.top, 10)
                 if searchBoxSelected {
                     Button(action: {
                         searchBoxSelected = false
