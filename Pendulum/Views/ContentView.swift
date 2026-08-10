@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .penPalList
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
-    @State private var showWhatsNewOverlay: Bool = false
+    @State private var showWhatsNewOverlay: Bool = true
     @AppStorage(UserDefaults.Key.lastLaunchedVersion, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
         
     var body: some View {
@@ -34,7 +34,7 @@ struct ContentView: View {
         }
         .onAppear {
             if lastLaunchedVersion != Bundle.main.appBuildNumber {
-//                showWhatsNewOverlay = true
+                showWhatsNewOverlay = true
                 lastLaunchedVersion = Bundle.main.appBuildNumber
             }
             if !UserDefaults.shared.hasGeneratedInitialBackup && UserDefaults.shared.exportURL == nil {

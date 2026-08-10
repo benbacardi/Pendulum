@@ -67,9 +67,7 @@ struct WhatsNew: View {
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
-            WhatsNewGridRow(icon: "sparkles", title: "New Design", summary: "With the release of iOS 26, Pendulum sports a brand new design for your list of Pen Pals, highlighting where in the world your letters are going to or coming from.")
-            WhatsNewGridRow(icon: "mappin.and.ellipse", title: "Local Addresses", summary: "For those of you who choose not to sync your Pen Pals with your device contacts, you can now store their addresses directly in Pendulum for easy access.")
-            WhatsNewGridRow(icon: "person.crop.circle", title: "What's in a name?", summary: "If any of your Pen Pal contacts have nicknames, they'll now be displayed instead of their full name.", suffix: "This can be disabled in Settings.")
+            WhatsNewGridRow(icon: "checkmark.seal", title: "Custom Stationery", summary: "Add your own items to track for each letter you send! What type of envelope did you use? Was it sent with a special stamp? What about a wax seal?")
         }
         .padding(.horizontal, 40)
         .padding(.top, 30)
