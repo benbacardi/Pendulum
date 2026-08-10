@@ -14,7 +14,7 @@ struct ContentView: View {
     @State private var selectedTab: Tab = .penPalList
     @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @EnvironmentObject var imageViewerController: ImageViewerController
-    @State private var showWhatsNewOverlay: Bool = true
+    @State private var showWhatsNewOverlay: Bool = false
     @AppStorage(UserDefaults.Key.lastLaunchedVersion, store: UserDefaults.shared) private var lastLaunchedVersion: String = ""
         
     var body: some View {
