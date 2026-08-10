@@ -69,6 +69,22 @@ extension CustomStationery {
         return []
     }
     
+    /// Values that have been pre-seeded from the stationery list but aren't yet attached to any event.
+    static func fetchUnassignedValues(ofType type: String, from context: NSManagedObjectContext) -> [String] {
+        let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "type = %@", type),
+            NSPredicate(format: "event == nil"),
+            NSPredicate(format: "value != nil"),
+        ])
+        do {
+            return try context.fetch(fetchRequest).flatMap { $0.values }.filter { !$0.isEmpty }
+        } catch {
+            dataLogger.error("Could not fetch unassigned custom stationery values of type \(type): \(error.localizedDescription)")
+        }
+        return []
+    }
+
     static func update(_ parameter: ParameterCount, to newName: String, in context: NSManagedObjectContext) {
         guard let parameterType = parameter.customType else { return }
         let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
@@ -113,6 +129,38 @@ extension CustomStationery {
         dataLogger.debug("Created CustomStationery type \(type.type) [\(type.icon)] with no value")
         if saving {
             PersistenceController.shared.save(context: context)
+        }
+    }
+
+    /// Pre-seeds a value for a category without attaching it to any event, mirroring how
+    /// pens/inks/papers can be added from the stationery list before ever being used. Reuses
+    /// an existing empty placeholder row (see `createType`) for this type if one exists,
+    /// rather than leaving it orphaned alongside a new row.
+    static func addValue(_ value: String, toType type: CustomStationeryType, in context: NSManagedObjectContext, saving: Bool = true) {
+        let fetchRequest = NSFetchRequest<CustomStationery>(entityName: CustomStationery.entityName)
+        fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+            NSPredicate(format: "type = %@", type.type),
+            NSPredicate(format: "event == nil"),
+            NSPredicate(format: "value == nil"),
+        ])
+        do {
+            let placeholder = try context.fetch(fetchRequest).first
+            if let placeholder {
+                dataLogger.debug("Reusing placeholder CustomStationery \(type.type) for new value \(value)")
+                placeholder.value = value
+            } else {
+                let newStationery = CustomStationery(context: context)
+                newStationery.id = UUID()
+                newStationery.type = type.type
+                newStationery.icon = type.icon
+                newStationery.value = value
+                dataLogger.debug("Created unassigned CustomStationery \(type.type) [\(type.icon)] (\(value))")
+            }
+            if saving {
+                PersistenceController.shared.save(context: context)
+            }
+        } catch {
+            dataLogger.error("Could not add custom stationery value: \(error.localizedDescription)")
         }
     }
 

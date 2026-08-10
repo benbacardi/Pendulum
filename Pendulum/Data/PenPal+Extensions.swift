@@ -286,6 +286,15 @@ extension PenPal {
                 }
             }
 
+            if penpal == nil && outbound {
+                for definedType in allDefinedTypes {
+                    let unassignedValues = CustomStationery.fetchUnassignedValues(ofType: definedType.type, from: context)
+                    for value in unassignedValues where pending[definedType]?[value] == nil {
+                        pending[definedType]?[value] = 0
+                    }
+                }
+            }
+
             var intermediate: [CustomStationeryType: [ParameterCount]] = [:]
             for (definedType, values) in pending {
                 let counts = values.map { ParameterCount(name: $0.key, count: $0.value, type: nil, customType: definedType) }

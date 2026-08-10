@@ -77,6 +77,9 @@ struct EventPropertyDetailsSheet: View {
 
     @State private var showAddStationerySheet: Bool = false
 
+    @State private var customNewEntries: [String: String] = [:]
+    @FocusState private var focusedCustomEntryType: String?
+
     @ViewBuilder
     func deleteButton(for option: ParameterCount) -> some View {
         if option.count == 0 || option.customType != nil {
@@ -99,6 +102,11 @@ struct EventPropertyDetailsSheet: View {
         }) {
             Label("Edit", systemImage: "pencil")
         }
+    }
+
+    func customEntryDisabled(for key: CustomStationeryType, options: [ParameterCount]) -> Bool {
+        let trimmed = (customNewEntries[key.type] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+        return trimmed.isEmpty || options.map { $0.name }.contains(trimmed)
     }
 
     @ViewBuilder
@@ -184,7 +192,7 @@ struct EventPropertyDetailsSheet: View {
             }
             .buttonStyle(.plain)
         }) {
-            if options.isEmpty {
+            if options.isEmpty && !(allowAdding && outbound) {
                 Text("None recorded yet")
                     .foregroundColor(.secondary)
             }
@@ -206,6 +214,31 @@ struct EventPropertyDetailsSheet: View {
                 .contextMenu {
                     editButton(for: option)
                     deleteButton(for: option)
+                }
+            }
+            if allowAdding && outbound {
+                HStack {
+                    TextField("Add…", text: Binding(
+                        get: { customNewEntries[key.type] ?? "" },
+                        set: { customNewEntries[key.type] = $0 }
+                    ))
+                    .focused($focusedCustomEntryType, equals: key.type)
+                    if focusedCustomEntryType == key.type {
+                        Button(action: {
+                            let newValue = (customNewEntries[key.type] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+                            withAnimation {
+                                CustomStationery.addValue(newValue, toType: key, in: moc)
+                                customNewEntries[key.type] = ""
+                                focusedCustomEntryType = nil
+                                self.updateStationery()
+                            }
+                        }) {
+                            Text("Save")
+                                .foregroundColor(.accentColor)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(customEntryDisabled(for: key, options: options))
+                    }
                 }
             }
         }
