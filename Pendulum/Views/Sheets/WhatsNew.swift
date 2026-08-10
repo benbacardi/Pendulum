@@ -67,7 +67,7 @@ struct WhatsNew: View {
     
     var grid: some View {
         Grid(horizontalSpacing: 20, verticalSpacing: 30) {
-            WhatsNewGridRow(icon: "checkmark.seal", title: "Custom Stationery", summary: "Add your own items to track for each letter you send! What type of envelope did you use? Was it sent with a special stamp? What about a wax seal?")
+            WhatsNewGridRow(icon: "checkmark.seal", title: "Custom Stationery", summary: "Add your own items to track for each letter you send! What type of envelope did you use? Was it sent with a special stamp? What about a wax seal?\n\nManage your custom stationery types from the Stationery list view.")
         }
         .padding(.horizontal, 40)
         .padding(.top, 30)
