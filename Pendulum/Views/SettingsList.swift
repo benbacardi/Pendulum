@@ -72,7 +72,7 @@ struct SettingsList: View {
     }
     
     var body: some View {
-        NavigationView {
+        NavigationStack {
             Form {
                 
                 if notificationsAuthorizationStatus == .denied && someNotificationAccessRequired {
@@ -139,11 +139,13 @@ struct SettingsList: View {
                             Text(order.name).tag(order)
                         }
                     }
+                    .pickerStyle(.navigationLink)
                     Picker("Sort sent letters", selection: $sortSentLettersOrder) {
                         ForEach(PenPalSortOrder.allCases, id: \.self) { order in
                             Text(order.name).tag(order)
                         }
                     }
+                    .pickerStyle(.navigationLink)
                     Toggle("Group Pen Pals by status", isOn: $groupPenPalsInListView)
                     Toggle("Enable Quick Entry", isOn: $enableQuickEntry)
                 }

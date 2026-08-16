@@ -80,7 +80,7 @@ struct MostUsedStationeryChart: View {
 
 struct MostUsedPenChart_Previews: PreviewProvider {
     static var previews: some View {
-        NavigationView {
+        NavigationStack {
             MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil)
         }
     }
