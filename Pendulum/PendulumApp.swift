@@ -34,7 +34,18 @@ struct PendulumApp: App {
                 UserDefaults.Key.groupPenPalsInListView.rawValue: true,
                 UserDefaults.Key.preferNicknames.rawValue: true,
             ])
-        
+
+            // Seed the new per-section sort settings from the old global "sort alphabetically"
+            // preference the first time each is read, but only if it was switched on.
+            if UserDefaults.shared.sortPenPalsAlphabetically {
+                if UserDefaults.shared.object(forKey: UserDefaults.Key.sortReceivedLettersOrder.rawValue) == nil {
+                    UserDefaults.shared.sortReceivedLettersOrder = .alphabetically
+                }
+                if UserDefaults.shared.object(forKey: UserDefaults.Key.sortSentLettersOrder.rawValue) == nil {
+                    UserDefaults.shared.sortSentLettersOrder = .alphabetically
+                }
+            }
+
         }
     
     var body: some Scene {
