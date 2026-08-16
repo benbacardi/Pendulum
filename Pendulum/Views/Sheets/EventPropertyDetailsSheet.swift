@@ -262,13 +262,6 @@ struct EventPropertyDetailsSheet: View {
                         ForEach(Array(custom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { key in
                             customSection(for: key, options: custom[key] ?? [])
                         }
-                        Section {
-                            Button(action: {
-                                showAddStationerySheet = true
-                            }) {
-                                Text("Add stationery type…")
-                            }
-                        }
                     }
                     .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
                         Button("Delete \(parameter.name)", role: .destructive) {
@@ -317,12 +310,40 @@ struct EventPropertyDetailsSheet: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        withAnimation {
-                            self.sortAlphabetically.toggle()
+                    Menu {
+                        Section("Sort") {
+                            Button(action: {
+                                withAnimation {
+                                    self.sortAlphabetically = true
+                                }
+                            }) {
+                                if sortAlphabetically {
+                                    Label("Alphabetically", systemImage: "checkmark")
+                                } else {
+                                    Text("Alphabetically")
+                                }
+                            }
+                            Button(action: {
+                                withAnimation {
+                                    self.sortAlphabetically = false
+                                }
+                            }) {
+                                if !sortAlphabetically {
+                                    Label("By Count", systemImage: "checkmark")
+                                } else {
+                                    Text("By Count")
+                                }
+                            }
                         }
+                    } label: {
+                        Label("Sort", systemImage: "slider.horizontal.3")
+                    }
+                }
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        showAddStationerySheet = true
                     }) {
-                        Label("Sort Alphabetically", systemImage: self.sortAlphabetically ? "textformat.123" : "textformat")
+                        Label("Add Stationery Type", systemImage: "plus")
                     }
                 }
                 ToolbarItem(placement: .navigationBarLeading) {
