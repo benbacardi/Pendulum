@@ -24,7 +24,27 @@ struct PenPalListSection: View {
     @State private var currentPenPal: PenPal? = nil
     @State private var showDeleteAlert = false
         
-    init(eventType: EventType?, iconWidth: Binding<CGFloat>, trackPostingLetters: Bool, sortAlphabetically: Bool = false) {
+    private static func sortDescriptors(for order: PenPalSortOrder) -> [NSSortDescriptor] {
+        switch order {
+        case .alphabetically:
+            return [
+                NSSortDescriptor(key: "name", ascending: true),
+                NSSortDescriptor(key: "lastEventDate", ascending: false)
+            ]
+        case .oldestFirst:
+            return [
+                NSSortDescriptor(key: "lastEventDate", ascending: true),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+        case .mostRecent:
+            return [
+                NSSortDescriptor(key: "lastEventDate", ascending: false),
+                NSSortDescriptor(key: "name", ascending: true)
+            ]
+        }
+    }
+
+    init(eventType: EventType?, iconWidth: Binding<CGFloat>, trackPostingLetters: Bool) {
         self.eventType = eventType
         self._iconWidth = iconWidth
         
@@ -71,10 +91,15 @@ struct PenPalListSection: View {
             predicate = nil
         }
         
-        if sortAlphabetically || eventType == .archived {
+        switch eventType {
+        case .written, .received:
+            sortDescriptors = Self.sortDescriptors(for: UserDefaults.shared.sortReceivedLettersOrder)
+        case .theyReceived, .sent:
+            sortDescriptors = Self.sortDescriptors(for: UserDefaults.shared.sortSentLettersOrder)
+        default:
             sortDescriptors.insert(NSSortDescriptor(key: "name", ascending: true), at: 0)
         }
-        
+
         if eventType == nil {
             sortDescriptors.insert(NSSortDescriptor(key: "archived", ascending: true), at: 0)
         }

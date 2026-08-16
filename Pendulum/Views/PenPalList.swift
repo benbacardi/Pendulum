@@ -19,7 +19,6 @@ struct PenPalList: View {
     
     // MARK: State
     @State private var iconWidth: CGFloat = .zero
-    @AppStorage(UserDefaults.Key.sortPenPalsAlphabetically, store: UserDefaults.shared) private var sortPenPalsAlphabetically: Bool = false
     @AppStorage(UserDefaults.Key.groupPenPalsInListView, store: UserDefaults.shared) private var groupPenPalsInListView: Bool = true
     @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
     @AppStorage(UserDefaults.Key.hideMap, store: UserDefaults.shared) private var hideMap: Bool = false
@@ -39,11 +38,11 @@ struct PenPalList: View {
                 }
                 if groupPenPalsInListView {
                     ForEach(EventType.orderedCases) { eventType in
-                        PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
+                        PenPalListSection(eventType: eventType, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters)
                             .padding(.horizontal)
                     }
                 } else {
-                    PenPalListSection(eventType: nil, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters, sortAlphabetically: sortPenPalsAlphabetically)
+                    PenPalListSection(eventType: nil, iconWidth: $iconWidth, trackPostingLetters: trackPostingLetters)
                         .padding(.horizontal)
                 }
             }

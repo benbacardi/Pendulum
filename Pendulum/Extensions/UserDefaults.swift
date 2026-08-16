@@ -22,7 +22,11 @@ extension UserDefaults {
         case stopAskingAboutContacts
         case preferNicknames
         case trackPostingLetters
+        /// No longer surfaced in Settings, kept only so its historical value can seed the default
+        /// for `sortReceivedLettersOrder`/`sortSentLettersOrder` on first read after upgrade.
         case sortPenPalsAlphabetically
+        case sortReceivedLettersOrder
+        case sortSentLettersOrder
         case sortStationeryAlphabetically
         case groupPenPalsInListView
         case hideMap
@@ -55,8 +59,25 @@ extension UserDefaults {
     func setValue(_ value: Any?, forKey key: UserDefaults.Key) { setValue(value, forKey: key.rawValue) }
 }
 
+enum PenPalSortOrder: String, CaseIterable {
+    case alphabetically
+    case oldestFirst
+    case mostRecent
+
+    var name: String {
+        switch self {
+        case .alphabetically:
+            return "Alphabetically"
+        case .oldestFirst:
+            return "Oldest First"
+        case .mostRecent:
+            return "Newest First"
+        }
+    }
+}
+
 extension UserDefaults {
-    
+
     var exportURL: URL? {
         get {
             guard let fileName = string(forKey: Key.exportURL) else { return nil }
@@ -110,6 +131,26 @@ extension UserDefaults {
     var sortPenPalsAlphabetically: Bool {
         get { bool(forKey: Key.sortPenPalsAlphabetically) }
         set { setValue(newValue, forKey: Key.sortPenPalsAlphabetically) }
+    }
+
+    var sortReceivedLettersOrder: PenPalSortOrder {
+        get {
+            guard let rawValue = string(forKey: Key.sortReceivedLettersOrder), let value = PenPalSortOrder(rawValue: rawValue) else {
+                return .oldestFirst
+            }
+            return value
+        }
+        set { setValue(newValue.rawValue, forKey: Key.sortReceivedLettersOrder) }
+    }
+
+    var sortSentLettersOrder: PenPalSortOrder {
+        get {
+            guard let rawValue = string(forKey: Key.sortSentLettersOrder), let value = PenPalSortOrder(rawValue: rawValue) else {
+                return .mostRecent
+            }
+            return value
+        }
+        set { setValue(newValue.rawValue, forKey: Key.sortSentLettersOrder) }
     }
     
     var sortStationeryAlphabetically: Bool {
