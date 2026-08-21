@@ -518,10 +518,6 @@ struct AddEventSheet: View {
                             .listRowInsets(EdgeInsets())
                         }
                     }
-                    .fullScreenCover(isPresented: $showPhotoPicker) {
-                        imagePickerView
-                            .edgesIgnoringSafeArea(.all)
-                    }
 
                     Section {
                         TextField("Tracking Reference", text: $trackingReference)
@@ -546,6 +542,10 @@ struct AddEventSheet: View {
                         .edgesIgnoringSafeArea(.top)
                 }
 
+            }
+            .fullScreenCover(isPresented: $showPhotoPicker) {
+                imagePickerView
+                    .edgesIgnoringSafeArea(.all)
             }
             .onChange(of: letterType) { newValue in
                 if self.setToDefaultIgnoreWhenChangingLetterType {
