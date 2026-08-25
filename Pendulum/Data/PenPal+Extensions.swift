@@ -243,12 +243,12 @@ extension PenPal {
         return nil
     }
     
-    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
-        let intermediate: [CustomStationeryType: [ParameterCount]] = PenPal.fetchDistinctCustomStationery(ofType: stationeryType, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
+    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, year: Int? = nil, from context: NSManagedObjectContext) -> [ParameterCount] {
+        let intermediate: [CustomStationeryType: [ParameterCount]] = PenPal.fetchDistinctCustomStationery(ofType: stationeryType, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, year: year, from: context)
         return intermediate.values.first ?? []
     }
 
-    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType? = nil, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [CustomStationeryType: [ParameterCount]] {
+    static func fetchDistinctCustomStationery(ofType stationeryType: CustomStationeryType? = nil, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, year: Int? = nil, from context: NSManagedObjectContext) -> [CustomStationeryType: [ParameterCount]] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         var predicates: [NSCompoundPredicate] = []
         if let penpal = penpal {
@@ -258,6 +258,9 @@ extension PenPal {
             predicates.append(NSCompoundPredicate(type: .or, subpredicates: [EventType.sent.predicate, EventType.written.predicate]))
         } else {
             predicates.append(NSCompoundPredicate(type: .or, subpredicates: [EventType.received.predicate]))
+        }
+        if let year {
+            predicates.append(NSCompoundPredicate(type: .and, subpredicates: [Event.datePredicate(forYear: year)]))
         }
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         do {
@@ -313,7 +316,7 @@ extension PenPal {
         return [:]
     }
 
-    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
+    static func fetchDistinctStationery(ofType stationery: StationeryType, for penpal: PenPal? = nil, sortAlphabetically: Bool = false, outbound: Bool = true, year: Int? = nil, from context: NSManagedObjectContext) -> [ParameterCount] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: stationery.rawValue, ascending: true)]
         var predicates: [NSCompoundPredicate] = []
@@ -329,6 +332,9 @@ extension PenPal {
             predicates.append(NSCompoundPredicate(type: .or, subpredicates: [
                 EventType.received.predicate
             ]))
+        }
+        if let year {
+            predicates.append(NSCompoundPredicate(type: .and, subpredicates: [Event.datePredicate(forYear: year)]))
         }
         fetchRequest.predicate = NSCompoundPredicate(type: .and, subpredicates: predicates)
         do {
@@ -373,8 +379,8 @@ extension PenPal {
         return []
     }
     
-    func fetchDistinctStationery(ofType stationery: StationeryType, sortAlphabetically: Bool = false, outbound: Bool = true, from context: NSManagedObjectContext) -> [ParameterCount] {
-        PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
+    func fetchDistinctStationery(ofType stationery: StationeryType, sortAlphabetically: Bool = false, outbound: Bool = true, year: Int? = nil, from context: NSManagedObjectContext) -> [ParameterCount] {
+        PenPal.fetchDistinctStationery(ofType: stationery, for: self, sortAlphabetically: sortAlphabetically, outbound: outbound, year: year, from: context)
     }
     
     static func fetch(withStatus eventType: EventType? = nil, all: Bool = false, from context: NSManagedObjectContext) -> [PenPal] {
@@ -501,7 +507,7 @@ extension PenPal {
         return count
     }
     
-    func events(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
+    func events(withStatus eventTypes: [EventType]? = nil, year: Int? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
         var predicates: [NSPredicate] = [
@@ -512,6 +518,9 @@ extension PenPal {
                 NSCompoundPredicate(orPredicateWithSubpredicates: eventTypes.map { NSPredicate(format: "typeValue = %d", $0.rawValue) })
             )
         }
+        if let year {
+            predicates.append(Event.datePredicate(forYear: year))
+        }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
             return try context.fetch(fetchRequest)
@@ -520,16 +529,16 @@ extension PenPal {
         }
         return []
     }
-    
-    static func averageTimeToRespond(from context: NSManagedObjectContext) -> Double {
-        
+
+    static func averageTimeToRespond(year: Int? = nil, from context: NSManagedObjectContext) -> Double? {
+
         var durations: [Int] = []
         let today = Date()
-        
+
         for penpal in PenPal.fetch(from: context) {
             dataLogger.debug("Fetching events for \(penpal.wrappedName)")
             var fromEvent: Event? = nil
-            for event in penpal.events(withStatus: [.received, .written, .sent], from: context) {
+            for event in penpal.events(withStatus: [.received, .written, .sent], year: year, from: context) {
                 if !event.ignore {
                     dataLogger.debug("Handling event: \(event.type.actionableTextShort) - \(event.wrappedDate)")
                     if event.type == .received {
@@ -544,15 +553,15 @@ extension PenPal {
                     }
                 }
             }
-            if penpal.lastEventType == .received, let receivedDate = penpal.lastEventDate {
+            if penpal.lastEventType == .received, let receivedDate = penpal.lastEventDate, year == nil || Calendar.current.component(.year, from: receivedDate) == year {
                 durations.append(Calendar.current.numberOfDaysBetween(receivedDate, and: today))
             }
         }
         
         if durations.isEmpty {
-            return 0
+            return nil
         }
-        
+
         let average = Double(durations.reduce(0, +)) / Double(durations.count)
         dataLogger.debug("Durations: \(durations) - Average: \(average)")
         return average

@@ -212,7 +212,7 @@ extension Event {
 
 extension Event {
     
-    static func fetch(withStatus eventTypes: [EventType]? = nil, from context: NSManagedObjectContext) -> [Event] {
+    static func fetch(withStatus eventTypes: [EventType]? = nil, year: Int? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         var predicates: [NSPredicate] = []
@@ -220,6 +220,9 @@ extension Event {
             predicates.append(
                 NSCompoundPredicate(orPredicateWithSubpredicates: eventTypes.map { NSPredicate(format: "typeValue = %d", $0.rawValue) })
             )
+        }
+        if let year {
+            predicates.append(Event.datePredicate(forYear: year))
         }
         fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: predicates)
         do {
@@ -229,7 +232,26 @@ extension Event {
         }
         return []
     }
-    
+
+    static func datePredicate(forYear year: Int) -> NSPredicate {
+        let calendar = Calendar.current
+        let start = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
+        let end = calendar.date(from: DateComponents(year: year + 1, month: 1, day: 1))!
+        return NSPredicate(format: "date >= %@ AND date < %@", start as NSDate, end as NSDate)
+    }
+
+    static func fetchEarliestDate(from context: NSManagedObjectContext) -> Date? {
+        let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        fetchRequest.fetchLimit = 1
+        do {
+            return try context.fetch(fetchRequest).first?.date
+        } catch {
+            dataLogger.error("Could not fetch earliest event date: \(error.localizedDescription)")
+        }
+        return nil
+    }
+
     static func count(from context: NSManagedObjectContext) -> Int {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.resultType = NSFetchRequestResultType.countResultType

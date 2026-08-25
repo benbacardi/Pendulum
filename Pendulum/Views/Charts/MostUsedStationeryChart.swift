@@ -14,6 +14,7 @@ struct MostUsedStationeryChart: View {
     
     let stationeryType: StationeryType?
     let customStationeryType: CustomStationeryType?
+    let selectedYear: Int?
 
     @State private var data: [ParameterCount] = [
 //        ParameterCount(name: "Lamy Safari Pink B", count: 3, type: .pen),
@@ -59,12 +60,12 @@ struct MostUsedStationeryChart: View {
                 .chartXAxis(.hidden)
                 .frame(height: CGFloat(parsedData.count * 50))
             }
-            .task {
+            .task(id: selectedYear) {
                 let data: [ParameterCount]
                 if let stationeryType {
-                    data = PenPal.fetchDistinctStationery(ofType: stationeryType, from: moc)
+                    data = PenPal.fetchDistinctStationery(ofType: stationeryType, year: selectedYear, from: moc)
                 } else if let customStationeryType {
-                    data = PenPal.fetchDistinctCustomStationery(ofType: customStationeryType, from: moc)
+                    data = PenPal.fetchDistinctCustomStationery(ofType: customStationeryType, year: selectedYear, from: moc)
                 } else {
                     data = []
                 }
@@ -81,7 +82,7 @@ struct MostUsedStationeryChart: View {
 struct MostUsedPenChart_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil)
+            MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil, selectedYear: nil)
         }
     }
 }
