@@ -26,7 +26,16 @@ struct EventCell: View {
     var eventIsMyAction: Bool {
         event.type == .written || event.type == .sent
     }
-    
+
+    /// Tracking references are free text, so they can contain characters — spaces
+    /// especially, when pasted out of a carrier's email — that have to be escaped
+    /// before they can go in a URL.
+    var trackingURL: URL? {
+        guard let reference = event.trackingReference?.trimmingCharacters(in: .whitespacesAndNewlines), !reference.isEmpty,
+              let escaped = reference.addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed) else { return nil }
+        return URL(string: "https://t.17track.net/en#nums=\(escaped)")
+    }
+
     @ViewBuilder
     var eventIcon: some View {
         event.type.iconImage
@@ -201,16 +210,16 @@ struct EventCell: View {
             .buttonStyle(.plain)
             .animation(.default, value: penpal)
             .contextMenu {
-                if !(event.trackingReference?.isEmpty ?? true) {
-                    Button(action: {
-                        openURL(URL(string: "https://t.17track.net/en#nums=\(event.trackingReference ?? "")")!)
-                    }) {
-                        Label("Track \(event.letterType.properNoun) on 17track.net", systemImage: "mappin.and.ellipse")
+                if let trackingReference = event.trackingReference, !trackingReference.isEmpty {
+                    if let trackingURL {
+                        Button(action: {
+                            openURL(trackingURL)
+                        }) {
+                            Label("Track \(event.letterType.properNoun) on 17track.net", systemImage: "mappin.and.ellipse")
+                        }
                     }
                     Button(action: {
-                        if let trackingReference = event.trackingReference {
-                            UIPasteboard.general.string = trackingReference
-                        }
+                        UIPasteboard.general.string = trackingReference
                     }) {
                         Label("Copy Tracking Reference", systemImage: "smallcircle.filled.circle")
                     }
