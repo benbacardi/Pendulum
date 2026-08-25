@@ -222,10 +222,16 @@ extension UserDefaults {
     
     func setContactID(for penpal: PenPal, to identifier: String) {
         if let uuid = penpal.id {
-            var currentMap = self.penpalContactMap
-            currentMap[uuid.uuidString] = identifier
-            self.penpalContactMap = currentMap
+            setContactID(forID: uuid, to: identifier)
         }
+    }
+
+    /// Takes the Pen Pal's ID rather than the Pen Pal itself, so callers running off
+    /// the context's queue can store a mapping without touching a managed object.
+    func setContactID(forID uuid: UUID, to identifier: String) {
+        var currentMap = self.penpalContactMap
+        currentMap[uuid.uuidString] = identifier
+        self.penpalContactMap = currentMap
     }
     
     func getContactID(for penpal: PenPal) -> String? {

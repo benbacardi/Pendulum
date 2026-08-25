@@ -476,12 +476,16 @@ extension PenPal {
                     appLogger.debug("No mapping found, searching contacts")
                     let request = CNContactFetchRequest(keysToFetch: keys)
                     request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                    /// Read what we need off the Pen Pal here, on the context's own
+                    /// queue. The enumeration below runs on a background queue, where
+                    /// touching a managed object is a Core Data threading violation.
+                    let name = self.wrappedName
                     DispatchQueue.global(qos: .userInitiated).async {
                         do {
                             try store.enumerateContacts(with: request) { (contact, stop) in
-                                if contact.fullName == self.wrappedName {
-                                    appLogger.debug("Setting \(self.wrappedName) to contact \(contact.identifier)")
-                                    UserDefaults.shared.setContactID(for: self, to: contact.identifier)
+                                if contact.fullName == name {
+                                    appLogger.debug("Setting \(name) to contact \(contact.identifier)")
+                                    UserDefaults.shared.setContactID(forID: uuid, to: contact.identifier)
                                 }
                             }
                         } catch {
