@@ -14,6 +14,9 @@ struct StatsView: View {
     
     @State private var iconWidth: CGFloat?
     @State private var inbound: Bool = false
+
+    @State private var selectedYear: Int? = nil
+    @State private var availableYears: [Int] = []
     
     @State private var mostUsedPen: ParameterCount? = nil
     @State private var mostUsedInk: ParameterCount? = nil
@@ -21,7 +24,7 @@ struct StatsView: View {
 
     @State private var mostUsedCustom: [CustomStationeryType: ParameterCount?] = [:]
 
-    @State private var averageTimeToReply: Double = 0
+    @State private var averageTimeToReply: Double? = nil
     @State private var numberReceived: Int = 0
     @State private var numberSent: Int = 0
     
@@ -64,7 +67,25 @@ struct StatsView: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
-                
+
+                if let selectedYear {
+                    HStack(spacing: 4) {
+                        Text("Filtered to \(String(selectedYear))")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        Button(action: {
+                            withAnimation {
+                                self.selectedYear = nil
+                            }
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    .fullWidth(alignment: .center)
+                }
+
                 GroupBox {
                     HStack {
                         VStack {
@@ -96,11 +117,19 @@ struct StatsView: View {
                     Text("Average time to respond to a letter")
                         .fullWidth(alignment: .center)
                         .font(.headline)
-                    Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply == 1 ? "" : "s")")
-                        .fullWidth(alignment: .center)
-                        .font(.system(size: 40, design: .rounded))
-                        .bold()
-                        .padding(.top, 1)
+                    if let averageTimeToReply {
+                        Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply == 1 ? "" : "s")")
+                            .fullWidth(alignment: .center)
+                            .font(.system(size: 40, design: .rounded))
+                            .bold()
+                            .padding(.top, 1)
+                    } else {
+                        Text("–")
+                            .fullWidth(alignment: .center)
+                            .font(.system(size: 40, design: .rounded))
+                            .bold()
+                            .padding(.top, 1)
+                    }
                 }
                 
                 
@@ -125,21 +154,21 @@ struct StatsView: View {
                         .font(.headline)
                         .fullWidth()
                     if let pen = mostUsedPen {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil, selectedYear: selectedYear)) {
                             mostUsed(pen)
                         }
                     } else {
                         mostUsed(placeholder: .pen)
                     }
                     if let ink = mostUsedInk {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .ink, customStationeryType: nil)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .ink, customStationeryType: nil, selectedYear: selectedYear)) {
                             mostUsed(ink)
                         }
                     } else {
                         mostUsed(placeholder: .ink)
                     }
                     if let paper = mostUsedPaper {
-                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .paper, customStationeryType: nil)) {
+                        NavigationLink(destination: MostUsedStationeryChart(stationeryType: .paper, customStationeryType: nil, selectedYear: selectedYear)) {
                             mostUsed(paper)
                         }
                     } else {
@@ -148,7 +177,7 @@ struct StatsView: View {
 
                     ForEach(Array(mostUsedCustom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { stationeryType in
                         if let count = mostUsedCustom[stationeryType] {
-                            NavigationLink(destination: MostUsedStationeryChart(stationeryType: nil, customStationeryType: stationeryType)) {
+                            NavigationLink(destination: MostUsedStationeryChart(stationeryType: nil, customStationeryType: stationeryType, selectedYear: selectedYear)) {
                                 mostUsed(count)
                             }
                         }
@@ -184,23 +213,65 @@ struct StatsView: View {
             self.iconWidth = value
         }
         .navigationTitle("Statistics")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Menu {
+                    Button(action: {
+                        withAnimation {
+                            self.selectedYear = nil
+                        }
+                    }) {
+                        if selectedYear == nil {
+                            Label("All Time", systemImage: "checkmark")
+                        } else {
+                            Text("All Time")
+                        }
+                    }
+                    ForEach(availableYears, id: \.self) { year in
+                        Button(action: {
+                            withAnimation {
+                                self.selectedYear = year
+                            }
+                        }) {
+                            if selectedYear == year {
+                                Label(String(year), systemImage: "checkmark")
+                            } else {
+                                Text(String(year))
+                            }
+                        }
+                    }
+                } label: {
+                    Label(selectedYear.map(String.init) ?? "All Time", systemImage: "calendar")
+                }
+            }
+        }
         .task {
-            let interestingEvents = Event.fetch(withStatus: [.written, .sent, .received], from: moc)
+            if let earliestDate = Event.fetchEarliestDate(from: moc) {
+                let earliestYear = Calendar.current.component(.year, from: earliestDate)
+                let currentYear = Calendar.current.component(.year, from: Date())
+                let years = Array((min(earliestYear, currentYear)...currentYear).reversed())
+                DispatchQueue.main.async {
+                    self.availableYears = years
+                }
+            }
+        }
+        .task(id: selectedYear) {
+            let interestingEvents = Event.fetch(withStatus: [.written, .sent, .received], year: selectedYear, from: moc)
             DispatchQueue.main.async {
                 withAnimation {
                     self.events = interestingEvents
                 }
             }
         }
-        .task {
-            
-            // Calculate stationery stats
-            
-            let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, from: moc).filter { $0.count != 0 }.first
-            let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, from: moc).filter { $0.count != 0 }.first
-            let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, from: moc).filter { $0.count != 0 }.first
+        .task(id: selectedYear) {
 
-            let mostUsedCustom = PenPal.fetchDistinctCustomStationery(from: moc).filter { !$0.value.isEmpty }.mapValues { $0.first }
+            // Calculate stationery stats
+
+            let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, year: selectedYear, from: moc).filter { $0.count != 0 }.first
+            let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, year: selectedYear, from: moc).filter { $0.count != 0 }.first
+            let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, year: selectedYear, from: moc).filter { $0.count != 0 }.first
+
+            let mostUsedCustom = PenPal.fetchDistinctCustomStationery(year: selectedYear, from: moc).filter { !$0.value.isEmpty }.mapValues { $0.first }
 
             DispatchQueue.main.async {
                 withAnimation {
@@ -210,26 +281,26 @@ struct StatsView: View {
                     self.mostUsedCustom = mostUsedCustom
                 }
             }
-            
+
             // Calculate reply stats
-            
-            let averageTimeToReply = PenPal.averageTimeToRespond(from: moc)
-            
+
+            let averageTimeToReply = PenPal.averageTimeToRespond(year: selectedYear, from: moc)
+
             DispatchQueue.main.async {
                 withAnimation {
                     self.averageTimeToReply = averageTimeToReply
                 }
             }
-            
+
             // Calculate Sent/Received stats
-            
+
             let allSent: [Event]
             if UserDefaults.shared.trackPostingLetters {
-                allSent = Event.fetch(withStatus: [.sent], from: moc)
+                allSent = Event.fetch(withStatus: [.sent], year: selectedYear, from: moc)
             } else {
-                allSent = Event.fetch(withStatus: [.written], from: moc)
+                allSent = Event.fetch(withStatus: [.written], year: selectedYear, from: moc)
             }
-            let allReceived: [Event] = Event.fetch(withStatus: [.received], from: moc)
+            let allReceived: [Event] = Event.fetch(withStatus: [.received], year: selectedYear, from: moc)
             let numberReceived = allReceived.count
             let numberSent = allSent.count
             
