@@ -205,25 +205,28 @@ struct PenPalListSection: View {
                             archiveButton(for: penpal)
                             deleteButton(for: penpal)
                         }
-                        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
-                            Button("Delete \(penpal.wrappedName)", role: .destructive) {
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                                    penpal.delete(in: moc)
-                                    if let path = router.path.first {
-                                        switch path {
-                                        case let .penPalDetail(pathPenPal):
-                                            if pathPenPal == penpal {
-                                                router.path.removeFirst()
-                                            }
-                                        }
-                                    }
-                                    self.currentPenPal = nil
-                                }
-                            }
-                        }
                         if penpal != penpals.last {
                             Divider()
                                 .padding(.horizontal)
+                        }
+                    }
+                }
+                /// One dialog for the whole section, not one per row — every row
+                /// shares `showDeleteAlert`, so a copy inside the ForEach meant every
+                /// Pen Pal tried to present at once.
+                .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
+                    Button("Delete \(penpal.wrappedName)", role: .destructive) {
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                            penpal.delete(in: moc)
+                            if let path = router.path.first {
+                                switch path {
+                                case let .penPalDetail(pathPenPal):
+                                    if pathPenPal == penpal {
+                                        router.path.removeFirst()
+                                    }
+                                }
+                            }
+                            self.currentPenPal = nil
                         }
                     }
                 }
