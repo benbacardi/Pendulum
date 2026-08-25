@@ -30,7 +30,6 @@ struct SettingsList: View {
     // MARK: Environment
     @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
-    @EnvironmentObject var appPreferences: AppPreferences
     @Environment(\.presentationMode) var presentationMode
     
     let motionManager = CMMotionManager()

@@ -11,7 +11,6 @@ import MapKit
 struct PenPalList: View {
     
     // MARK: Environment
-    @EnvironmentObject var appPreferences: AppPreferences
     @EnvironmentObject private var router: Router
     @Environment(\.colorScheme) var colorScheme
     
