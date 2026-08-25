@@ -11,7 +11,9 @@ import Charts
 struct StatsView: View {
     
     @Environment(\.managedObjectContext) var moc
-    
+
+    @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = true
+
     @State private var iconWidth: CGFloat?
     @State private var inbound: Bool = false
 
@@ -116,9 +118,9 @@ struct StatsView: View {
                 GroupBox {
                     HStack {
                         VStack {
-                            Text(UserDefaults.shared.trackPostingLetters ? "Sent" : "Written")
+                            Text(trackPostingLetters ? "Sent" : "Written")
                                 .font(.headline)
-                                .foregroundColor((UserDefaults.shared.trackPostingLetters ? EventType.sent : EventType.written).color)
+                                .foregroundColor((trackPostingLetters ? EventType.sent : EventType.written).color)
                             
                             Text("\(numberSent)")
                                 .font(.system(size: 40, design: .rounded))
@@ -261,7 +263,7 @@ struct StatsView: View {
                 }
             }
         }
-        .task(id: selectedYear) {
+        .task(id: statsQuery) {
 
             // Calculate stationery stats
 
@@ -293,7 +295,7 @@ struct StatsView: View {
             // Calculate Sent/Received stats
 
             let allSent: [Event]
-            if UserDefaults.shared.trackPostingLetters {
+            if trackPostingLetters {
                 allSent = Event.fetch(withStatus: [.sent], year: selectedYear, from: moc)
             } else {
                 allSent = Event.fetch(withStatus: [.written], year: selectedYear, from: moc)
@@ -362,6 +364,17 @@ struct StatsView: View {
 }
 
 private extension StatsView {
+    /// The inputs the sent/received counts depend on. Both have to be watched, or
+    /// toggling "Track posting letters" relabels the figures without recounting them.
+    struct StatsQuery: Equatable {
+        let year: Int?
+        let trackPostingLetters: Bool
+    }
+
+    var statsQuery: StatsQuery {
+        StatsQuery(year: selectedYear, trackPostingLetters: trackPostingLetters)
+    }
+
     struct IconWidthPreferenceKey: PreferenceKey {
         static let defaultValue: CGFloat = 0
         static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
