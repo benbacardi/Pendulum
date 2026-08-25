@@ -39,6 +39,24 @@ struct StatsView: View {
     @State private var receivedTypes: [LetterType: Int] = [:]
     
     @ViewBuilder
+    func yearPill(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
+        Button(action: {
+            withAnimation {
+                action()
+            }
+        }) {
+            Text(title)
+                .font(.subheadline)
+                .fontWeight(isSelected ? .semibold : .regular)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 6)
+                .background(isSelected ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
+                .foregroundColor(isSelected ? .white : .primary)
+                .clipShape(Capsule())
+        }
+    }
+
+    @ViewBuilder
     func mostUsed(_ parameter: ParameterCount? = nil, placeholder: StationeryType? = nil) -> some View {
         GroupBox {
             HStack {
@@ -68,23 +86,32 @@ struct StatsView: View {
         ScrollView {
             VStack(spacing: 20) {
 
-                if let selectedYear {
-                    HStack(spacing: 4) {
-                        Text("Filtered to \(String(selectedYear))")
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                        Button(action: {
-                            withAnimation {
-                                self.selectedYear = nil
+                if availableYears.count > 1 {
+                    ScrollViewReader { yearScrollProxy in
+                        ScrollView(.horizontal, showsIndicators: false) {
+                            HStack(spacing: 8) {
+                                yearPill(title: "All Time", isSelected: selectedYear == nil) {
+                                    self.selectedYear = nil
+                                }
+                                .id(-1)
+                                ForEach(availableYears, id: \.self) { year in
+                                    yearPill(title: String(year), isSelected: selectedYear == year) {
+                                        self.selectedYear = year
+                                    }
+                                    .id(year)
+                                }
                             }
-                        }) {
-                            Image(systemName: "xmark.circle.fill")
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                            .padding(.horizontal)
+                        }
+                        .onChange(of: selectedYear) { newValue in
+                            withAnimation {
+                                yearScrollProxy.scrollTo(newValue ?? -1, anchor: .center)
+                            }
                         }
                     }
-                    .fullWidth(alignment: .center)
                 }
+
+                VStack(spacing: 20) {
 
                 GroupBox {
                     HStack {
@@ -205,46 +232,17 @@ struct StatsView: View {
                         }
                     }
                 }
-                
+
+                }
+                .padding(.horizontal)
+
             }
-            .padding()
+            .padding(.vertical)
         }
         .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
             self.iconWidth = value
         }
         .navigationTitle("Statistics")
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Menu {
-                    Button(action: {
-                        withAnimation {
-                            self.selectedYear = nil
-                        }
-                    }) {
-                        if selectedYear == nil {
-                            Label("All Time", systemImage: "checkmark")
-                        } else {
-                            Text("All Time")
-                        }
-                    }
-                    ForEach(availableYears, id: \.self) { year in
-                        Button(action: {
-                            withAnimation {
-                                self.selectedYear = year
-                            }
-                        }) {
-                            if selectedYear == year {
-                                Label(String(year), systemImage: "checkmark")
-                            } else {
-                                Text(String(year))
-                            }
-                        }
-                    }
-                } label: {
-                    Label(selectedYear.map(String.init) ?? "All Time", systemImage: "calendar")
-                }
-            }
-        }
         .task {
             if let earliestDate = Event.fetchEarliestDate(from: moc) {
                 let earliestYear = Calendar.current.component(.year, from: earliestDate)
