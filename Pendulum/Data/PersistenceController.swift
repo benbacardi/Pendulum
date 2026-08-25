@@ -103,14 +103,18 @@ struct PersistenceController {
         
     }
     
+    /// Saves the given context.
+    ///
+    /// Note the save is still deferred to the next main-queue turn, which is only
+    /// correct while every caller passes the view context. A background context
+    /// would need this to run on its own queue via `perform`.
     func save(context: NSManagedObjectContext) {
-        if context.hasChanges {
-            DispatchQueue.main.async {
-                do {
-                    try container.viewContext.save()
-                } catch {
-                    dataLogger.error("[CoreData:save] Could not save context: \(error.localizedDescription)")
-                }
+        guard context.hasChanges else { return }
+        DispatchQueue.main.async {
+            do {
+                try context.save()
+            } catch {
+                dataLogger.error("[CoreData:save] Could not save context: \(error.localizedDescription)")
             }
         }
     }
