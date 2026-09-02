@@ -124,7 +124,7 @@ struct StatsView: View {
                                 .foregroundColor((trackPostingLetters ? EventType.sent : EventType.written).color)
                             
                             Text("\(numberSent)")
-                                .font(.system(size: 40, design: .rounded))
+                                .font(.system(.largeTitle, design: .rounded))
                                 .bold()
                                 .padding(.top, 1)
                         }
@@ -135,7 +135,7 @@ struct StatsView: View {
                                 .font(.headline)
                                 .foregroundColor(EventType.received.color)
                             Text("\(numberReceived)")
-                                .font(.system(size: 40, design: .rounded))
+                                .font(.system(.largeTitle, design: .rounded))
                                 .bold()
                                 .padding(.top, 1)
                         }
@@ -150,13 +150,13 @@ struct StatsView: View {
                     if let averageTimeToReply {
                         Text("\(averageTimeToReply.roundToDecimalPlaces(1)) day\(averageTimeToReply == 1 ? "" : "s")")
                             .fullWidth(alignment: .center)
-                            .font(.system(size: 40, design: .rounded))
+                            .font(.system(.largeTitle, design: .rounded))
                             .bold()
                             .padding(.top, 1)
                     } else {
                         Text("–")
                             .fullWidth(alignment: .center)
-                            .font(.system(size: 40, design: .rounded))
+                            .font(.system(.largeTitle, design: .rounded))
                             .bold()
                             .padding(.top, 1)
                     }
