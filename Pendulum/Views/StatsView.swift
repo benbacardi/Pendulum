@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Charts
+import CoreData
 
 struct StatsView: View {
     
@@ -246,124 +247,140 @@ struct StatsView: View {
         }
         .navigationTitle("Statistics")
         .task {
-            if let earliestDate = Event.fetchEarliestDate(from: moc) {
-                let earliestYear = Calendar.current.component(.year, from: earliestDate)
-                let currentYear = Calendar.current.component(.year, from: Date())
-                let years = Array((min(earliestYear, currentYear)...currentYear).reversed())
-                DispatchQueue.main.async {
-                    self.availableYears = years
-                }
-            }
+            let years = await Self.fetchAvailableYears()
+            self.availableYears = years
         }
         .task(id: selectedYear) {
-            let interestingEvents = Event.fetch(withStatus: [.written, .sent, .received], year: selectedYear, from: moc)
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.events = interestingEvents
-                }
+            let eventIDs = await Self.fetchInterestingEventIDs(year: selectedYear)
+            withAnimation {
+                self.events = self.objects(for: eventIDs)
             }
         }
         .task(id: statsQuery) {
-
-            // Calculate stationery stats
-
-            let mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, year: selectedYear, from: moc).filter { $0.count != 0 }.first
-            let mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, year: selectedYear, from: moc).filter { $0.count != 0 }.first
-            let mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, year: selectedYear, from: moc).filter { $0.count != 0 }.first
-
-            let mostUsedCustom = PenPal.fetchDistinctCustomStationery(year: selectedYear, from: moc).filter { !$0.value.isEmpty }.mapValues { $0.first }
-
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.mostUsedPen = mostUsedPen
-                    self.mostUsedInk = mostUsedInk
-                    self.mostUsedPaper = mostUsedPaper
-                    self.mostUsedCustom = mostUsedCustom
-                }
-            }
-
-            // Calculate reply stats
-
-            let averageTimeToReply = PenPal.averageTimeToRespond(year: selectedYear, from: moc)
-
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.averageTimeToReply = averageTimeToReply
-                }
-            }
-
-            // Calculate Sent/Received stats
-
-            let allSent: [Event]
-            if trackPostingLetters {
-                allSent = Event.fetch(withStatus: [.sent], year: selectedYear, from: moc)
-            } else {
-                allSent = Event.fetch(withStatus: [.written], year: selectedYear, from: moc)
-            }
-            let allReceived: [Event] = Event.fetch(withStatus: [.received], year: selectedYear, from: moc)
-            let numberReceived = allReceived.count
-            let numberSent = allSent.count
-            
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.numberSent = numberSent
-                    self.numberReceived = numberReceived
-                }
-            }
-            
-            // Calculate most common recipients
-            
-            let mostSent = allSent.reduce(into: [PenPal: Int]()) {
-                $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
-            }
-            
-            var mostCommonRecipients: [PenPal] = []
-            var mostCommonRecipientCount: Int = 0
-            if let highest = mostSent.values.max(), highest > 0 {
-                mostCommonRecipientCount = highest
-                mostCommonRecipients = mostSent.filter { $0.value == highest }.compactMap { $0.key }.sorted(using: KeyPathComparator(\.wrappedName))
-            }
-            
-            // Calculate most prolific pen pals
-            
-            let mostReceived = allReceived.reduce(into: [PenPal: Int]()) {
-                $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
-            }
-            
-            var mostProlificPenPals: [PenPal] = []
-            var mostProlificPenPalCount: Int = 0
-            if let highest = mostReceived.values.max(), highest > 0 {
-                mostProlificPenPalCount = highest
-                mostProlificPenPals = mostReceived.filter { $0.value == highest }.compactMap { $0.key }.sorted(using: KeyPathComparator(\.wrappedName))
-            }
-            
-            // Calculate letter type stats
-            
-            let sentTypes = allSent.reduce(into: [LetterType: Int]()) {
-                $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
-            }
-            
-            let receivedTypes = allReceived.reduce(into: [LetterType: Int]()) {
-                $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
-            }
-            
-            // Update UI
-            
-            DispatchQueue.main.async {
-                withAnimation {
-                    self.mostCommonRecipients = mostCommonRecipients
-                    self.mostProlificPenPals = mostProlificPenPals
-                    self.mostCommonRecipientCount = mostCommonRecipientCount
-                    self.mostProlificPenPalCount = mostProlificPenPalCount
-                    self.sentTypes = sentTypes
-                    self.receivedTypes = receivedTypes
-                }
+            let stats = await Self.fetchStats(for: statsQuery)
+            withAnimation {
+                self.mostUsedPen = stats.mostUsedPen
+                self.mostUsedInk = stats.mostUsedInk
+                self.mostUsedPaper = stats.mostUsedPaper
+                self.mostUsedCustom = stats.mostUsedCustom
+                self.averageTimeToReply = stats.averageTimeToReply
+                self.numberSent = stats.numberSent
+                self.numberReceived = stats.numberReceived
+                self.mostCommonRecipients = self.objects(for: stats.mostCommonRecipientIDs)
+                self.mostProlificPenPals = self.objects(for: stats.mostProlificPenPalIDs)
+                self.mostCommonRecipientCount = stats.mostCommonRecipientCount
+                self.mostProlificPenPalCount = stats.mostProlificPenPalCount
+                self.sentTypes = stats.sentTypes
+                self.receivedTypes = stats.receivedTypes
             }
         }
     }
 }
 
 private extension StatsView {
+    
+    /// Everything the stats screen shows, gathered in one pass away from the main actor.
+    ///
+    /// Pen Pals and Events come back as object IDs rather than managed objects: those belong to
+    /// the context that fetched them, so the view re-reads them on its own context.
+    struct Stats {
+        var mostUsedPen: ParameterCount? = nil
+        var mostUsedInk: ParameterCount? = nil
+        var mostUsedPaper: ParameterCount? = nil
+        var mostUsedCustom: [CustomStationeryType: ParameterCount?] = [:]
+        var averageTimeToReply: Double? = nil
+        var numberSent: Int = 0
+        var numberReceived: Int = 0
+        var mostCommonRecipientIDs: [NSManagedObjectID] = []
+        var mostProlificPenPalIDs: [NSManagedObjectID] = []
+        var mostCommonRecipientCount: Int = 0
+        var mostProlificPenPalCount: Int = 0
+        var sentTypes: [LetterType: Int] = [:]
+        var receivedTypes: [LetterType: Int] = [:]
+    }
+    
+    /// Runs `work` on a private background context, so a screenful of fetches doesn't block the UI.
+    static func fetching<T>(_ work: @escaping (NSManagedObjectContext) -> T) async -> T {
+        let context = PersistenceController.shared.container.newBackgroundContext()
+        return await context.perform { work(context) }
+    }
+    
+    /// Re-reads objects the background context found on the view's own context.
+    func objects<T: NSManagedObject>(for ids: [NSManagedObjectID]) -> [T] {
+        ids.compactMap { try? moc.existingObject(with: $0) as? T }
+    }
+    
+    static func fetchAvailableYears() async -> [Int] {
+        await fetching { context in
+            guard let earliestDate = Event.fetchEarliestDate(from: context) else { return [] }
+            let earliestYear = Calendar.current.component(.year, from: earliestDate)
+            let currentYear = Calendar.current.component(.year, from: Date())
+            return Array((min(earliestYear, currentYear)...currentYear).reversed())
+        }
+    }
+    
+    static func fetchInterestingEventIDs(year: Int?) async -> [NSManagedObjectID] {
+        await fetching { context in
+            Event.fetch(withStatus: [.written, .sent, .received], year: year, from: context).map { $0.objectID }
+        }
+    }
+    
+    static func fetchStats(for query: StatsQuery) async -> Stats {
+        await fetching { context in
+            let year = query.year
+            var stats = Stats()
+            
+            // Stationery stats
+            
+            stats.mostUsedPen = PenPal.fetchDistinctStationery(ofType: .pen, year: year, from: context).filter { $0.count != 0 }.first
+            stats.mostUsedInk = PenPal.fetchDistinctStationery(ofType: .ink, year: year, from: context).filter { $0.count != 0 }.first
+            stats.mostUsedPaper = PenPal.fetchDistinctStationery(ofType: .paper, year: year, from: context).filter { $0.count != 0 }.first
+            stats.mostUsedCustom = PenPal.fetchDistinctCustomStationery(year: year, from: context).filter { !$0.value.isEmpty }.mapValues { $0.first }
+            
+            // Reply stats
+            
+            stats.averageTimeToReply = PenPal.averageTimeToRespond(year: year, from: context)
+            
+            // Sent/received stats
+            
+            let allSent = Event.fetch(withStatus: query.trackPostingLetters ? [.sent] : [.written], year: year, from: context)
+            let allReceived = Event.fetch(withStatus: [.received], year: year, from: context)
+            stats.numberSent = allSent.count
+            stats.numberReceived = allReceived.count
+            
+            // Most common recipients
+            
+            let mostSent = allSent.reduce(into: [PenPal: Int]()) {
+                $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
+            }
+            if let highest = mostSent.values.max(), highest > 0 {
+                stats.mostCommonRecipientCount = highest
+                stats.mostCommonRecipientIDs = mostSent.filter { $0.value == highest }.compactMap { $0.key }.sorted(using: KeyPathComparator(\.wrappedName)).map { $0.objectID }
+            }
+            
+            // Most prolific Pen Pals
+            
+            let mostReceived = allReceived.reduce(into: [PenPal: Int]()) {
+                $0[$1.penpal] = ($0[$1.penpal] ?? 0) + 1
+            }
+            if let highest = mostReceived.values.max(), highest > 0 {
+                stats.mostProlificPenPalCount = highest
+                stats.mostProlificPenPalIDs = mostReceived.filter { $0.value == highest }.compactMap { $0.key }.sorted(using: KeyPathComparator(\.wrappedName)).map { $0.objectID }
+            }
+            
+            // Letter type stats
+            
+            stats.sentTypes = allSent.reduce(into: [LetterType: Int]()) {
+                $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
+            }
+            stats.receivedTypes = allReceived.reduce(into: [LetterType: Int]()) {
+                $0[$1.letterType] = ($0[$1.letterType] ?? 0) + 1
+            }
+            
+            return stats
+        }
+    }
+    
     /// The inputs the sent/received counts depend on. Both have to be watched, or
     /// toggling "Track posting letters" relabels the figures without recounting them.
     struct StatsQuery: Equatable {
