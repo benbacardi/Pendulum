@@ -230,7 +230,9 @@ class ExportService {
         try FileManager.default.zipItem(at: directoryURL, to: zipURL)
         try? FileManager.default.removeItem(at: directoryURL)
         
-        appLogger.debug("Saved to \(zipURL)")
+        /// Notice: one line per export, and the first-launch backup happens unasked. The name is
+        /// public because it is just the date; the containing path stays redacted
+        appLogger.notice("Saved backup to \(zipURL.lastPathComponent, privacy: .public)")
         
         return zipURL
     }
@@ -280,7 +282,7 @@ class ExportService {
                 }
             }
             
-            appLogger.debug("Restoring version \(metadata.majorVersion).")
+            appLogger.notice("Restoring backup of format \(metadata.majorVersion).\(metadata.minorVersion)")
             
             switch(metadata.majorVersion) {
                 
@@ -302,6 +304,10 @@ class ExportService {
                 let penpalRestore = PenPal.restore(importData.penpals, to: context, usingArchive: containingFolder, overwritingExistingData: overwritingExistingData, saving: false)
 
                 PersistenceController.shared.save(context: context)
+                
+                /// A restore rewrites the whole graph, so leave a record of it having happened —
+                /// counts are numbers, which os_log keeps public
+                appLogger.notice("Restored \(penpalRestore.penPalCount) Pen Pals, \(penpalRestore.eventCount) events, \(penpalRestore.photoCount) photos, \(stationeryCount) stationery items")
                 
                 return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
                 
