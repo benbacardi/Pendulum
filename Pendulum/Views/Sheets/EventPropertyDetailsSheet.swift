@@ -230,7 +230,9 @@ struct EventPropertyDetailsSheet: View {
                                 CustomStationery.addValue(newValue, toType: key, in: moc)
                                 customNewEntries[key.type] = ""
                                 focusedCustomEntryType = nil
-                                self.updateStationery()
+                            }
+                            Task {
+                                await self.updateStationery()
                             }
                         }) {
                             Text("Save")
@@ -271,20 +273,20 @@ struct EventPropertyDetailsSheet: View {
                                 CustomStationery.delete(parameter, in: moc)
                             }
                             self.toDelete = nil
-                            DispatchQueue.main.async {
+                            if let type = parameter.type {
                                 withAnimation {
-                                    if let type = parameter.type {
-                                        switch type {
-                                        case .pen:
-                                            self.pens = self.pens.filter { $0 != parameter }
-                                        case .ink:
-                                            self.inks = self.inks.filter { $0 != parameter }
-                                        case .paper:
-                                            self.papers = self.papers.filter { $0 != parameter }
-                                        }
-                                    } else {
-                                        self.updateStationery()
+                                    switch type {
+                                    case .pen:
+                                        self.pens = self.pens.filter { $0 != parameter }
+                                    case .ink:
+                                        self.inks = self.inks.filter { $0 != parameter }
+                                    case .paper:
+                                        self.papers = self.papers.filter { $0 != parameter }
                                     }
+                                }
+                            } else {
+                                Task {
+                                    await self.updateStationery()
                                 }
                             }
                         }
@@ -293,10 +295,8 @@ struct EventPropertyDetailsSheet: View {
                         Button("Delete \(customType.type)", role: .destructive) {
                             CustomStationery.delete(customType, in: moc)
                             self.customTypeToDelete = nil
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    self.updateStationery()
-                                }
+                            Task {
+                                await self.updateStationery()
                             }
                         }
                         Button("Cancel", role: .cancel) {
@@ -355,25 +355,15 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
             }
-            .task {
-                self.updateStationery()
-            }
-            .onChange(of: sortAlphabetically) { _ in
-                withAnimation {
-                    self.updateStationery()
-                }
-            }
-            .onChange(of: outbound) { _ in
-                withAnimation {
-                    self.updateStationery()
-                }
+            .task(id: stationeryQuery) {
+                await self.updateStationery()
             }
             .sheet(item: $editingStationery) { item in
                 EditStationerySheet(currentStationery: item, outbound: outbound) {
                     self.editingStationery = nil
-                    withAnimation {
-                        dataLogger.debug("Updating!")
-                        self.updateStationery()
+                    dataLogger.debug("Updating!")
+                    Task {
+                        await self.updateStationery()
                     }
                 }
             }
@@ -382,10 +372,8 @@ struct EventPropertyDetailsSheet: View {
                     AddStationeryTypeForm(initial: nil) { newType in
                         self.showAddStationerySheet = false
                         CustomStationery.createType(newType, in: moc)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation {
-                                self.updateStationery()
-                            }
+                        Task {
+                            await self.updateStationery()
                         }
                     }
                     .navigationTitle("Add Stationery Type")
@@ -407,10 +395,8 @@ struct EventPropertyDetailsSheet: View {
                     AddStationeryTypeForm(initial: item) { newItem in
                         self.editingCustomStationery = nil
                         CustomStationery.update(item, to: newItem, in: moc)
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                            withAnimation {
-                                self.updateStationery()
-                            }
+                        Task {
+                            await self.updateStationery()
                         }
                     }
                     .navigationTitle("Edit Stationery Type")
@@ -431,11 +417,38 @@ struct EventPropertyDetailsSheet: View {
 
     }
 
-    private func updateStationery() {
-        pens = PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
-        inks = PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
-        papers = PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
-        custom = PenPal.fetchDistinctCustomStationery(for: penpal, sortAlphabetically: self.sortAlphabetically, outbound: self.outbound, from: moc)
+    /// The inputs the stationery lists depend on — both have to be watched, or changing the sort
+    /// order or the direction leaves the previous lists on screen.
+    private struct StationeryQuery: Equatable {
+        let sortAlphabetically: Bool
+        let outbound: Bool
+    }
+    
+    private var stationeryQuery: StationeryQuery {
+        StationeryQuery(sortAlphabetically: sortAlphabetically, outbound: outbound)
+    }
+    
+    private func updateStationery() async {
+        let penpalID = penpal?.objectID
+        let sortAlphabetically = self.sortAlphabetically
+        let outbound = self.outbound
+        let fetched = await PersistenceController.shared.fetching { context in
+            let penpal: PenPal? = penpalID.flatMap { id in
+                (try? context.existingObject(with: id)) as? PenPal
+            }
+            return (
+                pens: PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context),
+                inks: PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context),
+                papers: PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context),
+                custom: PenPal.fetchDistinctCustomStationery(for: penpal, sortAlphabetically: sortAlphabetically, outbound: outbound, from: context)
+            )
+        }
+        withAnimation {
+            self.pens = fetched.pens
+            self.inks = fetched.inks
+            self.papers = fetched.papers
+            self.custom = fetched.custom
+        }
     }
 
 }
