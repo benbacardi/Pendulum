@@ -114,14 +114,15 @@ struct PersistenceController {
         return await context.perform { work(context) }
     }
     
-    /// Saves the given context.
+    /// Saves the given context on the context's own queue.
     ///
-    /// Note the save is still deferred to the next main-queue turn, which is only
-    /// correct while every caller passes the view context. A background context
-    /// would need this to run on its own queue via `perform`.
+    /// The save used to be wrapped in `DispatchQueue.main.async`, which left the store a
+    /// main-queue turn behind the caller: anything reading the store straight afterwards — a
+    /// background fetch, a badge recount — could still see the old data. `performAndWait` is
+    /// reentrant, so a caller already on the context's queue saves immediately.
     func save(context: NSManagedObjectContext) {
         guard context.hasChanges else { return }
-        DispatchQueue.main.async {
+        context.performAndWait {
             do {
                 try context.save()
             } catch {
