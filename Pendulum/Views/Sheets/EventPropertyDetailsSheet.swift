@@ -112,7 +112,7 @@ struct EventPropertyDetailsSheet: View {
     @ViewBuilder
     func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
         Section(header: HStack {
-            Image(systemName: type.icon)
+            type.iconImage
             Text(type.namePlural)
         }) {
             if options.wrappedValue.isEmpty && !(allowAdding && outbound) {
