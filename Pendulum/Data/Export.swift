@@ -24,7 +24,7 @@ struct ExportedPhoto: Codable {
         do {
             return try Data(contentsOf: archiveDirectory.appendingPathComponent("photo-\(id.uuidString)").appendingPathExtension("png"))
         } catch {
-            appLogger.debug("Could not load photo \(id) from archive \(archiveDirectory)")
+            appLogger.error("Could not load photo \(id) from archive \(archiveDirectory)")
         }
         return nil
     }
@@ -104,7 +104,7 @@ struct ExportedPenPal: Codable {
         do {
             return try Data(contentsOf: archiveDirectory.appendingPathComponent("penpal-\(id.uuidString)").appendingPathExtension("png"))
         } catch {
-            appLogger.debug("Could not load contact image \(id) from archive \(archiveDirectory)")
+            appLogger.error("Could not load contact image \(id) from archive \(archiveDirectory)")
         }
         return nil
     }
@@ -247,7 +247,7 @@ class ExportService {
             appLogger.debug("Creating a temp directory: \(temporaryDirectory)")
             try FileManager.default.createDirectory(at: temporaryDirectory, withIntermediateDirectories: true)
         } catch {
-            appLogger.debug("Creating temp directory failed, throwing .fileSystemError: \(error.localizedDescription)")
+            appLogger.error("Creating temp directory failed, throwing .fileSystemError: \(error.localizedDescription)")
             throw ExportRestoreError.fileSystemError
         }
         
@@ -255,7 +255,7 @@ class ExportService {
             appLogger.debug("Unzipping item at \(url) to \(temporaryDirectory)")
             try FileManager.default.unzipItem(at: url, to: temporaryDirectory)
         } catch {
-            appLogger.debug("Unzipping failed, throwing .invalidFormat: \(error.localizedDescription)")
+            appLogger.error("Unzipping failed, throwing .invalidFormat: \(error.localizedDescription)")
             throw ExportRestoreError.invalidFormat
         }
         
@@ -294,7 +294,7 @@ class ExportService {
                     appLogger.debug("Reading data from \(dataFile)")
                     importData = try decoder.decode(Export.self, from: Data(contentsOf: dataFile))
                 } catch {
-                    appLogger.debug("Reading failed: throwing .invalidFormat: \(error.localizedDescription)")
+                    appLogger.error("Reading failed: throwing .invalidFormat: \(error.localizedDescription)")
                     throw ExportRestoreError.invalidFormat
                 }
                 
@@ -306,7 +306,7 @@ class ExportService {
                 return ImportResult(stationeryCount: stationeryCount, penPalCount: penpalRestore.penPalCount, eventCount: penpalRestore.eventCount, photoCount: penpalRestore.photoCount)
                 
             default:
-                appLogger.debug("Unknown format: throwing .unknownFormat(format: \(metadata.majorVersion).\(metadata.minorVersion))")
+                appLogger.error("Unknown format: throwing .unknownFormat(format: \(metadata.majorVersion).\(metadata.minorVersion))")
                 throw ExportRestoreError.unknownFormat(format: metadata)
                 
             }

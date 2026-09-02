@@ -67,7 +67,7 @@ class SyncMonitor: ObservableObject {
                 syncState = .succeeded(started: event.startDate, ended: endDate)
                 UIApplication.shared.updateBadgeNumber()
             } else {
-                cloudKitLogger.debug("Sync failed: \(event.startDate) to \(endDate)")
+                cloudKitLogger.error("Sync failed: \(event.startDate) to \(endDate) — \(event.error?.localizedDescription ?? "no error given")")
                 syncState = .failed(started: event.startDate, ended: endDate, error: event.error)
             }
         } else {
