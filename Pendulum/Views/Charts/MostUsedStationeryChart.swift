@@ -10,8 +10,6 @@ import Charts
 
 struct MostUsedStationeryChart: View {
     
-    @Environment(\.managedObjectContext) var moc
-    
     let stationeryType: StationeryType?
     let customStationeryType: CustomStationeryType?
     let selectedYear: Int?
@@ -61,17 +59,19 @@ struct MostUsedStationeryChart: View {
                 .frame(height: CGFloat(parsedData.count * 50))
             }
             .task(id: selectedYear) {
-                let data: [ParameterCount]
-                if let stationeryType {
-                    data = PenPal.fetchDistinctStationery(ofType: stationeryType, year: selectedYear, from: moc)
-                } else if let customStationeryType {
-                    data = PenPal.fetchDistinctCustomStationery(ofType: customStationeryType, year: selectedYear, from: moc)
-                } else {
-                    data = []
+                let stationeryType = self.stationeryType
+                let customStationeryType = self.customStationeryType
+                let selectedYear = self.selectedYear
+                let data = await PersistenceController.shared.fetching { context -> [ParameterCount] in
+                    if let stationeryType {
+                        return PenPal.fetchDistinctStationery(ofType: stationeryType, year: selectedYear, from: context)
+                    }
+                    if let customStationeryType {
+                        return PenPal.fetchDistinctCustomStationery(ofType: customStationeryType, year: selectedYear, from: context)
+                    }
+                    return []
                 }
-                DispatchQueue.main.async {
-                    self.data = data
-                }
+                self.data = data
             }
             .padding()
             .navigationTitle(stationeryType?.namePlural ?? customStationeryType?.type ?? "Stationery")
