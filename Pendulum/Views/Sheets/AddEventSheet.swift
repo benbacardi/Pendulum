@@ -575,8 +575,8 @@ struct AddEventSheet: View {
             .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
                 self.iconWidth = value
             }
-            .onChange(of: eventType) { _ in
-                updateStationery()
+            .task(id: eventType) {
+                await updateStationery()
             }
             .onAppear {
                 if event == nil {
@@ -604,7 +604,6 @@ struct AddEventSheet: View {
                 } else {
                     self.customStationeryTypes = CustomStationery.fetchDistinctTypes(from: moc)
                 }
-                updateStationery()
             }
             .task {
                 if eventType == .sent && event == nil {
@@ -646,11 +645,22 @@ struct AddEventSheet: View {
         }
     }
 
-    func updateStationery() {
+    func updateStationery() async {
         let outbound: Bool = eventType == .written || eventType == .sent
-        self.penSuggestions = PenPal.fetchDistinctStationery(ofType: .pen, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
-        self.inkSuggestions = PenPal.fetchDistinctStationery(ofType: .ink, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
-        self.paperSuggestions = PenPal.fetchDistinctStationery(ofType: .paper, for: outbound ? nil : penpal, outbound: outbound, from: moc).map { $0.name }
+        let penpalID = outbound ? nil : penpal.objectID
+        let suggestions = await PersistenceController.shared.fetching { context in
+            let penpal: PenPal? = penpalID.flatMap { id in
+                (try? context.existingObject(with: id)) as? PenPal
+            }
+            return (
+                pens: PenPal.fetchDistinctStationery(ofType: .pen, for: penpal, outbound: outbound, from: context).map { $0.name },
+                inks: PenPal.fetchDistinctStationery(ofType: .ink, for: penpal, outbound: outbound, from: context).map { $0.name },
+                papers: PenPal.fetchDistinctStationery(ofType: .paper, for: penpal, outbound: outbound, from: context).map { $0.name }
+            )
+        }
+        self.penSuggestions = suggestions.pens
+        self.inkSuggestions = suggestions.inks
+        self.paperSuggestions = suggestions.papers
     }
 
 }
