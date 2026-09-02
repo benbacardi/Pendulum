@@ -49,56 +49,52 @@ struct DebugView: View {
                 Spacer()
                 Text("\(penpalCount)")
                     .foregroundColor(.secondary)
-                Button(action: {
+                Button("Delete all Pen Pals", systemImage: "trash") {
                     PenPal.deleteAll(in: moc)
                     Task {
                         await updateCounts()
                     }
-                }) {
-                    Image(systemName: "trash")
                 }
+                .labelStyle(.iconOnly)
             }
             HStack {
                 Text("Events")
                 Spacer()
                 Text("\(eventCount)")
                     .foregroundColor(.secondary)
-                Button(action: {
+                Button("Delete all events", systemImage: "trash") {
                     Event.deleteAll(in: moc)
                     Task {
                         await updateCounts()
                     }
-                }) {
-                    Image(systemName: "trash")
                 }
+                .labelStyle(.iconOnly)
             }
             HStack {
                 Text("EventPhotos")
                 Spacer()
                 Text("\(photoCount)")
                     .foregroundColor(.secondary)
-                Button(action: {
+                Button("Delete all event photos", systemImage: "trash") {
                     EventPhoto.deleteAll(in: moc)
                     Task {
                         await updateCounts()
                     }
-                }) {
-                    Image(systemName: "trash")
                 }
+                .labelStyle(.iconOnly)
             }
             HStack {
                 Text("Stationery")
                 Spacer()
                 Text("\(stationeryCount)")
                     .foregroundColor(.secondary)
-                Button(action: {
+                Button("Delete all stationery", systemImage: "trash") {
                     Stationery.deleteAll(in: moc)
                     Task {
                         await updateCounts()
                     }
-                }) {
-                    Image(systemName: "trash")
                 }
+                .labelStyle(.iconOnly)
             }
         }
         .navigationTitle("Debug")

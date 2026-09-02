@@ -74,11 +74,10 @@ struct StationeryTypeView: View {
                     Text("?")
                         .accessibilityHidden(true)
                         .opacity(0)
-                    Button(action: {
+                    Button(suggestionTitle, systemImage: "ellipsis") {
                         presentSuggestionSheetFor = TextOptions(text: $text, options: suggestions, title: suggestionTitle)
-                    }) {
-                        Image(systemName: "ellipsis")
                     }
+                    .labelStyle(.iconOnly)
                 }
             }
         }
