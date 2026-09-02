@@ -299,19 +299,13 @@ private extension StatsView {
         var receivedTypes: [LetterType: Int] = [:]
     }
     
-    /// Runs `work` on a private background context, so a screenful of fetches doesn't block the UI.
-    static func fetching<T>(_ work: @escaping (NSManagedObjectContext) -> T) async -> T {
-        let context = PersistenceController.shared.container.newBackgroundContext()
-        return await context.perform { work(context) }
-    }
-    
     /// Re-reads objects the background context found on the view's own context.
     func objects<T: NSManagedObject>(for ids: [NSManagedObjectID]) -> [T] {
         ids.compactMap { try? moc.existingObject(with: $0) as? T }
     }
     
     static func fetchAvailableYears() async -> [Int] {
-        await fetching { context in
+        await PersistenceController.shared.fetching { context in
             guard let earliestDate = Event.fetchEarliestDate(from: context) else { return [] }
             let earliestYear = Calendar.current.component(.year, from: earliestDate)
             let currentYear = Calendar.current.component(.year, from: Date())
@@ -320,13 +314,13 @@ private extension StatsView {
     }
     
     static func fetchInterestingEventIDs(year: Int?) async -> [NSManagedObjectID] {
-        await fetching { context in
+        await PersistenceController.shared.fetching { context in
             Event.fetch(withStatus: [.written, .sent, .received], year: year, from: context).map { $0.objectID }
         }
     }
     
     static func fetchStats(for query: StatsQuery) async -> Stats {
-        await fetching { context in
+        await PersistenceController.shared.fetching { context in
             let year = query.year
             var stats = Stats()
             
