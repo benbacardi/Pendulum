@@ -19,7 +19,10 @@ struct CustomStationeryTypeView: View {
     var body: some View {
         StationeryTypeView(icon: type.icon, title: type.type, text: $type.value, suggestions: suggestions, suggestionTitle: "Choose \(type.type)", iconWidth: $iconWidth)
             .task {
-                suggestions = CustomStationery.fetchDistinctValues(ofType: type.type, from: moc)
+                let type = type.type
+                suggestions = await PersistenceController.shared.fetching { context in
+                    CustomStationery.fetchDistinctValues(ofType: type, from: context)
+                }
             }
     }
 }

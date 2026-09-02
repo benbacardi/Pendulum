@@ -312,7 +312,9 @@ struct SettingsList: View {
                 }
             }
             .task {
-                self.showStatsLink = Event.count(from: moc) != 0
+                self.showStatsLink = await PersistenceController.shared.fetching { context in
+                    Event.count(from: context)
+                } != 0
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
