@@ -103,6 +103,17 @@ struct PersistenceController {
         
     }
     
+    /// Runs `work` on a private background context and returns its result.
+    ///
+    /// For read-only work a view needs: `.task` inherits the main actor, so fetching there blocks
+    /// the UI. Only value types and `NSManagedObjectID`s may be returned — managed objects belong
+    /// to the context that fetched them. Note the private context reads the store, so changes still
+    /// sitting unsaved on the view context won't be visible.
+    func fetching<T>(_ work: @escaping (NSManagedObjectContext) -> T) async -> T {
+        let context = container.newBackgroundContext()
+        return await context.perform { work(context) }
+    }
+    
     /// Saves the given context.
     ///
     /// Note the save is still deferred to the next main-queue turn, which is only
