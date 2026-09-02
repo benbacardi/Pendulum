@@ -16,17 +16,13 @@ struct PenPalView: View {
     
     // MARK: Parameters
     @ObservedObject var penpal: PenPal
-    let didSave =  NotificationCenter.default.publisher(for: .NSManagedObjectContextDidSave)
     
     // MARK: State
     @FetchRequest var events: FetchedResults<Event>
     @State private var buttonHeight: CGFloat?
     @State private var presentAddEventSheetForType: EventType? = nil
-    @State private var refreshID = UUID()
     @State private var showingPenPalContactSheet: Bool = false
     @State private var presentPropertyDetailsSheet: Bool = false
-    
-    @State private var eventsWithDifferences: [(Event, Int)] = []
     
     @Namespace private var transition
     
@@ -203,7 +199,6 @@ struct PenPalView: View {
                     }
                     .padding()
                 }
-                .id(refreshID)
             }
         }
         .sheet(isPresented: $showingPenPalContactSheet) {
@@ -224,9 +219,6 @@ struct PenPalView: View {
         }
         .sheet(item: $presentAddEventSheetForType) { eventType in
             AddEventSheet(penpal: penpal, eventType: eventType) {
-                Task {
-                    await self.updateEventsList()
-                }
                 self.presentAddEventSheetForType = nil
             }
         }
@@ -248,11 +240,6 @@ struct PenPalView: View {
             }
             .matchedTransitionSourceIfPossible(id: "contactSheet", in: transition)
         }
-        .onReceive(self.didSave) { _ in
-            Task {
-                await updateEventsList()
-            }
-        }
         .onPreferenceChange(ButtonHeightPreferenceKey.self) {
             self.buttonHeight = $0
         }
@@ -267,16 +254,6 @@ struct PenPalView: View {
             }
             #endif
         }
-        .task {
-            await updateEventsList()
-        }
-    }
-    
-    func updateEventsList() async {
-        withAnimation {
-            self.eventsWithDifferences = self.eventsWithDifferences(for: self.events)
-            self.refreshID = UUID()
-        }
     }
     
     func userTappedAddEvent(ofType eventType: EventType) {
@@ -289,7 +266,9 @@ struct PenPalView: View {
         }
     }
     
-    private func eventsWithDifferences(for events: FetchedResults<Event>) -> [(Event, Int)] {
+    /// The Pen Pal's events, newest first, each paired with the number of days between it and the
+    /// event that follows it in the list — used to draw the date dividers.
+    private var eventsWithDifferences: [(Event, Int)] {
         var intermediate: [(Event, Int)] = []
         let calendar = Calendar.current
         for (index, item) in events.enumerated() {
