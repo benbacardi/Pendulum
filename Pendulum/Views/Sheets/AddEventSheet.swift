@@ -45,11 +45,7 @@ struct StationeryTypeView: View {
     }
 
     var image: Image {
-        if icon == "pendulum" {
-            return Image(.pendulumIcon)
-        } else {
-            return Image(systemName: icon)
-        }
+        StationeryType.image(forIcon: icon)
     }
 
     var body: some View {
@@ -441,9 +437,9 @@ struct AddEventSheet: View {
                             EmptyView()
                         }
                     }) {
-                        StationeryTypeView(icon: "pendulum", title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: "drop", title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: "doc.plaintext", title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: StationeryType.pen.icon, title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: StationeryType.ink.icon, title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
+                        StationeryTypeView(icon: StationeryType.paper.icon, title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
 
                         ForEach($customStationeryTypes) { $customStationeryType in
                             CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)

@@ -7,6 +7,19 @@
 
 import Foundation
 import CoreData
+import SwiftUI
+
+extension StationeryType {
+    /// The image for a stored stationery icon name: Pendulum's own nib symbol lives in the asset
+    /// catalogue, everything else is an SF Symbol.
+    static func image(forIcon icon: String) -> Image {
+        icon == StationeryType.pen.icon ? Image(.pendulumIcon) : Image(systemName: icon)
+    }
+    
+    var iconImage: Image {
+        Self.image(forIcon: icon)
+    }
+}
 
 enum StationeryType: String {
     case pen
@@ -49,7 +62,7 @@ enum StationeryType: String {
     var icon: String {
         switch self {
         case .pen:
-            return "pencil"
+            return "pendulum"
         case .ink:
             return "drop"
         case .paper:

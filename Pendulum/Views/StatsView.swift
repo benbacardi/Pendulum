@@ -63,7 +63,7 @@ struct StatsView: View {
     func mostUsed(_ parameter: ParameterCount? = nil, placeholder: StationeryType? = nil) -> some View {
         GroupBox {
             HStack {
-                Image(systemName: parameter?.icon ?? placeholder?.icon ?? StationeryType.pen.icon)
+                StationeryType.image(forIcon: parameter?.icon ?? placeholder?.icon ?? StationeryType.pen.icon)
                     .frame(width: iconWidth)
                     .background(GeometryReader { geo in
                         Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
