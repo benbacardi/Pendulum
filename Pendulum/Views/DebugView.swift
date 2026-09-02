@@ -51,7 +51,9 @@ struct DebugView: View {
                     .foregroundColor(.secondary)
                 Button(action: {
                     PenPal.deleteAll(in: moc)
-                    updateCounts()
+                    Task {
+                        await updateCounts()
+                    }
                 }) {
                     Image(systemName: "trash")
                 }
@@ -63,7 +65,9 @@ struct DebugView: View {
                     .foregroundColor(.secondary)
                 Button(action: {
                     Event.deleteAll(in: moc)
-                    updateCounts()
+                    Task {
+                        await updateCounts()
+                    }
                 }) {
                     Image(systemName: "trash")
                 }
@@ -75,7 +79,9 @@ struct DebugView: View {
                     .foregroundColor(.secondary)
                 Button(action: {
                     EventPhoto.deleteAll(in: moc)
-                    updateCounts()
+                    Task {
+                        await updateCounts()
+                    }
                 }) {
                     Image(systemName: "trash")
                 }
@@ -87,7 +93,9 @@ struct DebugView: View {
                     .foregroundColor(.secondary)
                 Button(action: {
                     Stationery.deleteAll(in: moc)
-                    updateCounts()
+                    Task {
+                        await updateCounts()
+                    }
                 }) {
                     Image(systemName: "trash")
                 }
@@ -95,15 +103,23 @@ struct DebugView: View {
         }
         .navigationTitle("Debug")
         .task {
-            updateCounts()
+            await updateCounts()
         }
     }
     
-    func updateCounts() {
-        self.penpalCount = PenPal.fetchAll(from: moc).count
-        self.eventCount = Event.fetch(from: moc).count
-        self.stationeryCount = Stationery.fetch(from: moc).count
-        self.photoCount = EventPhoto.fetch(from: moc).count
+    func updateCounts() async {
+        let counts = await PersistenceController.shared.fetching { context in
+            (
+                penpals: PenPal.fetchAll(from: context).count,
+                events: Event.count(from: context),
+                stationery: Stationery.fetch(from: context).count,
+                photos: EventPhoto.fetch(from: context).count
+            )
+        }
+        self.penpalCount = counts.penpals
+        self.eventCount = counts.events
+        self.stationeryCount = counts.stationery
+        self.photoCount = counts.photos
     }
     
 }
