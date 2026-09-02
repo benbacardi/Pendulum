@@ -132,8 +132,12 @@ extension Event {
     }
 
     func delete(in context: NSManagedObjectContext, updatingAppState: Bool = true, saving: Bool = true) {
+        /// Hold on to the Pen Pal: deleting the event nullifies the relationship
+        let penpal = self.penpal
         context.delete(self)
-        self.penpal?.updateLastEventType(in: context)
+        /// ...and let the deletion settle, so the recalculation's fetch can't return this event
+        context.processPendingChanges()
+        penpal?.updateLastEventType(in: context)
         if updatingAppState {
             PenPal.updateAppState()
         }
