@@ -222,7 +222,12 @@ extension Event {
     
     static func fetch(withStatus eventTypes: [EventType]? = nil, year: Int? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: false),
+            /// Same-instant events would otherwise come back in whatever order the store
+            /// happens to hold them, which changes when rows are rewritten — by a restore, say
+            NSSortDescriptor(key: "id", ascending: false),
+        ]
         var predicates: [NSPredicate] = []
         if let eventTypes = eventTypes {
             predicates.append(

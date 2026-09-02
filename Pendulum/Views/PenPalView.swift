@@ -30,7 +30,8 @@ struct PenPalView: View {
         self.penpal = penpal
         self._events = FetchRequest<Event>(
             sortDescriptors: [
-                NSSortDescriptor(key: "date", ascending: false)
+                NSSortDescriptor(key: "date", ascending: false),
+                NSSortDescriptor(key: "id", ascending: false),
             ],
             predicate: NSPredicate(format: "penpal = %@", penpal),
             animation: .default

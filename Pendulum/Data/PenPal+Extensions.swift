@@ -189,7 +189,12 @@ extension PenPal {
         var currentEvent: Event? = nil
         
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: false),
+            /// Same-instant events would otherwise come back in whatever order the store
+            /// happens to hold them, which changes when rows are rewritten — by a restore, say
+            NSSortDescriptor(key: "id", ascending: false),
+        ]
         var predicates: [NSPredicate] = [self.ownEventsPredicate]
         if let eventType {
             predicates.append(eventType.predicate)
@@ -236,7 +241,12 @@ extension PenPal {
     func fetchPriorEvent(to date: Date, ofType eventType: EventType, ignore: Bool = true, from context: NSManagedObjectContext) -> Event? {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
         fetchRequest.fetchLimit = 1
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: false),
+            /// Same-instant events would otherwise come back in whatever order the store
+            /// happens to hold them, which changes when rows are rewritten — by a restore, say
+            NSSortDescriptor(key: "id", ascending: false),
+        ]
         var predicates = [
             self.ownEventsPredicate,
             eventType.predicate,
@@ -528,7 +538,10 @@ extension PenPal {
     
     func events(withStatus eventTypes: [EventType]? = nil, year: Int? = nil, from context: NSManagedObjectContext) -> [Event] {
         let fetchRequest = NSFetchRequest<Event>(entityName: Event.entityName)
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: true)]
+        fetchRequest.sortDescriptors = [
+            NSSortDescriptor(key: "date", ascending: true),
+            NSSortDescriptor(key: "id", ascending: true),
+        ]
         var predicates: [NSPredicate] = [
             self.ownEventsPredicate
         ]
