@@ -89,6 +89,7 @@ extension Event {
 
         if recalculatePenPalEvent {
             self.penpal?.updateLastEventType(in: context)
+            PenPal.updateAppState()
         }
         if saving {
             PersistenceController.shared.save(context: context)
@@ -130,9 +131,12 @@ extension Event {
         }
     }
 
-    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
+    func delete(in context: NSManagedObjectContext, updatingAppState: Bool = true, saving: Bool = true) {
         context.delete(self)
         self.penpal?.updateLastEventType(in: context)
+        if updatingAppState {
+            PenPal.updateAppState()
+        }
         if saving {
             PersistenceController.shared.save(context: context)
         }
@@ -300,8 +304,9 @@ extension Event {
 extension Event {
     static func deleteAll(in context: NSManagedObjectContext) {
         for event in fetch(from: context) {
-            event.delete(in: context, saving: false)
+            event.delete(in: context, updatingAppState: false, saving: false)
         }
+        PenPal.updateAppState()
         PersistenceController.shared.save(context: context)
     }
 }

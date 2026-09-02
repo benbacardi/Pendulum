@@ -122,6 +122,7 @@ extension PenPal {
         }
         if recalculatePenPalEvent {
             self.updateLastEventType(in: context)
+            Self.updateAppState()
         }
         if saving {
             PersistenceController.shared.save(context: context)
@@ -137,6 +138,22 @@ extension PenPal {
         }
     }
     
+    /// Refreshes the app-wide state derived from every Pen Pal's `lastEventType`: the app icon
+    /// badge and the single daily "letters to post" notification.
+    ///
+    /// Both walk the whole `PenPal` table, so they are deliberately *not* part of
+    /// `updateLastEventType`. Call this once after a batch of changes has been made.
+    static func updateAppState() {
+        UIApplication.shared.updateBadgeNumber()
+        Task {
+            await Self.scheduleShouldPostLettersNotification()
+        }
+    }
+    
+    /// Recalculates this Pen Pal's denormalised `lastEventType` from its event history.
+    ///
+    /// Only touches this Pen Pal (and its own "write back" reminder); the caller is responsible
+    /// for calling `PenPal.updateAppState()` once it has finished making changes.
     @discardableResult
     func updateLastEventType(saving: Bool = false, in context: NSManagedObjectContext) -> EventType {
         var newEventType: EventType = .noEvent
@@ -161,12 +178,6 @@ extension PenPal {
             self.scheduleShouldWriteBackNotification(countingFrom: newEventDate)
         } else {
             self.cancelShouldWriteBackNotification()
-        }
-        
-        UIApplication.shared.updateBadgeNumber()
-        
-        Task {
-            await Self.scheduleShouldPostLettersNotification()
         }
         
         return newEventType
@@ -422,6 +433,7 @@ extension PenPal {
         if self.nickname != contact.nickname { self.nickname = contact.nickname.isEmpty ? nil : contact.nickname }
         dataLogger.debug("New Values: \(self.wrappedInitials) - \(self.wrappedName)")
         self.updateLastEventType(in: context)
+        Self.updateAppState()
         if saving {
             PersistenceController.shared.save(context: context)
         }
@@ -434,8 +446,11 @@ extension PenPal {
         PersistenceController.shared.save(context: context)
     }
     
-    func delete(in context: NSManagedObjectContext, saving: Bool = true) {
+    func delete(in context: NSManagedObjectContext, updatingAppState: Bool = true, saving: Bool = true) {
         context.delete(self)
+        if updatingAppState {
+            Self.updateAppState()
+        }
         if saving {
             PersistenceController.shared.save(context: context)
         }
@@ -576,8 +591,9 @@ extension PenPal {
 extension PenPal {
     static func deleteAll(in context: NSManagedObjectContext) {
         for penpal in fetchAll(from: context) {
-            penpal.delete(in: context, saving: false)
+            penpal.delete(in: context, updatingAppState: false, saving: false)
         }
+        Self.updateAppState()
         PersistenceController.shared.save(context: context)
     }
 }
@@ -726,6 +742,8 @@ extension PenPal {
             }
             penPal.updateLastEventType(saving: false, in: context)
         }
+        
+        Self.updateAppState()
         
         if saving { PersistenceController.shared.save(context: context) }
         return ImportResult(stationeryCount: 0, penPalCount: penPalCount, eventCount: eventCount, photoCount: photoCount)
