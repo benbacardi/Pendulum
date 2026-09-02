@@ -215,7 +215,7 @@ extension UserDefaults {
             do {
                 setValue(try JSONEncoder().encode(newValue), forKey: Key.penpalContactMap)
             } catch {
-                appLogger.debug("Could not save penpalContactMap")
+                appLogger.error("Could not save penpalContactMap: \(error.localizedDescription)")
             }
         }
     }
