@@ -58,7 +58,9 @@ final class PenPalStateRepair {
 
         guard !repaired.isEmpty else { return }
 
-        dataLogger.debug("Repaired the last event type for \(repaired.joined(separator: ", "))")
+        /// Notice, not debug: this says stored data disagreed with the events and was rewritten,
+        /// which is worth seeing on a device — debug-level messages are dropped there by default
+        dataLogger.notice("Repaired the last event type for \(repaired.joined(separator: ", "))")
         PenPal.updateAppState()
         PersistenceController.shared.save(context: context)
     }
