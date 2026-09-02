@@ -89,6 +89,8 @@ struct PersistenceController {
     
     private func migrateStore(for container: NSPersistentContainer) {
 
+        var copied = 0
+
         for persistentStoreDescription in container.persistentStoreDescriptions {
             do {
                 try container.persistentStoreCoordinator.replacePersistentStore(
@@ -98,10 +100,20 @@ struct PersistenceController {
                     sourceOptions: persistentStoreDescription.options,
                     ofType: persistentStoreDescription.type
                 )
+                copied += 1
             } catch {
-                appLogger.error("Failed to copy persistence store: \(error.localizedDescription)")
+                storeLogger.error("Failed to copy persistence store: \(error.localizedDescription)")
             }
 
+        }
+        
+        /// A one-time, one-way copy of the user's database, and it happens before the first frame:
+        /// worth a persisted line either way. Note the migration is marked as performed below
+        /// regardless of whether anything was copied
+        if copied > 0 {
+            storeLogger.notice("Migrated \(copied) persistent store(s) to the app group container")
+        } else {
+            storeLogger.error("Marking the app group migration as performed, but nothing was copied")
         }
         
         container.persistentStoreDescriptions.first!.url = PersistenceController.appGroupStoreURL
