@@ -67,6 +67,7 @@ struct EventCell: View {
                 }) {
                     self.image(from: photo)
                 }
+                .accessibilityLabel("View photo")
             }
             Spacer()
         }
