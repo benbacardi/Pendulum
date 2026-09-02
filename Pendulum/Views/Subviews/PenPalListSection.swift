@@ -216,18 +216,18 @@ struct PenPalListSection: View {
                 /// Pen Pal tried to present at once.
                 .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: currentPenPal) { penpal in
                     Button("Delete \(penpal.wrappedName)", role: .destructive) {
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                            penpal.delete(in: moc)
-                            if let path = router.path.first {
-                                switch path {
-                                case let .penPalDetail(pathPenPal):
-                                    if pathPenPal == penpal {
-                                        router.path.removeFirst()
-                                    }
+                        /// Let go of the Pen Pal before deleting it, so neither the dismissing
+                        /// dialog nor a detail view still on screen reads a deleted object
+                        self.currentPenPal = nil
+                        if let path = router.path.first {
+                            switch path {
+                            case let .penPalDetail(pathPenPal):
+                                if pathPenPal == penpal {
+                                    router.path.removeFirst()
                                 }
                             }
-                            self.currentPenPal = nil
                         }
+                        penpal.delete(in: moc)
                     }
                 }
             }
