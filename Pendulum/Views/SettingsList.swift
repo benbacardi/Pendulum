@@ -32,7 +32,7 @@ struct SettingsList: View {
     @Environment(\.managedObjectContext) var moc
     @Environment(\.presentationMode) var presentationMode
     
-    let motionManager = CMMotionManager()
+    @State private var motionManager = CMMotionManager()
     
     // MARK: State
     @AppStorage(UserDefaults.Key.sendRemindersToWriteLetters, store: UserDefaults.shared) private var sendRemindersToWriteLetters: Bool = false
@@ -294,18 +294,21 @@ struct SettingsList: View {
             }
             .tint(.adequatelyGinger)
             .task {
-                if motionManager.isDeviceMotionAvailable {
-                    motionManager.deviceMotionUpdateInterval = 0.1
-                    let queue = OperationQueue()
-                    motionManager.startDeviceMotionUpdates(to: queue, withHandler: { motion, error in
+                guard motionManager.isDeviceMotionAvailable else { return }
+                motionManager.deviceMotionUpdateInterval = 0.1
+                /// Stops the 10Hz updates when the sheet goes away and the task is cancelled
+                defer { motionManager.stopDeviceMotionUpdates() }
+                let rolls = AsyncStream<Double> { continuation in
+                    motionManager.startDeviceMotionUpdates(to: OperationQueue()) { motion, error in
                         if let attitude = motion?.attitude {
-                            DispatchQueue.main.async {
-                                withAnimation {
-                                    self.angle = attitude.roll * 180.0/Double.pi
-                                }
-                            }
+                            continuation.yield(attitude.roll * 180.0/Double.pi)
                         }
-                    })
+                    }
+                }
+                for await roll in rolls {
+                    withAnimation {
+                        self.angle = roll
+                    }
                 }
             }
             .task {
