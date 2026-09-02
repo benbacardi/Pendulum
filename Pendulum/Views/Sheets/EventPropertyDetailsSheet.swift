@@ -96,11 +96,11 @@ struct EventPropertyDetailsSheet: View {
     }
 
     @ViewBuilder
-    func editButton(for option: ParameterCount) -> some View {
+    func renameButton(for option: ParameterCount) -> some View {
         Button(action: {
             self.editingStationery = option
         }) {
-            Label("Edit", systemImage: "pencil")
+            Label("Rename", systemImage: "pencil")
         }
     }
 
@@ -129,13 +129,13 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
                 .swipeActions(edge: .leading) {
-                    editButton(for: option)
+                    renameButton(for: option)
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     deleteButton(for: option)
                 }
                 .contextMenu {
-                    editButton(for: option)
+                    renameButton(for: option)
                     deleteButton(for: option)
                 }
             }
@@ -206,13 +206,13 @@ struct EventPropertyDetailsSheet: View {
                     }
                 }
                 .swipeActions(edge: .leading) {
-                    editButton(for: option)
+                    renameButton(for: option)
                 }
                 .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                     deleteButton(for: option)
                 }
                 .contextMenu {
-                    editButton(for: option)
+                    renameButton(for: option)
                     deleteButton(for: option)
                 }
             }
