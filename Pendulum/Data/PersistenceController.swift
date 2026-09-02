@@ -70,6 +70,12 @@ struct PersistenceController {
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
 
+        /// Needed for the remote-change notification PenPalStateRepair listens for; it is not on
+        /// by default, and has to be set before the stores are loaded
+        for description in container.persistentStoreDescriptions {
+            description.setOption(true as NSNumber, forKey: NSPersistentStoreRemoteChangeNotificationPostOptionKey)
+        }
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Error: \(description): \(error.localizedDescription)")

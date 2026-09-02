@@ -16,6 +16,7 @@ struct PendulumApp: App {
     let persistenceController = PersistenceController.shared
     let imageViewerController = ImageViewerController()
     let syncMonitor = SyncMonitor.shared
+    let penPalStateRepair = PenPalStateRepair.shared
     
     init() {
             // This fixes a bug / feature introduced in iOS 15

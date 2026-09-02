@@ -32,6 +32,9 @@ struct ContentView: View {
         .overlay {
             ImageGalleryOverlay()
         }
+        .task {
+            PenPalStateRepair.shared.repair()
+        }
         .onAppear {
             if lastLaunchedVersion != Bundle.main.appBuildNumber {
 //                showWhatsNewOverlay = true
