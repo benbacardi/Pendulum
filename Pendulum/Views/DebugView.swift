@@ -37,7 +37,9 @@ struct DebugView: View {
                 Text("Add PenPals")
             }
             #endif
-            Text("\(syncMonitor.state)")
+            /// verbatim: this is an enum's debug description on a debug screen, not display copy —
+            /// interpolating it into a LocalizedStringKey is deprecated for exactly that reason
+            Text(verbatim: "\(syncMonitor.state)")
             Toggle(isOn: $hasPerformedCoreDataMigrationToAppGroup) {
                 Text("Migration performed?")
             }
