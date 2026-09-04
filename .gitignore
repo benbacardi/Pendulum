@@ -1,6 +1,7 @@
 .DS_Store
 *.xcuserdatad
 app.xcarchive
+export/
 icon_hash
 
 # Local Claude Code settings (the reviews/ directory is tracked deliberately)
