@@ -485,7 +485,7 @@ struct AddEventSheet: View {
                                                     .resizable()
                                                     .scaledToFill()
                                                     .frame(width: 100, height: 100)
-                                                    .cornerRadius(10)
+                                                    .clipShape(.rect(cornerRadius: 10))
                                                 Button(role: .destructive, action: {
                                                     let _ = withAnimation {
                                                         self.eventPhotos = self.eventPhotos.filter { $0.id != photo.id }
