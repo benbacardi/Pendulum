@@ -660,7 +660,7 @@ html { scroll-behavior: smooth; }
     <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
     <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
     <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
-    <div class="stat is-fixed"><span class="n">20</span><span class="l">Fixed</span></div>
+    <div class="stat is-fixed"><span class="n">21</span><span class="l">Fixed</span></div>
     <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
     <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
   </div>
@@ -730,7 +730,7 @@ html { scroll-behavior: smooth; }
       <li class="done">
         <div>
           <div class="q-title">Dynamic Type and VoiceOver gaps <span class="sev sev-med">Medium</span> <span class="fixed-tag">Fixed <span class="sha">35f1ab7</span></span> <span class="fixed-tag">Fixed <span class="sha">4a529d7</span></span></div>
-          <div class="q-body">The four headline statistics now use <code>largeTitle</code> and scale; the photo thumbnails, the suggestions ellipsis and the debug trash buttons now carry labels. The manual <code>"day\(s)"</code> pluralisation is still there — it's a localisation problem more than an accessibility one, and it's listed under what's left.</div>
+          <div class="q-body">The four headline statistics now use <code>largeTitle</code> and scale; the photo thumbnails, the suggestions ellipsis and the debug trash buttons now carry labels. The manual <code>"day\(s)"</code> pluralisation — a localisation problem more than an accessibility one — is now fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code>; see below.</div>
           <span class="q-where">StatsView · EventCell · AddEventSheet · DebugView</span>
         </div>
       </li>
@@ -1002,7 +1002,7 @@ html { scroll-behavior: smooth; }
       </dl>
     </div>
 
-    <div class="note" style="margin-top: 1.6rem;"><strong>Still open on this branch:</strong> <code>syncWithContact</code> still runs synchronously on the main actor, so opening a Pen Pal still blocks on a Contacts XPC round trip. The deprecated-API sweep and the oversized view files (ranks 10 and 11) are untouched, as is the manual English pluralisation. None of these is a regression from the commits above.</div>
+    <div class="note" style="margin-top: 1.6rem;"><strong>Still open on this branch:</strong> <code>syncWithContact</code> still runs synchronously on the main actor, so opening a Pen Pal still blocks on a Contacts XPC round trip. The deprecated-API sweep and the oversized view files (ranks 10 and 11) are untouched. The manual English pluralisation is now fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code> — see those findings below. None of these is a regression from the commits above.</div>
   </div>
 
 
@@ -1567,6 +1567,7 @@ delete(penpal)
             </div>
             <div class="f-claim">Manual English pluralisation.</div>
             <p class="f-why">Hand-rolled <code>"day\(x == 1 ? "" : "s")"</code> breaks in every language that isn't English and doesn't handle zero correctly in the ones that are. SwiftUI's automatic grammar agreement handles English, French, German, Spanish, Portuguese and Italian for free. The same pattern appears in <code>PenPalView.swift:148</code>.</p>
+            <p class="f-why"><strong>Half fixed</strong> in <span class="mono">0ed33f8</span>, <span class="mono">b2b91a7</span>: line 148 (<code>averageTimeToReply</code>) now inflects correctly — the first attempt interpolated <code>roundToDecimalPlaces(1)</code>'s <code>String</code> return value inside the <code>^[...]</code> span, which gives the inflector nothing numeric to read a plural category from, so it silently rendered "894 day" on device; fixed by interpolating the <code>Double</code> directly with a <code>specifier:</code>. Lines 220/231 (the recipient/prolific-pen-pal counts) are untouched: they're built into <code>PenPalListItem</code>'s <code>subText: String</code>, which reaches <code>Text</code> through a variable rather than a literal — inflect markup doesn't survive that hop, it would show up as literal <code>"^[...]"</code> text.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -1577,9 +1578,10 @@ delete(penpal)
             </div>
             <div class="pane after">
               <div class="plabel">After</div>
-<pre><code><span class="t">Text</span>(<span class="s">"^[\(avg) day](inflect: true)"</span>)
+<pre><code><span class="t">Text</span>(<span class="s">"^[\(avg, specifier: "%.1f") day](inflect: true)"</span>)
 
-<span class="t">Text</span>(<span class="s">"You've sent them ^[\(count) item](inflect: true)"</span>)</code></pre>
+<span class="c">// 220/231 unchanged — subText: String can't carry inflect markup</span>
+<span class="t">Text</span>(<span class="s">"You've sent them \(count) item\(count == 1 ? "" : "s")"</span>)</code></pre>
             </div>
           </div>
         </article>
@@ -1800,15 +1802,18 @@ delete(penpal)
           </div>
         </article>
 
-        <article class="finding sf-med" data-sev="med">
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-med">Medium</span>
               <span class="f-lines">line 148, 154, 157</span>
               <span class="f-cat">localisation</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">0ed33f8</span></span>
             </div>
             <div class="f-claim">Manual pluralisation in <code>dateDivider</code>.</div>
             <p class="f-why"><code>let plural = difference &gt; 1 ? "s" : ""</code> then <code>"\(difference) day\(plural) ago"</code>. Note this also gets zero wrong in English before you even reach other languages.</p>
+            <p class="f-why"><code>difference</code> is an <code>Int</code> interpolated directly, so this one didn't hit the <code>String</code>-argument bug the sibling <code>StatsView</code> fix caught on device (see that finding above) — but it's built on the same untested assumption, so worth a direct look at a Pen Pal with an old event rather than trusting the diff.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -3211,7 +3216,8 @@ dismiss()</code></pre>
     <span>Findings verified against source; line numbers refer to the working tree at time of review, not to the current branch. Palette taken from fountain-pen ink and the app's own <span class="mono">Color.adequatelyGinger</span>.</span>
     <span>Update, 2 September 2026: ranked items 1–9 fixed across 22 commits. Four further Core Data findings added under <a href="#f-state">Found since</a>.</span>
     <span>Update, 4 September 2026: ranks 1–9 merged to <span class="mono">main</span> and their hashes here now point at the merged commits, not the pre-rebase ones. Rank 10 swept in twelve commits on <span class="mono">async-contact-sync</span>, along with the last two concurrency findings and a loading-state fix — 17 commits, unmerged, so those hashes will move if the branch is rebased. One finding <a href="#f-rejected">rejected</a> after checking it on a device. The project builds with no deprecation warnings.</span>
-    <span>Remaining: rank 11, the three oversized view files · the manual English pluralisation in StatsView and PenPalView · two half-fixed findings (<code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and its unscaled row height; <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race) · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
+    <span>Update, 4 September 2026 (later): the manual English pluralisation fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code> — the first pass on <code>StatsView</code> interpolated a <code>String</code> where the inflector needed a number, which shipped as "894 day" on device before a second commit fixed it. Now 19 commits on <span class="mono">async-contact-sync</span>, unmerged.</span>
+    <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · two half-fixed findings (<code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and its unscaled row height; <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race) · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 
 </div>
