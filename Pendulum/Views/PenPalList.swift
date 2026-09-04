@@ -54,7 +54,7 @@ struct PenPalList: View {
                 if !hideMap {
                     Map(position: $cameraPosition, interactionModes: [])
                 } else {
-                    Color(uiColor: .systemGroupedBackground)
+                    Color(.systemGroupedBackground)
                         .edgesIgnoringSafeArea(.all)
                 }
             }

@@ -64,7 +64,7 @@ struct SymbolPicker: View {
                             }) {
                                 ZStack {
                                     RoundedRectangle(cornerRadius: 10)
-                                        .fill(selectedSymbol == symbol ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
+                                        .fill(selectedSymbol == symbol ? Color.accentColor : Color(.secondarySystemBackground))
                                         .aspectRatio(1, contentMode: .fit)
                                     Image(systemName: symbol)
                                         .font(.title)
