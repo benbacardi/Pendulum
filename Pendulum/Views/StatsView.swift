@@ -91,7 +91,7 @@ struct StatsView: View {
 
                 if availableYears.count > 1 {
                     ScrollViewReader { yearScrollProxy in
-                        ScrollView(.horizontal, showsIndicators: false) {
+                        ScrollView(.horizontal) {
                             HStack(spacing: 8) {
                                 yearPill(title: "All Time", isSelected: selectedYear == nil) {
                                     self.selectedYear = nil
@@ -106,6 +106,7 @@ struct StatsView: View {
                             }
                             .padding(.horizontal)
                         }
+                        .scrollIndicators(.hidden)
                         .onChange(of: selectedYear) { _, newValue in
                             withAnimation {
                                 yearScrollProxy.scrollTo(newValue ?? -1, anchor: .center)

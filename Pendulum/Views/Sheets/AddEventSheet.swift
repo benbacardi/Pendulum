@@ -80,7 +80,7 @@ struct StationeryTypeView: View {
         .toolbar {
             if isTextFieldActive {
                 ToolbarItemGroup(placement: .keyboard) {
-                    ScrollView(.horizontal, showsIndicators: false) {
+                    ScrollView(.horizontal) {
                         HStack {
                             ForEach(autoSuggestions, id: \.self) { suggestion in
                                 Button(action: {
@@ -98,6 +98,7 @@ struct StationeryTypeView: View {
                             }
                         }
                     }
+                    .scrollIndicators(.hidden)
                     Button(action: {
                         isTextFieldActive = false
                     }) { Text("Done")}
@@ -476,7 +477,7 @@ struct AddEventSheet: View {
                         }
                         .listRowSeparator(.hidden)
                         if !eventPhotos.isEmpty {
-                            ScrollView(.horizontal, showsIndicators: false) {
+                            ScrollView(.horizontal) {
                                 LazyHStack {
                                     ForEach(eventPhotos) { photo in
                                         if let image = photo.thumbnail() ?? photo.image() {
@@ -513,6 +514,7 @@ struct AddEventSheet: View {
                                 .padding(.top, 5)
                                 .padding([.horizontal, .bottom])
                             }
+                            .scrollIndicators(.hidden)
                             .listRowInsets(EdgeInsets())
                         }
                     }

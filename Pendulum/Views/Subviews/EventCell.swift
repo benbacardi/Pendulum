@@ -110,10 +110,11 @@ struct EventCell: View {
                         ViewThatFits(in: .horizontal) {
                             imageHStack(from: event.allPhotos())
                                 .padding(.horizontal)
-                            ScrollView(.horizontal, showsIndicators: false) {
+                            ScrollView(.horizontal) {
                                 imageHStack(from: event.allPhotos())
                                     .padding(.horizontal)
                             }
+                            .scrollIndicators(.hidden)
                         }
                         
                         if event.hasNotes {
