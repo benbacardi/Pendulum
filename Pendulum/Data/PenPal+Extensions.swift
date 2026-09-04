@@ -59,13 +59,20 @@ extension PenPal {
         }
     }
     
-    var displayImage: Image? {
-        get async {
-            if let imageData = self.image, let image = UIImage(data: imageData) {
-                return Image(uiImage: image).resizable()
-            }
-            return nil
-        }
+    /// Decodes a Pen Pal's avatar away from the main actor.
+    ///
+    /// Takes the bytes rather than the Pen Pal deliberately: `PenPal` is a non-Sendable managed
+    /// object, so an `async` member on it would carry it across an actor boundary — which is a
+    /// Core Data threading violation and a hard error in Swift 6. `Data` crosses safely.
+    ///
+    /// `preparingForDisplay()` is what makes this worth doing. `UIImage(data:)` alone defers the
+    /// real decode until the image is first drawn, which lands it back on the main thread mid-scroll.
+    static func displayImage(from imageData: Data?) async -> Image? {
+        guard let imageData else { return nil }
+        return await Task.detached(priority: .userInitiated) {
+            guard let image = UIImage(data: imageData) else { return nil }
+            return Image(uiImage: image.preparingForDisplay() ?? image).resizable()
+        }.value
     }
     
     var contactID: String? {
