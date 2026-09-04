@@ -1044,12 +1044,14 @@ html { scroll-behavior: smooth; }
 
     <main>
 
-      <div class="filters" role="group" aria-label="Filter findings by severity">
+      <div class="filters" role="group" aria-label="Filter findings">
         <span class="flabel">Show</span>
         <button class="fbtn" type="button" data-sev="all" aria-pressed="true">All</button>
         <button class="fbtn" type="button" data-sev="high" aria-pressed="false">High</button>
         <button class="fbtn" type="button" data-sev="med" aria-pressed="false">Medium</button>
         <button class="fbtn" type="button" data-sev="low" aria-pressed="false">Low</button>
+        <span class="flabel" style="margin-left: .8rem;">Status</span>
+        <button class="fbtn" type="button" id="pendingToggle" aria-pressed="true">Pending only</button>
       </div>
 
       <!-- ══════════════ PersistenceController ══════════════ -->
@@ -1567,7 +1569,7 @@ delete(penpal)
             </div>
             <div class="f-claim">Manual English pluralisation.</div>
             <p class="f-why">Hand-rolled <code>"day\(x == 1 ? "" : "s")"</code> breaks in every language that isn't English and doesn't handle zero correctly in the ones that are. SwiftUI's automatic grammar agreement handles English, French, German, Spanish, Portuguese and Italian for free. The same pattern appears in <code>PenPalView.swift:148</code>.</p>
-            <p class="f-why"><strong>Half fixed</strong> in <span class="mono">0ed33f8</span>, <span class="mono">b2b91a7</span>, <span class="mono">c5470ea</span>: line 148 (<code>averageTimeToReply</code>) took three attempts, two bugs caught on device rather than in the diff. The first interpolated <code>roundToDecimalPlaces(1)</code>'s <code>String</code> return value inside the <code>^[...]</code> span, which gives the inflector nothing numeric to read a plural category from, so it silently rendered "894 day". The second switched to interpolating the <code>Double</code> directly with <code>specifier: "%.1f"</code>, which fixed the pluralisation but always renders one decimal digit, so a whole number showed as "894.0 days". The third replaced the specifier with <code>format: .number.precision(.fractionLength(0...1))</code>, which caps at one decimal but omits it when the value doesn't need it. Lines 220/231 (the recipient/prolific-pen-pal counts) are untouched: they're built into <code>PenPalListItem</code>'s <code>subText: String</code>, which reaches <code>Text</code> through a variable rather than a literal — inflect markup doesn't survive that hop, it would show up as literal <code>"^[...]"</code> text.</p>
+            <p class="f-why"><strong>Half fixed</strong> in <span class="mono">0ed33f8</span>, <span class="mono">b2b91a7</span>, <span class="mono">c5470ea</span>, <span class="mono">24da3e2</span>: line 148 (<code>averageTimeToReply</code>) took four attempts, three bugs caught on device rather than in the diff. First, interpolating <code>roundToDecimalPlaces(1)</code>'s <code>String</code> return value inside the <code>^[...]</code> span gave the inflector nothing numeric to read a plural category from, so it silently rendered "894 day". Second, switching to <code>specifier: "%.1f"</code> fixed the pluralisation but always renders one decimal digit, so a whole number showed as "894.0 days". Third, switching the <em>specifier</em> for a <code>format: .number.precision(...)</code> <code>FormatStyle</code> fixed the trailing zero but broke pluralisation all over again — the inflector reads <code>specifier:</code>-based interpolation as a raw numeric argument but a <code>format:</code>-based one as an opaque formatted string, the same failure mode as the very first bug. <strong>Confirmed correct on device</strong> with the specifier restored and chosen at runtime (<code>"%.0f"</code> for a whole number, <code>"%.1f"</code> otherwise) — singular, a whole number, and a fractional one all render right. Lines 220/231 (the recipient/prolific-pen-pal counts) are untouched: they're built into <code>PenPalListItem</code>'s <code>subText: String</code>, which reaches <code>Text</code> through a variable rather than a literal — inflect markup doesn't survive that hop, it would show up as literal <code>"^[...]"</code> text.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -1578,7 +1580,7 @@ delete(penpal)
             </div>
             <div class="pane after">
               <div class="plabel">After</div>
-<pre><code><span class="t">Text</span>(<span class="s">"^[\(avg, format: .number.precision(.fractionLength(0...1))) day](inflect: true)"</span>)
+<pre><code><span class="t">Text</span>(<span class="s">"^[\(avg, specifier: avg.rounded() == avg ? "%.0f" : "%.1f") day](inflect: true)"</span>)
 
 <span class="c">// 220/231 unchanged — subText: String can't carry inflect markup</span>
 <span class="t">Text</span>(<span class="s">"You've sent them \(count) item\(count == 1 ? "" : "s")"</span>)</code></pre>
@@ -2899,13 +2901,13 @@ dismiss()</code></pre>
         <p>Worth recording so it doesn't get "fixed" again: the review said three Settings rows faked a disabled appearance with a manual colour, and that <code>.disabled()</code> already draws the correct treatment. It doesn't — not for a <code>Form</code> row.</p>
       </div>
 
-      <article class="finding sf-low" data-sev="low">
+      <article class="finding sf-low" data-sev="low" data-resolved="true">
         <div class="f-head">
           <div class="f-top">
             <span class="sev sev-low">Low</span>
             <span class="f-lines">Views/SettingsList.swift:104, 112, 124</span>
             <span class="f-cat">design</span>
-          
+
             <span class="fixed-tag" style="color: var(--sev-high); background: var(--sev-high-bg); border-color: color-mix(in srgb, var(--sev-high) 30%, transparent);">Rejected <span class="sha">276d303 reverted</span></span>
           </div>
           <div class="f-claim">The manual dimming on the posting settings is <em>not</em> redundant.</div>
@@ -3216,7 +3218,8 @@ dismiss()</code></pre>
     <span>Findings verified against source; line numbers refer to the working tree at time of review, not to the current branch. Palette taken from fountain-pen ink and the app's own <span class="mono">Color.adequatelyGinger</span>.</span>
     <span>Update, 2 September 2026: ranked items 1–9 fixed across 22 commits. Four further Core Data findings added under <a href="#f-state">Found since</a>.</span>
     <span>Update, 4 September 2026: ranks 1–9 merged to <span class="mono">main</span> and their hashes here now point at the merged commits, not the pre-rebase ones. Rank 10 swept in twelve commits on <span class="mono">async-contact-sync</span>, along with the last two concurrency findings and a loading-state fix — 17 commits, unmerged, so those hashes will move if the branch is rebased. One finding <a href="#f-rejected">rejected</a> after checking it on a device. The project builds with no deprecation warnings.</span>
-    <span>Update, 4 September 2026 (later): the manual English pluralisation fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code> — the <code>StatsView</code> line took three attempts: a <code>String</code> where the inflector needed a number ("894 day"), then a fixed decimal specifier that always showed ".0" ("894.0 days"), each caught on device rather than in the diff. Now 21 commits on <span class="mono">async-contact-sync</span>, unmerged.</span>
+    <span>Update, 4 September 2026 (later): the manual English pluralisation fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code> — the <code>StatsView</code> line took four attempts, three bugs caught on device rather than in the diff, the last two both about the inflector: a <code>String</code> where it needed a number ("894 day"), a fixed decimal specifier that always showed ".0" ("894.0 days"), and a <code>FormatStyle</code> swap that fixed the ".0" but broke pluralisation the same way the first bug did. <strong>Confirmed correct on device</strong> with a runtime-chosen <code>specifier:</code>. Now 22 commits on <span class="mono">async-contact-sync</span>, unmerged.</span>
+    <span>Also, 4 September 2026: added a <strong>Pending only</strong> toggle beside the severity filter — on by default, it hides every <code>Fixed</code>/<code>Rejected</code> finding, the matching rows in the priority board, and any <code>Found since</code>/<code>Second pass</code>/<code>Rejected</code> cluster left with nothing showing, so scrolling the report surfaces only what's still open.</span>
     <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · two half-fixed findings (<code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and its unscaled row height; <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race) · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 
@@ -3224,34 +3227,87 @@ dismiss()</code></pre>
 
 <script>
 (function () {
-  var buttons = Array.prototype.slice.call(document.querySelectorAll('.fbtn'));
+  var sevButtons = Array.prototype.slice.call(document.querySelectorAll('.fbtn[data-sev]'));
+  var pendingBtn = document.getElementById('pendingToggle');
   var findings = Array.prototype.slice.call(document.querySelectorAll('.finding'));
   var groups = Array.prototype.slice.call(document.querySelectorAll('.filegroup'));
-  var KEY = 'pendulum-review-severity';
+  var queueItems = Array.prototype.slice.call(document.querySelectorAll('.queue li'));
+  var intros = Array.prototype.slice.call(document.querySelectorAll('.section-intro'));
+  var SEV_KEY = 'pendulum-review-severity';
+  var PENDING_KEY = 'pendulum-review-pendingonly';
 
-  function apply(sev) {
+  var state = { sev: 'all', pendingOnly: true };
+
+  function isResolved(el) {
+    return el.dataset.fixed === 'true' || el.dataset.resolved === 'true';
+  }
+
+  function apply() {
     findings.forEach(function (f) {
-      f.hidden = !(sev === 'all' || f.dataset.sev === sev);
+      var sevOk = state.sev === 'all' || f.dataset.sev === state.sev;
+      var pendingOk = !state.pendingOnly || !isResolved(f);
+      f.hidden = !(sevOk && pendingOk);
     });
+
+    // fixed items in the "fix in this order" board
+    queueItems.forEach(function (li) {
+      li.hidden = state.pendingOnly && li.classList.contains('done');
+    });
+
     // hide a file section whose findings are all filtered out
     groups.forEach(function (g) {
       var items = Array.prototype.slice.call(g.querySelectorAll('.finding'));
       var anyVisible = items.some(function (f) { return !f.hidden; });
       g.hidden = items.length > 0 && !anyVisible;
     });
-    buttons.forEach(function (b) {
-      b.setAttribute('aria-pressed', String(b.dataset.sev === sev));
+
+    // hide a loose section (Found since / Rejected / Second pass) — not
+    // wrapped in .filegroup — along with its notes, once every finding
+    // inside it is filtered out
+    intros.forEach(function (intro) {
+      var members = [];
+      var el = intro.nextElementSibling;
+      while (el && !el.classList.contains('section-intro') && el.tagName !== 'FOOTER') {
+        members.push(el);
+        el = el.nextElementSibling;
+      }
+      var findingMembers = members.filter(function (m) { return m.classList.contains('finding'); });
+      if (findingMembers.length === 0) { intro.hidden = false; return; }
+      var anyVisible = findingMembers.some(function (f) { return !f.hidden; });
+      intro.hidden = !anyVisible;
+      members.forEach(function (m) {
+        if (!m.classList.contains('finding')) { m.hidden = !anyVisible; }
+      });
     });
-    try { localStorage.setItem(KEY, sev); } catch (e) { /* storage unavailable */ }
+
+    sevButtons.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.sev === state.sev));
+    });
+    if (pendingBtn) { pendingBtn.setAttribute('aria-pressed', String(state.pendingOnly)); }
+
+    try {
+      localStorage.setItem(SEV_KEY, state.sev);
+      localStorage.setItem(PENDING_KEY, String(state.pendingOnly));
+    } catch (e) { /* storage unavailable */ }
   }
 
-  buttons.forEach(function (b) {
-    b.addEventListener('click', function () { apply(b.dataset.sev); });
+  sevButtons.forEach(function (b) {
+    b.addEventListener('click', function () { state.sev = b.dataset.sev; apply(); });
   });
+  if (pendingBtn) {
+    pendingBtn.addEventListener('click', function () {
+      state.pendingOnly = !state.pendingOnly;
+      apply();
+    });
+  }
 
-  var saved = 'all';
-  try { saved = localStorage.getItem(KEY) || 'all'; } catch (e) { saved = 'all'; }
-  if (['all', 'high', 'med', 'low'].indexOf(saved) === -1) { saved = 'all'; }
-  apply(saved);
+  try {
+    var savedSev = localStorage.getItem(SEV_KEY);
+    if (savedSev && ['all', 'high', 'med', 'low'].indexOf(savedSev) !== -1) { state.sev = savedSev; }
+    var savedPending = localStorage.getItem(PENDING_KEY);
+    if (savedPending !== null) { state.pendingOnly = savedPending === 'true'; }
+  } catch (e) { /* storage unavailable */ }
+
+  apply();
 })();
 </script>
