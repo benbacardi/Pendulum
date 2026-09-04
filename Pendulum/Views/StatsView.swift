@@ -28,8 +28,11 @@ struct StatsView: View {
     @State private var mostUsedCustom: [CustomStationeryType: ParameterCount?] = [:]
 
     @State private var averageTimeToReply: Double? = nil
-    @State private var numberReceived: Int = 0
-    @State private var numberSent: Int = 0
+    /// Optional so the first load shows a placeholder rather than a confident zero — the fetch
+    /// is asynchronous, and zero is a real answer we don't have yet. A reload keeps the previous
+    /// value on screen, because these are only assigned once the new figures arrive.
+    @State private var numberReceived: Int? = nil
+    @State private var numberSent: Int? = nil
     
     @State private var mostCommonRecipients: [PenPal] = []
     @State private var mostProlificPenPals: [PenPal] = []
@@ -124,7 +127,7 @@ struct StatsView: View {
                                 .font(.headline)
                                 .foregroundStyle((trackPostingLetters ? EventType.sent : EventType.written).color)
                             
-                            Text("\(numberSent)")
+                            Text(numberSent.map(String.init) ?? "–")
                                 .font(.system(.largeTitle, design: .rounded))
                                 .bold()
                                 .padding(.top, 1)
@@ -135,7 +138,7 @@ struct StatsView: View {
                             Text("Received")
                                 .font(.headline)
                                 .foregroundStyle(EventType.received.color)
-                            Text("\(numberReceived)")
+                            Text(numberReceived.map(String.init) ?? "–")
                                 .font(.system(.largeTitle, design: .rounded))
                                 .bold()
                                 .padding(.top, 1)
