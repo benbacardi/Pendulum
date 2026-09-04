@@ -61,7 +61,7 @@ struct ManualAddPenPalSheet: View {
                             Label("Delete", systemImage: "x.circle.fill")
                                 .font(.headline)
                                 .labelStyle(.iconOnly)
-                                .foregroundColor(.gray)
+                                .foregroundStyle(.gray)
                         }
                         .buttonStyle(.plain)
                         .background {
@@ -79,7 +79,7 @@ struct ManualAddPenPalSheet: View {
                             Text(initials)
                                 .font(.system(.title, design: .rounded))
                                 .bold()
-                                .foregroundColor(.white)
+                                .foregroundStyle(.white)
                         }
                     }
                     .frame(width: 80, height: 80)

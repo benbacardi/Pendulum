@@ -71,7 +71,7 @@ struct PenPalContactSheet: View {
                             Text("To change the name or photo for \(penpal.wrappedName), update their entry in the Contacts app.")
                                 .fullWidth(alignment: .center)
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                                 .padding()
                             
                         }

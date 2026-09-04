@@ -156,7 +156,7 @@ enum EventType: Int, CaseIterable, Identifiable {
             image = Image(systemName: "\(icon).circle.fill")
         }
         return image
-            .foregroundColor(color)
+            .foregroundStyle(color)
     }
     
     var phrase: String {

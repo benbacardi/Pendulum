@@ -65,7 +65,7 @@ struct ContactsAccessRequiredView: View {
                 self.presentInfoSheet = true
             }) {
                 Text("What does Pendulum do with my contacts information?")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .font(.caption)
             }
             .padding([.top, .horizontal])
@@ -108,7 +108,7 @@ struct ContactsAccessRequiredView: View {
             Text("You can turn off Contacts integration in Pendulum Settings to avoid seeing the prompts to grant access in future.")
                 .fullWidth()
         }
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
         .padding(.bottom, 8)
         if #available(iOS 26, *) {
             Button(action: {

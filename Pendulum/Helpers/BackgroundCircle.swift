@@ -26,7 +26,7 @@ struct BackgroundCircle: ViewModifier {
                 .fill(color)
                 .frame(width: backgroundSize, height: backgroundSize)
             content
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .background(GeometryReader { geo in
                     Color.clear.preference(key: CircleSizePreferenceKey.self, value: geo.size)
                 })

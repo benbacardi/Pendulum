@@ -120,7 +120,7 @@ struct PenPalListSection: View {
                 Text(eventType.phrase)
                     .fullWidth()
                     .font(.body)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
             }
         } else {
             EmptyView()

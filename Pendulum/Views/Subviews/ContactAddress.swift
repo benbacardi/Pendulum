@@ -75,7 +75,7 @@ struct ContactAddress: View {
                 }
             }
         }
-        .foregroundColor(.primary)
+        .foregroundStyle(.primary)
         .task {
             await updatePlacemark()
         }

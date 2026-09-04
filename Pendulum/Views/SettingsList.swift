@@ -101,7 +101,7 @@ struct SettingsList: View {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
-                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
+                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
@@ -109,7 +109,7 @@ struct SettingsList: View {
                                 .disabled(!trackPostingLetters)
                         }
                         .padding(.leading, 4)
-                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
+                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                     }
                 }
                 
@@ -121,7 +121,7 @@ struct SettingsList: View {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
-                        .foregroundColor(trackPostingLetters ? .primary : .secondary)
+                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                 }
                 
                 Section {
@@ -208,19 +208,19 @@ struct SettingsList: View {
                     }) {
                         HStack {
                             Text("Get Help & FAQs")
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                             Spacer()
                             Image(systemName: "questionmark.circle")
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                         }
                     }
                     Link(destination: URL(string: "mailto:pendulum@bencardy.co.uk")!) {
                         HStack {
                             Text("Send Feedback")
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                             Spacer()
                             Image(systemName: "paperplane")
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                         }
                     }
                     NavigationLink(destination: TipJarView()) {
@@ -231,7 +231,7 @@ struct SettingsList: View {
                             .fullWidth()
                         Spacer()
                         Text("\(Bundle.main.appVersionNumber) (Build \(Bundle.main.appBuildNumber))")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
             }

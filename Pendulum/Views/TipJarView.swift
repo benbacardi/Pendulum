@@ -78,7 +78,7 @@ struct TipJarView: View {
                                         ProgressView()
                                     } else {
                                         Text(product.displayPrice)
-                                            .foregroundColor(.accentColor)
+                                            .foregroundStyle(Color.accentColor)
                                     }
                                 } else {
                                     if productsFetched {
@@ -89,7 +89,7 @@ struct TipJarView: View {
                                 }
                             }
                         }
-                        .foregroundColor(.primary)
+                        .foregroundStyle(.primary)
                     }
                     .disabled(isDisabled(for: tip))
                     .opacity(productsFetched ? (isDisabled(for: tip) ? 0.5 : 1) : 1)
@@ -98,7 +98,7 @@ struct TipJarView: View {
                 if !purchasedTipsText.isEmpty {
                     Text("In your tip collection, you have \(purchasedTipsText)! Thank you so much for your support.")
                         .padding(.top)
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .fullWidth(alignment: .center)
                 }
                 

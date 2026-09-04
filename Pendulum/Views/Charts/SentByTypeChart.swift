@@ -25,7 +25,7 @@ struct SentByTypeChart: View {
                 Text("\(count)")
                     .font(.footnote)
                     .bold()
-                    .foregroundColor(eventType.color)
+                    .foregroundStyle(eventType.color)
                     .opacity(0.5)
             }
         }
