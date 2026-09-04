@@ -17,7 +17,7 @@ struct TextOptions: Identifiable {
 struct ChooseTextSheet: View {
     
     // MARK: Environment
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
     // MARK: External State
     @Binding var text: String
@@ -63,7 +63,7 @@ struct ChooseTextSheet: View {
             .toolbar {
                 ToolbarItem {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Done", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()

@@ -10,7 +10,7 @@ import SwiftUI
 struct EditStationerySheet: View {
 
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
 
     // MARK: Properties
     let currentStationery: ParameterCount
@@ -44,7 +44,7 @@ struct EditStationerySheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Cancel", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()

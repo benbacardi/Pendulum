@@ -13,7 +13,6 @@ struct AddPenPalSheet: View {
     // MARK: Environment
     @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject private var router: Router
     
     // MARK: Parameters
