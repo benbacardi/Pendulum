@@ -94,7 +94,9 @@ struct AddPenPalSheet: View {
                 Button(action: {
                     openURL(url)
                 }) {
-                    Text("You previously restricted Pendulum's access to limited contacts. You can choose to add more in ") + Text("Settings.").foregroundStyle(Color.accentColor)
+                    /// One string, not two Text values added together: the + operator is
+                    /// deprecated, and it hands a translator two fragments they cannot reorder
+                    Text("You previously restricted Pendulum's access to limited contacts. You can choose to add more in \(Text("Settings.").foregroundStyle(Color.accentColor))")
                 }
                 .fullWidth(alignment: .center)
                 .foregroundStyle(.secondary)
