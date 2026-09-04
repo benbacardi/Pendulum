@@ -128,10 +128,8 @@ struct TipJarView: View {
     }
 }
 
-struct TipJarView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            TipJarView()
-        }
+#Preview {
+    NavigationStack {
+        TipJarView()
     }
 }

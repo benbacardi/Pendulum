@@ -83,8 +83,6 @@ struct ChooseTextSheet: View {
     }
 }
 
-struct ChooseTextSheet_Previews: PreviewProvider {
-    static var previews: some View {
-        ChooseTextSheet(text: .constant(""), options: ["One", "Two"], title: "Choose Something")
-    }
+#Preview {
+    ChooseTextSheet(text: .constant(""), options: ["One", "Two"], title: "Choose Something")
 }

@@ -53,8 +53,6 @@ struct GrantContactsAccessView: View {
     }
 }
 
-struct GrantContactsAccessView_Previews: PreviewProvider {
-    static var previews: some View {
-        GrantContactsAccessView(contactsAccessStatus: .constant(.denied))
-    }
+#Preview {
+    GrantContactsAccessView(contactsAccessStatus: .constant(.denied))
 }

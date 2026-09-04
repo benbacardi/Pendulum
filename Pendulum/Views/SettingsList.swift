@@ -346,9 +346,6 @@ struct SettingsList: View {
     
 }
 
-struct SettingsList_Previews: PreviewProvider {
-    static var previews: some View {
-        SettingsList()
-    }
+#Preview {
+    SettingsList()
 }
-

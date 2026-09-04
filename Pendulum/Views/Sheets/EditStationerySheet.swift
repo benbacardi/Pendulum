@@ -71,10 +71,8 @@ struct EditStationerySheet: View {
     }
 }
 
-struct EditStationerySheet_Previews: PreviewProvider {
-    static var previews: some View {
-        EditStationerySheet(currentStationery: ParameterCount(name: "Foobar", count: 0, type: .ink, customType: nil), outbound: true) {
+#Preview {
+    EditStationerySheet(currentStationery: ParameterCount(name: "Foobar", count: 0, type: .ink, customType: nil), outbound: true) {
 
-        }
     }
 }

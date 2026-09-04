@@ -86,9 +86,7 @@ struct SentAndWrittenByMonthChart: View {
     }
 }
 
-struct SentAndWrittenByMonthChart_Previews: PreviewProvider {
-    static var previews: some View {
-        SentAndWrittenByMonthChart(events: .constant([]), showInbound: .constant(false))
-            .padding()
-    }
+#Preview {
+    SentAndWrittenByMonthChart(events: .constant([]), showInbound: .constant(false))
+        .padding()
 }

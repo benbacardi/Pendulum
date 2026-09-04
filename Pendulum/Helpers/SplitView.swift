@@ -37,12 +37,10 @@ struct SplitView<SidebarContent: View, Content: View>: View {
     
 }
 
-struct SplitView_Previews: PreviewProvider {
-    static var previews: some View {
-        SplitView {
-            Text("Sidebar")
-        } content: {
-            Text("Content")
-        }
+#Preview {
+    SplitView {
+        Text("Sidebar")
+    } content: {
+        Text("Content")
     }
 }

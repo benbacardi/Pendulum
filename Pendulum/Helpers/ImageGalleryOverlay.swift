@@ -80,9 +80,7 @@ struct ImageGalleryOverlay: View {
     }
 }
 
-struct ImageGalleryOverlay_Previews: PreviewProvider {
-    static var previews: some View {
-        ImageGalleryOverlay()
-            .environmentObject(ImageViewerController())
-    }
+#Preview {
+    ImageGalleryOverlay()
+        .environmentObject(ImageViewerController())
 }

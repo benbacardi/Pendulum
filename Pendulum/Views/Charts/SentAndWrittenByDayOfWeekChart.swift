@@ -103,9 +103,7 @@ struct SentAndWrittenByDayOfWeekChart: View {
     }
 }
 
-struct SentAndWrittenByDayOfWeekChart_Previews: PreviewProvider {
-    static var previews: some View {
-        SentAndWrittenByDayOfWeekChart(events: .constant([]), showInbound: .constant(false))
-            .padding()
-    }
+#Preview {
+    SentAndWrittenByDayOfWeekChart(events: .constant([]), showInbound: .constant(false))
+        .padding()
 }

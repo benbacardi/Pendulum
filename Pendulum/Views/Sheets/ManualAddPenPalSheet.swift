@@ -174,11 +174,9 @@ struct ManualAddPenPalSheet: View {
     }
 }
 
-struct ManualAddPenPalSheet_Previews: PreviewProvider {
-    static var previews: some View {
-        ManualAddPenPalSheet() { newPenPal in
-            
-        }
-        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+#Preview {
+    ManualAddPenPalSheet() { newPenPal in
+
     }
+    .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
 }

@@ -153,10 +153,8 @@ struct ContactsAccessRequiredView: View {
     
 }
 
-struct ContactsAccessRequiredView_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
-            ContactsAccessRequiredView(contactsAccessStatus: .constant(.notDetermined))
-        }
+#Preview {
+    VStack {
+        ContactsAccessRequiredView(contactsAccessStatus: .constant(.notDetermined))
     }
 }

@@ -395,8 +395,6 @@ private extension StatsView {
     }
 }
 
-struct StatsView_Previews: PreviewProvider {
-    static var previews: some View {
-        StatsView()
-    }
+#Preview {
+    StatsView()
 }
