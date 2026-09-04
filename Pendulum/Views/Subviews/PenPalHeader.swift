@@ -30,7 +30,7 @@ struct PenPalHeader: View {
                 }
                 .frame(width: 40, height: 40)
                 .task {
-                    self.displayImage = await penpal.displayImage
+                    self.displayImage = await PenPal.displayImage(from: penpal.image)
                 }
             }
             VStack(spacing: 0) {

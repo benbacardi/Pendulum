@@ -46,7 +46,7 @@ struct PenPalListItem: View {
                         .foregroundColor(.white)
                 }
                 .frame(width: 40, height: 40)
-                .task { displayImage = await penpal.displayImage }
+                .task { displayImage = await PenPal.displayImage(from: penpal.image) }
             }
             VStack {
                 Text(preferNicknames ? penpal.preferredName : penpal.wrappedName)
