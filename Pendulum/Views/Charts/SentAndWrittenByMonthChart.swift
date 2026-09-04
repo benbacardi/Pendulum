@@ -58,7 +58,7 @@ struct SentAndWrittenByMonthChart: View {
             ])
             .frame(height: 150)
         }
-        .onChange(of: events) { _ in
+        .onChange(of: events) {
             var months: [Month: [Event]] = [:]
             for event in events {
                 if !months.keys.contains(event.wrappedDate.month) {

@@ -75,7 +75,7 @@ struct SentAndWrittenByDayOfWeekChart: View {
             ])
             .frame(height: 150)
         }
-        .onChange(of: events) { _ in
+        .onChange(of: events) {
             var days: [Weekday: [Event]] = [:]
             for event in events {
                 if !days.keys.contains(event.wrappedDate.weekday) {

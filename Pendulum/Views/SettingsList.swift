@@ -254,11 +254,11 @@ struct SettingsList: View {
                 dateComponents.minute = UserDefaults.shared.sendRemindersToPostLettersAtMinute
                 self.sendRemindersToPostLettersDate = Calendar.current.date(from: dateComponents) ?? Date()
             }
-            .onChange(of: sendRemindersToPostLettersDate) { newValue in
+            .onChange(of: sendRemindersToPostLettersDate) { _, newValue in
                 UserDefaults.shared.sendRemindersToPostLettersAtHour = Calendar.current.component(.hour, from: newValue)
                 UserDefaults.shared.sendRemindersToPostLettersAtMinute = Calendar.current.component(.minute, from: newValue)
             }
-            .onChange(of: sendRemindersToWriteLetters) { newValue in
+            .onChange(of: sendRemindersToWriteLetters) { _, newValue in
                 if newValue {
                     requestNotificationAccess()
                     Task {
@@ -270,26 +270,26 @@ struct SettingsList: View {
                     }
                 }
             }
-            .onChange(of: sendRemindersToPostLetters) { newValue in
+            .onChange(of: sendRemindersToPostLetters) { _, newValue in
                 if newValue {
                     requestNotificationAccess()
                 } else {
                     PenPal.cancelAllShouldPostLettersNotifications()
                 }
             }
-            .onChange(of: badgeRemindersToWriteLetters) { newValue in
+            .onChange(of: badgeRemindersToWriteLetters) { _, newValue in
                 if newValue {
                     requestNotificationAccess()
                 }
                 UIApplication.shared.updateBadgeNumber()
             }
-            .onChange(of: badgeRemindersToPostLetters) { newValue in
+            .onChange(of: badgeRemindersToPostLetters) { _, newValue in
                 if newValue {
                     requestNotificationAccess()
                 }
                 UIApplication.shared.updateBadgeNumber()
             }
-            .onChange(of: trackPostingLetters) { newValue in
+            .onChange(of: trackPostingLetters) { _, newValue in
                 UIApplication.shared.updateBadgeNumber()
             }
             .tint(.adequatelyGinger)
