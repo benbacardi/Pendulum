@@ -207,7 +207,8 @@
       "severity": "medium",
       "category": "localisation",
       "summary": "Manual English pluralisation. Also lines 220, 231.",
-      "fix": "Text(\"^[\\(count) item](inflect: true)\")."
+      "fix": "Text(\"^[\\(count) item](inflect: true)\").",
+      "outcome": "partially fixed — 0ed33f8, b2b91a7 on async-contact-sync (unmerged): line 148 (averageTimeToReply) converted, but 0ed33f8 interpolated roundToDecimalPlaces(1)'s return value, which is a String — inflect can't read a plural category off a String, so it silently fell back to singular (\"894 day\", caught on device). b2b91a7 fixed it to interpolate the Double directly with a specifier. Lines 220/231 (mostCommonRecipientCount/mostProlificPenPalCount) are passed into PenPalListItem's subText: String, which reaches Text(subText) via a variable, not a literal — inflect markup does not survive that hop and would render as literal \"^[...]\" text. Left as manual pluralisation; would need subText retyped to LocalizedStringKey or AttributedString to fix properly."
     },
     {
       "id": "statsview-userdefaults-in-body",
@@ -271,7 +272,8 @@
       "severity": "medium",
       "category": "localisation",
       "summary": "Manual pluralisation in dateDivider; also gets zero wrong in English.",
-      "fix": "inflect: true."
+      "fix": "inflect: true.",
+      "outcome": "fixed — 0ed33f8 on async-contact-sync (unmerged). difference is an Int interpolated directly, so this one didn't hit the String-argument bug found in the StatsView sibling fix (see statsview-pluralisation) — worth confirming on device anyway since that's exactly how the StatsView regression was caught."
     },
     {
       "id": "penpalview-dead-buttonheight",
