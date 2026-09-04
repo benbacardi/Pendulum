@@ -1,0 +1,670 @@
+{
+  "review": {
+    "date": "2026-08-25",
+    "branch": "stationery-list-toolbar",
+    "commit": "6ef28a0",
+    "scope": {
+      "files": 79,
+      "lines": 10308
+    },
+    "build": {
+      "deploymentTarget": "iOS 17.0",
+      "swiftVersion": "5.0",
+      "strictConcurrency": false,
+      "testTarget": false
+    },
+    "method": "swiftui-pro skill: api, views, data, navigation, design, accessibility, performance, swift, hygiene",
+    "totals": {
+      "findings": 65,
+      "high": 9,
+      "medium": 28,
+      "low": 28,
+      "detail": "57 individual findings + 8 cross-cutting sweeps; test coverage tracked separately"
+    }
+  },
+  "priority": [
+    {
+      "rank": 1,
+      "id": "eventcell-url-force-unwrap"
+    },
+    {
+      "rank": 2,
+      "id": "persistence-save-ignores-context"
+    },
+    {
+      "rank": 3,
+      "id": "penpal-sync-off-queue"
+    },
+    {
+      "rank": 4,
+      "id": "apppreferences-appstorage"
+    },
+    {
+      "rank": 5,
+      "id": "listsection-dialog-in-foreach"
+    },
+    {
+      "rank": 6,
+      "id": "settings-motion-never-stopped"
+    },
+    {
+      "rank": 7,
+      "id": "statsview-main-thread-fetch"
+    },
+    {
+      "rank": 8,
+      "id": "penpalview-refreshid"
+    },
+    {
+      "rank": 9,
+      "id": "a11y-dynamic-type-voiceover"
+    },
+    {
+      "rank": 10,
+      "id": "sweep-deprecated-api"
+    },
+    {
+      "rank": 11,
+      "id": "oversized-view-files"
+    }
+  ],
+  "findings": [
+    {
+      "id": "eventcell-url-force-unwrap",
+      "file": "Pendulum/Views/Subviews/EventCell.swift",
+      "line": 206,
+      "severity": "high",
+      "category": "crash",
+      "summary": "Force-unwrapped URL built from a free-text tracking reference traps when the value contains a space.",
+      "fix": "Percent-encode with .urlFragmentAllowed and bind with if let before calling openURL.",
+      "outcome": "fixed \u2014 2823bec"
+    },
+    {
+      "id": "persistence-save-ignores-context",
+      "file": "Pendulum/Data/PersistenceController.swift",
+      "line": 106,
+      "severity": "high",
+      "category": "correctness",
+      "summary": "save(context:) discards its parameter and saves container.viewContext; 20 call sites pass a context that is ignored.",
+      "fix": "Save the passed context, mark @MainActor, drop the DispatchQueue.main.async.",
+      "outcome": "fixed \u2014 87a3c02 (passed context now saved; main-queue deferral deliberately retained)"
+    },
+    {
+      "id": "persistence-force-unwraps",
+      "file": "Pendulum/Data/PersistenceController.swift",
+      "line": 91,
+      "severity": "medium",
+      "category": "crash-risk",
+      "summary": "persistentStoreDescriptions.first!.url! on the launch migration path.",
+      "fix": "guard let sourceURL = ... else { log; return }."
+    },
+    {
+      "id": "penpal-sync-off-queue",
+      "file": "Pendulum/Data/PenPal+Extensions.swift",
+      "line": 479,
+      "severity": "high",
+      "category": "concurrency",
+      "summary": "enumerateContacts runs on DispatchQueue.global and its closure reads self.wrappedName and self.id \u2014 Core Data property access off the owning queue.",
+      "fix": "Snapshot name and id first, run enumeration in Task.detached, hop to MainActor to write; add UserDefaults.setContactID(forID:to:).",
+      "outcome": "fixed \u2014 dfa9bb7"
+    },
+    {
+      "id": "penpal-sync-blocking",
+      "file": "Pendulum/Data/PenPal+Extensions.swift",
+      "line": 444,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "syncWithContact() is synchronous and called from .task (MainActor); unifiedContact(withIdentifier:) is a blocking XPC call.",
+      "fix": "Make it async; call site is Views/PenPalView.swift:261."
+    },
+    {
+      "id": "penpal-displayimage-fake-async",
+      "file": "Pendulum/Data/PenPal+Extensions.swift",
+      "line": 62,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "displayImage is an async getter with no suspension point, so UIImage decoding runs on the caller's actor (always main).",
+      "fix": "Wrap the decode in Task.detached and await it."
+    },
+    {
+      "id": "apppreferences-appstorage",
+      "file": "Pendulum/Helpers/AppPreferences.swift",
+      "line": 15,
+      "severity": "high",
+      "category": "data-flow",
+      "summary": "@AppStorage inside an ObservableObject does not drive view updates; didSet fires after the change and external writes never fire it.",
+      "fix": "Delete the class; use @AppStorage directly per view. Also removes unused @EnvironmentObject in PenPalList.swift:14 and SettingsList.swift:33.",
+      "outcome": "fixed \u2014 19328a9 (class deleted; it was never injected or read)"
+    },
+    {
+      "id": "apppreferences-mutable-static",
+      "file": "Pendulum/Helpers/AppPreferences.swift",
+      "line": 13,
+      "severity": "low",
+      "category": "concurrency",
+      "summary": "static var shared is a mutable global; same for PersistenceController.preview.",
+      "fix": "static let."
+    },
+    {
+      "id": "listsection-dialog-in-foreach",
+      "file": "Pendulum/Views/Subviews/PenPalListSection.swift",
+      "line": 208,
+      "severity": "high",
+      "category": "correctness",
+      "summary": "confirmationDialog is inside the ForEach, so N pen pals attach N dialogs to one shared $showDeleteAlert.",
+      "fix": "Move outside the loop; drive presentation from currentPenPal != nil.",
+      "outcome": "fixed \u2014 2b893a4"
+    },
+    {
+      "id": "listsection-async-after",
+      "file": "Pendulum/Views/Subviews/PenPalListSection.swift",
+      "line": 210,
+      "severity": "medium",
+      "category": "correctness",
+      "summary": "DispatchQueue.main.asyncAfter(0.05) before delete \u2014 a timing guess working around the dialog placement.",
+      "fix": "Remove once the dialog is moved; otherwise Task.sleep(for: .milliseconds(50))."
+    },
+    {
+      "id": "animation-value-managed-object",
+      "file": "Pendulum/Views/Subviews/PenPalListSection.swift",
+      "line": 199,
+      "severity": "medium",
+      "category": "correctness",
+      "summary": ".animation(.default, value: penpal) never fires \u2014 NSManagedObject == is identity comparison. Also EventCell.swift:202.",
+      "fix": "value: penpal.lastEventType."
+    },
+    {
+      "id": "listsection-heavy-init",
+      "file": "Pendulum/Views/Subviews/PenPalListSection.swift",
+      "line": 47,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "65-line initializer building predicates and reading UserDefaults; one instance per EventType.orderedCases on every render.",
+      "fix": "Hoist to static pure functions following the existing sortDescriptors(for:) pattern at line 27."
+    },
+    {
+      "id": "statsview-main-thread-fetch",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 246,
+      "severity": "high",
+      "category": "performance",
+      "summary": ".task inherits @MainActor so every Core Data fetch blocks the UI; the DispatchQueue.main.async wrappers inside only add latency. 30+ sites app-wide.",
+      "fix": "Task.detached + newBackgroundContext + performAndWait, assign directly. Recipient blocks at 314-336 must return NSManagedObjectID, not [PenPal]."
+    },
+    {
+      "id": "statsview-fixed-font-size",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 124,
+      "severity": "medium",
+      "category": "accessibility",
+      "summary": ".font(.system(size: 40, design: .rounded)) pins the three headline figures regardless of Dynamic Type. Also lines 135, 150, 156.",
+      "fix": ".font(.system(.largeTitle, design: .rounded))."
+    },
+    {
+      "id": "statsview-pluralisation",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 148,
+      "severity": "medium",
+      "category": "localisation",
+      "summary": "Manual English pluralisation. Also lines 220, 231.",
+      "fix": "Text(\"^[\\(count) item](inflect: true)\")."
+    },
+    {
+      "id": "statsview-userdefaults-in-body",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 119,
+      "severity": "medium",
+      "category": "data-flow",
+      "summary": "UserDefaults.shared.trackPostingLetters read directly in body \u2014 not observable. Also lines 121, 296.",
+      "fix": "@AppStorage.",
+      "outcome": "fixed \u2014 19328a9 (folded in; .task now keyed on StatsQuery)"
+    },
+    {
+      "id": "statsview-viewbuilder-methods",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 41,
+      "severity": "low",
+      "category": "view-structure",
+      "summary": "yearPill(...) and mostUsed(...) are @ViewBuilder methods.",
+      "fix": "Extract to YearPill and MostUsedStationeryRow structs, one per file."
+    },
+    {
+      "id": "statsview-sort-in-body",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 205,
+      "severity": "low",
+      "category": "performance",
+      "summary": "Array(mostUsedCustom.keys).sorted(using:) allocates and sorts on every render.",
+      "fix": "Sort once in the .task; store ordered keys in @State."
+    },
+    {
+      "id": "statsview-navigationlink-destination",
+      "file": "Pendulum/Views/StatsView.swift",
+      "line": 184,
+      "severity": "low",
+      "category": "navigation",
+      "summary": "NavigationLink(destination:) builds four MostUsedStationeryChart instances eagerly per render. Also SettingsList.swift:129,166,203,227.",
+      "fix": "Extend the existing Route enum and withAppRouter()."
+    },
+    {
+      "id": "penpalview-refreshid",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 206,
+      "severity": "high",
+      "category": "performance",
+      "summary": ".id(refreshID) with refreshID = UUID() on NSManagedObjectContextDidSave rebuilds the whole ScrollView for any save app-wide.",
+      "fix": "Make eventsWithDifferences a computed property; delete refreshID, .id() and the didSave publisher."
+    },
+    {
+      "id": "penpalview-ios26-branching",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 88,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "Full if #available(iOS 26) duplicating the entire Button produces _ConditionalContent and differing structural identity.",
+      "fix": "Extend Backport/Backport.swift with a button-style case, as already done for glassEffect."
+    },
+    {
+      "id": "penpalview-pluralisation",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 148,
+      "severity": "medium",
+      "category": "localisation",
+      "summary": "Manual pluralisation in dateDivider; also gets zero wrong in English.",
+      "fix": "inflect: true."
+    },
+    {
+      "id": "penpalview-dead-buttonheight",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 23,
+      "severity": "low",
+      "category": "dead-code",
+      "summary": "buttonHeight written but never read; three GeometryReaders feed a preference key nothing consumes.",
+      "fix": "Delete state, modifier, preference key and all three readers."
+    },
+    {
+      "id": "penpalview-large-viewbuilder",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 44,
+      "severity": "low",
+      "category": "view-structure",
+      "summary": "headerAndButtons() is ~90 lines; also eventTypeMenu and dateDivider(for:).",
+      "fix": "Extract PenPalActionButtons, EventTypeMenu, EventDateDivider."
+    },
+    {
+      "id": "penpalview-debug-asyncafter",
+      "file": "Pendulum/Views/PenPalView.swift",
+      "line": 262,
+      "severity": "low",
+      "category": "hygiene",
+      "summary": "DispatchQueue.main.asyncAfter debug hook keyed on a hard-coded name (inside #if DEBUG).",
+      "fix": "Task.sleep(for:) so it cancels with the view."
+    },
+    {
+      "id": "eventcell-allphotos-repeated",
+      "file": "Pendulum/Views/Subviews/EventCell.swift",
+      "line": 97,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "event.allPhotos() called four times per render inside a LazyVStack row. Lines 97, 99, 101, 104.",
+      "fix": "Hoist to a let."
+    },
+    {
+      "id": "eventcell-photo-a11y",
+      "file": "Pendulum/Views/Subviews/EventCell.swift",
+      "line": 54,
+      "severity": "medium",
+      "category": "accessibility",
+      "summary": "Photo thumbnail buttons have an Image-only label \u2014 nothing for VoiceOver.",
+      "fix": ".accessibilityLabel(\"View photo\")."
+    },
+    {
+      "id": "eventcell-dead-iconwidth",
+      "file": "Pendulum/Views/Subviews/EventCell.swift",
+      "line": 21,
+      "severity": "low",
+      "category": "dead-code",
+      "summary": "iconWidth and IconWidthPreferenceKey declared and never used. Lines 21, 249-255.",
+      "fix": "Delete both."
+    },
+    {
+      "id": "settings-motion-never-stopped",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 297,
+      "severity": "high",
+      "category": "resource-leak",
+      "summary": "CMMotionManager is a stored property on a View struct (re-allocated per re-creation) and 10 Hz updates are never stopped.",
+      "fix": "@State private var motionManager; AsyncStream; defer { stopDeviceMotionUpdates() }."
+    },
+    {
+      "id": "settings-presentationmode",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 34,
+      "severity": "medium",
+      "category": "deprecated-api",
+      "summary": "@Environment(\\.presentationMode) deprecated. Also EventPropertyDetailsSheet.swift:44.",
+      "fix": "@Environment(\\.dismiss)."
+    },
+    {
+      "id": "settings-force-unwrap-urls",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 218,
+      "severity": "medium",
+      "category": "crash-risk",
+      "summary": "Force-unwrapped literal URLs in the view body. Lines 218, 240.",
+      "fix": "Hoist to named constants in AppInfo.swift and guard at the use site."
+    },
+    {
+      "id": "settings-fake-disabled-colour",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 105,
+      "severity": "low",
+      "category": "design",
+      "summary": ".foregroundColor() faking a disabled look on rows that already have .disabled(). Lines 105, 113, 125.",
+      "fix": "Remove the modifier; .disabled() draws the correct treatment."
+    },
+    {
+      "id": "settings-safariview-type",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 13,
+      "severity": "low",
+      "category": "hygiene",
+      "summary": "SafariView is a second type declared in this file.",
+      "fix": "Move to Helpers/SafariView.swift."
+    },
+    {
+      "id": "settings-pointless-task",
+      "file": "Pendulum/Views/SettingsList.swift",
+      "line": 265,
+      "severity": "low",
+      "category": "concurrency",
+      "summary": "Task { } wrapping synchronous notification-scheduling calls; buys an actor hop and nothing else.",
+      "fix": "Call directly, or make the underlying functions async if the goal is off-main fetching."
+    },
+    {
+      "id": "addevent-asyncafter-race",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 603,
+      "severity": "medium",
+      "category": "correctness",
+      "summary": "asyncAfter(0.1) resets thingsHaveChanged after the .task fires eight onChange handlers; on a slow launch the flag stays true and blocks swipe-to-dismiss.",
+      "fix": "isPopulating guard flag with defer."
+    },
+    {
+      "id": "addevent-lowercased-contains",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 39,
+      "severity": "medium",
+      "category": "localisation",
+      "summary": "User-input filtering with lowercased().contains(). Also SymbolPicker.swift:29.",
+      "fix": "localizedStandardContains."
+    },
+    {
+      "id": "addevent-icon-only-button",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 74,
+      "severity": "medium",
+      "category": "accessibility",
+      "summary": "Ellipsis suggestion button is an Image in a Button with no text label.",
+      "fix": "Button(_:systemImage:) + .labelStyle(.iconOnly)."
+    },
+    {
+      "id": "addevent-huge-body",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 392,
+      "severity": "medium",
+      "category": "view-structure",
+      "summary": "250-line body; save action at 633-639 is a ~200-char 14-argument expression duplicated across create/update.",
+      "fix": "Extract a save() method and an EventDraft value type; split the photo, stationery and toggle sections into views."
+    },
+    {
+      "id": "addevent-repeated-onchange",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 550,
+      "severity": "low",
+      "category": "simplification",
+      "summary": "Eight near-identical onChange handlers all setting thingsHaveChanged = true.",
+      "fix": "Compose tracked fields into one Equatable value and watch that."
+    },
+    {
+      "id": "addevent-four-types",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 11,
+      "severity": "low",
+      "category": "hygiene",
+      "summary": "Four types in one file: CustomStationeryTypeView, StationeryTypeView, AddStationeryTypeForm, AddEventSheet.",
+      "fix": "Split into four files."
+    },
+    {
+      "id": "addevent-update-stationery-main",
+      "file": "Pendulum/Views/Sheets/AddEventSheet.swift",
+      "line": 651,
+      "severity": "low",
+      "category": "performance",
+      "summary": "updateStationery() runs three fetchDistinctStationery calls on the main actor, from both .task and onChange(of: eventType). Also cornerRadius(10) at line 490.",
+      "fix": "Move fetches off-main; use clipShape(.rect(cornerRadius:))."
+    },
+    {
+      "id": "charts-binding-readonly",
+      "file": "Pendulum/Views/Charts/SentByTypeChart.swift",
+      "line": 13,
+      "severity": "medium",
+      "category": "data-flow",
+      "summary": "@Binding used for values the child never writes. Also SentAndWrittenByDayOfWeekChart.swift:39-40 and SentAndWrittenByMonthChart.swift.",
+      "fix": "Make them let."
+    },
+    {
+      "id": "charts-onchange-only",
+      "file": "Pendulum/Views/Charts/SentAndWrittenByDayOfWeekChart.swift",
+      "line": 77,
+      "severity": "medium",
+      "category": "correctness",
+      "summary": "Chart data computed only in onChange(of: events); renders permanently empty if the view mounts with events already populated. Works today only by ordering coincidence.",
+      "fix": "Derive chartData from the input rather than caching in @State."
+    },
+    {
+      "id": "charts-parseddata-in-body",
+      "file": "Pendulum/Views/Charts/MostUsedStationeryChart.swift",
+      "line": 36,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "parsedData filters and sorts in body and is called twice; .frame(height: count * 50) also ignores Dynamic Type.",
+      "fix": "Filter and sort once at fetch time; use @ScaledMetric for row height."
+    },
+    {
+      "id": "charts-filter-count",
+      "file": "Pendulum/Views/Charts/SentAndWrittenByDayOfWeekChart.swift",
+      "line": 90,
+      "severity": "low",
+      "category": "simplification",
+      "summary": ".filter { }.count allocates an intermediate array. Also SentAndWrittenByMonthChart.swift:73.",
+      "fix": "count(where:)."
+    },
+    {
+      "id": "charts-dead-sample-data",
+      "file": "Pendulum/Views/Charts/SentAndWrittenByDayOfWeekChart.swift",
+      "line": 18,
+      "severity": "low",
+      "category": "dead-code",
+      "summary": "SENT_AND_WRITTEN_BY_DAY_OF_WEEK_DATA ships in the release binary and is referenced nowhere; MostUsedStationeryChart.swift:19-34 carries 15 lines of commented-out placeholders.",
+      "fix": "Move into #Preview or delete."
+    },
+    {
+      "id": "parametercount-uuid-id",
+      "file": "Pendulum/Views/Sheets/EventPropertyDetailsSheet.swift",
+      "line": 10,
+      "severity": "high",
+      "category": "correctness",
+      "summary": "ParameterCount.id is a fresh UUID() per construction, so every Core Data refetch hands ForEach entirely new identities \u2014 rows are destroyed and recreated. Identifiable and Equatable also disagree.",
+      "fix": "var id: String { \"\\(typeName):\\(name)\" }."
+    },
+    {
+      "id": "propdetails-deprecated",
+      "file": "Pendulum/Views/Sheets/EventPropertyDetailsSheet.swift",
+      "line": 44,
+      "severity": "medium",
+      "category": "deprecated-api",
+      "summary": "presentationMode and .navigationBarLeading. Lines 44, 349, 394, 419.",
+      "fix": "\\.dismiss and .topBarLeading."
+    },
+    {
+      "id": "badge-number-deprecated",
+      "file": "Pendulum/Extensions/UIApplication.swift",
+      "line": 23,
+      "severity": "medium",
+      "category": "deprecated-api",
+      "summary": "applicationIconBadgeNumber deprecated in iOS 17.",
+      "fix": "UNUserNotificationCenter.current().setBadgeCount(_:)."
+    },
+    {
+      "id": "bundle-force-cast",
+      "file": "Pendulum/Extensions/Bundle.swift",
+      "line": 13,
+      "severity": "medium",
+      "category": "crash-risk",
+      "summary": "infoDictionary?[\"CFBundleName\"] as! String force-casts Any? and traps on nil. Lines 13, 21, 25.",
+      "fix": "as? String ?? fallback."
+    },
+    {
+      "id": "tipjar-alert-deprecated",
+      "file": "Pendulum/Views/TipJarView.swift",
+      "line": 107,
+      "severity": "medium",
+      "category": "deprecated-api",
+      "summary": "alert(isPresented:) { Alert(...) } is the iOS 13 API; the lone dismiss button can be omitted entirely.",
+      "fix": ".alert(_:isPresented:actions:message:)."
+    },
+    {
+      "id": "addpenpal-text-concat",
+      "file": "Pendulum/Views/Sheets/AddPenPalSheet.swift",
+      "line": 98,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "Text concatenation with + \u2014 deprecated and breaks localisation by splitting the sentence.",
+      "fix": "Interpolate the styled Text into a single string."
+    },
+    {
+      "id": "misc-force-unwraps",
+      "file": "Pendulum/Views/DebugView.swift",
+      "line": 45,
+      "severity": "low",
+      "category": "crash-risk",
+      "summary": "Remaining force unwraps: DebugView.swift:45 (debug-only), TipJarView.swift:31, Data/Export.swift:228.",
+      "fix": "Export.swift should use URL.documentsDirectory."
+    },
+    {
+      "id": "router-observableobject",
+      "file": "Pendulum/Views/Navigation/AppRouter.swift",
+      "line": 45,
+      "severity": "medium",
+      "category": "data-flow",
+      "summary": "Router publishes at object granularity, so a presentedSheet change invalidates everything watching path.",
+      "fix": "@Observable + @State for ownership + @Environment(Router.self) for passing."
+    },
+    {
+      "id": "orientation-observer-concurrency",
+      "file": "Pendulum/Helpers/Orientation.swift",
+      "line": 17,
+      "severity": "medium",
+      "category": "concurrency",
+      "summary": "Combine sink captures self strongly and mutates @Published on an arbitrary queue. SyncMonitor.swift:35 has the same shape plus a dead if #available(iOS 14.0, *) at line 44.",
+      "fix": "@MainActor @Observable + NotificationCenter.notifications(named:) with for await."
+    },
+    {
+      "id": "imageviewer-observableobject",
+      "file": "Pendulum/Helpers/ImageViewerController.swift",
+      "line": 24,
+      "severity": "low",
+      "category": "data-flow",
+      "summary": "Fourth ObservableObject. Its urls getter calls item.temporaryURL() per image on every access, writing files to disk from a property QLPreviewCoordinator reads per item.",
+      "fix": "Migrate to @Observable and cache the URLs."
+    },
+    {
+      "id": "sweep-foregroundcolor",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "58 foregroundColor(_:) call sites across 21 files.",
+      "fix": "foregroundStyle(_:)."
+    },
+    {
+      "id": "sweep-onchange",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "23 one-parameter onChange call sites across 9 files.",
+      "fix": "Two-parameter variant."
+    },
+    {
+      "id": "sweep-previewprovider",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "18 PreviewProvider structs.",
+      "fix": "#Preview { }."
+    },
+    {
+      "id": "sweep-toolbar-placement",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "13 .navigationBarLeading/.navigationBarTrailing placements. PenPalTab.swift:46 and PenPalView.swift:234 already use the modern spelling \u2014 drift, not style.",
+      "fix": ".topBarLeading / .topBarTrailing."
+    },
+    {
+      "id": "sweep-cornerradius",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "3 cornerRadius(_:) call sites: SymbolPicker.swift:44, AddEventSheet.swift:490, EventCell.swift:44.",
+      "fix": "clipShape(.rect(cornerRadius:))."
+    },
+    {
+      "id": "sweep-scrollindicators",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "deprecated-api",
+      "summary": "4 ScrollView(showsIndicators: false): StatsView:91, AddEventSheet:85 and :481, EventCell:103.",
+      "fix": ".scrollIndicators(.hidden)."
+    },
+    {
+      "id": "sweep-uicolor",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "design",
+      "summary": "3 Color(uiColor: UIColor.x): AppInfo.swift:21, SettingsList.swift:19, AddEventSheet.swift:97.",
+      "fix": "Color(.x) or an asset-catalog colour."
+    },
+    {
+      "id": "sweep-dispatch-in-task",
+      "file": "*",
+      "line": 0,
+      "severity": "medium",
+      "category": "performance",
+      "summary": "30+ DispatchQueue.main.async wrappers inside .task closures that already run on the MainActor.",
+      "fix": "Assign directly; move the real work off-main with a background context."
+    },
+    {
+      "id": "no-test-target",
+      "file": "*",
+      "line": 0,
+      "severity": "low",
+      "category": "test-coverage",
+      "summary": "No test target. EventType.nextLogicalEventTypes/groupingEventType (~24 cases across 9 types x 2 trackPostingLetters modes), PenPal.averageTimeToRespond (~8), Calendar.numberOfDaysBetween (~6) are pure logic worth covering.",
+      "fix": "Add a Swift Testing target covering the three above."
+    }
+  ],
+  "notes": {
+    "secrets": "None checked in. @AppStorage holds only preferences and the pen-pal to contact ID map.",
+    "lineNumbers": "Refer to the working tree at 2026-08-25 on branch stationery-list-toolbar. Verify before acting.",
+    "jsonIndex": "This index holds 64 entries: file-level findings plus one row per sweep. The HTML artifact is the readable form; this file is for grepping by file/line/id.",
+    "fixes": "Branch `review-fixes` (2026-08-25), 5 commits on top of 68b08f8. Each build-verified with `xcodebuild -destination 'generic/platform=iOS' CODE_SIGNING_ALLOWED=NO` \u2014 CoreSimulator is broken on this machine so simulator destinations are unavailable. Still open on that branch: listsection-async-after (the 50ms delay, now removable) and penpal-sync-blocking (syncWithContact still synchronous)."
+  }
+}

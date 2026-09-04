@@ -1,0 +1,3251 @@
+<title>Pendulum Ink Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,500;0,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+/* ─────────────────────────────────────────────────────────────
+   Tokens — palette drawn from fountain-pen ink and the app's own
+   Color.adequatelyGinger (#FBAB39, AppInfo.swift:21)
+   ───────────────────────────────────────────────────────────── */
+:root {
+  --paper:        #FBFCFD;
+  --surface:      #F2F5F8;
+  --surface-2:    #E8EEF3;
+  --rule:         #DCE4EB;
+  --rule-strong:  #C2CED8;
+
+  --ink:          #15202A;
+  --ink-2:        #3E4F5D;
+  --ink-3:        #6D7E8C;
+
+  --accent:       #B26A0B;
+  --accent-quiet: #F3E4CC;
+
+  --sev-high:     #A32E2E;
+  --sev-high-bg:  #F8EAE8;
+  --sev-med:      #2F5D7C;
+  --sev-med-bg:   #E7EEF4;
+  --sev-low:      #6B7A88;
+  --sev-low-bg:   #EDF1F4;
+
+  --code-bg:      #F4F7F9;
+  --code-rule:    #E1E9EF;
+  --del-bg:       #FBF0EE;
+  --del-mark:     #A32E2E;
+  --add-bg:       #EDF5F0;
+  --add-mark:     #1F6B4A;
+
+  --shadow: 0 1px 2px rgba(21, 32, 42, .04), 0 6px 20px -12px rgba(21, 32, 42, .18);
+
+  --step--1: 0.815rem;
+  --step-0:  1rem;
+  --step-1:  1.22rem;
+  --step-2:  1.55rem;
+  --step-3:  2.05rem;
+  --step-4:  2.85rem;
+
+  --measure: 68ch;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper:        #10161B;
+    --surface:      #171F26;
+    --surface-2:    #1E2831;
+    --rule:         #27333D;
+    --rule-strong:  #38474F;
+
+    --ink:          #E3EAEF;
+    --ink-2:        #A9B8C4;
+    --ink-3:        #7C8C99;
+
+    --accent:       #FBAB39;
+    --accent-quiet: #3A2D16;
+
+    --sev-high:     #E8776E;
+    --sev-high-bg:  #2E1A19;
+    --sev-med:      #84B0CE;
+    --sev-med-bg:   #16242E;
+    --sev-low:      #8B9AA6;
+    --sev-low-bg:   #1B242B;
+
+    --code-bg:      #141C22;
+    --code-rule:    #232F38;
+    --del-bg:       #241618;
+    --del-mark:     #E8776E;
+    --add-bg:       #12241C;
+    --add-mark:     #62B48C;
+
+    --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -14px rgba(0, 0, 0, .8);
+  }
+}
+
+:root[data-theme="dark"] {
+  --paper:        #10161B;
+  --surface:      #171F26;
+  --surface-2:    #1E2831;
+  --rule:         #27333D;
+  --rule-strong:  #38474F;
+
+  --ink:          #E3EAEF;
+  --ink-2:        #A9B8C4;
+  --ink-3:        #7C8C99;
+
+  --accent:       #FBAB39;
+  --accent-quiet: #3A2D16;
+
+  --sev-high:     #E8776E;
+  --sev-high-bg:  #2E1A19;
+  --sev-med:      #84B0CE;
+  --sev-med-bg:   #16242E;
+  --sev-low:      #8B9AA6;
+  --sev-low-bg:   #1B242B;
+
+  --code-bg:      #141C22;
+  --code-rule:    #232F38;
+  --del-bg:       #241618;
+  --del-mark:     #E8776E;
+  --add-bg:       #12241C;
+  --add-mark:     #62B48C;
+
+  --shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -14px rgba(0, 0, 0, .8);
+}
+
+/* ───────────────────────────── base ───────────────────────────── */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: var(--step-0);
+  line-height: 1.62;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4 {
+  font-family: Newsreader, ui-serif, Georgia, "Times New Roman", serif;
+  font-weight: 500;
+  line-height: 1.16;
+  text-wrap: balance;
+  margin: 0;
+}
+
+p { margin: 0; max-width: var(--measure); }
+
+a {
+  color: var(--ink);
+  text-decoration-color: var(--accent);
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+}
+a:hover { color: var(--accent); }
+
+code, pre, .mono { font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace; }
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: var(--step--1);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+/* ───────────────────────────── shell ───────────────────────────── */
+.shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 clamp(1.1rem, 3vw, 2.6rem);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3rem;
+  align-items: start;
+}
+
+@media (min-width: 1060px) {
+  .layout { grid-template-columns: 232px minmax(0, 1fr); gap: 3.5rem; }
+}
+
+/* ───────────────────────────── masthead ───────────────────────────── */
+.masthead {
+  border-bottom: 1px solid var(--rule);
+  padding: clamp(2.6rem, 6vw, 4.4rem) 0 clamp(1.8rem, 4vw, 2.6rem);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.masthead h1 {
+  font-size: clamp(2.4rem, 6.5vw, var(--step-4));
+  letter-spacing: -0.018em;
+}
+
+.masthead .standfirst {
+  font-size: var(--step-1);
+  color: var(--ink-2);
+  max-width: 60ch;
+  line-height: 1.5;
+}
+
+.meta-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem 1.6rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+}
+.meta-line b { color: var(--ink-2); font-weight: 500; }
+
+/* ───────────────────────────── stat strip ───────────────────────────── */
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(132px, 1fr));
+  gap: 1px;
+  background: var(--rule);
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 2.6rem 0 0;
+}
+
+.stat { background: var(--paper); padding: 1.1rem 1.25rem; }
+.stat .n {
+  font-family: Newsreader, serif;
+  font-size: var(--step-3);
+  font-weight: 500;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: block;
+}
+.stat .l {
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  letter-spacing: .02em;
+  margin-top: .4rem;
+  display: block;
+}
+.stat.is-high .n { color: var(--sev-high); }
+
+/* ───────────────────────────── rail ───────────────────────────── */
+.rail { display: none; }
+
+@media (min-width: 1060px) {
+  .rail {
+    display: block;
+    position: sticky;
+    top: 1.5rem;
+    max-height: calc(100vh - 3rem);
+    overflow-y: auto;
+    font-size: var(--step--1);
+    padding-bottom: 2rem;
+  }
+}
+
+.rail h4 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: var(--step--1);
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  margin: 0 0 .85rem;
+}
+
+.rail ol { list-style: none; margin: 0 0 2rem; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+
+.rail a.rail-link {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: .6rem;
+  padding: .34rem .5rem .34rem .6rem;
+  border-left: 2px solid transparent;
+  text-decoration: none;
+  color: var(--ink-2);
+  border-radius: 0 2px 2px 0;
+}
+.rail a.rail-link:hover { background: var(--surface); color: var(--ink); border-left-color: var(--accent); }
+.rail a.rail-link .ct {
+  font-family: "IBM Plex Mono", monospace;
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-3);
+  font-size: .76rem;
+}
+.rail .fname { font-family: "IBM Plex Mono", monospace; font-size: .78rem; overflow-wrap: anywhere; }
+
+/* ───────────────────────────── priority board ───────────────────────────── */
+.board { margin: 3.4rem 0 0; }
+
+.board-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: .7rem;
+  margin-bottom: 1.6rem;
+}
+.board-head h2 { font-size: var(--step-2); }
+
+.queue { list-style: none; margin: 0; padding: 0; counter-reset: q; }
+
+.queue li {
+  counter-increment: q;
+  display: grid;
+  grid-template-columns: 2.7rem minmax(0, 1fr);
+  gap: 0 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--rule);
+  align-items: start;
+}
+.queue li::before {
+  content: counter(q, decimal-leading-zero);
+  font-family: Newsreader, serif;
+  font-size: var(--step-2);
+  font-weight: 500;
+  color: var(--accent);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.queue .q-title { font-weight: 600; color: var(--ink); }
+.queue .q-body { color: var(--ink-2); font-size: .945rem; max-width: 74ch; }
+.queue .q-where {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem;
+  color: var(--ink-3);
+  margin-top: .3rem;
+  display: block;
+}
+
+/* ───────────────────────────── severity ink-blot ───────────────────────────── */
+.sev {
+  display: inline-flex;
+  align-items: center;
+  gap: .44rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .09em;
+  text-transform: uppercase;
+  font-weight: 500;
+  padding: .17rem .55rem .17rem .42rem;
+  border-radius: 100px;
+  white-space: nowrap;
+  vertical-align: middle;
+}
+.sev::before {
+  content: "";
+  width: .58rem;
+  height: .58rem;
+  border-radius: 50%;
+  flex: none;
+  /* an ink drop bleeding into paper */
+  background: radial-gradient(circle at 38% 34%, currentColor 42%, color-mix(in srgb, currentColor 62%, transparent) 74%, color-mix(in srgb, currentColor 22%, transparent) 100%);
+}
+.sev-high { color: var(--sev-high); background: var(--sev-high-bg); }
+.sev-med  { color: var(--sev-med);  background: var(--sev-med-bg); }
+.sev-low  { color: var(--sev-low);  background: var(--sev-low-bg); }
+
+/* ───────────────────────────── filter bar ───────────────────────────── */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .5rem;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: .8rem 0;
+  background: color-mix(in srgb, var(--paper) 92%, transparent);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 2rem;
+}
+.filters .flabel {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-right: .3rem;
+}
+.fbtn {
+  font: inherit;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .74rem;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  cursor: pointer;
+  border: 1px solid var(--rule-strong);
+  background: var(--paper);
+  color: var(--ink-2);
+  padding: .28rem .68rem;
+  border-radius: 100px;
+  transition: background .15s ease, color .15s ease, border-color .15s ease;
+}
+.fbtn:hover { border-color: var(--ink-3); color: var(--ink); }
+.fbtn[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+/* ───────────────────────────── file sections ───────────────────────────── */
+.filegroup { margin: 0 0 3.2rem; scroll-margin-top: 5rem; }
+
+.filegroup > header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--rule-strong);
+  padding-bottom: .55rem;
+  margin-bottom: 1.4rem;
+}
+.filegroup > header h3 {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 1.02rem;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  overflow-wrap: anywhere;
+}
+.filegroup > header .path { color: var(--ink-3); }
+.filegroup > header .cnt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .76rem;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+
+/* ───────────────────────────── finding ───────────────────────────── */
+.finding {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  background: var(--paper);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.15rem;
+  overflow: hidden;
+}
+.finding[hidden] { display: none; }
+
+.finding > .f-head {
+  padding: 1.05rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: .55rem;
+  border-left: 3px solid var(--rule-strong);
+}
+.finding.sf-high  > .f-head { border-left-color: var(--sev-high); }
+.finding.sf-med   > .f-head { border-left-color: var(--sev-med); }
+.finding.sf-low   > .f-head { border-left-color: var(--sev-low); }
+
+.f-top { display: flex; flex-wrap: wrap; gap: .5rem .8rem; align-items: center; }
+.f-lines {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .78rem;
+  color: var(--ink-3);
+}
+.f-cat {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  border: 1px solid var(--rule);
+  padding: .1rem .48rem;
+  border-radius: 2px;
+}
+.f-claim { font-weight: 600; font-size: 1.03rem; line-height: 1.4; max-width: 76ch; }
+.f-why { color: var(--ink-2); font-size: .945rem; max-width: 76ch; }
+.f-why code, .f-claim code, .q-body code, li code, p code {
+  background: var(--surface-2);
+  padding: .07em .34em;
+  border-radius: 2px;
+  font-size: .88em;
+}
+
+/* ───────────────────────────── diff ───────────────────────────── */
+.diff {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1px;
+  background: var(--code-rule);
+  border-top: 1px solid var(--code-rule);
+}
+@media (min-width: 780px) {
+  .diff.two { grid-template-columns: 1fr 1fr; }
+}
+
+.pane { background: var(--code-bg); min-width: 0; }
+.pane > .plabel {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .69rem;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  padding: .42rem 1rem;
+  border-bottom: 1px solid var(--code-rule);
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 500;
+}
+.pane.before > .plabel { color: var(--del-mark); background: var(--del-bg); }
+.pane.after  > .plabel { color: var(--add-mark); background: var(--add-bg); }
+.pane.single > .plabel { color: var(--ink-3); }
+
+.pane pre {
+  margin: 0;
+  padding: .9rem 1rem 1.05rem;
+  overflow-x: auto;
+  font-size: .818rem;
+  line-height: 1.62;
+  tab-size: 4;
+}
+.pane code { background: none; padding: 0; font-size: inherit; }
+
+/* Swift syntax tint — kept to three roles so code stays readable */
+.k  { color: var(--accent); }                                   /* keyword */
+.t  { color: var(--sev-med); }                                  /* type */
+.s  { color: var(--add-mark); }                                 /* string */
+.c  { color: var(--ink-3); font-style: italic; }                /* comment */
+
+/* ───────────────────────────── sweep table ───────────────────────────── */
+.tablewrap { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; }
+table { border-collapse: collapse; width: 100%; font-size: .9rem; min-width: 660px; }
+th, td { text-align: left; padding: .62rem .9rem; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: .72rem;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  font-weight: 500;
+  background: var(--surface);
+  white-space: nowrap;
+}
+tbody tr:last-child td { border-bottom: none; }
+td.num { font-family: "IBM Plex Mono", monospace; font-variant-numeric: tabular-nums; white-space: nowrap; }
+td code { background: var(--surface-2); padding: .07em .34em; border-radius: 2px; font-size: .86em; }
+
+/* ───────────────────────────── notes / callout ───────────────────────────── */
+.note {
+  border-left: 3px solid var(--accent);
+  background: var(--surface);
+  padding: 1rem 1.2rem;
+  border-radius: 0 3px 3px 0;
+  font-size: .945rem;
+  color: var(--ink-2);
+  max-width: var(--measure);
+}
+.note strong { color: var(--ink); }
+
+.section-intro { margin: 3.6rem 0 1.8rem; display: flex; flex-direction: column; gap: .7rem; }
+.section-intro h2 {
+  font-size: var(--step-2);
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: .55rem;
+}
+
+footer.colophon {
+  border-top: 1px solid var(--rule);
+  margin-top: 4rem;
+  padding: 2rem 0 3.5rem;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+footer.colophon .mono { color: var(--ink-2); }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
+}
+
+/* ── fixed state ── */
+.stat.is-fixed .n { color: var(--add-mark); }
+
+.fixed-tag {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem;
+  letter-spacing: .06em; text-transform: uppercase; font-weight: 500;
+  color: var(--add-mark); background: var(--add-bg);
+  border: 1px solid color-mix(in srgb, var(--add-mark) 30%, transparent);
+  padding: .15rem .5rem; border-radius: 100px; white-space: nowrap;
+}
+.fixed-tag .sha { text-transform: none; letter-spacing: 0; opacity: .8; }
+
+.finding.is-fixed > .f-head { border-left-color: var(--add-mark); }
+.finding.is-fixed .f-claim { color: var(--ink-2); }
+
+.queue li.done .q-title { color: var(--ink-2); }
+.queue li.done::before { color: var(--add-mark); }
+
+/* ── verification checks ── */
+.verify { margin: 3.4rem 0 0; }
+.check {
+  border: 1px solid var(--rule); border-radius: 4px; background: var(--paper);
+  box-shadow: var(--shadow); margin-bottom: 1.15rem; overflow: hidden;
+}
+.check > header {
+  display: flex; flex-wrap: wrap; gap: .5rem .8rem; align-items: baseline;
+  padding: .85rem 1.25rem; background: var(--surface);
+  border-bottom: 1px solid var(--rule);
+}
+.check > header .cnum {
+  font-family: "IBM Plex Mono", monospace; font-size: .72rem; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--accent); font-weight: 500;
+}
+.check > header h3 { font-family: inherit; font-size: 1.02rem; font-weight: 600; line-height: 1.35; }
+.check > header .forcommit {
+  font-family: "IBM Plex Mono", monospace; font-size: .74rem; color: var(--ink-3); margin-left: auto;
+}
+.check .rows { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 700px) { .check .rows { grid-template-columns: 7.5rem minmax(0,1fr); } }
+.check .rows > dt {
+  font-family: "IBM Plex Mono", monospace; font-size: .7rem; letter-spacing: .11em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 500;
+  padding: .9rem 1.25rem .2rem; align-self: start;
+}
+@media (min-width: 700px) { .check .rows > dt { padding: .9rem .5rem .9rem 1.25rem; text-align: right; } }
+.check .rows > dd {
+  margin: 0; padding: 0 1.25rem .9rem; color: var(--ink-2); font-size: .945rem;
+}
+@media (min-width: 700px) { .check .rows > dd { padding: .9rem 1.25rem .9rem 0; } }
+.check .rows > dd + dt { border-top: 1px solid var(--rule); }
+@media (min-width: 700px) { .check .rows > dd { border-top: 1px solid var(--rule); } .check .rows > dt { border-top: 1px solid var(--rule); } .check .rows > dt:first-of-type, .check .rows > dd:first-of-type { border-top: none; } }
+.check ol, .check ul { margin: 0; padding-left: 1.15rem; display: flex; flex-direction: column; gap: .35rem; }
+.check code { background: var(--surface-2); padding: .07em .34em; border-radius: 2px; font-size: .88em; }
+.check .expect { color: var(--ink); }
+.check .warn { color: var(--sev-high); }
+.check kbd {
+  font-family: "IBM Plex Mono", monospace; font-size: .85em; background: var(--surface-2);
+  border: 1px solid var(--rule-strong); border-bottom-width: 2px; border-radius: 3px; padding: .05em .35em;
+}
+
+html { scroll-behavior: smooth; }
+</style>
+
+<div class="shell">
+
+  <header class="masthead">
+    <span class="eyebrow">SwiftUI review · 25 August 2026</span>
+    <h1>Pendulum Ink Report</h1>
+    <p class="standfirst">A full pass over the Pendulum iOS app — 79 Swift files, ~10,300 lines — against modern SwiftUI, Swift concurrency, accessibility and Core&nbsp;Data practice. Nine are high severity, six of those genuine correctness or crash bugs. <strong>Ten of the eleven ranked items are now fixed</strong>, along with four Core&nbsp;Data bugs <a href="#f-state">found since</a> while chasing a Pen Pal who moved list section after a backup restore, and one finding <a href="#f-rejected">rejected on the evidence</a>. Ranks 1–9 are merged to <span class="mono">main</span>; rank 10, the deprecated-API sweep, sits on <span class="mono">async-contact-sync</span> awaiting merge. See <a href="#verify">Verifying the fixes</a> for what has been confirmed on a device and what hasn't.</p>
+    <div class="meta-line">
+      <span><b>Repo</b> Pendulum</span>
+      <span><b>Branch</b> main + async-contact-sync</span>
+      <span><b>Target</b> iOS 17.0</span>
+      <span><b>Swift</b> 5.0, strict concurrency off</span>
+      <span><b>Tests</b> none</span>
+    </div>
+  </header>
+
+  <div class="stats">
+    <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
+    <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
+    <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
+    <div class="stat is-fixed"><span class="n">20</span><span class="l">Fixed</span></div>
+    <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
+    <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
+  </div>
+
+  <div class="board">
+    <div class="board-head">
+      <h2>Fix in this order</h2>
+      <span class="f-lines">ranked by blast radius, not by effort</span>
+    </div>
+    <ol class="queue">
+      <li class="done">
+        <div>
+          <div class="q-title">A user-typed tracking reference crashes the app <span class="sev sev-high">High</span> <span class="fixed-tag">Fixed <span class="sha">663b565</span></span></div>
+          <div class="q-body">A force-unwrapped URL built from free text. One space in the tracking field and tapping the context menu traps.</div>
+          <span class="q-where">Views/Subviews/EventCell.swift:206</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">Every save ignores the context it was handed <span class="sev sev-high">High</span> <span class="fixed-tag">Fixed <span class="sha">69dda8a</span></span></div>
+          <div class="q-body">Twenty call sites pass a <code>NSManagedObjectContext</code> that is silently discarded in favour of <code>viewContext</code>. Harmless today, silently wrong the moment a background context appears.</div>
+          <span class="q-where">Data/PersistenceController.swift:106</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">Managed objects touched off their own queue <span class="sev sev-high">High</span> <span class="fixed-tag">Fixed <span class="sha">505fa66</span></span></div>
+          <div class="q-body">Contact sync reads <code>PenPal</code> properties from a global dispatch queue — a real Core&nbsp;Data threading violation that trips the concurrency debugger.</div>
+          <span class="q-where">Data/PenPal+Extensions.swift:479</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">The preferences object doesn't reliably publish <span class="sev sev-high">High</span> <span class="fixed-tag">Fixed <span class="sha">6da712a</span></span></div>
+          <div class="q-body"><code>@AppStorage</code> inside an <code>ObservableObject</code> is the documented dead end. Changing “Track posting letters” can fail to reach the views that read it.</div>
+          <span class="q-where">Helpers/AppPreferences.swift:15</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">One delete dialog per row, all on the same boolean <span class="sev sev-high">High</span> <span class="fixed-tag">Fixed <span class="sha">63f69dc</span></span></div>
+          <div class="q-body">The confirmation dialog sits inside the <code>ForEach</code>, so <em>N</em> pen pals means <em>N</em> dialogs racing to present off a single flag.</div>
+          <span class="q-where">Views/Subviews/PenPalListSection.swift:208</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">The gyroscope never stops <span class="sev sev-med">Medium</span> <span class="fixed-tag">Fixed <span class="sha">db3dd64</span></span></div>
+          <div class="q-body">Settings starts 10&nbsp;Hz device-motion updates for the tilting pendulum icon and never calls <code>stopDeviceMotionUpdates()</code>. It keeps running after the sheet closes.</div>
+          <span class="q-where">Views/SettingsList.swift:297</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">Statistics blocks the main thread <span class="sev sev-med">Medium</span> <span class="fixed-tag">Fixed <span class="sha">0f4ef49</span></span></div>
+          <div class="q-body"><code>.task</code> inherits <code>@MainActor</code>, so every stats fetch — including a walk over every pen pal and every event — runs on the UI thread. The <code>DispatchQueue.main.async</code> wrappers inside add latency and buy nothing. Swept across seven views; <code>PersistenceController.fetching</code> is now the shared road onto a private context.</div>
+          <span class="q-where">StatsView · MostUsedStationeryChart · EventPropertyDetailsSheet · AddEventSheet · DebugView · SettingsList</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">The event list is rebuilt from scratch on every save <span class="sev sev-med">Medium</span> <span class="fixed-tag">Fixed <span class="sha">88485bc</span></span></div>
+          <div class="q-body"><code>.id(refreshID)</code> with a fresh <code>UUID()</code> tears down the whole <code>ScrollView</code> whenever anything in the app saves — losing scroll position and re-creating every cell.</div>
+          <span class="q-where">Views/PenPalView.swift:206</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">Dynamic Type and VoiceOver gaps <span class="sev sev-med">Medium</span> <span class="fixed-tag">Fixed <span class="sha">35f1ab7</span></span> <span class="fixed-tag">Fixed <span class="sha">4a529d7</span></span></div>
+          <div class="q-body">The four headline statistics now use <code>largeTitle</code> and scale; the photo thumbnails, the suggestions ellipsis and the debug trash buttons now carry labels. The manual <code>"day\(s)"</code> pluralisation is still there — it's a localisation problem more than an accessibility one, and it's listed under what's left.</div>
+          <span class="q-where">StatsView · EventCell · AddEventSheet · DebugView</span>
+        </div>
+      </li>
+      <li class="done">
+        <div>
+          <div class="q-title">Deprecated API, mechanical <span class="sev sev-low">Low</span> <span class="fixed-tag">Fixed <span class="sha">12 commits</span></span></div>
+          <div class="q-body">147 sites in the end, one commit per replacement: 65 <code>foregroundColor</code>, 20 <code>onChange</code>, 18 <code>PreviewProvider</code>, 13 <code>navigationBar*</code>, 7 <code>presentationMode</code>, 6 <code>Color(uiColor:)</code>, 4 <code>showsIndicators</code>, 3 <code>cornerRadius</code>, plus the badge API, the iOS&nbsp;13 alert and a <code>Text</code> concatenation. <strong>The project now builds with zero deprecation warnings.</strong></div>
+          <span class="q-where">app-wide — see the sweep table</span>
+        </div>
+      </li>
+      <li>
+        <div>
+          <div class="q-title">Three views have outgrown their files <span class="sev sev-low">Low</span></div>
+          <div class="q-body"><code>AddEventSheet</code> (667 lines, four types), <code>EventPropertyDetailsSheet</code> (448) and <code>PenPalView</code> all need their <code>@ViewBuilder</code> properties extracted into real <code>View</code> structs.</div>
+          <span class="q-where">Views/Sheets · Views/PenPalView.swift</span>
+        </div>
+      </li>
+    </ol>
+  </div>
+
+  <div class="verify" id="verify">
+    <div class="board-head">
+      <h2>Verifying the fixes</h2>
+      <span class="f-lines">8 checks · branch <span class="mono">review-fixes</span> · ~35 minutes</span>
+    </div>
+
+    <div class="note" style="margin-bottom: 1.6rem;"><strong>Where this stands.</strong> Everything up to rank 9 has been run on a device through a normal session of adding, removing and moving things around, with no errors logged. Confirmed by eye on Gary: Check 06's delete case (the bug this started from), <code>syncWithContact</code> and the avatar decode, and — from screenshots — the whole sweep bar one item.
+      <br><br>
+      <strong>Confirmed on device from screenshots:</strong> toolbar placements across six screens · photo-thumbnail corners · the app icon badge reading 2 · foregroundStyle throughout (ginger Settings links, white-on-indigo headers, secondary captions) · year-pill fills and text · chart value labels coloured per series · <code>scrollIndicators</code> · both sheet dismissals · the symbol picker's rounded cells and grey fill · the stats figures at <code>largeTitle</code> · the nib icon on the Pens header and every stationery line.
+      <br><br>
+      <strong>Not confirmed:</strong> the Statistics en-dash placeholder (<span class="mono">48fb951</span>) — a sub-second state that four-second screenshot polling won't reliably catch; look at it by eye. And <code>#Preview</code>, which is an Xcode-only concern.</div>
+
+    <div class="note" style="margin-bottom: 1.6rem;"><strong>Before you start:</strong> every commit builds clean against the iPhone&nbsp;17 simulator — the earlier commits were compiled for a generic iOS destination because CoreSimulator was broken at the time; it works now. What none of it has had is a <em>run</em>: nothing below has been exercised in the app, which is what these checks are for. Run them on a device — <span class="mono">Gary</span>, per <code>CLAUDE.md</code> — or the simulator.</div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 01</span>
+        <h3>A tracking reference with spaces no longer crashes</h3>
+        <span class="forcommit">663b565</span>
+      </header>
+      <dl class="rows">
+        <dt>Setup</dt>
+        <dd>Any Pen Pal with at least one logged event.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Open the Pen Pal and tap an event to edit it.</li>
+            <li>In <strong>Tracking Reference</strong>, enter <code>AB 123 456 789 GB</code> — with the spaces.</li>
+            <li>Save, then long-press the event.</li>
+            <li>Tap <strong>Track … on 17track.net</strong>.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">The context menu shows both <strong>Track …</strong> and <strong>Copy Tracking Reference</strong>. Tapping Track opens 17track.net in the browser with the number in the URL. <strong>No crash.</strong></dd>
+        <dt>Then</dt>
+        <dd>
+          <ol>
+            <li>Change the reference to a single space and save. Long-press again — <strong>Copy</strong> should still be there, <strong>Track …</strong> should be gone.</li>
+            <li>Change it to <code>AB123456789GB</code>. Both items return and tracking opens as it always did.</li>
+          </ol>
+        </dd>
+        <dt>Watch for</dt>
+        <dd class="warn">On the previous build, step 3 killed the app outright. If you want to see the bug first, stash the branch and try it on <span class="mono">main</span>.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 02</span>
+        <h3>Everything still saves — and saves on time</h3>
+        <span class="forcommit">69dda8a · 8c73ba9</span>
+      </header>
+      <dl class="rows">
+        <dt>Why</dt>
+        <dd><strong>The riskiest check on the branch.</strong> <span class="mono">69dda8a</span> was behaviourally identical — it only changed <em>which</em> context gets saved, and every caller passes the same one. <span class="mono">8c73ba9</span> is not: saves used to be deferred by a main-queue turn and now commit in place, which changes <em>when</em> around twenty call sites write. If anything was accidentally relying on that deferral — a save fired from inside a view update — this is where it surfaces.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Add an event to a Pen Pal with notes, pen, ink, paper <em>and</em> a photo.</li>
+            <li>Edit an existing event and change its date.</li>
+            <li>Delete an event.</li>
+            <li>Add a Pen Pal, archive it, unarchive it.</li>
+            <li>Add a stationery item from the Stationery sheet.</li>
+            <li>Rename a custom stationery category.</li>
+            <li><strong>Force-quit the app and relaunch.</strong></li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">All six changes survived the relaunch, exactly as before.</dd>
+        <dt>Then</dt>
+        <dd>Settings → <strong>Backup and Restore</strong> → export a backup, then restore from it. The restore should complete and the data should be intact.</dd>
+        <dt>Watch for</dt>
+        <dd class="warn">Anything that looks right in the UI but reverts after the relaunch — that would mean a save didn't land on disk. And watch the Xcode console for <strong>“Modifying state during view update”</strong>, or a visible hitch when saving a large event; both would point at a save now committing somewhere it shouldn't, and the fix would be to defer that one call site rather than every save.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 03</span>
+        <h3>Contact sync doesn't touch Core Data off-queue</h3>
+        <span class="forcommit">505fa66</span>
+      </header>
+      <dl class="rows">
+        <dt>Setup</dt>
+        <dd>
+          <ol>
+            <li>Xcode → <kbd>Product</kbd> → <kbd>Scheme</kbd> → <kbd>Edit Scheme</kbd> → <strong>Run</strong> → <strong>Arguments</strong>. Under <em>Arguments Passed On Launch</em> add <code>-com.apple.CoreData.ConcurrencyDebug 1</code>.</li>
+            <li>Confirm Settings → <strong>Turn off Contacts integration</strong> is <strong>off</strong>, and the app has Contacts permission.</li>
+            <li>You need a Pen Pal with no contact mapping yet. Easiest: add one manually whose name exactly matches somebody in your address book.</li>
+          </ol>
+        </dd>
+        <dt>Do</dt>
+        <dd>Open that Pen Pal. This is the only path that runs the address-book search.</dd>
+        <dt>Expect</dt>
+        <dd class="expect">No crash. Before the fix this trips a <code>__Multithreading_Violation_AllThatIsLeftToUsIsHonor__</code> assertion as soon as the search closure reads the Pen Pal's name.</dd>
+        <dt>Then</dt>
+        <dd>Background the app and reopen the Pen Pal. Their contact photo and nickname should now appear — that confirms the mapping was written from the background queue correctly.</dd>
+        <dt>Watch for</dt>
+        <dd class="warn">Remove the launch argument when you're done. It slows every Core Data operation down noticeably and you don't want it in a build you're living with.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 04</span>
+        <h3>"Track posting letters" reaches Statistics</h3>
+        <span class="forcommit">6da712a</span>
+      </header>
+      <dl class="rows">
+        <dt>Setup</dt>
+        <dd>You need events of both kinds with <strong>different totals</strong> — some logged as written, some as sent — or the number won't visibly change and the check proves nothing.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Settings → turn <strong>Track posting letters</strong> ON → tap <strong>Statistics</strong>.</li>
+            <li>Note the left-hand figure and its heading.</li>
+            <li>Go back → turn <strong>Track posting letters</strong> OFF → open Statistics again.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">The heading flips <strong>Sent</strong> → <strong>Written</strong> <em>and</em> the number underneath changes to the written count. Before this commit the heading changed but the figure stayed stale until you touched the year filter.</dd>
+        <dt>Then</dt>
+        <dd>
+          <ol>
+            <li>With Statistics open, tap through the year pills. Figures should update per year as before.</li>
+            <li>Open the Pen Pal list and Settings and confirm both render normally. Both lost an unused <code>@EnvironmentObject</code> in this commit — if either had actually been reachable, it would fatalError on appearance.</li>
+          </ol>
+        </dd>
+        <dt>Watch for</dt>
+        <dd class="warn">A brief flicker as the stats re-fetch when you toggle the setting. That's expected — the task is now keyed on the setting as well as the year, so it re-runs. A <em>sustained</em> spinner or a figure that lands on zero is not expected.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 05</span>
+        <h3>One delete confirmation, naming the right Pen Pal</h3>
+        <span class="forcommit">63f69dc</span>
+      </header>
+      <dl class="rows">
+        <dt>Setup</dt>
+        <dd>At least three Pen Pals sitting in the <strong>same</strong> list section — the bug scaled with rows per section, so one-per-section won't show it.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Long-press a Pen Pal → <strong>Delete</strong>.</li>
+            <li><strong>Cancel.</strong> Now long-press a <em>different</em> Pen Pal in that same section → <strong>Delete</strong>.</li>
+            <li>Confirm the delete.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">Exactly one confirmation sheet each time, naming the Pen Pal you actually long-pressed — the second one must name the second Pen Pal, not the first. The correct Pen Pal is removed.</dd>
+        <dt>Then</dt>
+        <dd>
+          <ol>
+            <li>Settings → turn <strong>Group Pen Pals by status</strong> OFF, then repeat step 1 in the flat list.</li>
+            <li><strong>iPad:</strong> select a Pen Pal so their detail shows in the right-hand pane, then delete that same Pen Pal from the list. The detail pane should clear.</li>
+          </ol>
+        </dd>
+        <dt>Watch for</dt>
+        <dd class="warn">Two sheets stacking, a sheet naming the wrong person, or no sheet at all. The 50&nbsp;ms delay that used to wrap the delete is gone as of <span class="mono">276d303</span> — the work is ordered instead: the Pen Pal is released and the detail route popped <em>before</em> the delete, so nothing on screen is holding a deleted object. A flicker or a momentarily empty detail pane on iPad would be worth reporting.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 06</span>
+        <h3>A Pen Pal lands in the right section after a delete — and a restore agrees</h3>
+        <span class="forcommit">6d161ed · c6285cd · 5823db5</span>
+      </header>
+      <dl class="rows">
+        <dt>Why</dt>
+        <dd>This is the bug that started it: a Pen Pal moved from <em>Nothing to do</em> to <em>You have post to send</em> after a restore. The restore was right; the stored state had drifted. A restore should now be a no-op as far as sections go.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Pick a Pen Pal and log two events — a <strong>written</strong>, then something after it that changes their section (a <strong>sent</strong>, or anything with <strong>No further actions</strong> on).</li>
+            <li>Note which section they sit in.</li>
+            <li>Delete the <em>newest</em> event.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">They move to the section the <em>remaining</em> events imply, immediately — before this they'd keep the old section until something else recalculated them. <strong>Confirmed on Gary, 2 September 2026.</strong></dd>
+        <dt>Then</dt>
+        <dd>
+          <ol>
+            <li>Settings → <strong>Backup and Restore</strong> → export, then restore that backup.</li>
+            <li>Compare the list against a screenshot taken before the restore.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">Nobody moves. If anyone does, their stored state was still drifting, and the repair says so: it logs <code>Repaired the last event type for &lt;names&gt;</code> whenever it changes something. Silence means everything agreed.</dd>
+        <dt>Reading the log</dt>
+        <dd><strong>Xcode's console shows nothing unless the app was launched from Xcode and is still attached</strong> — a build you installed and then used normally logs nowhere you can see. And every other logger call in this app is <code>.debug</code>, which os_log drops on a device unless debug logging is enabled for the subsystem, so an empty console proves nothing. The repair line is <code>.notice</code> as of <span class="mono">471eb79</span> precisely so it survives that. To watch it with the device connected:
+          <pre style="overflow-x:auto"><code>log stream --device --level debug \
+  --predicate 'subsystem == "uk.co.bencardy.Pendulum"'</code></pre>
+          Or Console.app → pick the device → Action → <em>Include Debug Messages</em>, filtered on the subsystem. The 30 <code>dataLogger.error</code> calls — failed saves and fetches — <em>are</em> captured on device at any level, so those you would see.</dd>
+        <dt>Watch for</dt>
+        <dd class="warn">The CloudKit half can't be checked on one device. With two: change a Pen Pal's events on device A, wait for the sync, then open the app on device B and watch for that log line. It should be rare — and it must not repeat endlessly, which would mean the two devices are repairing each other in a loop.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 07</span>
+        <h3>The screens that moved off the main actor still show the right numbers</h3>
+        <span class="forcommit">0f4ef49 · 9446f6d · 3e40fdb · 12e01c2 · 7e515e9</span>
+      </header>
+      <dl class="rows">
+        <dt>Why</dt>
+        <dd>Six screens now read a private background context instead of the view context. The risk isn't a crash — it's a figure that's silently wrong or momentarily empty, because a private context reads the <em>store</em> and can't see unsaved changes.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li><strong>Statistics:</strong> open it, tap through every year pill, toggle the inbound/outbound switch on the charts. Compare a couple of figures against what you'd expect from the event list.</li>
+            <li>Tap into <strong>most-used pen / ink / paper</strong> and check the bar charts draw.</li>
+            <li><strong>Stationery sheet:</strong> add an entry, rename one, delete one, add a category, rename a category, delete a category. Each should appear or disappear straight away.</li>
+            <li>Flip <strong>Sort alphabetically</strong> and the outbound/inbound selector in that sheet.</li>
+            <li><strong>Event sheet:</strong> open it, switch the event type between Written and Received, and check the pen/ink/paper suggestion lists repopulate.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">Everything as before, ideally arriving faster. A brief empty state on first open is fine — the fetch is asynchronous now.</dd>
+        <dt>Watch for</dt>
+        <dd class="warn">A list that doesn't refresh after you add or delete something — that would mean the background read beat the save, which is precisely what <span class="mono">8c73ba9</span> was supposed to make impossible. Also worth a look: Statistics on a large database should no longer freeze the UI while it loads.</dd>
+      </dl>
+    </div>
+
+    <div class="check">
+      <header>
+        <span class="cnum">Check 08</span>
+        <h3>The pendulum still swings, and stops when you leave</h3>
+        <span class="forcommit">db3dd64</span>
+      </header>
+      <dl class="rows">
+        <dt>Why</dt>
+        <dd>The gyroscope now stops when the settings sheet closes. The failure mode of getting this wrong is the easter egg not working at all.</dd>
+        <dt>Do</dt>
+        <dd>
+          <ol>
+            <li>Open <strong>Settings</strong> and tilt the device — the app icon should swing, capped at ±9°.</li>
+            <li>Close Settings, reopen it, tilt again.</li>
+          </ol>
+        </dd>
+        <dt>Expect</dt>
+        <dd class="expect">It swings both times. The second open is the real test: the manager is now held in <code>@State</code> and the stream restarted, so a mistake here shows as a dead icon on the second visit.</dd>
+        <dt>Watch for</dt>
+        <dd class="warn">If you want to confirm it actually stops, run with Instruments' Energy log, or just leave the app open on another screen for a few minutes and watch for the battery drain that a 10&nbsp;Hz motion feed causes. This is a device-only check — the simulator has no gyroscope.</dd>
+      </dl>
+    </div>
+
+    <div class="note" style="margin-top: 1.6rem;"><strong>Still open on this branch:</strong> <code>syncWithContact</code> still runs synchronously on the main actor, so opening a Pen Pal still blocks on a Contacts XPC round trip. The deprecated-API sweep and the oversized view files (ranks 10 and 11) are untouched, as is the manual English pluralisation. None of these is a regression from the commits above.</div>
+  </div>
+
+
+  <div class="layout" style="margin-top: 3.6rem;">
+
+    <nav class="rail" aria-label="Findings by file">
+      <h4>By file</h4>
+      <ol>
+        <li><a class="rail-link" href="#f-persistence"><span class="fname">PersistenceController</span><span class="ct">2</span></a></li>
+        <li><a class="rail-link" href="#f-penpalext"><span class="fname">PenPal+Extensions</span><span class="ct">3</span></a></li>
+        <li><a class="rail-link" href="#f-apppreferences"><span class="fname">AppPreferences</span><span class="ct">2</span></a></li>
+        <li><a class="rail-link" href="#f-listsection"><span class="fname">PenPalListSection</span><span class="ct">4</span></a></li>
+        <li><a class="rail-link" href="#f-statsview"><span class="fname">StatsView</span><span class="ct">8</span></a></li>
+        <li><a class="rail-link" href="#f-penpalview"><span class="fname">PenPalView</span><span class="ct">6</span></a></li>
+        <li><a class="rail-link" href="#f-eventcell"><span class="fname">EventCell</span><span class="ct">4</span></a></li>
+        <li><a class="rail-link" href="#f-settings"><span class="fname">SettingsList</span><span class="ct">6</span></a></li>
+        <li><a class="rail-link" href="#f-addevent"><span class="fname">AddEventSheet</span><span class="ct">7</span></a></li>
+        <li><a class="rail-link" href="#f-charts"><span class="fname">Views/Charts</span><span class="ct">5</span></a></li>
+        <li><a class="rail-link" href="#f-propdetails"><span class="fname">EventPropertyDetails</span><span class="ct">2</span></a></li>
+        <li><a class="rail-link" href="#f-small"><span class="fname">Smaller files</span><span class="ct">5</span></a></li>
+      </ol>
+      <h4>Found since</h4>
+      <ol>
+        <li><a class="rail-link" href="#f-state"><span class="fname">Pen Pal state</span><span class="ct">4</span></a></li>
+        <li><a class="rail-link" href="#f-second"><span class="fname">Second pass</span><span class="ct">3</span></a></li>
+        <li><a class="rail-link" href="#f-rejected"><span class="fname">Rejected</span><span class="ct">1</span></a></li>
+      </ol>
+      <h4>Verify</h4>
+      <ol>
+        <li><a class="rail-link" href="#verify"><span class="fname">Manual checks</span><span class="ct">8</span></a></li>
+      </ol>
+      <h4>Sweeps</h4>
+      <ol>
+        <li><a class="rail-link" href="#crosscutting"><span class="fname">Cross-cutting</span><span class="ct">8</span></a></li>
+        <li><a class="rail-link" href="#observable"><span class="fname">@Observable move</span><span class="ct">3</span></a></li>
+        <li><a class="rail-link" href="#testing"><span class="fname">Test coverage</span><span class="ct">—</span></a></li>
+      </ol>
+    </nav>
+
+    <main>
+
+      <div class="filters" role="group" aria-label="Filter findings by severity">
+        <span class="flabel">Show</span>
+        <button class="fbtn" type="button" data-sev="all" aria-pressed="true">All</button>
+        <button class="fbtn" type="button" data-sev="high" aria-pressed="false">High</button>
+        <button class="fbtn" type="button" data-sev="med" aria-pressed="false">Medium</button>
+        <button class="fbtn" type="button" data-sev="low" aria-pressed="false">Low</button>
+      </div>
+
+      <!-- ══════════════ PersistenceController ══════════════ -->
+      <section class="filegroup" id="f-persistence">
+        <header>
+          <h3><span class="path">Data/</span>PersistenceController.swift</h3>
+          <span class="cnt">2 findings</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 106–116</span>
+              <span class="f-cat">correctness</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">69dda8a</span></span>
+              <span class="fixed-tag">Fixed <span class="sha">8c73ba9</span></span>
+            </div>
+            <div class="f-claim"><code>save(context:)</code> ignores the context it is given.</div>
+            <p class="f-why">All twenty call sites pass a context which is then discarded in favour of <code>container.viewContext</code>. Today every caller happens to pass the view context, so nothing breaks — but the parameter is a lie, and the first background context added to this app will save to the wrong place with no error. The <code>DispatchQueue.main.async</code> also defers every save by a runloop tick, which is why several call sites have grown their own <code>asyncAfter</code> delays to compensate.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">func</span> save(context: <span class="t">NSManagedObjectContext</span>) {
+    <span class="k">if</span> context.hasChanges {
+        <span class="t">DispatchQueue</span>.main.async {
+            <span class="k">do</span> {
+                <span class="k">try</span> container.viewContext.save()
+            } <span class="k">catch</span> {
+                dataLogger.error(<span class="s">"…"</span>)
+            }
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — on the context's own queue</div>
+<pre><code><span class="k">func</span> save(context: <span class="t">NSManagedObjectContext</span>) {
+    <span class="k">guard</span> context.hasChanges <span class="k">else</span> { <span class="k">return</span> }
+    context.performAndWait {
+        <span class="k">do</span> {
+            <span class="k">try</span> context.save()
+        } <span class="k">catch</span> {
+            dataLogger.error(
+                <span class="s">"[CoreData:save] \(error.localizedDescription)"</span>
+            )
+        }
+    }
+}</code></pre>
+            </div>
+          </div>
+          <div class="note" style="margin: 1rem 1.25rem 1.25rem;"><strong>Landed in two steps.</strong> <span class="mono">69dda8a</span> saved the context it was handed; the <code>DispatchQueue.main.async</code> stayed. That deferral turned out to be load-bearing in the wrong direction — it left the <em>store</em> a main-queue turn behind the caller, so anything reading the store straight after a write saw stale data. It is why <code>EventPropertyDetailsSheet</code> grew <code>asyncAfter(0.2)</code> waits before reloading, and why the post-mutation refreshes could not move to a background context. <span class="mono">8c73ba9</span> replaced it with <code>performAndWait</code>, which is reentrant — a caller already on the context's queue saves in place. That changed <em>when</em> around twenty call sites commit, so it is the single riskiest commit on the branch: see <a href="#verify">Check 02</a>.</div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 91, 101</span>
+              <span class="f-cat">crash-risk</span>
+            </div>
+            <div class="f-claim">Chained force unwraps run during app launch.</div>
+            <p class="f-why"><code>persistentStoreDescriptions.first!.url!</code> sits on the migration path, so a missing store description crashes before the first frame — with no log and no recovery. Since this is genuinely unrecoverable, at least make it say so.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>withPersistentStoreFrom: container
+    .persistentStoreDescriptions.first!.url!,</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">guard let</span> sourceURL = container
+    .persistentStoreDescriptions.first?.url <span class="k">else</span> {
+    storeLogger.error(<span class="s">"No store description to migrate"</span>)
+    <span class="k">return</span>
+}
+<span class="c">// …withPersistentStoreFrom: sourceURL</span></code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ PenPal+Extensions ══════════════ -->
+      <section class="filegroup" id="f-penpalext">
+        <header>
+          <h3><span class="path">Data/</span>PenPal+Extensions.swift</h3>
+          <span class="cnt">3 findings · 756 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 479–490</span>
+              <span class="f-cat">concurrency</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">505fa66</span></span>
+            </div>
+            <div class="f-claim">Core Data objects are read from a global dispatch queue.</div>
+            <p class="f-why"><code>store.enumerateContacts</code> runs on <code>DispatchQueue.global</code>, and its closure reads <code>self.wrappedName</code> and hands <code>self</code> to <code>setContactID(for:)</code>, which reads <code>penpal.id</code>. Both are <code>NSManagedObject</code> property accesses from a thread that doesn't own the context. This is exactly what <code>-com.apple.CoreData.ConcurrencyDebug 1</code> exists to catch, and it will become a hard compile error under Swift 6. Read the values out <em>before</em> leaving the context, and pass plain <code>Sendable</code> types across.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">DispatchQueue</span>.global(qos: .userInitiated).async {
+    <span class="k">try</span> store.enumerateContacts(with: request) { contact, _ <span class="k">in</span>
+        <span class="c">// ⚠️ self.wrappedName off-queue</span>
+        <span class="k">if</span> contact.fullName == <span class="k">self</span>.wrappedName {
+            <span class="c">// ⚠️ reads penpal.id off-queue</span>
+            <span class="t">UserDefaults</span>.shared.setContactID(
+                for: <span class="k">self</span>, to: contact.identifier
+            )
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="c">// snapshot on the context's own queue first</span>
+<span class="k">let</span> name = wrappedName
+<span class="k">guard let</span> penpalID = id <span class="k">else</span> { <span class="k">return</span> }
+
+<span class="t">Task</span>.detached(priority: .userInitiated) {
+    <span class="k">var</span> match: <span class="t">String</span>?
+    <span class="k">try</span>? store.enumerateContacts(with: request) { contact, _ <span class="k">in</span>
+        <span class="k">if</span> contact.fullName == name {
+            match = contact.identifier
+        }
+    }
+    <span class="k">guard let</span> match <span class="k">else</span> { <span class="k">return</span> }
+    <span class="k">await</span> <span class="t">MainActor</span>.run {
+        <span class="t">UserDefaults</span>.shared
+            .setContactID(forID: penpalID, to: match)
+    }
+}</code></pre>
+            </div>
+          </div>
+          <div class="diff">
+            <div class="pane single">
+              <div class="plabel">Also add — an ID-based overload so no managed object crosses the boundary</div>
+<pre><code><span class="k">extension</span> <span class="t">UserDefaults</span> {
+    <span class="k">func</span> setContactID(forID uuid: <span class="t">UUID</span>, to identifier: <span class="t">String</span>) {
+        <span class="k">var</span> map = penpalContactMap
+        map[uuid.uuidString] = identifier
+        penpalContactMap = map
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 444 · called from PenPalView.swift:261</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim"><code>syncWithContact()</code> blocks the main actor on an XPC round trip.</div>
+            <p class="f-why">It is a synchronous function called from <code>.task</code>, which inherits <code>@MainActor</code>. <code>store.unifiedContact(withIdentifier:)</code> is a blocking call into the contacts daemon — so opening any pen pal stalls the UI for as long as that takes.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="c">// PenPalView.swift</span>
+.task {
+    penpal.syncWithContact()
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="c">// make syncWithContact() async, then:</span>
+.task {
+    <span class="k">await</span> penpal.syncWithContact()
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 62–68</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim"><code>displayImage</code> is an <code>async</code> getter with no suspension point.</div>
+            <p class="f-why">Marking it <code>async</code> without ever awaiting means it just runs on the caller's actor — always the main actor, via <code>PenPalListItem.swift:49</code>. So every avatar in the list decodes a <code>UIImage</code> on the UI thread while looking like it doesn't. Either make it genuinely off-main, or drop the <code>async</code> so the cost is honest.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">var</span> displayImage: <span class="t">Image</span>? {
+    <span class="k">get async</span> {
+        <span class="k">if let</span> imageData = <span class="k">self</span>.image,
+           <span class="k">let</span> image = <span class="t">UIImage</span>(data: imageData) {
+            <span class="k">return</span> <span class="t">Image</span>(uiImage: image).resizable()
+        }
+        <span class="k">return nil</span>
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">var</span> displayImage: <span class="t">Image</span>? {
+    <span class="k">get async</span> {
+        <span class="k">guard let</span> imageData = image <span class="k">else</span> { <span class="k">return nil</span> }
+        <span class="k">return await</span> <span class="t">Task</span>.detached {
+            <span class="t">UIImage</span>(data: imageData)
+                .map { <span class="t">Image</span>(uiImage: $0).resizable() }
+        }.value
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ AppPreferences ══════════════ -->
+      <section class="filegroup" id="f-apppreferences">
+        <header>
+          <h3><span class="path">Helpers/</span>AppPreferences.swift</h3>
+          <span class="cnt">2 findings · 21 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 11–19</span>
+              <span class="f-cat">data-flow</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">6da712a</span></span>
+            </div>
+            <div class="f-claim"><code>@AppStorage</code> inside an <code>ObservableObject</code> does not drive view updates.</div>
+            <p class="f-why">This is the documented dead end. <code>@AppStorage</code>'s change-tracking only works when the property wrapper lives on a <code>View</code>; here the <code>didSet</code> fires <em>after</em> the value has already changed (SwiftUI needs <code>willSet</code>), and a write to the same key from anywhere else — the Settings sheet's own <code>@AppStorage</code>, say — never fires it at all. <code>StatsView</code> and <code>PenPalList</code> both depend on <code>trackPostingLetters</code>, so the setting can silently fail to propagate. The class earns nothing; delete it and read the key directly wherever it's needed.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">class</span> <span class="t">AppPreferences</span>: <span class="t">ObservableObject</span> {
+    <span class="k">static var</span> shared = <span class="t">AppPreferences</span>()
+
+    <span class="k">@AppStorage</span>(.trackPostingLetters,
+                store: .shared)
+    <span class="k">var</span> trackPostingLetters = <span class="k">true</span> {
+        <span class="k">didSet</span> { objectWillChange.send() }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — in each view that needs it</div>
+<pre><code><span class="k">@AppStorage</span>(<span class="t">UserDefaults</span>.<span class="t">Key</span>.trackPostingLetters,
+            store: .shared)
+<span class="k">private var</span> trackPostingLetters = <span class="k">true</span></code></pre>
+            </div>
+          </div>
+          <div class="note" style="margin: 1rem 1.25rem 1.25rem;"><strong>Knock-on cleanup:</strong> removing the class also removes the <code>.environmentObject(AppPreferences.shared)</code> injection and the <code>@EnvironmentObject var appPreferences</code> declarations in <code>PenPalList.swift:14</code> and <code>SettingsList.swift:33</code> — neither of which currently reads anything off it.</div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 13</span>
+              <span class="f-cat">concurrency</span>
+            </div>
+            <div class="f-claim"><code>static var shared</code> is a mutable global.</div>
+            <p class="f-why">A data race under Swift 6's strict concurrency checking. If the type survives at all, it should be <code>static let</code>. The same applies to <code>PersistenceController.preview</code> (<code>static var</code>, line 25).</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ PenPalListSection ══════════════ -->
+      <section class="filegroup" id="f-listsection">
+        <header>
+          <h3><span class="path">Views/Subviews/</span>PenPalListSection.swift</h3>
+          <span class="cnt">4 findings · 239 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 208</span>
+              <span class="f-cat">correctness</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">63f69dc</span></span>
+            </div>
+            <div class="f-claim">One confirmation dialog per row, all bound to a single boolean.</div>
+            <p class="f-why">The <code>.confirmationDialog</code> is applied inside the <code>ForEach</code>, so a section with ten pen pals attaches ten dialogs to the same <code>$showDeleteAlert</code>. Setting it true asks all ten to present at once; which one wins is undefined. The <code>presenting: currentPenPal</code> argument papers over the symptom by making them all render the same content.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">ForEach</span>(penpals) { penpal <span class="k">in</span>
+    <span class="t">Button</span> { … } label: { … }
+        .contextMenu { … }
+        .confirmationDialog(
+            <span class="s">"Are you sure?"</span>,
+            isPresented: $showDeleteAlert,
+            presenting: currentPenPal
+        ) { penpal <span class="k">in</span> … }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — one dialog, driven by the optional</div>
+<pre><code><span class="t">ForEach</span>(penpals) { penpal <span class="k">in</span>
+    <span class="t">Button</span> { … } label: { … }
+        .contextMenu { … }
+}
+.confirmationDialog(
+    <span class="s">"Are you sure?"</span>,
+    isPresented: <span class="t">Binding</span>(
+        get: { currentPenPal != <span class="k">nil</span> },
+        set: { <span class="k">if</span> !$0 { currentPenPal = <span class="k">nil</span> } }
+    ),
+    titleVisibility: .visible,
+    presenting: currentPenPal
+) { penpal <span class="k">in</span>
+    <span class="t">Button</span>(<span class="s">"Delete \(penpal.wrappedName)"</span>,
+           role: .destructive) {
+        delete(penpal)
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 210</span>
+              <span class="f-cat">correctness</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">276d303</span></span>
+            </div>
+            <div class="f-claim">A 50&nbsp;ms sleep is used to dodge a presentation race.</div>
+            <p class="f-why"><code>DispatchQueue.main.asyncAfter(deadline: .now() + 0.05)</code> before deleting is a timing guess, not a fix — and it exists because of the dialog placement above. Fixing that should remove the need. If some delay genuinely remains necessary, at least express it in structured concurrency so it cancels with the view.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">DispatchQueue</span>.main.asyncAfter(deadline: .now() + <span class="s">0.05</span>) {
+    penpal.delete(<span class="k">in</span>: moc)
+    …
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="c">// preferred: just call it</span>
+delete(penpal)
+
+<span class="c">// if a beat really is needed:</span>
+<span class="t">Task</span> {
+    <span class="k">try</span>? <span class="k">await</span> <span class="t">Task</span>.sleep(<span class="k">for</span>: .milliseconds(<span class="s">50</span>))
+    delete(penpal)
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 199 · also EventCell.swift:202</span>
+              <span class="f-cat">correctness</span>
+            </div>
+            <div class="f-claim"><code>.animation(.default, value: penpal)</code> never fires.</div>
+            <p class="f-why"><code>PenPal</code> is an <code>NSManagedObject</code>, so <code>==</code> resolves to <code>NSObject</code>'s identity comparison. Mutating <code>lastEventType</code> doesn't change the value SwiftUI is watching, so the animation is dead code — it only triggers if a <em>different</em> object is passed in. Watch the property that actually changes.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.animation(.default, value: penpal)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code>.animation(.default, value: penpal.lastEventType)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 47–112</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim">The initializer builds predicates, reads <code>UserDefaults</code> and constructs a fetch request.</div>
+            <p class="f-why">65 lines of work in <code>init</code>, and <code>PenPalList</code> instantiates one of these per <code>EventType.orderedCases</code> on every render. View initializers are called far more often than bodies and must stay trivial. Hoist the predicate and sort-descriptor construction into <code>static</code> pure functions (the sort half already is — <code>sortDescriptors(for:)</code> at line 27 — so follow that pattern for the predicate) and memoise per event type.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">init</span>(eventType: <span class="t">EventType</span>?, iconWidth: <span class="t">Binding</span>&lt;<span class="t">CGFloat</span>&gt;,
+     trackPostingLetters: <span class="t">Bool</span>) {
+    <span class="c">// 60 lines of switch, predicate and</span>
+    <span class="c">// UserDefaults reads, every render</span>
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">private static func</span> predicate(
+    <span class="k">for</span> eventType: <span class="t">EventType</span>?, trackPosting: <span class="t">Bool</span>
+) -&gt; <span class="t">NSPredicate</span>? { … }
+
+<span class="k">init</span>(eventType: <span class="t">EventType</span>?, iconWidth: <span class="t">Binding</span>&lt;<span class="t">CGFloat</span>&gt;,
+     trackPostingLetters: <span class="t">Bool</span>) {
+    <span class="k">self</span>.eventType = eventType
+    <span class="k">self</span>._iconWidth = iconWidth
+    <span class="k">self</span>._penpals = <span class="t">FetchRequest</span>(
+        sortDescriptors: <span class="t">Self</span>.sortDescriptors(<span class="k">for</span>: eventType),
+        predicate: <span class="t">Self</span>.predicate(<span class="k">for</span>: eventType,
+                                   trackPosting: trackPostingLetters),
+        animation: .default
+    )
+}</code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ StatsView ══════════════ -->
+      <section class="filegroup" id="f-statsview">
+        <header>
+          <h3><span class="path">Views/</span>StatsView.swift</h3>
+          <span class="cnt">8 findings · 377 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 246–360</span>
+              <span class="f-cat">performance</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">0f4ef49</span></span>
+            </div>
+            <div class="f-claim">Every statistics fetch runs on the main thread, and the <code>DispatchQueue.main.async</code> wrappers make it worse.</div>
+            <p class="f-why"><code>.task</code> inherits the view's <code>@MainActor</code> isolation — so <code>PenPal.averageTimeToRespond</code>, which walks every pen pal and every one of their events, blocks the UI thread. The <code>DispatchQueue.main.async</code> inside was presumably added believing the work was off-main; it isn't, so all it adds is a frame of latency before the result appears. The same misconception appears in <code>MostUsedStationeryChart.swift:72</code>, <code>SettingsList.swift:246</code>, <code>TipJarView.swift:118</code> and <code>PenPalList.swift:66</code> — 30+ sites in total.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.task(id: selectedYear) {
+    <span class="k">let</span> average = <span class="t">PenPal</span>.averageTimeToRespond(
+        year: selectedYear, from: moc
+    )
+    <span class="t">DispatchQueue</span>.main.async {
+        <span class="k">withAnimation</span> {
+            <span class="k">self</span>.averageTimeToReply = average
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — real background context, direct assign</div>
+<pre><code>.task(id: selectedYear) {
+    <span class="k">let</span> year = selectedYear
+    <span class="k">let</span> average = <span class="k">await</span> <span class="t">Task</span>.detached {
+        <span class="k">let</span> ctx = <span class="t">PersistenceController</span>.shared
+            .container.newBackgroundContext()
+        <span class="k">return</span> ctx.performAndWait {
+            <span class="t">PenPal</span>.averageTimeToRespond(year: year, from: ctx)
+        }
+    }.value
+    <span class="k">withAnimation</span> { averageTimeToReply = average }
+}</code></pre>
+            </div>
+          </div>
+          <div class="note" style="margin: 1rem 1.25rem 1.25rem;"><strong>Note:</strong> the returned values must be plain <code>Sendable</code> types, not managed objects. <code>averageTimeToRespond</code> returns <code>Double?</code> so it's fine as-is; the recipient/pen-pal blocks at lines 314–336 return <code>[PenPal]</code> and will need to hand back object IDs (<code>NSManagedObjectID</code>) and re-fetch on the main context.</div>
+        </article>
+
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 124, 135, 150, 156</span>
+              <span class="f-cat">accessibility</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">35f1ab7</span></span>
+            </div>
+            <div class="f-claim">The headline numbers ignore Dynamic Type.</div>
+            <p class="f-why"><code>.font(.system(size: 40, design: .rounded))</code> pins the three biggest, most important figures on the screen at 40&nbsp;pt regardless of the user's text size. Use the semantic style with the same design — you keep the rounded face and gain scaling.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Text</span>(<span class="s">"\(numberSent)"</span>)
+    .font(.system(size: <span class="s">40</span>, design: .rounded))
+    .bold()</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Text</span>(<span class="s">"\(numberSent)"</span>)
+    .font(.system(.largeTitle, design: .rounded))
+    .bold()</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 148, 220, 231</span>
+              <span class="f-cat">localisation</span>
+            </div>
+            <div class="f-claim">Manual English pluralisation.</div>
+            <p class="f-why">Hand-rolled <code>"day\(x == 1 ? "" : "s")"</code> breaks in every language that isn't English and doesn't handle zero correctly in the ones that are. SwiftUI's automatic grammar agreement handles English, French, German, Spanish, Portuguese and Italian for free. The same pattern appears in <code>PenPalView.swift:148</code>.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Text</span>(<span class="s">"\(avg.roundToDecimalPlaces(1)) day\(avg == 1 ? "" : "s")"</span>)
+
+<span class="t">Text</span>(<span class="s">"You've sent them \(count) item\(count == 1 ? "" : "s")"</span>)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Text</span>(<span class="s">"^[\(avg) day](inflect: true)"</span>)
+
+<span class="t">Text</span>(<span class="s">"You've sent them ^[\(count) item](inflect: true)"</span>)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 119, 121, 296</span>
+              <span class="f-cat">data-flow</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">6da712a</span></span>
+            </div>
+            <div class="f-claim"><code>UserDefaults.shared.trackPostingLetters</code> is read directly in <code>body</code>.</div>
+            <p class="f-why">A raw <code>UserDefaults</code> read is not observable, so the "Sent"/"Written" label and the corresponding fetch won't update when the setting changes — this view will keep showing whichever value was current when it was first built.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Text</span>(<span class="t">UserDefaults</span>.shared.trackPostingLetters
+    ? <span class="s">"Sent"</span> : <span class="s">"Written"</span>)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">@AppStorage</span>(<span class="t">UserDefaults</span>.<span class="t">Key</span>.trackPostingLetters,
+            store: .shared)
+<span class="k">private var</span> trackPostingLetters = <span class="k">true</span>
+<span class="c">// …</span>
+<span class="t">Text</span>(trackPostingLetters ? <span class="s">"Sent"</span> : <span class="s">"Written"</span>)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 41–83</span>
+              <span class="f-cat">view-structure</span>
+            </div>
+            <div class="f-claim"><code>yearPill(...)</code> and <code>mostUsed(...)</code> are <code>@ViewBuilder</code> methods.</div>
+            <p class="f-why">A <code>@ViewBuilder</code> method doesn't give SwiftUI a distinct type to diff against, so the pills and rows are re-evaluated as part of the parent instead of independently. Extract to real structs — one per file.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">@ViewBuilder</span>
+<span class="k">func</span> yearPill(title: <span class="t">String</span>, isSelected: <span class="t">Bool</span>,
+              action: <span class="k">@escaping</span> () -&gt; <span class="t">Void</span>) -&gt; <span class="k">some</span> <span class="t">View</span> { … }</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — Views/Subviews/YearPill.swift</div>
+<pre><code><span class="k">struct</span> <span class="t">YearPill</span>: <span class="t">View</span> {
+    <span class="k">let</span> title: <span class="t">String</span>
+    <span class="k">let</span> isSelected: <span class="t">Bool</span>
+    <span class="k">let</span> action: () -&gt; <span class="t">Void</span>
+
+    <span class="k">var</span> body: <span class="k">some</span> <span class="t">View</span> { … }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 205</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim">Sorting inside <code>body</code>.</div>
+            <p class="f-why"><code>Array(mostUsedCustom.keys).sorted(using: KeyPathComparator(\.type))</code> allocates and sorts on every render pass. Sort once, where you populate the dictionary in the <code>.task</code>, and store the ordered keys in <code>@State</code> alongside it.</p>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 106</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim">One-parameter <code>onChange</code>.</div>
+            <p class="f-why">Deprecated in iOS 17. 23 occurrences across nine files — see the sweep table for the full list.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.onChange(of: selectedYear) { newValue <span class="k">in</span>
+    <span class="k">withAnimation</span> { proxy.scrollTo(newValue ?? -<span class="s">1</span>) }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code>.onChange(of: selectedYear) { _, newValue <span class="k">in</span>
+    <span class="k">withAnimation</span> { proxy.scrollTo(newValue ?? -<span class="s">1</span>) }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 184–207 · also SettingsList.swift:129, 166, 203, 227</span>
+              <span class="f-cat">navigation</span>
+            </div>
+            <div class="f-claim"><code>NavigationLink(destination:)</code> where a value-based destination belongs.</div>
+            <p class="f-why">The destination view is constructed eagerly on every render, even for links the user never taps — here that means four <code>MostUsedStationeryChart</code> instances built each pass. The app already has a <code>Route</code> enum and <code>withAppRouter()</code>; extend that pattern rather than mixing styles.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">NavigationLink</span>(destination: <span class="t">MostUsedStationeryChart</span>(
+    stationeryType: .pen, customStationeryType: <span class="k">nil</span>,
+    selectedYear: selectedYear
+)) { mostUsed(pen) }</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="c">// Route.swift</span>
+<span class="k">case</span> stationeryChart(<span class="t">StationeryType</span>?, <span class="t">CustomStationeryType</span>?, <span class="t">Int</span>?)
+
+<span class="c">// StatsView.swift</span>
+<span class="t">NavigationLink</span>(value: <span class="t">Route</span>.stationeryChart(.pen, <span class="k">nil</span>, selectedYear)) {
+    <span class="t">MostUsedStationeryRow</span>(parameter: pen)
+}</code></pre>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ PenPalView ══════════════ -->
+      <section class="filegroup" id="f-penpalview">
+        <header>
+          <h3><span class="path">Views/</span>PenPalView.swift</h3>
+          <span class="cnt">6 findings · 316 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 206, 251–255, 278</span>
+              <span class="f-cat">performance</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">88485bc</span></span>
+            </div>
+            <div class="f-claim">The whole event list is destroyed and rebuilt on every Core Data save.</div>
+            <p class="f-why"><code>.id(refreshID)</code> combined with <code>refreshID = UUID()</code> in the <code>NSManagedObjectContextDidSave</code> handler changes the view's identity, which tells SwiftUI to throw away the entire <code>ScrollView</code> and its <code>LazyVStack</code> — losing scroll position and re-creating every <code>EventCell</code>. And it fires for <em>any</em> save anywhere in the app, not just this pen pal's. The <code>@FetchRequest</code> on line 22 already publishes its own changes; this is fighting it.</p>
+            <p class="f-why">The underlying reason for the cache is <code>eventsWithDifferences</code> — a derived array pairing each event with the day gap to the previous one. That's a pure function of <code>events</code>, so derive it rather than storing it.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">@State private var</span> refreshID = <span class="t">UUID</span>()
+<span class="k">@State private var</span> eventsWithDifferences: [(<span class="t">Event</span>, <span class="t">Int</span>)] = []
+<span class="k">let</span> didSave = <span class="t">NotificationCenter</span>.default
+    .publisher(for: .NSManagedObjectContextDidSave)
+<span class="c">// …</span>
+<span class="t">ScrollView</span> { … }
+    .id(refreshID)
+.onReceive(didSave) { _ <span class="k">in</span>
+    <span class="t">Task</span> { <span class="k">await</span> updateEventsList() }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — derive, don't cache</div>
+<pre><code><span class="k">private var</span> eventsWithDifferences: [(<span class="t">Event</span>, <span class="t">Int</span>)] {
+    <span class="k">let</span> calendar = <span class="t">Calendar</span>.current
+    <span class="k">return</span> events.enumerated().map { index, item <span class="k">in</span>
+        <span class="k">guard</span> index &gt; <span class="s">0</span> <span class="k">else</span> { <span class="k">return</span> (item, <span class="s">0</span>) }
+        <span class="k">return</span> (item, calendar.numberOfDaysBetween(
+            item.wrappedDate,
+            <span class="k">and</span>: events[index - <span class="s">1</span>].wrappedDate
+        ))
+    }
+}
+
+<span class="c">// no refreshID, no .id(), no didSave publisher</span>
+<span class="t">ScrollView</span> { … }</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 88–113</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim">The iOS 26 check duplicates the entire button rather than just the style.</div>
+            <p class="f-why">A full <code>if #available { Button … } else { Button … }</code> produces <code>_ConditionalContent</code> and gives the button a different structural identity on each OS — so state and animations don't carry across. The project already has a <code>Backport</code> shim for exactly this (<code>Backport/Backport.swift</code>, and <code>backport.glassEffect</code> is already used in <code>PenPalListSection</code>); extend it with a button-style case instead of branching in view code.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">if</span> #available(iOS <span class="s">26</span>, *) {
+    <span class="t">Button</span> { … } label: { … }
+        .buttonStyle(.glass(.regular.tint(eventType.color)))
+} <span class="k">else</span> {
+    <span class="t">Button</span> { … } label: { … }
+        .tint(eventType.color)
+        .buttonStyle(.borderedProminent)
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — one button, backported style</div>
+<pre><code><span class="t">Button</span> { userTappedAddEvent(ofType: eventType) } label: {
+    <span class="t">Label</span>(eventType.actionableTextShort,
+          systemImage: eventType.icon)
+        .fullWidth(alignment: .center)
+}
+.backport.prominentStyle(tint: eventType.color)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 148, 154, 157</span>
+              <span class="f-cat">localisation</span>
+            </div>
+            <div class="f-claim">Manual pluralisation in <code>dateDivider</code>.</div>
+            <p class="f-why"><code>let plural = difference &gt; 1 ? "s" : ""</code> then <code>"\(difference) day\(plural) ago"</code>. Note this also gets zero wrong in English before you even reach other languages.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">let</span> plural = difference &gt; <span class="s">1</span> ? <span class="s">"s"</span> : <span class="s">""</span>
+<span class="t">Text</span>(<span class="s">"\(difference) day\(plural) ago"</span>)
+<span class="t">Text</span>(<span class="s">"\(difference) day\(plural) before"</span>)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Text</span>(<span class="s">"^[\(difference) day](inflect: true) ago"</span>)
+<span class="t">Text</span>(<span class="s">"^[\(difference) day](inflect: true) before"</span>)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 23, 80, 97, 107, 256, 309–315</span>
+              <span class="f-cat">dead-code</span>
+            </div>
+            <div class="f-claim"><code>buttonHeight</code> is written but never read.</div>
+            <p class="f-why">Three <code>GeometryReader</code>s feed a <code>ButtonHeightPreferenceKey</code> into a <code>@State</code> that nothing consumes. That's three extra layout passes per render for nothing. Delete the state, the modifier, the preference key, and all three readers.</p>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 44–164</span>
+              <span class="f-cat">view-structure</span>
+            </div>
+            <div class="f-claim"><code>headerAndButtons()</code> is ~90 lines inside a <code>@ViewBuilder</code> method.</div>
+            <p class="f-why">Along with <code>eventTypeMenu</code> and <code>dateDivider(for:)</code>. Extract to <code>PenPalActionButtons</code>, <code>EventTypeMenu</code> and <code>EventDateDivider</code>, one struct per file.</p>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 262–268</span>
+              <span class="f-cat">hygiene</span>
+            </div>
+            <div class="f-claim">A <code>DispatchQueue.main.asyncAfter</code> debug hook keyed on a hard-coded name.</div>
+            <p class="f-why">Inside <code>#if DEBUG</code>, so it never ships — but <code>Task.sleep(for:)</code> would express the same thing and cancel with the view.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ EventCell ══════════════ -->
+      <section class="filegroup" id="f-eventcell">
+        <header>
+          <h3><span class="path">Views/Subviews/</span>EventCell.swift</h3>
+          <span class="cnt">4 findings · 256 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 206</span>
+              <span class="f-cat">crash</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">663b565</span></span>
+            </div>
+            <div class="f-claim">A force-unwrapped URL built from free-text user input.</div>
+            <p class="f-why"><code>trackingReference</code> comes straight from a <code>TextField</code> in <code>AddEventSheet</code> with no validation. A tracking number containing a space — which people paste from carrier emails constantly — makes <code>URL(string:)</code> return <code>nil</code>, and the <code>!</code> traps. This is the most likely crash in the app.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>openURL(<span class="t">URL</span>(string:
+    <span class="s">"https://t.17track.net/en#nums=\(event.trackingReference ?? "")"</span>
+)!)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">if let</span> ref = event.trackingReference?
+       .addingPercentEncoding(withAllowedCharacters: .urlFragmentAllowed),
+   <span class="k">let</span> url = <span class="t">URL</span>(string: <span class="s">"https://t.17track.net/en#nums=\(ref)"</span>) {
+    openURL(url)
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 97, 99, 101, 104</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim"><code>event.allPhotos()</code> is called four times per render.</div>
+            <p class="f-why">Each call walks a Core Data to-many relationship and builds a new array. This is inside a <code>LazyVStack</code> row, so it happens for every visible event on every pass. Hoist it once.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.padding(.bottom, event.allPhotos().isEmpty ? <span class="s">5</span> : <span class="s">0</span>)
+
+<span class="k">if</span> !event.allPhotos().isEmpty {
+    <span class="t">ViewThatFits</span>(<span class="k">in</span>: .horizontal) {
+        imageHStack(from: event.allPhotos())
+        <span class="t">ScrollView</span>(.horizontal) {
+            imageHStack(from: event.allPhotos())
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">let</span> photos = event.allPhotos()
+
+<span class="c">// …</span>
+.padding(.bottom, photos.isEmpty ? <span class="s">5</span> : <span class="s">0</span>)
+
+<span class="k">if</span> !photos.isEmpty {
+    <span class="t">ViewThatFits</span>(<span class="k">in</span>: .horizontal) {
+        imageHStack(from: photos)
+        <span class="t">ScrollView</span>(.horizontal) {
+            imageHStack(from: photos)
+        }
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 54–60</span>
+              <span class="f-cat">accessibility</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">4a529d7</span></span>
+            </div>
+            <div class="f-claim">Photo thumbnails are buttons with no VoiceOver label.</div>
+            <p class="f-why">The button's only label is an <code>Image</code> built from photo data, so VoiceOver announces nothing useful. Every tappable element needs text, even when it isn't shown.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Button</span> {
+    imageViewerController.present(
+        event.allPhotos(), showing: photo
+    )
+} label: {
+    <span class="k">self</span>.image(from: photo)
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Button</span> {
+    imageViewerController.present(photos, showing: photo)
+} label: {
+    image(from: photo)
+}
+.accessibilityLabel(<span class="s">"View photo"</span>)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 21, 249–255</span>
+              <span class="f-cat">dead-code</span>
+            </div>
+            <div class="f-claim"><code>iconWidth</code> and <code>IconWidthPreferenceKey</code> are declared and never used.</div>
+            <p class="f-why">Neither is read anywhere in the file. Delete both.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ SettingsList ══════════════ -->
+      <section class="filegroup" id="f-settings">
+        <header>
+          <h3><span class="path">Views/</span>SettingsList.swift</h3>
+          <span class="cnt">6 findings · 350 lines</span>
+        </header>
+
+        <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 36, 297–311</span>
+              <span class="f-cat">resource-leak</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">db3dd64</span></span>
+            </div>
+            <div class="f-claim">Device-motion updates are started and never stopped.</div>
+            <p class="f-why">Two problems compounding. <code>let motionManager = CMMotionManager()</code> is a stored property on a <code>View</code> struct, so a fresh manager is allocated every time the view value is re-created. And <code>.task</code> starts 10&nbsp;Hz updates for the tilting pendulum easter egg with no matching <code>stopDeviceMotionUpdates()</code> — so the gyroscope keeps sampling and the handler keeps firing after the settings sheet is dismissed. Store the manager as <code>@State</code> (using <code>@State</code> as a cache for an expensive non-observable object is the sanctioned pattern) and stop the updates when the task is cancelled.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">let</span> motionManager = <span class="t">CMMotionManager</span>()
+<span class="c">// …</span>
+.task {
+    <span class="k">if</span> motionManager.isDeviceMotionAvailable {
+        motionManager.deviceMotionUpdateInterval = <span class="s">0.1</span>
+        <span class="k">let</span> queue = <span class="t">OperationQueue</span>()
+        motionManager.startDeviceMotionUpdates(to: queue) {
+            motion, error <span class="k">in</span>
+            <span class="k">if let</span> attitude = motion?.attitude {
+                <span class="t">DispatchQueue</span>.main.async {
+                    <span class="k">withAnimation</span> {
+                        <span class="k">self</span>.angle = attitude.roll * <span class="s">180.0</span> / .pi
+                    }
+                }
+            }
+        }
+    }
+    <span class="c">// nothing ever stops it</span>
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">@State private var</span> motionManager = <span class="t">CMMotionManager</span>()
+<span class="c">// …</span>
+.task {
+    <span class="k">guard</span> motionManager.isDeviceMotionAvailable <span class="k">else</span> { <span class="k">return</span> }
+    motionManager.deviceMotionUpdateInterval = <span class="s">0.1</span>
+    <span class="k">defer</span> { motionManager.stopDeviceMotionUpdates() }
+
+    <span class="k">let</span> stream = <span class="t">AsyncStream</span>&lt;<span class="t">Double</span>&gt; { continuation <span class="k">in</span>
+        motionManager.startDeviceMotionUpdates(
+            to: .main
+        ) { motion, _ <span class="k">in</span>
+            <span class="k">if let</span> roll = motion?.attitude.roll {
+                continuation.yield(roll * <span class="s">180</span> / .pi)
+            }
+        }
+    }
+    <span class="k">for await</span> newAngle <span class="k">in</span> stream {
+        <span class="k">withAnimation</span> { angle = newAngle }
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 34, 318 · also EventPropertyDetailsSheet.swift:44</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim"><code>@Environment(\.presentationMode)</code> is deprecated.</div>
+            <p class="f-why">Superseded by <code>\.dismiss</code>, which is both simpler and correct in more presentation contexts.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">@Environment</span>(\.presentationMode) <span class="k">var</span> presentationMode
+<span class="c">// …</span>
+presentationMode.wrappedValue.dismiss()</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">@Environment</span>(\.dismiss) <span class="k">private var</span> dismiss
+<span class="c">// …</span>
+dismiss()</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 218, 240</span>
+              <span class="f-cat">crash-risk</span>
+            </div>
+            <div class="f-claim">Force-unwrapped literal URLs in the view body.</div>
+            <p class="f-why">A typo in either string ships a crash. Hoist them to named constants so the failure is caught once, in one place, rather than at the moment a user taps “Send Feedback”.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Link</span>(destination: <span class="t">URL</span>(string:
+    <span class="s">"mailto:pendulum@bencardy.co.uk"</span>)!) { … }
+
+<span class="t">SafariView</span>(url: <span class="t">URL</span>(string:
+    <span class="s">"https://bencardy.co.uk/pendulum/faq.html"</span>)!)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — AppInfo.swift</div>
+<pre><code><span class="k">enum</span> <span class="t">AppLinks</span> {
+    <span class="k">static let</span> feedback = <span class="t">URL</span>(
+        string: <span class="s">"mailto:pendulum@bencardy.co.uk"</span>
+    )
+    <span class="k">static let</span> faq = <span class="t">URL</span>(
+        string: <span class="s">"https://bencardy.co.uk/pendulum/faq.html"</span>
+    )
+}
+
+<span class="c">// then guard at the use site</span>
+<span class="k">if let</span> url = <span class="t">AppLinks</span>.feedback {
+    <span class="t">Link</span>(destination: url) { … }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 105, 113, 125</span>
+              <span class="f-cat">design</span>
+            </div>
+            <div class="f-claim"><code>.foregroundColor()</code> is used to fake a disabled appearance.</div>
+            <p class="f-why"><code>.disabled(!trackPostingLetters)</code> is already applied on the same rows, and the system draws the correct disabled treatment for the current context — including under Increase Contrast and Differentiate Without Color. The manual colour fights it and won't adapt. Drop the modifier and let <code>.disabled()</code> do its job.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Toggle</span>(<span class="s">"Remind me to post letters"</span>,
+       isOn: $sendRemindersToPostLetters.animation())
+    .disabled(!trackPostingLetters)
+    .foregroundColor(trackPostingLetters ? .primary : .secondary)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Toggle</span>(<span class="s">"Remind me to post letters"</span>,
+       isOn: $sendRemindersToPostLetters.animation())
+    .disabled(!trackPostingLetters)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 13–26</span>
+              <span class="f-cat">hygiene</span>
+            </div>
+            <div class="f-claim"><code>SafariView</code> is a second type declared in this file.</div>
+            <p class="f-why">A <code>UIViewControllerRepresentable</code> wrapper has nothing to do with the settings screen. Move it to <code>Helpers/SafariView.swift</code>.</p>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 265–272</span>
+              <span class="f-cat">concurrency</span>
+            </div>
+            <div class="f-claim"><code>Task { }</code> wrapping synchronous calls.</div>
+            <p class="f-why"><code>PenPal.scheduleAllShouldWriteBackNotifications()</code> and <code>cancelAllShouldWriteBackNotifications()</code> are both synchronous. Wrapping them in <code>Task</code> buys nothing but an actor hop — and if the intent was to get the Core Data fetch inside them off the main thread, it doesn't do that either, since the <code>Task</code> inherits the main actor.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ AddEventSheet ══════════════ -->
+      <section class="filegroup" id="f-addevent">
+        <header>
+          <h3><span class="path">Views/Sheets/</span>AddEventSheet.swift</h3>
+          <span class="cnt">7 findings · 667 lines · 4 types</span>
+        </header>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 603</span>
+              <span class="f-cat">correctness</span>
+            </div>
+            <div class="f-claim">A 100&nbsp;ms sleep races the change tracking.</div>
+            <p class="f-why">The <code>.task</code> populates state from an existing event, which fires all eight <code>onChange</code> handlers and sets <code>thingsHaveChanged = true</code>. The <code>asyncAfter(0.1)</code> is an attempt to reset it once they've all settled. On a slow launch the flag stays <code>true</code>, and <code>interactiveDismissDisabled(thingsHaveChanged)</code> then blocks swipe-to-dismiss on a sheet the user hasn't touched. Use an explicit guard flag instead of a timing guess.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.task {
+    <span class="k">if let</span> event {
+        <span class="k">self</span>.date = event.wrappedDate
+        <span class="c">// …eleven more assignments</span>
+        <span class="t">DispatchQueue</span>.main.asyncAfter(deadline: .now() + <span class="s">0.1</span>) {
+            <span class="k">self</span>.thingsHaveChanged = <span class="k">false</span>
+        }
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">@State private var</span> isPopulating = <span class="k">false</span>
+
+<span class="k">private func</span> markChanged() {
+    <span class="k">guard</span> !isPopulating <span class="k">else</span> { <span class="k">return</span> }
+    thingsHaveChanged = <span class="k">true</span>
+}
+
+.task {
+    <span class="k">guard let</span> event <span class="k">else</span> { <span class="c">/* new-event path */</span> <span class="k">return</span> }
+    isPopulating = <span class="k">true</span>
+    <span class="k">defer</span> { isPopulating = <span class="k">false</span> }
+    <span class="k">self</span>.date = event.wrappedDate
+    <span class="c">// …eleven more assignments</span>
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 39–42 · also SymbolPicker.swift:29</span>
+              <span class="f-cat">localisation</span>
+            </div>
+            <div class="f-claim">User-input filtering uses <code>lowercased().contains()</code>.</div>
+            <p class="f-why">Wrong for anyone whose pen or ink names carry diacritics — searching “nöodler” won't match “Noodler”, and Turkish dotted-i casing breaks entirely. <code>localizedStandardContains</code> is the Foundation API built for exactly this: case- <em>and</em> diacritic-insensitive, locale-aware. Given this app's users type in fountain-pen brand names from all over, it matters.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">var</span> autoSuggestions: [<span class="t">String</span>] {
+    <span class="k">let</span> search = text.lowercased()
+        .trimmingCharacters(<span class="k">in</span>: .whitespaces)
+    <span class="k">return</span> suggestions.filter {
+        $0.lowercased().contains(search)
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">var</span> autoSuggestions: [<span class="t">String</span>] {
+    <span class="k">let</span> search = text
+        .trimmingCharacters(<span class="k">in</span>: .whitespaces)
+    <span class="k">guard</span> !search.isEmpty <span class="k">else</span> { <span class="k">return</span> suggestions }
+    <span class="k">return</span> suggestions.filter {
+        $0.localizedStandardContains(search)
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 74–78</span>
+              <span class="f-cat">accessibility</span>
+            
+              <span class="fixed-tag">Fixed <span class="sha">4a529d7</span></span>
+            </div>
+            <div class="f-claim">Icon-only button with no text label.</div>
+            <p class="f-why">The “show all suggestions” ellipsis button is an <code>Image</code> in a <code>Button</code> with nothing for VoiceOver to read. Use the <code>Button(_:systemImage:)</code> initializer and keep the icon-only look with <code>.labelStyle(.iconOnly)</code> — the text stays available to assistive technology.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Button</span> {
+    presentSuggestionSheetFor = <span class="t">TextOptions</span>(…)
+} label: {
+    <span class="t">Image</span>(systemName: <span class="s">"ellipsis"</span>)
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Button</span>(<span class="s">"Choose from saved \(title)"</span>,
+       systemImage: <span class="s">"ellipsis"</span>) {
+    presentSuggestionSheetFor = <span class="t">TextOptions</span>(…)
+}
+.labelStyle(.iconOnly)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 392–649</span>
+              <span class="f-cat">view-structure</span>
+            </div>
+            <div class="f-claim">A 250-line <code>body</code> with the save logic inline in a toolbar button.</div>
+            <p class="f-why">The save action at lines 633–639 is a single ~200-character expression with fourteen arguments, duplicated across the create and update branches, sitting inside the view hierarchy. Move it to a method; extract the photo, stationery and toggle sections into their own views.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">ToolbarItem</span>(placement: .topBarTrailing) {
+    <span class="t">Button</span> {
+        <span class="k">if let</span> event {
+            event.update(type: eventType, date: date, notes: …,
+                pen: …, ink: …, paper: …, letterType: …, <span class="c">/* +7 */</span>)
+        } <span class="k">else</span> {
+            penpal.addEvent(ofType: eventType, date: date, <span class="c">/* +12 */</span>)
+        }
+        done()
+    } label: { … }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">private func</span> save() {
+    <span class="k">let</span> draft = <span class="t">EventDraft</span>(
+        type: eventType, date: date, notes: notes,
+        pen: pen, ink: ink, paper: paper,
+        letterType: letterType, ignore: ignore,
+        noFurtherActions: noFurtherActions,
+        trackingReference: trackingReference,
+        photos: eventPhotos, custom: customStationeryTypes
+    )
+    <span class="k">if let</span> event {
+        event.apply(draft, <span class="k">in</span>: moc)
+    } <span class="k">else</span> {
+        penpal.addEvent(draft, <span class="k">in</span>: moc)
+    }
+    done()
+}
+
+<span class="c">// …</span>
+<span class="t">Button</span>(event == <span class="k">nil</span> ? <span class="s">"Save"</span> : <span class="s">"Update"</span>,
+       systemImage: <span class="s">"checkmark"</span>, action: save)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 550–576</span>
+              <span class="f-cat">simplification</span>
+            </div>
+            <div class="f-claim">Eight near-identical <code>onChange</code> handlers.</div>
+            <p class="f-why">All eight do nothing but set <code>thingsHaveChanged = true</code>. Compose the tracked fields into one <code>Equatable</code> value and watch that instead — one handler, and adding a new field can't be forgotten.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.onChange(of: letterType) { newValue <span class="k">in</span> … }
+.onChange(of: date) { _ <span class="k">in</span> thingsHaveChanged = <span class="k">true</span> }
+.onChange(of: notes) { _ <span class="k">in</span> thingsHaveChanged = <span class="k">true</span> }
+.onChange(of: pen) { _ <span class="k">in</span> thingsHaveChanged = <span class="k">true</span> }
+.onChange(of: ink) { _ <span class="k">in</span> thingsHaveChanged = <span class="k">true</span> }
+.onChange(of: paper) { _ <span class="k">in</span> thingsHaveChanged = <span class="k">true</span> }
+.onChange(of: trackingReference) { _ <span class="k">in</span> … }
+.onChange(of: eventPhotos) { _ <span class="k">in</span> … }</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">private var</span> trackedFields: <span class="t">EventDraft</span> {
+    <span class="t">EventDraft</span>(type: eventType, date: date, notes: notes, …)
+}
+
+.onChange(of: trackedFields) { _, _ <span class="k">in</span> markChanged() }
+.onChange(of: letterType) { _, newValue <span class="k">in</span>
+    <span class="k">if</span> setToDefaultIgnoreWhenChangingLetterType {
+        ignore = newValue.defaultIgnore
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 11, 27, 117, 198</span>
+              <span class="f-cat">hygiene</span>
+            </div>
+            <div class="f-claim">Four types in one file.</div>
+            <p class="f-why"><code>CustomStationeryTypeView</code>, <code>StationeryTypeView</code>, <code>AddStationeryTypeForm</code> and <code>AddEventSheet</code>. Split into four files under <code>Views/Sheets/</code>.</p>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">line 490, 651–656</span>
+              <span class="f-cat">mixed</span>
+            </div>
+            <div class="f-claim"><code>cornerRadius()</code>, plus three synchronous fetches in <code>updateStationery()</code>.</div>
+            <p class="f-why"><code>.cornerRadius(10)</code> → <code>.clipShape(.rect(cornerRadius: 10))</code>. And <code>updateStationery()</code> runs three <code>fetchDistinctStationery</code> calls on the main actor, from both <code>.task</code> and <code>onChange(of: eventType)</code> — so every event-type change stalls the sheet.</p>
+            <p class="f-why"><strong>Half fixed</strong> in <span class="mono">7e515e9</span>: the three fetches now read a private context, and the <code>onChange</code> became <code>.task(id: eventType)</code> so it can await and covers the first load too. The <code>cornerRadius</code> is still there — it belongs with the deprecated-API sweep.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ Charts ══════════════ -->
+      <section class="filegroup" id="f-charts">
+        <header>
+          <h3><span class="path">Views/</span>Charts/</h3>
+          <span class="cnt">5 findings · 4 files</span>
+        </header>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">SentByTypeChart:13–16 · ByDayOfWeek:39–40 · ByMonth</span>
+              <span class="f-cat">data-flow</span>
+            </div>
+            <div class="f-claim"><code>@Binding</code> is used for values the child never writes.</div>
+            <p class="f-why">None of the three charts ever assign to <code>events</code>, <code>showInbound</code>, <code>sentTypes</code> or <code>receivedTypes</code>. <code>@Binding</code> forces the parent into <code>$</code>-plumbing, misrepresents the data flow, and adds an extra layer of invalidation. These are inputs — make them <code>let</code>.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">@Binding var</span> showInbound: <span class="t">Bool</span>
+<span class="k">@Binding var</span> sentTypes: [<span class="t">LetterType</span>: <span class="t">Int</span>]
+<span class="k">@Binding var</span> receivedTypes: [<span class="t">LetterType</span>: <span class="t">Int</span>]
+
+<span class="c">// call site</span>
+<span class="t">SentByTypeChart</span>(showInbound: $inbound,
+                sentTypes: $sentTypes,
+                receivedTypes: $receivedTypes)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">let</span> showInbound: <span class="t">Bool</span>
+<span class="k">let</span> sentTypes: [<span class="t">LetterType</span>: <span class="t">Int</span>]
+<span class="k">let</span> receivedTypes: [<span class="t">LetterType</span>: <span class="t">Int</span>]
+
+<span class="c">// call site</span>
+<span class="t">SentByTypeChart</span>(showInbound: inbound,
+                sentTypes: sentTypes,
+                receivedTypes: receivedTypes)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">SentAndWrittenByDayOfWeekChart.swift:77</span>
+              <span class="f-cat">correctness</span>
+            </div>
+            <div class="f-claim">Chart data is computed only in <code>onChange</code>, never on first appearance.</div>
+            <p class="f-why">If the view is ever created with <code>events</code> already populated — a re-entry into Statistics, a restored navigation state — <code>onChange</code> never fires and the chart renders permanently empty. It currently works only because <code>StatsView</code>'s <code>.task</code> happens to assign <code>events</code> after the chart mounts. That's a coincidence of ordering, not a guarantee. Deriving the data removes the whole class of bug.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">@State private var</span> outboundData = <span class="t">EMPTY_STATUS_COUNTS_BY_DAY</span>
+<span class="k">@State private var</span> inboundData = <span class="t">EMPTY_STATUS_COUNTS_BY_DAY</span>
+
+.onChange(of: events) { _ <span class="k">in</span>
+    <span class="c">// build both arrays…</span>
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — derive from the input</div>
+<pre><code><span class="k">private var</span> chartData: [<span class="t">StatusCountByDay</span>] {
+    <span class="k">let</span> wanted: [<span class="t">EventType</span>] = showInbound
+        ? [.received] : [.written, .sent]
+    <span class="k">let</span> byDay = <span class="t">Dictionary</span>(grouping: events,
+                             by: \.wrappedDate.weekday)
+    <span class="k">return</span> wanted.flatMap { type <span class="k">in</span>
+        <span class="t">Weekday</span>.orderedCases.map { day <span class="k">in</span>
+            <span class="t">StatusCountByDay</span>(
+                status: type, day: day,
+                count: byDay[day, default: []]
+                    .count(where: { $0.type == type })
+            )
+        }
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">MostUsedStationeryChart.swift:36–37, 61</span>
+              <span class="f-cat">performance</span>
+            </div>
+            <div class="f-claim"><code>parsedData</code> filters and sorts in <code>body</code>, and is called twice.</div>
+            <p class="f-why">Once for the <code>Chart</code> and again for <code>.frame(height: CGFloat(parsedData.count * 50))</code>. That fixed 50&nbsp;pt per row also ignores Dynamic Type — at larger text sizes the bar labels overflow their rows.</p>
+            <p class="f-why"><strong>Half fixed</strong> in <span class="mono">9446f6d</span>: the fetch behind it moved to a private context. The double evaluation in <code>body</code> and the unscaled row height are untouched.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">var</span> parsedData: [<span class="t">ParameterCount</span>] {
+    data.filter { $0.count &gt; <span class="s">0</span> }.sorted()
+}
+<span class="c">// …</span>
+<span class="t">Chart</span>(parsedData) { … }
+    .frame(height: <span class="t">CGFloat</span>(parsedData.count * <span class="s">50</span>))</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">@ScaledMetric</span>(relativeTo: .body) <span class="k">private var</span> rowHeight = <span class="s">50</span>
+
+<span class="c">// filter+sort once, when data is fetched</span>
+.task(id: selectedYear) {
+    data = (<span class="k">await</span> fetch()).filter { $0.count &gt; <span class="s">0</span> }.sorted()
+}
+<span class="c">// …</span>
+<span class="t">Chart</span>(data) { … }
+    .frame(height: <span class="t">Double</span>(data.count) * rowHeight)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">ByDayOfWeek:90 · ByMonth:73</span>
+              <span class="f-cat">simplification</span>
+            </div>
+            <div class="f-claim"><code>.filter { }.count</code> allocates an intermediate array.</div>
+            <p class="f-why">Use <code>count(where:)</code> — no allocation, and it reads better.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>count: (days[day] ?? []).filter { $0.type == eventType }.count</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code>count: (days[day] ?? []).count(where: { $0.type == eventType })</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">ByDayOfWeek:18–33 · MostUsedStationery:19–34</span>
+              <span class="f-cat">dead-code</span>
+            </div>
+            <div class="f-claim">Sample data ships in the release binary.</div>
+            <p class="f-why"><code>SENT_AND_WRITTEN_BY_DAY_OF_WEEK_DATA</code> is a 14-element global referenced nowhere, and <code>MostUsedStationeryChart</code> carries 15 lines of commented-out placeholder pens and inks inside a <code>@State</code> initialiser. Move both into the <code>#Preview</code> or delete them.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ EventPropertyDetailsSheet ══════════════ -->
+      <section class="filegroup" id="f-propdetails">
+        <header>
+          <h3><span class="path">Views/Sheets/</span>EventPropertyDetailsSheet.swift</h3>
+          <span class="cnt">2 findings · 448 lines</span>
+        </header>
+
+        <article class="finding sf-high" data-sev="high">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-high">High</span>
+              <span class="f-lines">line 10–27</span>
+              <span class="f-cat">correctness</span>
+            </div>
+            <div class="f-claim"><code>ParameterCount.id</code> is a fresh <code>UUID()</code> on every construction.</div>
+            <p class="f-why">These values are rebuilt from Core Data on every fetch, so each rebuild hands <code>ForEach</code> a completely new set of identities for what is logically the same list. SwiftUI dutifully destroys and recreates every row — killing animations, scroll position and any in-flight edit. Worse, <code>Identifiable</code> and <code>Equatable</code> disagree: the custom <code>==</code> deliberately ignores <code>id</code>, so two "equal" values have different identities. Derive the id from the data.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">struct</span> <span class="t">ParameterCount</span>: <span class="t">Comparable</span>, <span class="t">Identifiable</span> {
+    <span class="k">let</span> id = <span class="t">UUID</span>()
+    <span class="k">let</span> name: <span class="t">String</span>
+    <span class="k">let</span> count: <span class="t">Int</span>
+    <span class="k">let</span> type: <span class="t">StationeryType</span>?
+    <span class="k">let</span> customType: <span class="t">CustomStationeryType</span>?
+
+    <span class="k">static func</span> == (lhs: <span class="t">Self</span>, rhs: <span class="t">Self</span>) -&gt; <span class="t">Bool</span> {
+        lhs.count == rhs.count &amp;&amp; lhs.name == rhs.name
+    }
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After — stable identity from the data</div>
+<pre><code><span class="k">struct</span> <span class="t">ParameterCount</span>: <span class="t">Comparable</span>, <span class="t">Identifiable</span> {
+    <span class="k">let</span> name: <span class="t">String</span>
+    <span class="k">let</span> count: <span class="t">Int</span>
+    <span class="k">let</span> type: <span class="t">StationeryType</span>?
+    <span class="k">let</span> customType: <span class="t">CustomStationeryType</span>?
+
+    <span class="k">var</span> id: <span class="t">String</span> { <span class="s">"\(typeName):\(name)"</span> }
+
+    <span class="k">static func</span> == (lhs: <span class="t">Self</span>, rhs: <span class="t">Self</span>) -&gt; <span class="t">Bool</span> {
+        lhs.count == rhs.count &amp;&amp; lhs.name == rhs.name
+    }
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">line 44, 349, 394, 419</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim"><code>presentationMode</code> and <code>.navigationBarLeading</code>.</div>
+            <p class="f-why">Same fixes as <code>SettingsList</code>: <code>\.dismiss</code> and <code>.topBarLeading</code>.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ Smaller files ══════════════ -->
+      <section class="filegroup" id="f-small">
+        <header>
+          <h3>Smaller files</h3>
+          <span class="cnt">5 findings</span>
+        </header>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">Extensions/UIApplication.swift:23</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim"><code>applicationIconBadgeNumber</code> is deprecated in iOS 17.</div>
+            <p class="f-why">Replaced by <code>UNUserNotificationCenter.setBadgeCount(_:)</code>, which is also the API that respects the user's per-app badge permission.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">DispatchQueue</span>.main.async {
+    <span class="k">self</span>.applicationIconBadgeNumber = fetchedBadgeNumber
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="t">Task</span> {
+    <span class="k">try</span>? <span class="k">await</span> <span class="t">UNUserNotificationCenter</span>.current()
+        .setBadgeCount(fetchedBadgeNumber)
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">Extensions/Bundle.swift:13, 21, 25</span>
+              <span class="f-cat">crash-risk</span>
+            </div>
+            <div class="f-claim">Force-casting an optional dictionary lookup.</div>
+            <p class="f-why"><code>infoDictionary?["CFBundleName"] as! String</code> — the optional chain yields <code>Any?</code>, and force-casting <code>nil</code> to <code>String</code> traps. These values are read in <code>SettingsList</code> and <code>ContentView</code>'s launch path.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="k">var</span> appName: <span class="t">String</span> {
+    <span class="k">return</span> infoDictionary?[<span class="s">"CFBundleName"</span>] <span class="k">as!</span> <span class="t">String</span>
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">var</span> appName: <span class="t">String</span> {
+    infoDictionary?[<span class="s">"CFBundleName"</span>] <span class="k">as</span>? <span class="t">String</span> ?? <span class="s">"Pendulum"</span>
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-med" data-sev="med">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-med">Medium</span>
+              <span class="f-lines">Views/TipJarView.swift:107</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim"><code>alert(isPresented:) { Alert(...) }</code> is the iOS 13 API.</div>
+            <p class="f-why">Superseded in iOS 15. And since the only button does nothing but dismiss, the actions closure can be left empty entirely — SwiftUI supplies OK.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code>.alert(isPresented: $showingSuccessAlert) {
+    <span class="t">Alert</span>(
+        title: <span class="t">Text</span>(<span class="s">"Purchase Successful"</span>),
+        message: <span class="t">Text</span>(<span class="s">"Thank you for supporting Pendulum!"</span>),
+        dismissButton: .default(<span class="t">Text</span>(<span class="s">"🧡"</span>))
+    )
+}</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code>.alert(<span class="s">"Purchase Successful"</span>,
+       isPresented: $showingSuccessAlert) { } message: {
+    <span class="t">Text</span>(<span class="s">"Thank you for supporting Pendulum!"</span>)
+}</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">Views/Sheets/AddPenPalSheet.swift:98</span>
+              <span class="f-cat">deprecated-api</span>
+            </div>
+            <div class="f-claim"><code>Text</code> concatenation with <code>+</code>.</div>
+            <p class="f-why">The <code>+</code> operator on <code>Text</code> is deprecated and breaks localisation — translators receive two disconnected fragments and can't reorder them. Interpolate the styled <code>Text</code> into a single string instead, which keeps the sentence whole.</p>
+          </div>
+          <div class="diff two">
+            <div class="pane before">
+              <div class="plabel">Before</div>
+<pre><code><span class="t">Text</span>(<span class="s">"…You can choose to add more in "</span>)
++ <span class="t">Text</span>(<span class="s">"Settings."</span>).foregroundColor(.accentColor)</code></pre>
+            </div>
+            <div class="pane after">
+              <div class="plabel">After</div>
+<pre><code><span class="k">let</span> settings = <span class="t">Text</span>(<span class="s">"Settings."</span>).foregroundStyle(.tint)
+<span class="t">Text</span>(<span class="s">"…You can choose to add more in \(settings)"</span>)</code></pre>
+            </div>
+          </div>
+        </article>
+
+        <article class="finding sf-low" data-sev="low">
+          <div class="f-head">
+            <div class="f-top">
+              <span class="sev sev-low">Low</span>
+              <span class="f-lines">Views/DebugView.swift:45 · Views/TipJarView.swift:31 · Data/Export.swift:228</span>
+              <span class="f-cat">crash-risk</span>
+            </div>
+            <div class="f-claim">Remaining force unwraps.</div>
+            <p class="f-why"><code>moc.persistentStoreCoordinator!.persistentStores.first!.url!</code> (debug-only, low reach), <code>tipText.first!</code>, and <code>FileManager…urls(for:).first!</code> in the export path — the last of which is better expressed as <code>URL.documentsDirectory</code>.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- ══════════════ Found since ══════════════ -->
+      <div class="section-intro" id="f-state">
+        <span class="eyebrow">Found since · 2 September 2026</span>
+        <h2>The Pen Pal who moved section</h2>
+        <p>None of these were in the original review. They came out of one question: after a backup and restore, a Pen Pal moved from <em>Nothing to do</em> to <em>You have post to send</em>. The restore hadn't changed the events — it had recalculated them. <code>PenPal.lastEventType</code> is a stored cache of what the event history says, and it had drifted; restoring re-derives every Pen Pal, which is why a restore is where you notice.</p>
+        <p>It has to be stored, not computed: the list sections are <code>@FetchRequest</code>s predicated on <code>lastEventTypeValue</code>, and you can't predicate on a derived value. So the fix isn't to remove the cache — it's to stop it drifting, and to repair it when it does. Three ways it drifted:</p>
+      </div>
+
+      <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-high">High</span>
+            <span class="f-lines">Data/Event+Extensions.swift:134</span>
+            <span class="f-cat">correctness</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">6d161ed</span></span>
+          </div>
+          <div class="f-claim">Deleting an event recalculated the Pen Pal before the delete had settled.</div>
+          <p class="f-why">Two failures in three lines. A fetch returns objects marked for deletion until pending changes are processed, so <code>getLastEvent</code> could hand back the very event being deleted — and <code>context.delete</code> nullifies the event's <code>penpal</code> relationship, so <code>self.penpal</code> could already be <code>nil</code> and nothing recalculated at all. Either way the Pen Pal kept the state it had before the delete. Delete the newest event and they stay wherever they were.</p>
+        </div>
+        <div class="diff two">
+          <div class="pane before">
+            <div class="plabel">Before</div>
+<pre><code><span class="k">func</span> delete(<span class="k">in</span> context: <span class="t">NSManagedObjectContext</span>) {
+    context.delete(<span class="k">self</span>)
+    <span class="c">// ⚠️ may fetch the deleted event; penpal may be nil</span>
+    <span class="k">self</span>.penpal?.updateLastEventType(<span class="k">in</span>: context)
+    <span class="c">// …save</span>
+}</code></pre>
+          </div>
+          <div class="pane after">
+            <div class="plabel">After</div>
+<pre><code><span class="k">func</span> delete(<span class="k">in</span> context: <span class="t">NSManagedObjectContext</span>) {
+    <span class="k">let</span> penpal = <span class="k">self</span>.penpal
+    context.delete(<span class="k">self</span>)
+    context.processPendingChanges()
+    penpal?.updateLastEventType(<span class="k">in</span>: context)
+    <span class="c">// …save</span>
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">PenPal+Extensions:192, 239, 531 · Event+Extensions:225 · PenPalView:33</span>
+            <span class="f-cat">correctness</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">c6285cd</span></span>
+          </div>
+          <div class="f-claim">Every event fetch sorted on <code>date</code> alone.</div>
+          <p class="f-why">Two events at the same instant came back in whatever order the store held them — and that order isn't stable. Rewriting the rows, which is exactly what restoring a backup does, can swap them. <code>getLastEvent</code> walks that list to decide the Pen Pal's state, so which of the two counted as “last” could change underneath you. The event id is now a secondary key, matching each fetch's direction so the ascending and descending orders stay mirror images.</p>
+          <p class="f-why">Deliberately arbitrary rather than clever: <code>typeValue</code> would have been the semantic choice, but the raw values don't support it — <code>written</code>(1) → <code>sent</code>(4) reads forwards while <code>inbound</code>(3) → <code>received</code>(2) reads backwards, so it would order one chain right and the other wrong.</p>
+        </div>
+        <div class="diff two">
+          <div class="pane before">
+            <div class="plabel">Before</div>
+<pre><code>fetchRequest.sortDescriptors = [
+    <span class="t">NSSortDescriptor</span>(key: <span class="s">"date"</span>, ascending: <span class="k">false</span>)
+]</code></pre>
+          </div>
+          <div class="pane after">
+            <div class="plabel">After</div>
+<pre><code>fetchRequest.sortDescriptors = [
+    <span class="t">NSSortDescriptor</span>(key: <span class="s">"date"</span>, ascending: <span class="k">false</span>),
+    <span class="t">NSSortDescriptor</span>(key: <span class="s">"id"</span>, ascending: <span class="k">false</span>),
+]</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-high">High</span>
+            <span class="f-lines">Data/PenPalStateRepair.swift · new</span>
+            <span class="f-cat">data-flow</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">5823db5</span></span>
+          </div>
+          <div class="f-claim">A stale <code>lastEventType</code> merged in from another device was never re-derived.</div>
+          <p class="f-why">CloudKit mirrors the cache like any other attribute, and under <code>NSMergeByPropertyObjectTrumpMergePolicy</code> an older copy from another device can win the merge. Nothing then re-derives it until that Pen Pal's next event, so they sit in the wrong section indefinitely — until something recalculates, which is what a restore does.</p>
+          <p class="f-why"><code>PenPalStateRepair</code> watches <code>.NSPersistentStoreRemoteChange</code> — debounced, because a CloudKit import posts in bursts, and hopped to main because the repair works on the view context — and re-derives each Pen Pal from its events, writing back only the ones that disagree. It also runs once at launch, for merges that landed while the app was closed. Remote-change notifications are off by default, so the store descriptions now ask for them before the stores load.</p>
+          <p class="f-why">It converges rather than ping-ponging between devices: a Pen Pal whose stored state already matches its events is left untouched, <code>setLastEventType</code> skips writes of identical values and <code>save</code> returns early on <code>hasChanges</code> — so a device that agrees writes nothing, and there is no repair for the other device to import back.</p>
+        </div>
+        <div class="diff">
+          <div class="pane single">
+            <div class="plabel">Data/PenPalStateRepair.swift</div>
+<pre><code><span class="k">private init</span>() {
+    <span class="t">NotificationCenter</span>.default
+        .publisher(for: .NSPersistentStoreRemoteChange)
+        .debounce(for: .seconds(<span class="s">2</span>), scheduler: <span class="t">DispatchQueue</span>.main)
+        .sink { [<span class="k">weak self</span>] _ <span class="k">in</span> <span class="k">self</span>?.repair() }
+        .store(<span class="k">in</span>: &amp;disposables)
+}
+
+<span class="k">func</span> repair() {
+    <span class="k">let</span> context = <span class="t">PersistenceController</span>.shared.container.viewContext
+    <span class="k">var</span> repaired: [<span class="t">String</span>] = []
+    <span class="k">for</span> penpal <span class="k">in</span> <span class="t">PenPal</span>.fetchAll(from: context) {
+        <span class="k">let</span> before = (penpal.lastEventType, penpal.lastEventDate,
+                      penpal.lastEventLetterType)
+        penpal.updateLastEventType(saving: <span class="k">false</span>, <span class="k">in</span>: context)
+        <span class="k">if</span> before != (penpal.lastEventType, penpal.lastEventDate,
+                      penpal.lastEventLetterType) {
+            repaired.append(penpal.wrappedName)
+        }
+    }
+    <span class="k">guard</span> !repaired.isEmpty <span class="k">else</span> { <span class="k">return</span> }
+    <span class="t">PenPal</span>.updateAppState()
+    <span class="t">PersistenceController</span>.shared.save(context: context)
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Data/PenPal+Extensions.swift:141 · :449</span>
+            <span class="f-cat">performance</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">d431405</span></span>
+          </div>
+          <div class="f-claim">The badge and the daily notification were recomputed once per Pen Pal.</div>
+          <p class="f-why"><code>updateLastEventType</code> ended by calling <code>updateBadgeNumber()</code> and <code>scheduleShouldPostLettersNotification()</code>, both of which walk the whole <code>PenPal</code> table. Fine for one event; restoring a backup recalculates every Pen Pal, so a restore of fifty was fifty badge recounts and fifty notification reschedules. They now live in <code>PenPal.updateAppState()</code>, called once per operation — outside the loop in <code>PenPal.restore</code> and <code>Event.deleteAll</code>.</p>
+          <p class="f-why">While in there: <code>PenPal.delete</code> never refreshed either, so deleting a Pen Pal with unanswered post left a stale badge until the next event change.</p>
+        </div>
+      </article>
+
+      <div class="note" style="margin-bottom: 3.2rem;"><strong>Also on the branch, not review findings:</strong> the per-entry stationery action reads <strong>Rename</strong> rather than <strong>Edit</strong> now that it opens a single text field (<span class="mono">bb4aaa4</span>) — the category menu keeps <strong>Edit</strong>, since that form changes the icon too. And pens use the app's own nib symbol from the asset catalogue instead of SF Symbols' pencil (<span class="mono">1d8b8fe</span>); it was already drawn that way in the event sheet, which special-cased the icon name locally. <code>StationeryType.image(forIcon:)</code> is now the one place that knows the name isn't an SF Symbol.</div>
+
+      <!-- ══════════════ Rejected ══════════════ -->
+      <div class="section-intro" id="f-rejected">
+        <span class="eyebrow">Rejected · 4 September 2026</span>
+        <h2>One finding the device disproved</h2>
+        <p>Worth recording so it doesn't get "fixed" again: the review said three Settings rows faked a disabled appearance with a manual colour, and that <code>.disabled()</code> already draws the correct treatment. It doesn't — not for a <code>Form</code> row.</p>
+      </div>
+
+      <article class="finding sf-low" data-sev="low">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-low">Low</span>
+            <span class="f-lines">Views/SettingsList.swift:104, 112, 124</span>
+            <span class="f-cat">design</span>
+          
+            <span class="fixed-tag" style="color: var(--sev-high); background: var(--sev-high-bg); border-color: color-mix(in srgb, var(--sev-high) 30%, transparent);">Rejected <span class="sha">276d303 reverted</span></span>
+          </div>
+          <div class="f-claim">The manual dimming on the posting settings is <em>not</em> redundant.</div>
+          <p class="f-why">The three rows that depend on “Track posting letters” — the post reminder, its time picker, and the unposted-letters badge — carry <code>.disabled(!trackPostingLetters)</code> <em>and</em> a <code>foregroundStyle(trackPostingLetters ? .primary : .secondary)</code>. The review called the second one redundant. Removing it and looking at the result on a device with the setting off: <code>.disabled()</code> fades the toggle's tint and drops the date picker's grey capsule, but <strong>leaves every row label at full primary black</strong>. SwiftUI deliberately does not propagate disabled state to a label, so the manual <code>.secondary</code> was the only thing marking those rows as inert. The change was reverted.</p>
+          <p class="f-why">Two further corrections to the original write-up, while here: the rows sit in the sections <em>above</em> “Track posting letters”, not below it — the sort and grouping rows underneath never dim and shouldn't. And the third site is the reminder <em>time picker</em>, not a third toggle.</p>
+        </div>
+      </article>
+
+      <!-- ══════════════ Second pass ══════════════ -->
+      <div class="section-intro" id="f-second">
+        <span class="eyebrow">Second pass · 4 September 2026</span>
+        <h2>Concurrency, then the sweep</h2>
+        <p>Branch <span class="mono">async-contact-sync</span>, 17 commits, unmerged — <strong>so these hashes change if you rebase.</strong> Two concurrency fixes first, then rank 10 one replacement at a time, then a consequence of the earlier stats work that only showed up on the device.</p>
+      </div>
+
+      <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Data/PenPal+Extensions.swift:469 · PenPalView.swift:249</span>
+            <span class="f-cat">performance</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">c6b32cd</span></span>
+          </div>
+          <div class="f-claim"><code>syncWithContact()</code> blocked the main actor on a Contacts XPC round trip.</div>
+          <p class="f-why">The last item from the original review's own list. It was synchronous and called from <code>.task</code>, so opening <em>any</em> Pen Pal stalled the UI on <code>unifiedContact(withIdentifier:)</code>. Both Contacts calls now run in a detached task and hand back a value — the contact, or the identifier a name search matched — with the managed-object reads taken before the first <code>await</code>, on the context's own queue.</p>
+          <p class="f-why">The name search also stops at the first match now. It used to enumerate the whole address book regardless, rewriting the mapping once per contact sharing the name, so the last duplicate won.</p>
+        </div>
+      </article>
+
+      <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Data/PenPal+Extensions.swift:62 · PenPalListItem:49 · PenPalHeader:33</span>
+            <span class="f-cat">performance</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">4f7f06c</span></span>
+          </div>
+          <div class="f-claim"><code>displayImage</code> decoded avatars on the main thread and carried a managed object off it.</div>
+          <p class="f-why">The review had this as an <code>async</code> getter with no suspension point — so it ran on the caller's actor, always the main one. Worse, being an <code>async</code> member on a non-Sendable <code>NSManagedObject</code>, calling it carried the Pen Pal across an actor boundary: a Core Data threading violation, and a hard error under Swift 6 (the compiler was already warning).</p>
+          <p class="f-why">It is now a static taking <code>Data</code>, which crosses safely. The decode happens in a detached task and calls <code>preparingForDisplay()</code> — without that, <code>UIImage(data:)</code> defers the real decode to first draw and puts the cost straight back on the main thread mid-scroll, which is the whole point of moving it.</p>
+        </div>
+        <div class="diff two">
+          <div class="pane before">
+            <div class="plabel">Before</div>
+<pre><code><span class="k">var</span> displayImage: <span class="t">Image</span>? {
+    <span class="k">get async</span> { <span class="c">/* no await inside */</span> }
+}
+<span class="c">// call site</span>
+.task { displayImage = <span class="k">await</span> penpal.displayImage }</code></pre>
+          </div>
+          <div class="pane after">
+            <div class="plabel">After</div>
+<pre><code><span class="k">static func</span> displayImage(from imageData: <span class="t">Data</span>?) <span class="k">async</span> -&gt; <span class="t">Image</span>? {
+    <span class="k">guard let</span> imageData <span class="k">else</span> { <span class="k">return nil</span> }
+    <span class="k">return await</span> <span class="t">Task</span>.detached(priority: .userInitiated) {
+        <span class="k">guard let</span> image = <span class="t">UIImage</span>(data: imageData) <span class="k">else</span> { <span class="k">return nil</span> }
+        <span class="k">return</span> <span class="t">Image</span>(uiImage: image.preparingForDisplay() ?? image)
+            .resizable()
+    }.value
+}
+<span class="c">// call site</span>
+.task { displayImage = <span class="k">await</span> <span class="t">PenPal</span>.displayImage(from: penpal.image) }</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Views/StatsView.swift:31–32, 127, 138</span>
+            <span class="f-cat">correctness</span>
+          
+            <span class="fixed-tag">Fixed <span class="sha">48fb951</span></span>
+          </div>
+          <div class="f-claim">Statistics showed “Sent 0” while the figures were still loading.</div>
+          <p class="f-why">Caught in a screenshot, not in code review: once the fetches moved off the main actor (<span class="mono">0f4ef49</span>), the two headline counts showed their initial value of <code>0</code> for a moment — beside charts already drawn from real data. The screen used to freeze and then show the right number; a confident wrong number is worse than a slow one.</p>
+          <p class="f-why">Both counts are <code>Int?</code> now and render an en dash until the first result arrives, matching how the average already handled having no value. Changing year holds the previous figures rather than flashing the placeholder, because they are only assigned once the new ones land.</p>
+        </div>
+      </article>
+
+      <div class="note" style="margin-bottom: 3.2rem;"><strong>The sweep itself</strong> is twelve commits, in this order: <span class="mono">814bdab</span> foregroundStyle (65 sites) · <span class="mono">971a1b2</span> onChange (20) · <span class="mono">0875960</span> topBar placements (13) · <span class="mono">e2bffe9</span> cornerRadius (3) · <span class="mono">6e507bc</span> Color(uiColor:) (6) · <span class="mono">37d4b43</span> scrollIndicators (4) · <span class="mono">a457e9d</span> dismiss (7) · <span class="mono">aa1d493</span> alert · <span class="mono">aab3553</span> setBadgeCount · <span class="mono">0295706</span> #Preview (18) · <span class="mono">881b54c</span> Text interpolation · <span class="mono">652df40</span> verbatim sync state. Two spellings needed thought rather than replacement: a leading dot resolves against <code>ShapeStyle</code>, so <code>.foregroundStyle(.accentColor)</code> doesn't compile — those five sites are <code>Color.accentColor</code>, which is what they meant, rather than <code>.tint</code>, which reads the environment and would have changed colour wherever the app sets its own. Same for two <code>.adequatelyGinger</code> sites.</div>
+
+      <!-- ══════════════ Cross-cutting ══════════════ -->
+      <div class="section-intro" id="crosscutting">
+        <span class="eyebrow">Sweeps</span>
+        <h2>Cross-cutting replacements</h2>
+        <p>Mechanical, low-risk, and best done as a single commit each rather than opportunistically alongside feature work — a find-and-replace pass keeps the diff reviewable.</p>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Replace</th>
+              <th scope="col">With</th>
+              <th scope="col" style="text-align:right">Sites</th>
+              <th scope="col">Concentrated in</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>foregroundColor(_:)</code></td>
+              <td><code>foregroundStyle(_:)</code></td>
+              <td class="num" style="text-align:right">65 · <span class="mono">814bdab</span></td>
+              <td>SettingsList (8), EventPropertyDetailsSheet (7), AddEventSheet (7), StatsView (5)</td>
+            </tr>
+            <tr>
+              <td><code>onChange(of:) { v in }</code></td>
+              <td><code>onChange(of:) { _, v in }</code></td>
+              <td class="num" style="text-align:right">20 · <span class="mono">971a1b2</span></td>
+              <td>9 files — AddEventSheet (8), SettingsList (7)</td>
+            </tr>
+            <tr>
+              <td><code>PreviewProvider</code></td>
+              <td><code>#Preview { }</code></td>
+              <td class="num" style="text-align:right">18 · <span class="mono">0295706</span></td>
+              <td>app-wide</td>
+            </tr>
+            <tr>
+              <td><code>.navigationBarLeading</code> / <code>Trailing</code></td>
+              <td><code>.topBarLeading</code> / <code>.topBarTrailing</code></td>
+              <td class="num" style="text-align:right">13 · <span class="mono">0875960</span></td>
+              <td>PenPalSplitView, PenPalTab, the four sheets</td>
+            </tr>
+            <tr>
+              <td><code>cornerRadius(_:)</code></td>
+              <td><code>clipShape(.rect(cornerRadius:))</code></td>
+              <td class="num" style="text-align:right">3 · <span class="mono">e2bffe9</span></td>
+              <td>SymbolPicker, AddEventSheet, EventCell</td>
+            </tr>
+            <tr>
+              <td><code>showsIndicators: false</code></td>
+              <td><code>.scrollIndicators(.hidden)</code></td>
+              <td class="num" style="text-align:right">4 · <span class="mono">37d4b43</span></td>
+              <td>StatsView, AddEventSheet ×2, EventCell</td>
+            </tr>
+            <tr>
+              <td><code>Color(uiColor: UIColor.x)</code></td>
+              <td><code>Color(.x)</code></td>
+              <td class="num" style="text-align:right">6 · <span class="mono">6e507bc</span></td>
+              <td>AppInfo, SettingsList, AddEventSheet</td>
+            </tr>
+            <tr>
+              <td><code>DispatchQueue.main.async</code> inside <code>.task</code></td>
+              <td>direct assignment</td>
+              <td class="num" style="text-align:right">30+ · <span class="mono">most done</span></td>
+              <td>Cleared wherever it wrapped a fetch — StatsView, the stationery chart, both stationery sheets, DebugView, SettingsList. What is left sits in completion handlers from Contacts and StoreKit, where the hop to main is real.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top: 1.4rem;"><strong>Note on <code>.topBarLeading</code>:</strong> <code>PenPalTab.swift:46</code> and <code>PenPalView.swift:234</code> already use the modern spelling while their siblings in the same files don't — so this isn't a deliberate style choice, just drift.</div>
+
+      <!-- ══════════════ Observable ══════════════ -->
+      <div class="section-intro" id="observable">
+        <span class="eyebrow">Sweeps</span>
+        <h2>Moving to <code>@Observable</code></h2>
+        <p>All four observable classes are iOS 17-compatible and would migrate cleanly. The clearest win is <code>Router</code>: today a change to <code>presentedSheet</code> invalidates every view observing <code>path</code> as well, because <code>ObservableObject</code> publishes at object granularity. <code>@Observable</code> tracks per-property.</p>
+      </div>
+
+      <article class="finding sf-med" data-sev="med">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Views/Navigation/AppRouter.swift:45</span>
+            <span class="f-cat">data-flow</span>
+          </div>
+          <div class="f-claim"><code>Router</code> invalidates observers more than it needs to.</div>
+          <p class="f-why">Every sheet presentation currently re-renders anything watching the navigation path, and vice versa.</p>
+        </div>
+        <div class="diff two">
+          <div class="pane before">
+            <div class="plabel">Before</div>
+<pre><code><span class="k">@MainActor</span>
+<span class="k">class</span> <span class="t">Router</span>: <span class="t">ObservableObject</span> {
+    <span class="k">@Published var</span> path: [<span class="t">Route</span>] = []
+    <span class="k">@Published public var</span> presentedSheet: <span class="t">SheetDestination</span>?
+}
+
+<span class="c">// consumers</span>
+<span class="k">@StateObject private var</span> router = <span class="t">Router</span>()
+<span class="k">@EnvironmentObject private var</span> router: <span class="t">Router</span>
+.environmentObject(router)</code></pre>
+          </div>
+          <div class="pane after">
+            <div class="plabel">After</div>
+<pre><code><span class="k">@MainActor</span> <span class="k">@Observable</span>
+<span class="k">class</span> <span class="t">Router</span> {
+    <span class="k">var</span> path: [<span class="t">Route</span>] = []
+    <span class="k">var</span> presentedSheet: <span class="t">SheetDestination</span>?
+}
+
+<span class="c">// consumers</span>
+<span class="k">@State private var</span> router = <span class="t">Router</span>()
+<span class="k">@Environment</span>(<span class="t">Router</span>.<span class="k">self</span>) <span class="k">private var</span> router
+.environment(router)</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding sf-med" data-sev="med">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-med">Medium</span>
+            <span class="f-lines">Helpers/Orientation.swift:17 · Data/SyncMonitor.swift:35</span>
+            <span class="f-cat">concurrency</span>
+          </div>
+          <div class="f-claim">Two observable classes mutate published state off the main actor, and one retains itself.</div>
+          <p class="f-why"><code>OrientationObserver</code>'s Combine sink captures <code>self</code> strongly and calls <code>changeOrientation(to:)</code> on whatever queue the notification arrives on. It's a singleton so nothing leaks in practice, but neither is safe under strict concurrency. <code>SyncMonitor</code> has the same shape, plus a dead <code>if #available(iOS 14.0, *)</code> check (line 44) against a 17.0 deployment target.</p>
+        </div>
+        <div class="diff two">
+          <div class="pane before">
+            <div class="plabel">Before</div>
+<pre><code><span class="k">class</span> <span class="t">OrientationObserver</span>: <span class="t">ObservableObject</span> {
+    <span class="k">@Published var</span> currentOrientation: <span class="t">DeviceOrientation</span> = .portrait
+
+    <span class="k">init</span>() {
+        <span class="t">NotificationCenter</span>.default
+            .publisher(for: <span class="t">UIDevice</span>.orientationDidChangeNotification)
+            .sink { notification <span class="k">in</span>
+                <span class="c">// strong self, arbitrary queue</span>
+                <span class="k">self</span>.changeOrientation(to: …)
+            }
+            .store(<span class="k">in</span>: &amp;disposables)
+    }
+}</code></pre>
+          </div>
+          <div class="pane after">
+            <div class="plabel">After</div>
+<pre><code><span class="k">@MainActor</span> <span class="k">@Observable</span>
+<span class="k">final class</span> <span class="t">OrientationObserver</span> {
+    <span class="k">var</span> currentOrientation: <span class="t">DeviceOrientation</span> = .portrait
+
+    <span class="k">func</span> observe() <span class="k">async</span> {
+        <span class="k">let</span> notifications = <span class="t">NotificationCenter</span>.default
+            .notifications(named: <span class="t">UIDevice</span>.orientationDidChangeNotification)
+        <span class="k">for await</span> _ <span class="k">in</span> notifications {
+            currentOrientation = <span class="t">UIDevice</span>.current.orientation.isPortrait
+                ? .portrait : .landscape
+        }
+    }
+}</code></pre>
+          </div>
+        </div>
+      </article>
+
+      <article class="finding sf-low" data-sev="low">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-low">Low</span>
+            <span class="f-lines">Helpers/ImageViewerController.swift:24</span>
+            <span class="f-cat">data-flow</span>
+          </div>
+          <div class="f-claim"><code>ImageViewerController</code> is the fourth <code>ObservableObject</code>.</div>
+          <p class="f-why">Straightforward to migrate alongside the others. Note that its <code>urls</code> computed property calls <code>item.temporaryURL()</code> for every image on each access — writing files to disk from a getter that <code>QLPreviewCoordinator</code> reads per item. Worth caching while you're in there.</p>
+        </div>
+      </article>
+
+      <!-- ══════════════ Testing ══════════════ -->
+      <div class="section-intro" id="testing">
+        <span class="eyebrow">Sweeps</span>
+        <h2>What isn't covered</h2>
+      </div>
+
+      <p style="margin-bottom: 1.2rem;">There is no test target in the project. That's a defensible call for view code, but two areas here are pure logic with real branching complexity and would be cheap to cover:</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Target</th>
+              <th scope="col">Why it's worth testing</th>
+              <th scope="col">Cases</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><code>EventType</code> state machine<br><span class="f-lines">Model/EventType.swift</span></td>
+              <td>Every list section, header, and action button in the app derives from <code>nextLogicalEventTypes</code> and <code>groupingEventType</code>. Both branch on <code>trackPostingLetters</code>, so each has two behaviours that must stay consistent — and a regression here is invisible until a user reports the wrong buttons.</td>
+              <td class="num">~24<br><span class="f-lines">9 types × 2 modes</span></td>
+            </tr>
+            <tr>
+              <td><code>PenPal.averageTimeToRespond</code><br><span class="f-lines">Data/PenPal+Extensions.swift:533</span></td>
+              <td>Pairs received events with the next written/sent event, skipping ignored ones, with a special case for a still-unanswered last letter. Easy to get subtly wrong; currently unverifiable except by eye.</td>
+              <td class="num">~8</td>
+            </tr>
+            <tr>
+              <td><code>Calendar.numberOfDaysBetween</code><br><span class="f-lines">Extensions/Calendar.swift</span></td>
+              <td>Used for every date divider and the "N days ago" subheader. DST boundaries and timezone changes are the classic failure mode.</td>
+              <td class="num">~6</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="note" style="margin-top: 1.4rem;"><strong>No secrets are checked in.</strong> <code>@AppStorage</code> holds only preferences and the pen-pal → contact ID map; nothing that belongs in the keychain is stored in <code>UserDefaults</code>.</div>
+
+    </main>
+  </div>
+
+  <footer class="colophon">
+    <span class="mono">Pendulum SwiftUI review · 25 August 2026 · updated 2 September 2026 · branch review-fixes</span>
+    <span>79 Swift files, ~10,300 lines. Reviewed against modern SwiftUI API, view structure, data flow, navigation, HIG and accessibility, performance, Swift concurrency, and code hygiene.</span>
+    <span>Findings verified against source; line numbers refer to the working tree at time of review, not to the current branch. Palette taken from fountain-pen ink and the app's own <span class="mono">Color.adequatelyGinger</span>.</span>
+    <span>Update, 2 September 2026: ranked items 1–9 fixed across 22 commits. Four further Core Data findings added under <a href="#f-state">Found since</a>.</span>
+    <span>Update, 4 September 2026: ranks 1–9 merged to <span class="mono">main</span> and their hashes here now point at the merged commits, not the pre-rebase ones. Rank 10 swept in twelve commits on <span class="mono">async-contact-sync</span>, along with the last two concurrency findings and a loading-state fix — 17 commits, unmerged, so those hashes will move if the branch is rebased. One finding <a href="#f-rejected">rejected</a> after checking it on a device. The project builds with no deprecation warnings.</span>
+    <span>Remaining: rank 11, the three oversized view files · the manual English pluralisation in StatsView and PenPalView · two half-fixed findings (<code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and its unscaled row height; <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race) · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  var buttons = Array.prototype.slice.call(document.querySelectorAll('.fbtn'));
+  var findings = Array.prototype.slice.call(document.querySelectorAll('.finding'));
+  var groups = Array.prototype.slice.call(document.querySelectorAll('.filegroup'));
+  var KEY = 'pendulum-review-severity';
+
+  function apply(sev) {
+    findings.forEach(function (f) {
+      f.hidden = !(sev === 'all' || f.dataset.sev === sev);
+    });
+    // hide a file section whose findings are all filtered out
+    groups.forEach(function (g) {
+      var items = Array.prototype.slice.call(g.querySelectorAll('.finding'));
+      var anyVisible = items.some(function (f) { return !f.hidden; });
+      g.hidden = items.length > 0 && !anyVisible;
+    });
+    buttons.forEach(function (b) {
+      b.setAttribute('aria-pressed', String(b.dataset.sev === sev));
+    });
+    try { localStorage.setItem(KEY, sev); } catch (e) { /* storage unavailable */ }
+  }
+
+  buttons.forEach(function (b) {
+    b.addEventListener('click', function () { apply(b.dataset.sev); });
+  });
+
+  var saved = 'all';
+  try { saved = localStorage.getItem(KEY) || 'all'; } catch (e) { saved = 'all'; }
+  if (['all', 'high', 'med', 'low'].indexOf(saved) === -1) { saved = 'all'; }
+  apply(saved);
+})();
+</script>

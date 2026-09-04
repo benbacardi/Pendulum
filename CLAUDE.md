@@ -20,6 +20,34 @@ There is no CLI test suite or lint config in this repo — verification is done 
 - If a physical device is genuinely needed, use Gary: `-destination 'platform=iOS,name=Gary'`. Otherwise stick to the simulator.
 - The build number (`CURRENT_PROJECT_VERSION`) is bumped manually per commit (see recent commit history, e.g. "build: 101") — bump it in the project settings when cutting a release, not per ordinary commit.
 
+### Running on Gary (the physical device)
+
+Signing is automatic and works; the app installs over the existing one and keeps its data.
+
+```
+xcodebuild -project Pendulum.xcodeproj -scheme Pendulum \
+  -destination 'platform=iOS,name=Gary' -derivedDataPath /tmp/pendulum-dd build
+xcrun devicectl device install app --device Gary /tmp/pendulum-dd/Build/Products/Debug-iphoneos/Pendulum.app
+xcrun devicectl device process launch --device Gary uk.co.bencardy.Pendulum
+xcrun devicectl device capture screenshot --device Gary --destination shot.png
+```
+
+- **`devicectl` cannot inject taps.** Ask the user to navigate, and screenshot what they land on.
+- **`capture screen-record` is not supported on Gary** — it fails with "capability not supported" *and exits 0*, so it looks like it worked and produces no file. Don't use it. To cover a sequence, poll `capture screenshot` in a loop instead and diff the frames.
+- Screenshots are 1170×2532; downscale with `ffmpeg -i in.png -vf scale=380:-1 out.png` before reading them, and crop at full resolution when a detail matters.
+- **Logs from the device**: every logger call in this app except two is `.debug`, and os_log drops debug level on a device unless it is enabled for the subsystem. Xcode's console also shows nothing unless the app was launched from Xcode and is still attached. Use `log stream --device --level debug --predicate 'subsystem == "uk.co.bencardy.Pendulum"'`, or Console.app with *Include Debug Messages*.
+
+## The code review and its artifact
+
+`.claude/reviews/` holds a `/swiftui-pro` review of the whole app (65 findings, ranked) and the HTML
+source of a published report. `INDEX.md` is the entry point; `2026-08-25-findings.json` is greppable by
+`file`, `line`, `id`, `severity`.
+
+The report is published at https://claude.ai/code/artifact/9dfc9504-c75a-462c-9370-37c569a6735a and
+is kept up to date as findings are fixed. **To update it from a new conversation you must pass that URL
+as `url` to the Artifact tool** — publishing the file without it creates a second, separate artifact.
+Read it first; a publish to an artifact the conversation hasn't read is refused.
+
 ## Architecture
 
 ### Core Data model (`Pendulum/Data/Pendulum.xcdatamodeld`)
