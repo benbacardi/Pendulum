@@ -2,3 +2,6 @@
 *.xcuserdatad
 app.xcarchive
 icon_hash
+
+# Local Claude Code settings (the reviews/ directory is tracked deliberately)
+.claude/settings.local.json
