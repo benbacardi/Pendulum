@@ -101,7 +101,6 @@ struct SettingsList: View {
                     Toggle("Remind me to write back", isOn: $sendRemindersToWriteLetters.animation())
                     Toggle("Remind me to post letters", isOn: $sendRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
-                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                     if sendRemindersToPostLetters {
                         HStack {
                             Image(systemName: "arrow.turn.down.right")
@@ -109,7 +108,6 @@ struct SettingsList: View {
                                 .disabled(!trackPostingLetters)
                         }
                         .padding(.leading, 4)
-                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                     }
                 }
                 
@@ -121,7 +119,6 @@ struct SettingsList: View {
                     Toggle("Show for unwritten responses", isOn: $badgeRemindersToWriteLetters.animation())
                     Toggle("Show for unposted letters", isOn: $badgeRemindersToPostLetters.animation())
                         .disabled(!trackPostingLetters)
-                        .foregroundStyle(trackPostingLetters ? .primary : .secondary)
                 }
                 
                 Section {
