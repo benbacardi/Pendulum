@@ -104,8 +104,10 @@ struct TipJarView: View {
                 
             }
         }
-        .alert(isPresented: $showingSuccessAlert) {
-            Alert(title: Text("Purchase Successful"), message: Text("Thank you for supporting Pendulum!"), dismissButton: .default(Text("🧡")))
+        .alert("Purchase Successful", isPresented: $showingSuccessAlert) {
+            Button("🧡") { }
+        } message: {
+            Text("Thank you for supporting Pendulum!")
         }
         .padding()
         .onAppear {
