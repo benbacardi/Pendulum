@@ -142,16 +142,15 @@ struct PenPalView: View {
     
     @ViewBuilder
     func dateDivider(for date: Date, withDifference difference: Int, relativeToToday: Bool = false) -> some View {
-        let plural = difference > 1 ? "s" : ""
         HStack {
             if relativeToToday {
                 if difference == 0 {
                     Text("Today")
                 } else {
-                    Text("\(difference) day\(plural) ago")
+                    Text("^[\(difference) day](inflect: true) ago")
                 }
             } else {
-                Text("\(difference) day\(plural) before")
+                Text("^[\(difference) day](inflect: true) before")
             }
             Text("–")
             Text(date, style: .date)
