@@ -41,7 +41,7 @@ struct SymbolPicker: View {
                 .padding(.trailing, 15)
                 .foregroundStyle(.secondary)
                 .background(Color(.secondarySystemBackground))
-                .cornerRadius(8)
+                .clipShape(.rect(cornerRadius: 8))
                 .padding(.top, 10)
                 if searchBoxSelected {
                     Button(action: {

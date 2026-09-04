@@ -50,7 +50,7 @@ struct EventCell: View {
                 .resizable()
                 .scaledToFill()
                 .frame(width: 60, height: 60)
-                .cornerRadius(5)
+                .clipShape(.rect(cornerRadius: 5))
         } else {
             EmptyView()
         }
