@@ -47,7 +47,7 @@ struct MostUsedStationeryChart: View {
                         Text("\(data.count)")
                             .font(.footnote)
                             .bold()
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                     }
                 }
                 .chartYAxis {

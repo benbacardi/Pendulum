@@ -26,7 +26,7 @@ struct PenPalHeader: View {
                         .fill(.gray)
                     Text(penpal.wrappedInitials)
                         .font(.system(.headline, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 .frame(width: 40, height: 40)
                 .task {

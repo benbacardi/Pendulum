@@ -54,7 +54,7 @@ struct StatsView: View {
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
                 .background(isSelected ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
-                .foregroundColor(isSelected ? .white : .primary)
+                .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
         }
     }
@@ -75,14 +75,14 @@ struct StatsView: View {
                         Text("\(parameter.count)")
                             .font(.headline)
                         Image(systemName: "chevron.right")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 } else {
                     Text("Placeholder Pen").fullWidth().redacted(reason: .placeholder)
                 }
             }
         }
-        .foregroundColor(.primary)
+        .foregroundStyle(.primary)
     }
     
     var body: some View {
@@ -121,7 +121,7 @@ struct StatsView: View {
                         VStack {
                             Text(trackPostingLetters ? "Sent" : "Written")
                                 .font(.headline)
-                                .foregroundColor((trackPostingLetters ? EventType.sent : EventType.written).color)
+                                .foregroundStyle((trackPostingLetters ? EventType.sent : EventType.written).color)
                             
                             Text("\(numberSent)")
                                 .font(.system(.largeTitle, design: .rounded))
@@ -133,7 +133,7 @@ struct StatsView: View {
                         VStack {
                             Text("Received")
                                 .font(.headline)
-                                .foregroundColor(EventType.received.color)
+                                .foregroundStyle(EventType.received.color)
                             Text("\(numberReceived)")
                                 .font(.system(.largeTitle, design: .rounded))
                                 .bold()

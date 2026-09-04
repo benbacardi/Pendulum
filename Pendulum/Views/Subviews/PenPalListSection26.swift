@@ -93,7 +93,7 @@ struct PenPalListSection26: View {
                 Text(eventType.phrase)
                     .fullWidth()
                     .font(.body)
-                    .foregroundColor(.primary)
+                    .foregroundStyle(.primary)
             }
         } else {
             EmptyView()
@@ -139,13 +139,13 @@ struct PenPalListSection26: View {
                 VStack {
                     HStack {
                         eventType.sectionHeaderIcon
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                             .font(.title)
                         Text(eventType.phrase)
                             .fullWidth()
                             .font(.headline)
                     }
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
                     .padding()
                     .background(eventType.color)
                 }

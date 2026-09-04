@@ -48,11 +48,11 @@ struct ChooseTextSheet: View {
                     }) {
                         HStack {
                             Text(option)
-                                .foregroundColor(.primary)
+                                .foregroundStyle(.primary)
                             Spacer()
                             if chosenOptions.contains(option) {
                                 Image(systemName: "checkmark")
-                                    .foregroundColor(.adequatelyGinger)
+                                    .foregroundStyle(Color.adequatelyGinger)
                             }
                         }
                     }

@@ -100,7 +100,7 @@ struct EventCell: View {
                                     
                                 }
                             }
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                         }
                     }
                     .padding([.horizontal, .top])
@@ -131,7 +131,7 @@ struct EventCell: View {
                             if let notes = event.notes, !notes.isEmpty {
                                 Text(notes)
                                     .font(.caption)
-                                    .foregroundColor(.secondary)
+                                    .foregroundStyle(.secondary)
                                     .fullWidth()
                                     .padding(.bottom, event.hasAttributes ? 5 : 0)
                                 
@@ -196,7 +196,7 @@ struct EventCell: View {
                                     
                                 }
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                                 .fullWidth()
                                 
                             }

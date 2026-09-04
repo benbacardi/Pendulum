@@ -157,7 +157,7 @@ struct PenPalView: View {
             Text(date, style: .date)
         }
         .font(.caption)
-        .foregroundColor(.secondary)
+        .foregroundStyle(.secondary)
     }
     
     var body: some View {

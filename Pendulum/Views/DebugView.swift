@@ -48,7 +48,7 @@ struct DebugView: View {
                 Text("PenPals")
                 Spacer()
                 Text("\(penpalCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Button("Delete all Pen Pals", systemImage: "trash") {
                     PenPal.deleteAll(in: moc)
                     Task {
@@ -61,7 +61,7 @@ struct DebugView: View {
                 Text("Events")
                 Spacer()
                 Text("\(eventCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Button("Delete all events", systemImage: "trash") {
                     Event.deleteAll(in: moc)
                     Task {
@@ -74,7 +74,7 @@ struct DebugView: View {
                 Text("EventPhotos")
                 Spacer()
                 Text("\(photoCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Button("Delete all event photos", systemImage: "trash") {
                     EventPhoto.deleteAll(in: moc)
                     Task {
@@ -87,7 +87,7 @@ struct DebugView: View {
                 Text("Stationery")
                 Spacer()
                 Text("\(stationeryCount)")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                 Button("Delete all stationery", systemImage: "trash") {
                     Stationery.deleteAll(in: moc)
                     Task {

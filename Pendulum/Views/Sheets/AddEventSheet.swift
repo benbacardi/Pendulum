@@ -52,7 +52,7 @@ struct StationeryTypeView: View {
         HStack(alignment: .top, spacing: 0) {
             HStack(alignment: .firstTextBaseline, spacing: 0) {
                 image
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
                     .background {
                         GeometryReader { geo in
                             Color.clear.preference(key: AddEventSheet.IconWidthPreferenceKey.self, value: geo.size.width)
@@ -89,7 +89,7 @@ struct StationeryTypeView: View {
                                     Text(suggestion)
                                 }
                                 .font(.caption)
-                                .foregroundColor(.secondary)
+                                .foregroundStyle(.secondary)
                                 .padding(5)
                                 .background {
                                     Color(uiColor: UIColor.secondarySystemBackground)
@@ -138,7 +138,7 @@ struct AddStationeryTypeForm: View {
                             .frame(width: 80, height: 80)
                         Image(systemName: icon)
                             .font(.system(size: 32))
-                            .foregroundColor(.white)
+                            .foregroundStyle(.white)
                     }
                     Text("Change Icon")
                         .font(.caption)
@@ -157,7 +157,7 @@ struct AddStationeryTypeForm: View {
                 TextField("Name", text: $typeName)
                 if isDuplicate {
                     Text("A category with this name already exists.")
-                        .foregroundColor(.red)
+                        .foregroundStyle(.red)
                         .font(.caption)
                 }
             }
@@ -369,7 +369,7 @@ struct AddEventSheet: View {
             self.showEventTypeOptions = true
         }) {
             largeHeaderText
-                .foregroundColor(.white)
+                .foregroundStyle(.white)
                 .padding()
                 .padding(.top, 48)
                 .padding(.vertical)
@@ -407,7 +407,7 @@ struct AddEventSheet: View {
                                     Spacer()
                                 }
                             }
-                            .foregroundColor(EventType.sent.color)
+                            .foregroundStyle(EventType.sent.color)
                         }
                     }
 
@@ -498,7 +498,7 @@ struct AddEventSheet: View {
                                                         Label("Delete", systemImage: "minus.circle.fill")
                                                             .font(.headline)
                                                             .labelStyle(.iconOnly)
-                                                            .foregroundColor(.gray)
+                                                            .foregroundStyle(.gray)
                                                             .background(.white)
                                                             .clipShape(Circle())
                                                     }

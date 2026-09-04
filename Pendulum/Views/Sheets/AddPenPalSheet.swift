@@ -43,7 +43,7 @@ struct AddPenPalSheet: View {
                         .fill(.gray)
                     Text(contact.initials)
                         .font(.system(.headline, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 .frame(width: 40, height: 40)
             }
@@ -53,7 +53,7 @@ struct AddPenPalSheet: View {
                 Text("Unknown Contact")
             }
         }
-        .foregroundColor(.primary)
+        .foregroundStyle(.primary)
     }
     
     func fetchContacts() {
@@ -95,7 +95,7 @@ struct AddPenPalSheet: View {
                 Button(action: {
                     openURL(url)
                 }) {
-                    Text("You previously restricted Pendulum's access to limited contacts. You can choose to add more in ") + Text("Settings.").foregroundColor(.accentColor)
+                    Text("You previously restricted Pendulum's access to limited contacts. You can choose to add more in ") + Text("Settings.").foregroundStyle(Color.accentColor)
                 }
                 .fullWidth(alignment: .center)
                 .foregroundStyle(.secondary)

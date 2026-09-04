@@ -117,7 +117,7 @@ struct EventPropertyDetailsSheet: View {
         }) {
             if options.wrappedValue.isEmpty && !(allowAdding && outbound) {
                 Text("None recorded yet")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             ForEach(options.wrappedValue, id: \.name) { option in
                 HStack {
@@ -125,7 +125,7 @@ struct EventPropertyDetailsSheet: View {
                         .fullWidth()
                     if option.count > 0 {
                         Text("\(option.count)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .swipeActions(edge: .leading) {
@@ -157,7 +157,7 @@ struct EventPropertyDetailsSheet: View {
                             }
                         }) {
                             Text("Save")
-                                .foregroundColor(.accentColor)
+                                .foregroundStyle(Color.accentColor)
                         }
                         .buttonStyle(.plain)
                         .disabled(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || options.wrappedValue.map { $0.name }.contains(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)))
@@ -188,13 +188,13 @@ struct EventPropertyDetailsSheet: View {
             } label: {
                 Label("More actions", systemImage: "ellipsis")
                     .labelStyle(.iconOnly)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
         }) {
             if options.isEmpty && !(allowAdding && outbound) {
                 Text("None recorded yet")
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
             }
             ForEach(options, id: \.name) { option in
                 HStack {
@@ -202,7 +202,7 @@ struct EventPropertyDetailsSheet: View {
                         .fullWidth()
                     if option.count > 0 {
                         Text("\(option.count)")
-                            .foregroundColor(.secondary)
+                            .foregroundStyle(.secondary)
                     }
                 }
                 .swipeActions(edge: .leading) {
@@ -236,7 +236,7 @@ struct EventPropertyDetailsSheet: View {
                             }
                         }) {
                             Text("Save")
-                                .foregroundColor(.accentColor)
+                                .foregroundStyle(Color.accentColor)
                         }
                         .buttonStyle(.plain)
                         .disabled(customEntryDisabled(for: key, options: options))

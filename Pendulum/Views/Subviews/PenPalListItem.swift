@@ -43,7 +43,7 @@ struct PenPalListItem: View {
                         .fill(.gray)
                     Text(penpal.wrappedInitials)
                         .font(.system(.headline, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundStyle(.white)
                 }
                 .frame(width: 40, height: 40)
                 .task { displayImage = await PenPal.displayImage(from: penpal.image) }
@@ -65,7 +65,7 @@ struct PenPalListItem: View {
             }
             if DeviceType.isPad() && isSelectedPenPal {
                 Image(systemName: "chevron.right")
-                    .foregroundColor(.adequatelyGinger)
+                    .foregroundStyle(Color.adequatelyGinger)
                     .imageScale(.large)
                     .bold()
             }

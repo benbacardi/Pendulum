@@ -39,7 +39,7 @@ struct SymbolPicker: View {
                 .padding(.vertical, 8)
                 .padding(.leading, 10)
                 .padding(.trailing, 15)
-                .foregroundColor(.secondary)
+                .foregroundStyle(.secondary)
                 .background(Color(.secondarySystemBackground))
                 .cornerRadius(8)
                 .padding(.top, 10)

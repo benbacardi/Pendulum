@@ -44,7 +44,7 @@ struct SentAndWrittenByMonthChart: View {
                         Text("\(data.count)")
                             .font(.footnote)
                             .bold()
-                            .foregroundColor(data.status.color)
+                            .foregroundStyle(data.status.color)
                             .opacity(0.5)
                     }
                 }

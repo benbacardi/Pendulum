@@ -22,7 +22,7 @@ struct WhatsNewGridRow: View {
         if let icon {
             Image(systemName: icon)
                 .font(.title)
-                .foregroundColor(iconColor)
+                .foregroundStyle(iconColor)
         } else {
             EmptyView()
         }
@@ -101,7 +101,7 @@ struct WhatsNew: View {
                 .font(.title)
                 .bold()
                 .fullWidth(alignment: .leading)
-                .foregroundColor(.accentColor)
+                .foregroundStyle(Color.accentColor)
             HStack(spacing: 0) {
                 Text("Pendulum ")
                 Text(Bundle.main.appVersionNumber)
