@@ -152,7 +152,7 @@ struct StatsView: View {
                         .fullWidth(alignment: .center)
                         .font(.headline)
                     if let averageTimeToReply {
-                        Text("^[\(averageTimeToReply.roundToDecimalPlaces(1)) day](inflect: true)")
+                        Text("^[\(averageTimeToReply, specifier: "%.1f") day](inflect: true)")
                             .fullWidth(alignment: .center)
                             .font(.system(.largeTitle, design: .rounded))
                             .bold()
