@@ -53,7 +53,7 @@ struct StatsView: View {
                 .fontWeight(isSelected ? .semibold : .regular)
                 .padding(.horizontal, 14)
                 .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(uiColor: .secondarySystemBackground))
+                .background(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
                 .foregroundStyle(isSelected ? .white : .primary)
                 .clipShape(Capsule())
         }

@@ -92,7 +92,7 @@ struct StationeryTypeView: View {
                                 .foregroundStyle(.secondary)
                                 .padding(5)
                                 .background {
-                                    Color(uiColor: UIColor.secondarySystemBackground)
+                                    Color(.secondarySystemBackground)
                                 }
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                             }

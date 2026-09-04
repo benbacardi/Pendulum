@@ -304,7 +304,7 @@ struct EventPropertyDetailsSheet: View {
                         }
                     }
                 }
-                .background(Color(uiColor: .systemGroupedBackground))
+                .background(Color(.systemGroupedBackground))
             }
             .navigationTitle("Stationery")
             .navigationBarTitleDisplayMode(.inline)

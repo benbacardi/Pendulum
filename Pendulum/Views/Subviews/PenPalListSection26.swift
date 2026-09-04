@@ -150,7 +150,7 @@ struct PenPalListSection26: View {
                     .background(eventType.color)
                 }
                 .background {
-                    Color(uiColor: .systemGroupedBackground)
+                    Color(.systemGroupedBackground)
                 }
 //                .clipShape(RoundedRectangle(cornerRadius: 25, style: .continuous))
                 .glassEffect(.regular)
