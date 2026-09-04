@@ -193,7 +193,7 @@ struct AddPenPalSheet: View {
             .navigationBarTitle("Add Pen Pal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         router.presentedSheet = nil
                     }) {

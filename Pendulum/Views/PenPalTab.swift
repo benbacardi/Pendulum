@@ -51,7 +51,7 @@ struct PenPalTab: View {
                     }
                 }
                 .matchedTransitionSourceIfPossible(id: "settings", in: transition)
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         router.presentedSheet = .stationeryList(namespace: transition)
                     }) {
@@ -59,7 +59,7 @@ struct PenPalTab: View {
                     }
                 }
                 .matchedTransitionSourceIfPossible(id: "stationeryList", in: transition)
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         if self.stopAskingAboutContacts {
                             router.presentedSheet = .addPenPalManually(namespace: transition) { penpal in

@@ -128,7 +128,7 @@ struct ManualAddPenPalSheet: View {
             .navigationBarTitle(self.penpal == nil ? "Add Pen Pal" : "Update Pen Pal")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
