@@ -545,31 +545,31 @@ struct AddEventSheet: View {
                 imagePickerView
                     .edgesIgnoringSafeArea(.all)
             }
-            .onChange(of: letterType) { newValue in
+            .onChange(of: letterType) { _, newValue in
                 if self.setToDefaultIgnoreWhenChangingLetterType {
                     self.ignore = newValue.defaultIgnore
                 }
                 self.thingsHaveChanged = true
             }
-            .onChange(of: date) { _ in
+            .onChange(of: date) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: notes) { _ in
+            .onChange(of: notes) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: pen) { _ in
+            .onChange(of: pen) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: ink) { _ in
+            .onChange(of: ink) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: paper) { _ in
+            .onChange(of: paper) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: trackingReference) { _ in
+            .onChange(of: trackingReference) {
                 self.thingsHaveChanged = true
             }
-            .onChange(of: eventPhotos) { _ in
+            .onChange(of: eventPhotos) {
                 self.thingsHaveChanged = true
             }
             .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in

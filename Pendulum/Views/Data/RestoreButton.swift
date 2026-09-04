@@ -65,7 +65,7 @@ struct RestoreButton: View {
                     print(error.localizedDescription)
                 }
             }
-            .onChange(of: showFileImporter) { newValue in
+            .onChange(of: showFileImporter) { _, newValue in
                 if !showFileImporter && self.importState == .inProgress {
                     self.importState = .pending
                 }

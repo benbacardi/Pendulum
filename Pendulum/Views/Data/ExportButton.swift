@@ -61,7 +61,7 @@ struct ExportButton: View {
                 }
             }
             .disabled(exportState == .inProgress)
-            .onChange(of: exportState) { newValue in
+            .onChange(of: exportState) { _, newValue in
                 if newValue == .successful {
                     showSuccessAlert = true
                 }

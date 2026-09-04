@@ -92,7 +92,7 @@ struct ManualAddPenPalSheet: View {
                     Text(imageData == nil ? "Add Photo" : "Change Photo")
                         .font(.caption)
                 }
-                .onChange(of: selectedPhoto) { newItem in
+                .onChange(of: selectedPhoto) { _, newItem in
                     self.imageLoading = true
                     self.imageData = nil
                     Task {

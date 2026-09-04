@@ -106,7 +106,7 @@ struct StatsView: View {
                             }
                             .padding(.horizontal)
                         }
-                        .onChange(of: selectedYear) { newValue in
+                        .onChange(of: selectedYear) { _, newValue in
                             withAnimation {
                                 yearScrollProxy.scrollTo(newValue ?? -1, anchor: .center)
                             }
