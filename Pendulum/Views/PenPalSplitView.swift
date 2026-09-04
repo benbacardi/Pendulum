@@ -38,7 +38,7 @@ struct PenPalSplitView: View {
                     .navigationTitle(navBarTitle)
                     .navigationBarTitleDisplayMode(navBarDisplayMode)
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .topBarLeading) {
                             Button(action: {
                                 router.presentedSheet = .settings(namespace: transition)
                             }) {
@@ -46,7 +46,7 @@ struct PenPalSplitView: View {
                             }
                         }
                         .matchedTransitionSourceIfPossible(id: "settings", in: transition)
-                        ToolbarItem(placement: .navigationBarTrailing) {
+                        ToolbarItem(placement: .topBarTrailing) {
                             Button(action: {
                                 router.presentedSheet = .stationeryList(namespace: transition)
                             }) {
@@ -54,7 +54,7 @@ struct PenPalSplitView: View {
                             }
                         }
                         .matchedTransitionSourceIfPossible(id: "stationeryList", in: transition)
-                        ToolbarItem(placement: .navigationBarTrailing) {
+                        ToolbarItem(placement: .topBarTrailing) {
                             Button(action: {
                                 if self.stopAskingAboutContacts {
                                     router.presentedSheet = .addPenPalManually(namespace: transition) { penpal in

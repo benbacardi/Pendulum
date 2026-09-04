@@ -309,7 +309,7 @@ struct EventPropertyDetailsSheet: View {
             .navigationTitle("Stationery")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         Section("Sort") {
                             Button(action: {
@@ -339,14 +339,14 @@ struct EventPropertyDetailsSheet: View {
                         Label("Sort", systemImage: "slider.horizontal.3")
                     }
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
                         showAddStationerySheet = true
                     }) {
                         Label("Add Stationery Type", systemImage: "plus")
                     }
                 }
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
@@ -379,7 +379,7 @@ struct EventPropertyDetailsSheet: View {
                     .navigationTitle("Add Stationery Type")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .topBarLeading) {
                             Button(action: {
                                 self.showAddStationerySheet = false
                             }) {
@@ -402,7 +402,7 @@ struct EventPropertyDetailsSheet: View {
                     .navigationTitle("Edit Stationery Type")
                     .navigationBarTitleDisplayMode(.inline)
                     .toolbar {
-                        ToolbarItem(placement: .navigationBarLeading) {
+                        ToolbarItem(placement: .topBarLeading) {
                             Button(action: {
                                 self.editingCustomStationery = nil
                             }) {

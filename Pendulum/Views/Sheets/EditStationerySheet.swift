@@ -42,7 +42,7 @@ struct EditStationerySheet: View {
             .navigationTitle("Update \(typeDisplayName)")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
                         presentationMode.wrappedValue.dismiss()
                     }) {
