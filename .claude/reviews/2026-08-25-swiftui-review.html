@@ -660,7 +660,7 @@ html { scroll-behavior: smooth; }
     <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
     <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
     <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
-    <div class="stat is-fixed"><span class="n">21</span><span class="l">Fixed</span></div>
+    <div class="stat is-fixed"><span class="n">22</span><span class="l">Fixed</span></div>
     <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
     <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
   </div>
@@ -2691,15 +2691,18 @@ dismiss()</code></pre>
           </div>
         </article>
 
-        <article class="finding sf-med" data-sev="med">
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-med">Medium</span>
               <span class="f-lines">Views/TipJarView.swift:107</span>
               <span class="f-cat">deprecated-api</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">aa1d493</span></span>
             </div>
             <div class="f-claim"><code>alert(isPresented:) { Alert(...) }</code> is the iOS 13 API.</div>
-            <p class="f-why">Superseded in iOS 15. And since the only button does nothing but dismiss, the actions closure can be left empty entirely — SwiftUI supplies OK.</p>
+            <p class="f-why">Superseded in iOS 15.</p>
+            <p class="f-why"><strong>Correction:</strong> the original write-up claimed the actions closure could be left empty since the only button just dismisses, falling back to the system default OK button. That would have silently dropped the custom "🧡" dismiss button. The actual commit kept it as an explicit <code>Button</code> instead.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -2713,9 +2716,11 @@ dismiss()</code></pre>
 }</code></pre>
             </div>
             <div class="pane after">
-              <div class="plabel">After</div>
+              <div class="plabel">After — button kept, not dropped</div>
 <pre><code>.alert(<span class="s">"Purchase Successful"</span>,
-       isPresented: $showingSuccessAlert) { } message: {
+       isPresented: $showingSuccessAlert) {
+    <span class="t">Button</span>(<span class="s">"🧡"</span>) { }
+} message: {
     <span class="t">Text</span>(<span class="s">"Thank you for supporting Pendulum!"</span>)
 }</code></pre>
             </div>
@@ -3220,6 +3225,7 @@ dismiss()</code></pre>
     <span>Update, 4 September 2026: ranks 1–9 merged to <span class="mono">main</span> and their hashes here now point at the merged commits, not the pre-rebase ones. Rank 10 swept in twelve commits on <span class="mono">async-contact-sync</span>, along with the last two concurrency findings and a loading-state fix — 17 commits, unmerged, so those hashes will move if the branch is rebased. One finding <a href="#f-rejected">rejected</a> after checking it on a device. The project builds with no deprecation warnings.</span>
     <span>Update, 4 September 2026 (later): the manual English pluralisation fixed in <code>PenPalView</code> and half-fixed in <code>StatsView</code> — the <code>StatsView</code> line took four attempts, three bugs caught on device rather than in the diff, the last two both about the inflector: a <code>String</code> where it needed a number ("894 day"), a fixed decimal specifier that always showed ".0" ("894.0 days"), and a <code>FormatStyle</code> swap that fixed the ".0" but broke pluralisation the same way the first bug did. <strong>Confirmed correct on device</strong> with a runtime-chosen <code>specifier:</code>. Now 22 commits on <span class="mono">async-contact-sync</span>, unmerged.</span>
     <span>Also, 4 September 2026: added a <strong>Pending only</strong> toggle beside the severity filter — on by default, it hides every <code>Fixed</code>/<code>Rejected</code> finding, the matching rows in the priority board, and any <code>Found since</code>/<code>Second pass</code>/<code>Rejected</code> cluster left with nothing showing, so scrolling the report surfaces only what's still open.</span>
+    <span>Correction, 4 September 2026: the <code>TipJarView</code> alert finding (Smaller files) was already fixed in <span class="mono">aa1d493</span> but had no <code>Fixed</code> tag here. Its "after" sample also claimed the custom "🧡" dismiss button could be dropped for the system default — the actual commit kept the button; the sample here now matches the real diff.</span>
     <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · two half-fixed findings (<code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and its unscaled row height; <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race) · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 

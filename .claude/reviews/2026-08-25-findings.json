@@ -534,7 +534,8 @@
       "severity": "medium",
       "category": "deprecated-api",
       "summary": "alert(isPresented:) { Alert(...) } is the iOS 13 API; the lone dismiss button can be omitted entirely.",
-      "fix": ".alert(_:isPresented:actions:message:)."
+      "fix": ".alert(_:isPresented:actions:message:).",
+      "outcome": "fixed — aa1d493 on async-contact-sync (unmerged). Correction: the review's proposed fix (an empty actions closure, falling back to the system default OK button) would have silently dropped the custom \"🧡\" dismiss button. The actual commit kept it: actions: { Button(\"🧡\") { } }, not actions: { }."
     },
     {
       "id": "addpenpal-text-concat",
