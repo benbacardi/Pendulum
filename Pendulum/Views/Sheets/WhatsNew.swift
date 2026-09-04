@@ -151,11 +151,9 @@ struct WhatsNew: View {
     }
 }
 
-struct WhatsNew_Previews: PreviewProvider {
-    static var previews: some View {
-        Text("Hello")
-            .sheet(isPresented: .constant(true)) {
-                WhatsNew()
-            }
-    }
+#Preview {
+    Text("Hello")
+        .sheet(isPresented: .constant(true)) {
+            WhatsNew()
+        }
 }

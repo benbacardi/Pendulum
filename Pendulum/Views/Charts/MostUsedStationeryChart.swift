@@ -79,10 +79,8 @@ struct MostUsedStationeryChart: View {
     }
 }
 
-struct MostUsedPenChart_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil, selectedYear: nil)
-        }
+#Preview {
+    NavigationStack {
+        MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil, selectedYear: nil)
     }
 }

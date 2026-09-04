@@ -56,8 +56,6 @@ struct SentByTypeChart: View {
     }
 }
 
-struct SentByTypeChart_Previews: PreviewProvider {
-    static var previews: some View {
-        SentByTypeChart(showInbound: .constant(false), sentTypes: .constant([.postcard: 2]), receivedTypes: .constant([.postcard: 3, .package: 5]))
-    }
+#Preview {
+    SentByTypeChart(showInbound: .constant(false), sentTypes: .constant([.postcard: 2]), receivedTypes: .constant([.postcard: 3, .package: 5]))
 }

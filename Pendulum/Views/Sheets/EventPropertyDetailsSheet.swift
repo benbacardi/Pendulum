@@ -454,8 +454,6 @@ struct EventPropertyDetailsSheet: View {
 }
 
 
-struct EventPropertyDetailsSheet_Previews: PreviewProvider {
-    static var previews: some View {
-        EventPropertyDetailsSheet(penpal: nil)
-    }
+#Preview {
+    EventPropertyDetailsSheet(penpal: nil)
 }

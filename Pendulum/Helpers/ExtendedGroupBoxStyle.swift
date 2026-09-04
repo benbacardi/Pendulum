@@ -48,44 +48,42 @@ struct ExtendedGroupBoxStyle: GroupBoxStyle {
     
 }
 
-struct ExtendedGroupBoxStyle_Previews: PreviewProvider {
-    static var previews: some View {
-        VStack {
+#Preview {
+    VStack {
+        GroupBox {
+            Text("Hello")
+            Text("Everybody")
+        }
+        .contextMenu {
+            Button(action: {}) {
+                Label("Hello", systemImage: "image")
+            }
+        }
+        ForEach(0..<4) { _ in
             GroupBox {
                 Text("Hello")
                 Text("Everybody")
             }
-            .contextMenu {
-                Button(action: {}) {
-                    Label("Hello", systemImage: "image")
-                }
-            }
-            ForEach(0..<4) { _ in
-                GroupBox {
-                    Text("Hello")
-                    Text("Everybody")
-                }
-                .contextMenu {
-                    Button(action: {}) {
-                        Label("Hello", systemImage: "image")
-                    }
-                }
-            }
-            .groupBoxStyle(ExtendedGroupBoxStyle(background: .red))
-            GroupBox {
-                Text("Hello")
-                    .padding([.horizontal, .top])
-                Rectangle().frame(height: 20)
-                Text("Everybody")
-                    .padding([.horizontal, .bottom])
-            }
-            .groupBoxStyle(ExtendedGroupBoxStyle(includePadding: false))
             .contextMenu {
                 Button(action: {}) {
                     Label("Hello", systemImage: "image")
                 }
             }
         }
-        .padding()
+        .groupBoxStyle(ExtendedGroupBoxStyle(background: .red))
+        GroupBox {
+            Text("Hello")
+                .padding([.horizontal, .top])
+            Rectangle().frame(height: 20)
+            Text("Everybody")
+                .padding([.horizontal, .bottom])
+        }
+        .groupBoxStyle(ExtendedGroupBoxStyle(includePadding: false))
+        .contextMenu {
+            Button(action: {}) {
+                Label("Hello", systemImage: "image")
+            }
+        }
     }
+    .padding()
 }
