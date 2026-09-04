@@ -246,7 +246,7 @@ struct PenPalView: View {
         }
         .navigationBarTitleDisplayMode(.inline)
         .task {
-            penpal.syncWithContact()
+            await penpal.syncWithContact()
             #if DEBUG
             if penpal.wrappedName == "James Burbank" {
                 DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(1)) {

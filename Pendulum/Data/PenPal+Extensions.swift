@@ -466,58 +466,80 @@ extension PenPal {
         }
     }
     
-    func syncWithContact() {
+    /// Brings this Pen Pal's name, nickname and photo in line with their address-book entry.
+    ///
+    /// Async because both Contacts calls are blocking XPC round trips into the contacts daemon, and
+    /// the caller is `.task` on a view — which inherits the main actor, so a synchronous version
+    /// stalled the UI for as long as the daemon took to answer.
+    func syncWithContact() async {
         
         appLogger.debug("Syncing \(self.wrappedName) with contacts")
         
-        if CNContactStore.canReadContacts(CNContactStore.authorizationStatus(for: .contacts)) && !UserDefaults.shared.stopAskingAboutContacts {
+        guard CNContactStore.canReadContacts(CNContactStore.authorizationStatus(for: .contacts)),
+              !UserDefaults.shared.stopAskingAboutContacts else { return }
+        
+        appLogger.debug("Authorisation")
+        
+        guard let uuid = self.id else { return }
+        
+        let keys = [
+            CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
+            CNContactNicknameKey,
+            CNContactOrganizationNameKey,
+            CNContactImageDataAvailableKey,
+            CNContactThumbnailImageDataKey
+        ] as! [CNKeyDescriptor]
+        
+        /// Read what we need off the Pen Pal here, on the context's own queue — the work below runs
+        /// elsewhere, where touching a managed object is a Core Data threading violation
+        let name = self.wrappedName
+        let mapping = UserDefaults.shared.penpalContactMap
+        
+        appLogger.debug("Fetched mapping: \(mapping)")
+        appLogger.debug("This ID: \(uuid)")
+        
+        if let contactID = mapping[uuid.uuidString] {
             
-            appLogger.debug("Authorisation")
+            let contact = await Task.detached(priority: .userInitiated) { () -> CNContact? in
+                appLogger.debug("Fetching contact \(contactID) for \(name)")
+                do {
+                    return try CNContactStore().unifiedContact(withIdentifier: contactID, keysToFetch: keys)
+                } catch {
+                    appLogger.error("Could not fetch contact with ID \(contactID) \(name): \(error.localizedDescription)")
+                    return nil
+                }
+            }.value
             
-            let store = CNContactStore()
-            let keys = [
-                CNContactFormatter.descriptorForRequiredKeys(for: .fullName),
-                CNContactNicknameKey,
-                CNContactOrganizationNameKey,
-                CNContactImageDataAvailableKey,
-                CNContactThumbnailImageDataKey
-            ] as! [CNKeyDescriptor]
+            if let contact {
+                self.update(from: contact, in: PersistenceController.shared.container.viewContext)
+            }
             
-            if let uuid = self.id {
-                let mapping = UserDefaults.shared.penpalContactMap
-                
-                appLogger.debug("Fetched mapping: \(mapping)")
-                appLogger.debug("This ID: \(uuid)")
-                
-                if let contactID = mapping[uuid.uuidString] {
-                    do {
-                        appLogger.debug("Fetching contact \(contactID) for \(self.wrappedName)")
-                        let contact = try store.unifiedContact(withIdentifier: contactID, keysToFetch: keys)
-                        self.update(from: contact, in: PersistenceController.shared.container.viewContext)
-                    } catch {
-                        appLogger.error("Could not fetch contact with ID \(contactID) \(self.wrappedName): \(error.localizedDescription)")
-                    }
-                } else {
-                    appLogger.debug("No mapping found, searching contacts")
-                    let request = CNContactFetchRequest(keysToFetch: keys)
-                    request.sortOrder = CNContactsUserDefaults.shared().sortOrder
-                    /// Read what we need off the Pen Pal here, on the context's own
-                    /// queue. The enumeration below runs on a background queue, where
-                    /// touching a managed object is a Core Data threading violation.
-                    let name = self.wrappedName
-                    DispatchQueue.global(qos: .userInitiated).async {
-                        do {
-                            try store.enumerateContacts(with: request) { (contact, stop) in
-                                if contact.fullName == name {
-                                    appLogger.debug("Setting \(name) to contact \(contact.identifier)")
-                                    UserDefaults.shared.setContactID(forID: uuid, to: contact.identifier)
-                                }
-                            }
-                        } catch {
-                            appLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
+        } else {
+            
+            appLogger.debug("No mapping found, searching contacts")
+            
+            let match = await Task.detached(priority: .userInitiated) { () -> String? in
+                let request = CNContactFetchRequest(keysToFetch: keys)
+                request.sortOrder = CNContactsUserDefaults.shared().sortOrder
+                var identifier: String? = nil
+                do {
+                    try CNContactStore().enumerateContacts(with: request) { contact, stop in
+                        if contact.fullName == name {
+                            identifier = contact.identifier
+                            /// The first match is the answer; this used to keep walking the whole
+                            /// address book, and to write the mapping once per duplicate name
+                            stop.pointee = true
                         }
                     }
+                } catch {
+                    appLogger.error("Could not enumerate contacts: \(error.localizedDescription)")
                 }
+                return identifier
+            }.value
+            
+            if let match {
+                appLogger.debug("Setting \(name) to contact \(match)")
+                UserDefaults.shared.setContactID(forID: uuid, to: match)
             }
             
         }
