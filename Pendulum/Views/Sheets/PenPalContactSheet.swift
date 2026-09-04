@@ -14,7 +14,7 @@ struct PenPalContactSheet: View {
     // MARK: Environment
     @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
     // MARK: State
     @ObservedObject var penpal: PenPal
@@ -103,7 +103,7 @@ struct PenPalContactSheet: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Cancel", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()
@@ -114,7 +114,7 @@ struct PenPalContactSheet: View {
                         penpal.notes = notes.isEmpty ? nil : notes
                         penpal.address = localAddress.isEmpty ? nil : localAddress
                         PersistenceController.shared.save(context: moc)
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Done", systemImage: "checkmark")
                             .labelStyleIconOnlyOn26()

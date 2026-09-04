@@ -30,7 +30,7 @@ struct SettingsList: View {
     // MARK: Environment
     @Environment(\.openURL) private var openURL
     @Environment(\.managedObjectContext) var moc
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     
     @State private var motionManager = CMMotionManager()
     
@@ -319,7 +319,7 @@ struct SettingsList: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Close", systemImage: "xmark")
                     }

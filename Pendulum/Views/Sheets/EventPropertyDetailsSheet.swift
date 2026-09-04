@@ -43,7 +43,7 @@ struct ParameterCount: Comparable, Identifiable, CustomStringConvertible {
 struct EventPropertyDetailsSheet: View {
 
     // MARK: Environment
-    @Environment(\.presentationMode) var presentationMode
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.managedObjectContext) var moc
 
     // MARK: Properties
@@ -348,7 +348,7 @@ struct EventPropertyDetailsSheet: View {
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button(action: {
-                        presentationMode.wrappedValue.dismiss()
+                        dismiss()
                     }) {
                         Label("Close", systemImage: "xmark")
                             .labelStyleIconOnlyOn26()
