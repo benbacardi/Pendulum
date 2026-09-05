@@ -20,7 +20,6 @@ struct StationeryTypeSection: View {
     let allowAdding: Bool
     let outbound: Bool
     let onRename: (ParameterCount) -> Void
-    let onDelete: (ParameterCount) -> Void
 
     var body: some View {
         Section(header: HStack {
@@ -32,23 +31,11 @@ struct StationeryTypeSection: View {
                     .foregroundStyle(.secondary)
             }
             ForEach(options, id: \.name) { option in
-                HStack {
-                    Text(option.name)
-                        .fullWidth()
-                    if option.count > 0 {
-                        Text("\(option.count)")
-                            .foregroundStyle(.secondary)
+                StationeryRow(option: option, onRename: { onRename(option) }) {
+                    Stationery.delete(option, in: moc)
+                    withAnimation {
+                        options.removeAll { $0 == option }
                     }
-                }
-                .swipeActions(edge: .leading) {
-                    RenameStationeryButton { onRename(option) }
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    DeleteStationeryButton(option: option) { onDelete(option) }
-                }
-                .contextMenu {
-                    RenameStationeryButton { onRename(option) }
-                    DeleteStationeryButton(option: option) { onDelete(option) }
                 }
             }
             if allowAdding && outbound {

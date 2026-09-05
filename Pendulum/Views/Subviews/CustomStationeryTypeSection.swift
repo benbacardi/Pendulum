@@ -21,10 +21,12 @@ struct CustomStationeryTypeSection: View {
     let allowAdding: Bool
     let outbound: Bool
     let onRename: (ParameterCount) -> Void
-    let onDelete: (ParameterCount) -> Void
     let onEditCategory: () -> Void
-    let onDeleteCategory: () -> Void
-    let onEntryAdded: () -> Void
+    /// Called after anything changes the underlying data — an entry added, an entry deleted, or
+    /// the whole category deleted — so the parent can refetch.
+    let onChanged: () -> Void
+
+    @State private var showDeleteCategoryConfirmation = false
 
     var body: some View {
         Section(header: HStack {
@@ -35,7 +37,9 @@ struct CustomStationeryTypeSection: View {
                 Button(action: onEditCategory) {
                     Label("Edit", systemImage: "pencil")
                 }
-                Button(role: .destructive, action: onDeleteCategory) {
+                Button(role: .destructive) {
+                    showDeleteCategoryConfirmation = true
+                } label: {
                     Label("Delete", systemImage: "trash")
                 }
             } label: {
@@ -44,29 +48,22 @@ struct CustomStationeryTypeSection: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
+            .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCategoryConfirmation, titleVisibility: .visible) {
+                Button("Delete \(key.type)", role: .destructive) {
+                    CustomStationery.delete(key, in: moc)
+                    onChanged()
+                }
+                Button("Cancel", role: .cancel) { }
+            }
         }) {
             if options.isEmpty && !(allowAdding && outbound) {
                 Text("None recorded yet")
                     .foregroundStyle(.secondary)
             }
             ForEach(options, id: \.name) { option in
-                HStack {
-                    Text(option.name)
-                        .fullWidth()
-                    if option.count > 0 {
-                        Text("\(option.count)")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .swipeActions(edge: .leading) {
-                    RenameStationeryButton { onRename(option) }
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    DeleteStationeryButton(option: option) { onDelete(option) }
-                }
-                .contextMenu {
-                    RenameStationeryButton { onRename(option) }
-                    DeleteStationeryButton(option: option) { onDelete(option) }
+                StationeryRow(option: option, onRename: { onRename(option) }) {
+                    CustomStationery.delete(option, in: moc)
+                    onChanged()
                 }
             }
             if allowAdding && outbound {
@@ -81,7 +78,7 @@ struct CustomStationeryTypeSection: View {
                                 newEntry = ""
                                 focused.wrappedValue = nil
                             }
-                            onEntryAdded()
+                            onChanged()
                         }) {
                             Text("Save")
                                 .foregroundStyle(Color.accentColor)

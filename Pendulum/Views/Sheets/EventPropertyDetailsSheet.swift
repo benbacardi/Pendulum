@@ -69,12 +69,6 @@ struct EventPropertyDetailsSheet: View {
     @State private var newPaperEntry: String = ""
     @FocusState private var newPaperEntryIsFocused: Bool
 
-    @State private var toDelete: ParameterCount? = nil
-    @State private var showDeleteAlert: Bool = false
-
-    @State private var customTypeToDelete: CustomStationeryType? = nil
-    @State private var showDeleteCustomTypeAlert: Bool = false
-
     @State private var showAddStationerySheet: Bool = false
 
     @State private var customNewEntries: [String: String] = [:]
@@ -92,9 +86,9 @@ struct EventPropertyDetailsSheet: View {
                     .padding(.horizontal)
                     .padding(.bottom)
                     List {
-                        StationeryTypeSection(type: .pen, options: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
-                        StationeryTypeSection(type: .ink, options: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
-                        StationeryTypeSection(type: .paper, options: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
+                        StationeryTypeSection(type: .pen, options: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename)
+                        StationeryTypeSection(type: .ink, options: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename)
+                        StationeryTypeSection(type: .paper, options: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename)
                         ForEach(Array(custom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { key in
                             CustomStationeryTypeSection(
                                 key: key,
@@ -107,13 +101,8 @@ struct EventPropertyDetailsSheet: View {
                                 allowAdding: allowAdding,
                                 outbound: outbound,
                                 onRename: rename,
-                                onDelete: delete,
                                 onEditCategory: { editingCustomStationery = key },
-                                onDeleteCategory: {
-                                    customTypeToDelete = key
-                                    showDeleteCustomTypeAlert = true
-                                },
-                                onEntryAdded: { Task { await self.updateStationery() } }
+                                onChanged: { Task { await self.updateStationery() } }
                             )
                         }
                     }
@@ -228,48 +217,6 @@ struct EventPropertyDetailsSheet: View {
                 }
             }
         }
-        /// Attached to the NavigationStack itself, not the List the rows live in — nested inside
-        /// a List, on a device where this sheet is presented with a zoom navigationTransition
-        /// (PenPalView.swift / AppRouter.swift, iOS 26+), the dialog anchored near the zoom's
-        /// source rect instead of the bottom of the screen.
-        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
-            Button("Delete \(parameter.name)", role: .destructive) {
-                if parameter.type != nil {
-                    Stationery.delete(parameter, in: moc)
-                } else if parameter.customType != nil {
-                    CustomStationery.delete(parameter, in: moc)
-                }
-                self.toDelete = nil
-                if let type = parameter.type {
-                    withAnimation {
-                        switch type {
-                        case .pen:
-                            self.pens = self.pens.filter { $0 != parameter }
-                        case .ink:
-                            self.inks = self.inks.filter { $0 != parameter }
-                        case .paper:
-                            self.papers = self.papers.filter { $0 != parameter }
-                        }
-                    }
-                } else {
-                    Task {
-                        await self.updateStationery()
-                    }
-                }
-            }
-        }
-        .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCustomTypeAlert, titleVisibility: .visible, presenting: customTypeToDelete) { customType in
-            Button("Delete \(customType.type)", role: .destructive) {
-                CustomStationery.delete(customType, in: moc)
-                self.customTypeToDelete = nil
-                Task {
-                    await self.updateStationery()
-                }
-            }
-            Button("Cancel", role: .cancel) {
-                self.customTypeToDelete = nil
-            }
-        }
     }
 
     /// The inputs the stationery lists depend on — both have to be watched, or changing the sort
@@ -285,11 +232,6 @@ struct EventPropertyDetailsSheet: View {
 
     private func rename(_ option: ParameterCount) {
         self.editingStationery = option
-    }
-
-    private func delete(_ option: ParameterCount) {
-        self.toDelete = option
-        self.showDeleteAlert = true
     }
 
     private func updateStationery() async {
