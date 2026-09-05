@@ -33,7 +33,7 @@ struct StationeryRow: View {
             RenameStationeryButton(action: onRename)
         }
         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-            DeleteStationeryButton(option: option) {
+            DeleteStationeryButton(option: option, role: nil) {
                 showDeleteConfirmation = true
             }
         }

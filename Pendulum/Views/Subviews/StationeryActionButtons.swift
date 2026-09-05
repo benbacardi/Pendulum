@@ -12,11 +12,17 @@ import SwiftUI
 struct DeleteStationeryButton: View {
 
     let option: ParameterCount
+    /// `.destructive` gives a context-menu item its red text. Pass `nil` in a `.swipeActions`
+    /// context instead: a destructive-role swipe button makes the system play its own
+    /// swipe-to-delete collapse animation on tap, regardless of what `action` actually does —
+    /// tearing down the row (and anything attached to it, like a confirmation dialog) before
+    /// the action's confirmation can be answered.
+    var role: ButtonRole? = .destructive
     let action: () -> Void
 
     var body: some View {
         if option.count == 0 || option.customType != nil {
-            Button(role: .destructive, action: action) {
+            Button(role: role, action: action) {
                 Label("Delete", systemImage: "trash")
             }
             .tint(.red)
