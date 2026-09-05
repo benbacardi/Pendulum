@@ -117,44 +117,6 @@ struct EventPropertyDetailsSheet: View {
                             )
                         }
                     }
-                    .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
-                        Button("Delete \(parameter.name)", role: .destructive) {
-                            if parameter.type != nil {
-                                Stationery.delete(parameter, in: moc)
-                            } else if parameter.customType != nil {
-                                CustomStationery.delete(parameter, in: moc)
-                            }
-                            self.toDelete = nil
-                            if let type = parameter.type {
-                                withAnimation {
-                                    switch type {
-                                    case .pen:
-                                        self.pens = self.pens.filter { $0 != parameter }
-                                    case .ink:
-                                        self.inks = self.inks.filter { $0 != parameter }
-                                    case .paper:
-                                        self.papers = self.papers.filter { $0 != parameter }
-                                    }
-                                }
-                            } else {
-                                Task {
-                                    await self.updateStationery()
-                                }
-                            }
-                        }
-                    }
-                    .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCustomTypeAlert, titleVisibility: .visible, presenting: customTypeToDelete) { customType in
-                        Button("Delete \(customType.type)", role: .destructive) {
-                            CustomStationery.delete(customType, in: moc)
-                            self.customTypeToDelete = nil
-                            Task {
-                                await self.updateStationery()
-                            }
-                        }
-                        Button("Cancel", role: .cancel) {
-                            self.customTypeToDelete = nil
-                        }
-                    }
                 }
                 .background(Color(.systemGroupedBackground))
             }
@@ -266,7 +228,48 @@ struct EventPropertyDetailsSheet: View {
                 }
             }
         }
-
+        /// Attached to the NavigationStack itself, not the List the rows live in — nested inside
+        /// a List, on a device where this sheet is presented with a zoom navigationTransition
+        /// (PenPalView.swift / AppRouter.swift, iOS 26+), the dialog anchored near the zoom's
+        /// source rect instead of the bottom of the screen.
+        .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
+            Button("Delete \(parameter.name)", role: .destructive) {
+                if parameter.type != nil {
+                    Stationery.delete(parameter, in: moc)
+                } else if parameter.customType != nil {
+                    CustomStationery.delete(parameter, in: moc)
+                }
+                self.toDelete = nil
+                if let type = parameter.type {
+                    withAnimation {
+                        switch type {
+                        case .pen:
+                            self.pens = self.pens.filter { $0 != parameter }
+                        case .ink:
+                            self.inks = self.inks.filter { $0 != parameter }
+                        case .paper:
+                            self.papers = self.papers.filter { $0 != parameter }
+                        }
+                    }
+                } else {
+                    Task {
+                        await self.updateStationery()
+                    }
+                }
+            }
+        }
+        .confirmationDialog("Delete this category and all its entries?", isPresented: $showDeleteCustomTypeAlert, titleVisibility: .visible, presenting: customTypeToDelete) { customType in
+            Button("Delete \(customType.type)", role: .destructive) {
+                CustomStationery.delete(customType, in: moc)
+                self.customTypeToDelete = nil
+                Task {
+                    await self.updateStationery()
+                }
+            }
+            Button("Cancel", role: .cancel) {
+                self.customTypeToDelete = nil
+            }
+        }
     }
 
     /// The inputs the stationery lists depend on — both have to be watched, or changing the sort
