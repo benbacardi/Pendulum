@@ -80,172 +80,6 @@ struct EventPropertyDetailsSheet: View {
     @State private var customNewEntries: [String: String] = [:]
     @FocusState private var focusedCustomEntryType: String?
 
-    @ViewBuilder
-    func deleteButton(for option: ParameterCount) -> some View {
-        if option.count == 0 || option.customType != nil {
-            Button(role: .destructive) {
-                self.toDelete = option
-                self.showDeleteAlert = true
-            } label: {
-                Label("Delete", systemImage: "trash")
-            }
-            .tint(.red)
-        } else {
-            EmptyView()
-        }
-    }
-
-    @ViewBuilder
-    func renameButton(for option: ParameterCount) -> some View {
-        Button(action: {
-            self.editingStationery = option
-        }) {
-            Label("Rename", systemImage: "pencil")
-        }
-    }
-
-    func customEntryDisabled(for key: CustomStationeryType, options: [ParameterCount]) -> Bool {
-        let trimmed = (customNewEntries[key.type] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-        return trimmed.isEmpty || options.map { $0.name }.contains(trimmed)
-    }
-
-    @ViewBuilder
-    func section(for type: StationeryType, with options: Binding<[ParameterCount]>, newEntry: Binding<String>, focused: FocusState<Bool>.Binding) -> some View {
-        Section(header: HStack {
-            type.iconImage
-            Text(type.namePlural)
-        }) {
-            if options.wrappedValue.isEmpty && !(allowAdding && outbound) {
-                Text("None recorded yet")
-                    .foregroundStyle(.secondary)
-            }
-            ForEach(options.wrappedValue, id: \.name) { option in
-                HStack {
-                    Text(option.name)
-                        .fullWidth()
-                    if option.count > 0 {
-                        Text("\(option.count)")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .swipeActions(edge: .leading) {
-                    renameButton(for: option)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    deleteButton(for: option)
-                }
-                .contextMenu {
-                    renameButton(for: option)
-                    deleteButton(for: option)
-                }
-            }
-            if allowAdding && outbound {
-                HStack {
-                    TextField("Add…", text: newEntry)
-                        .focused(focused)
-                    if focused.wrappedValue {
-                        Button(action: {
-                            let stationery = Stationery(context: moc)
-                            stationery.id = UUID()
-                            stationery.value = newEntry.wrappedValue
-                            stationery.type = type.recordType
-                            withAnimation {
-                                PersistenceController.shared.save(context: moc)
-                                options.wrappedValue.append(ParameterCount(name: stationery.wrappedValue, count: 0, type: type, customType: nil))
-                                focused.wrappedValue = false
-                                newEntry.wrappedValue = ""
-                            }
-                        }) {
-                            Text("Save")
-                                .foregroundStyle(Color.accentColor)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || options.wrappedValue.map { $0.name }.contains(newEntry.wrappedValue.trimmingCharacters(in: .whitespacesAndNewlines)))
-                    }
-                }
-            }
-        }
-    }
-
-    @ViewBuilder
-    func customSection(for key: CustomStationeryType, options: [ParameterCount]) -> some View {
-        Section(header: HStack {
-            Image(systemName: key.icon)
-            Text(key.type)
-            Spacer()
-            Menu {
-                Button(action: {
-                    editingCustomStationery = key
-                }) {
-                    Label("Edit", systemImage: "pencil")
-                }
-                Button(role: .destructive, action: {
-                    customTypeToDelete = key
-                    showDeleteCustomTypeAlert = true
-                }) {
-                    Label("Delete", systemImage: "trash")
-                }
-            } label: {
-                Label("More actions", systemImage: "ellipsis")
-                    .labelStyle(.iconOnly)
-                    .foregroundStyle(.secondary)
-            }
-            .buttonStyle(.plain)
-        }) {
-            if options.isEmpty && !(allowAdding && outbound) {
-                Text("None recorded yet")
-                    .foregroundStyle(.secondary)
-            }
-            ForEach(options, id: \.name) { option in
-                HStack {
-                    Text(option.name)
-                        .fullWidth()
-                    if option.count > 0 {
-                        Text("\(option.count)")
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                .swipeActions(edge: .leading) {
-                    renameButton(for: option)
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: false) {
-                    deleteButton(for: option)
-                }
-                .contextMenu {
-                    renameButton(for: option)
-                    deleteButton(for: option)
-                }
-            }
-            if allowAdding && outbound {
-                HStack {
-                    TextField("Add…", text: Binding(
-                        get: { customNewEntries[key.type] ?? "" },
-                        set: { customNewEntries[key.type] = $0 }
-                    ))
-                    .focused($focusedCustomEntryType, equals: key.type)
-                    if focusedCustomEntryType == key.type {
-                        Button(action: {
-                            let newValue = (customNewEntries[key.type] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-                            withAnimation {
-                                CustomStationery.addValue(newValue, toType: key, in: moc)
-                                customNewEntries[key.type] = ""
-                                focusedCustomEntryType = nil
-                            }
-                            Task {
-                                await self.updateStationery()
-                            }
-                        }) {
-                            Text("Save")
-                                .foregroundStyle(Color.accentColor)
-                        }
-                        .buttonStyle(.plain)
-                        .disabled(customEntryDisabled(for: key, options: options))
-                    }
-                }
-            }
-        }
-    }
-
     var body: some View {
         NavigationStack {
             Group {
@@ -258,11 +92,29 @@ struct EventPropertyDetailsSheet: View {
                     .padding(.horizontal)
                     .padding(.bottom)
                     List {
-                        section(for: .pen, with: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused)
-                        section(for: .ink, with: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused)
-                        section(for: .paper, with: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused)
+                        StationeryTypeSection(type: .pen, options: $pens, newEntry: $newPenEntry, focused: $newPenEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
+                        StationeryTypeSection(type: .ink, options: $inks, newEntry: $newInkEntry, focused: $newInkEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
+                        StationeryTypeSection(type: .paper, options: $papers, newEntry: $newPaperEntry, focused: $newPaperEntryIsFocused, allowAdding: allowAdding, outbound: outbound, onRename: rename, onDelete: delete)
                         ForEach(Array(custom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { key in
-                            customSection(for: key, options: custom[key] ?? [])
+                            CustomStationeryTypeSection(
+                                key: key,
+                                options: custom[key] ?? [],
+                                newEntry: Binding(
+                                    get: { customNewEntries[key.type] ?? "" },
+                                    set: { customNewEntries[key.type] = $0 }
+                                ),
+                                focused: $focusedCustomEntryType,
+                                allowAdding: allowAdding,
+                                outbound: outbound,
+                                onRename: rename,
+                                onDelete: delete,
+                                onEditCategory: { editingCustomStationery = key },
+                                onDeleteCategory: {
+                                    customTypeToDelete = key
+                                    showDeleteCustomTypeAlert = true
+                                },
+                                onEntryAdded: { Task { await self.updateStationery() } }
+                            )
                         }
                     }
                     .confirmationDialog("Are you sure?", isPresented: $showDeleteAlert, titleVisibility: .visible, presenting: toDelete) { parameter in
@@ -427,7 +279,16 @@ struct EventPropertyDetailsSheet: View {
     private var stationeryQuery: StationeryQuery {
         StationeryQuery(sortAlphabetically: sortAlphabetically, outbound: outbound)
     }
-    
+
+    private func rename(_ option: ParameterCount) {
+        self.editingStationery = option
+    }
+
+    private func delete(_ option: ParameterCount) {
+        self.toDelete = option
+        self.showDeleteAlert = true
+    }
+
     private func updateStationery() async {
         let penpalID = penpal?.objectID
         let sortAlphabetically = self.sortAlphabetically
