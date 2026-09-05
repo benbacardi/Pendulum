@@ -2199,7 +2199,7 @@ dismiss()</code></pre>
             </div>
             <div class="f-claim">A 100&nbsp;ms sleep races the change tracking.</div>
             <p class="f-why">The <code>.task</code> populates state from an existing event, which fires all eight <code>onChange</code> handlers and sets <code>thingsHaveChanged = true</code>. The <code>asyncAfter(0.1)</code> is an attempt to reset it once they've all settled. On a slow launch the flag stays <code>true</code>, and <code>interactiveDismissDisabled(thingsHaveChanged)</code> then blocks swipe-to-dismiss on a sheet the user hasn't touched.</p>
-            <p class="f-why"><strong>Fixed differently to the proposed guard flag above:</strong> a synchronous <code>defer</code> right after the assignments doesn't actually close the race, because nothing yields between the assignments and the <code>defer</code> — the <code>onChange</code> callbacks fire on a later run-loop turn, after the guard is already back to <code>false</code>. Same failure mode, just without the arbitrary delay. Went with a derived comparison instead: no flag, no ordering dependency, so no race is possible.</p>
+            <p class="f-why"><strong>Fixed differently to the proposed guard flag above:</strong> a synchronous <code>defer</code> right after the assignments doesn't actually close the race, because nothing yields between the assignments and the <code>defer</code> — the <code>onChange</code> callbacks fire on a later run-loop turn, after the guard is already back to <code>false</code>. Same failure mode, just without the arbitrary delay. Went with a derived comparison instead: no flag, no ordering dependency, so no race is possible. <strong>Confirmed on device (Rusty).</strong></p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -2513,7 +2513,7 @@ dismiss()</code></pre>
             </div>
             <div class="f-claim"><code>parsedData</code> filters and sorts in <code>body</code>, and is called twice.</div>
             <p class="f-why">Once for the <code>Chart</code> and again for <code>.frame(height: CGFloat(parsedData.count * 50))</code>. That fixed 50&nbsp;pt per row also ignores Dynamic Type — at larger text sizes the bar labels overflow their rows.</p>
-            <p class="f-why">Half fixed in <span class="mono">9446f6d</span>: the fetch behind it moved to a private context. <strong>Fully fixed</strong> in <span class="mono">3b5be42</span>: the computed <code>parsedData</code> property is gone, filtered/sorted once when the fetch lands and stored directly in <code>@State</code>; row height now scales via <code>@ScaledMetric</code>.</p>
+            <p class="f-why">Half fixed in <span class="mono">9446f6d</span>: the fetch behind it moved to a private context. <strong>Fully fixed</strong> in <span class="mono">3b5be42</span>: the computed <code>parsedData</code> property is gone, filtered/sorted once when the fetch lands and stored directly in <code>@State</code>; row height now scales via <code>@ScaledMetric</code>. <strong>Confirmed on device (Rusty).</strong></p>
           </div>
           <div class="diff two">
             <div class="pane before">

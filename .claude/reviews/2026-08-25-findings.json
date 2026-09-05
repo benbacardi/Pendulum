@@ -391,7 +391,7 @@
       "category": "correctness",
       "summary": "asyncAfter(0.1) resets thingsHaveChanged after the .task fires eight onChange handlers; on a slow launch the flag stays true and blocks swipe-to-dismiss.",
       "fix": "isPopulating guard flag with defer.",
-      "outcome": "fixed — 82583a2 on main, differently to the proposed fix. A guard flag reset via a synchronous defer right after the assignments doesn't actually close the race: nothing yields between the assignments and the defer, so onChange callbacks fire on a later run-loop turn, after the guard is already back to false — same failure mode, just without the arbitrary delay. Went with a derived comparison instead: thingsHaveChanged is now (trackedFields != initialFields), with initialFields snapshotted once population finishes. No ordering dependency on when onChange fires, so no race is possible. Also resolves addevent-repeated-onchange, below — the seven onChange handlers that existed solely to set the flag were deleted; letterType's stays for its defaultIgnore side effect."
+      "outcome": "fixed, confirmed on device (Rusty) — 82583a2 on main, differently to the proposed fix. A guard flag reset via a synchronous defer right after the assignments doesn't actually close the race: nothing yields between the assignments and the defer, so onChange callbacks fire on a later run-loop turn, after the guard is already back to false — same failure mode, just without the arbitrary delay. Went with a derived comparison instead: thingsHaveChanged is now (trackedFields != initialFields), with initialFields snapshotted once population finishes. No ordering dependency on when onChange fires, so no race is possible. Also resolves addevent-repeated-onchange, below — the seven onChange handlers that existed solely to set the flag were deleted; letterType's stays for its defaultIgnore side effect."
     },
     {
       "id": "addevent-lowercased-contains",
@@ -474,7 +474,7 @@
       "category": "performance",
       "summary": "parsedData filters and sorts in body and is called twice; .frame(height: count * 50) also ignores Dynamic Type.",
       "fix": "Filter and sort once at fetch time; use @ScaledMetric for row height.",
-      "outcome": "fixed — 3b5be42 on main"
+      "outcome": "fixed, confirmed on device (Rusty) — 3b5be42 on main"
     },
     {
       "id": "charts-filter-count",
