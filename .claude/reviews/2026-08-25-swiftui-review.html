@@ -660,7 +660,7 @@ html { scroll-behavior: smooth; }
     <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
     <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
     <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
-    <div class="stat is-fixed"><span class="n">25</span><span class="l">Fixed</span></div>
+    <div class="stat is-fixed"><span class="n">26</span><span class="l">Fixed</span></div>
     <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
     <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
   </div>
@@ -1617,15 +1617,18 @@ delete(penpal)
           </div>
         </article>
 
-        <article class="finding sf-low" data-sev="low">
+        <article class="finding is-fixed sf-low" data-sev="low" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-low">Low</span>
               <span class="f-lines">line 41–83</span>
               <span class="f-cat">view-structure</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">9e3cfc1</span></span>
             </div>
             <div class="f-claim"><code>yearPill(...)</code> and <code>mostUsed(...)</code> are <code>@ViewBuilder</code> methods.</div>
             <p class="f-why">A <code>@ViewBuilder</code> method doesn't give SwiftUI a distinct type to diff against, so the pills and rows are re-evaluated as part of the parent instead of independently. Extract to real structs — one per file.</p>
+            <p class="f-why"><strong>Confirmed on device (Rusty):</strong> the icon-width alignment across <code>MostUsedStationeryRow</code> instances — the trickiest part to get right, since it crosses the new view boundary via <code>PreferenceKey</code> — still lines pen/ink/paper icons up correctly.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -3234,7 +3237,8 @@ dismiss()</code></pre>
     <span>Also, 4 September 2026: added a <strong>Pending only</strong> toggle beside the severity filter — on by default, it hides every <code>Fixed</code>/<code>Rejected</code> finding, the matching rows in the priority board, and any <code>Found since</code>/<code>Second pass</code>/<code>Rejected</code> cluster left with nothing showing, so scrolling the report surfaces only what's still open.</span>
     <span>Correction, 4 September 2026: the <code>TipJarView</code> alert finding (Smaller files) was already fixed in <span class="mono">aa1d493</span> but had no <code>Fixed</code> tag here. Its "after" sample also claimed the custom "🧡" dismiss button could be dropped for the system default — the actual commit kept the button; the sample here now matches the real diff.</span>
     <span>Update, 5 September 2026: both remaining half-fixed findings closed out on <span class="mono">main</span> — <code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and unscaled row height (<span class="mono">3b5be42</span>), and <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race (<span class="mono">82583a2</span>), the latter fixed differently to the original write-up — a derived comparison instead of a guard flag, since a guard flag reset via a synchronous <code>defer</code> doesn't actually close this particular race. Also closes the related low-severity <code>onChange</code>-duplication finding as a side effect.</span>
-    <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
+    <span>Update, 5 September 2026 (later): <code>StatsView</code>'s two <code>@ViewBuilder</code> methods extracted to <code>YearPill</code> and <code>MostUsedStationeryRow</code>, confirmed on device (Rusty) — <span class="mono">9e3cfc1</span> on branch <span class="mono">split-statsview-viewbuilders</span>.</span>
+    <span>Remaining: rank 11, splitting <code>AddEventSheet</code> and <code>EventPropertyDetailsSheet</code> into real views (<code>StatsView</code>'s worst offenders are now done) · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 
 </div>

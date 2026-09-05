@@ -227,7 +227,8 @@
       "severity": "low",
       "category": "view-structure",
       "summary": "yearPill(...) and mostUsed(...) are @ViewBuilder methods.",
-      "fix": "Extract to YearPill and MostUsedStationeryRow structs, one per file."
+      "fix": "Extract to YearPill and MostUsedStationeryRow structs, one per file.",
+      "outcome": "fixed, confirmed on device (Rusty) — 9e3cfc1 on split-statsview-viewbuilders. Icon-width alignment across MostUsedStationeryRow instances still works: the row emits IconWidthPreferenceKey (now nested under MostUsedStationeryRow rather than StatsView), StatsView still collects it via onPreferenceChange and passes iconWidth back down as a parameter."
     },
     {
       "id": "statsview-sort-in-body",
