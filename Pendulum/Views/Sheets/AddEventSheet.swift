@@ -250,7 +250,24 @@ struct AddEventSheet: View {
     @State private var priorWrittenEvent: Event? = nil
 
     @State private var showEventTypeOptions: Bool = false
-    @State private var thingsHaveChanged: Bool = false
+
+    private struct TrackedFields: Equatable {
+        var date: Date
+        var notes: String
+        var pen: String
+        var ink: String
+        var paper: String
+        var trackingReference: String
+        var letterType: LetterType
+        var eventPhotos: [EventPhoto]
+    }
+    @State private var initialFields: TrackedFields? = nil
+    private var trackedFields: TrackedFields {
+        TrackedFields(date: date, notes: notes, pen: pen, ink: ink, paper: paper, trackingReference: trackingReference, letterType: letterType, eventPhotos: eventPhotos)
+    }
+    private var thingsHaveChanged: Bool {
+        initialFields != nil && trackedFields != initialFields
+    }
 
     @State private var customStationeryTypes: [CustomStationeryType] = []
 
@@ -551,28 +568,6 @@ struct AddEventSheet: View {
                 if self.setToDefaultIgnoreWhenChangingLetterType {
                     self.ignore = newValue.defaultIgnore
                 }
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: date) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: notes) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: pen) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: ink) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: paper) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: trackingReference) {
-                self.thingsHaveChanged = true
-            }
-            .onChange(of: eventPhotos) {
-                self.thingsHaveChanged = true
             }
             .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
                 self.iconWidth = value
@@ -600,12 +595,10 @@ struct AddEventSheet: View {
                     self.eventPhotos = event.allPhotos()
                     self.customStationeryTypes = event.allCustomStationeryTypes(from: moc)
                     appLogger.debug("Event photos: \(self.eventPhotos)")
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        self.thingsHaveChanged = false
-                    }
                 } else {
                     self.customStationeryTypes = CustomStationery.fetchDistinctTypes(from: moc)
                 }
+                initialFields = trackedFields
             }
             .task {
                 if eventType == .sent && event == nil {
