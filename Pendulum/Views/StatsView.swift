@@ -44,50 +44,6 @@ struct StatsView: View {
     @State private var sentTypes: [LetterType: Int] = [:]
     @State private var receivedTypes: [LetterType: Int] = [:]
     
-    @ViewBuilder
-    func yearPill(title: String, isSelected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: {
-            withAnimation {
-                action()
-            }
-        }) {
-            Text(title)
-                .font(.subheadline)
-                .fontWeight(isSelected ? .semibold : .regular)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 6)
-                .background(isSelected ? Color.accentColor : Color(.secondarySystemBackground))
-                .foregroundStyle(isSelected ? .white : .primary)
-                .clipShape(Capsule())
-        }
-    }
-
-    @ViewBuilder
-    func mostUsed(_ parameter: ParameterCount? = nil, placeholder: StationeryType? = nil) -> some View {
-        GroupBox {
-            HStack {
-                StationeryType.image(forIcon: parameter?.icon ?? placeholder?.icon ?? StationeryType.pen.icon)
-                    .frame(width: iconWidth)
-                    .background(GeometryReader { geo in
-                        Color.clear.preference(key: Self.IconWidthPreferenceKey.self, value: max(geo.size.width, geo.size.height))
-                    })
-                if let parameter = parameter {
-                    Text(parameter.name)
-                        .fullWidth()
-                    if parameter.count > 0 {
-                        Text("\(parameter.count)")
-                            .font(.headline)
-                        Image(systemName: "chevron.right")
-                            .foregroundStyle(.secondary)
-                    }
-                } else {
-                    Text("Placeholder Pen").fullWidth().redacted(reason: .placeholder)
-                }
-            }
-        }
-        .foregroundStyle(.primary)
-    }
-    
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
@@ -96,12 +52,12 @@ struct StatsView: View {
                     ScrollViewReader { yearScrollProxy in
                         ScrollView(.horizontal) {
                             HStack(spacing: 8) {
-                                yearPill(title: "All Time", isSelected: selectedYear == nil) {
+                                YearPill(title: "All Time", isSelected: selectedYear == nil) {
                                     self.selectedYear = nil
                                 }
                                 .id(-1)
                                 ForEach(availableYears, id: \.self) { year in
-                                    yearPill(title: String(year), isSelected: selectedYear == year) {
+                                    YearPill(title: String(year), isSelected: selectedYear == year) {
                                         self.selectedYear = year
                                     }
                                     .id(year)
@@ -189,30 +145,30 @@ struct StatsView: View {
                         .fullWidth()
                     if let pen = mostUsedPen {
                         NavigationLink(destination: MostUsedStationeryChart(stationeryType: .pen, customStationeryType: nil, selectedYear: selectedYear)) {
-                            mostUsed(pen)
+                            MostUsedStationeryRow(pen, iconWidth: iconWidth)
                         }
                     } else {
-                        mostUsed(placeholder: .pen)
+                        MostUsedStationeryRow(placeholder: .pen, iconWidth: iconWidth)
                     }
                     if let ink = mostUsedInk {
                         NavigationLink(destination: MostUsedStationeryChart(stationeryType: .ink, customStationeryType: nil, selectedYear: selectedYear)) {
-                            mostUsed(ink)
+                            MostUsedStationeryRow(ink, iconWidth: iconWidth)
                         }
                     } else {
-                        mostUsed(placeholder: .ink)
+                        MostUsedStationeryRow(placeholder: .ink, iconWidth: iconWidth)
                     }
                     if let paper = mostUsedPaper {
                         NavigationLink(destination: MostUsedStationeryChart(stationeryType: .paper, customStationeryType: nil, selectedYear: selectedYear)) {
-                            mostUsed(paper)
+                            MostUsedStationeryRow(paper, iconWidth: iconWidth)
                         }
                     } else {
-                        mostUsed(placeholder: .paper)
+                        MostUsedStationeryRow(placeholder: .paper, iconWidth: iconWidth)
                     }
 
                     ForEach(Array(mostUsedCustom.keys).sorted(using: KeyPathComparator(\.type)), id: \.self) { stationeryType in
                         if let count = mostUsedCustom[stationeryType] {
                             NavigationLink(destination: MostUsedStationeryChart(stationeryType: nil, customStationeryType: stationeryType, selectedYear: selectedYear)) {
-                                mostUsed(count)
+                                MostUsedStationeryRow(count, iconWidth: iconWidth)
                             }
                         }
                     }
@@ -246,7 +202,7 @@ struct StatsView: View {
             }
             .padding(.vertical)
         }
-        .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
+        .onPreferenceChange(MostUsedStationeryRow.IconWidthPreferenceKey.self) { value in
             self.iconWidth = value
         }
         .navigationTitle("Statistics")
@@ -388,13 +344,6 @@ private extension StatsView {
 
     var statsQuery: StatsQuery {
         StatsQuery(year: selectedYear, trackPostingLetters: trackPostingLetters)
-    }
-
-    struct IconWidthPreferenceKey: PreferenceKey {
-        static let defaultValue: CGFloat = 0
-        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-            value = max(value, nextValue())
-        }
     }
 }
 
