@@ -436,14 +436,7 @@ struct AddEventSheet: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        if let event = event {
-                            event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
-                        } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
-                        }
-                        done()
-                    }) {
+                    Button(action: save) {
                         Label(event == nil ? "Save" : "Update", systemImage: "checkmark")
                             .labelStyleIconOnlyOn26()
                     }
@@ -452,6 +445,48 @@ struct AddEventSheet: View {
             }
             .interactiveDismissDisabled(thingsHaveChanged)
         }
+    }
+
+    private struct EventDraft {
+        let type: EventType
+        let date: Date
+        let notes: String?
+        let pen: String?
+        let ink: String?
+        let paper: String?
+        let letterType: LetterType
+        let ignore: Bool
+        let noFurtherActions: Bool
+        let trackingReference: String?
+        let photos: [EventPhoto]
+        let customStationeryTypes: [CustomStationeryType]
+    }
+
+    private var draft: EventDraft {
+        EventDraft(
+            type: eventType,
+            date: date,
+            notes: notes.isEmpty ? nil : notes,
+            pen: pen.isEmpty ? nil : parseStationery(for: pen),
+            ink: ink.isEmpty ? nil : parseStationery(for: ink),
+            paper: paper.isEmpty ? nil : parseStationery(for: paper),
+            letterType: letterType,
+            ignore: ignore,
+            noFurtherActions: noFurtherActions,
+            trackingReference: trackingReference.isEmpty ? nil : trackingReference,
+            photos: eventPhotos,
+            customStationeryTypes: customStationeryTypes
+        )
+    }
+
+    private func save() {
+        let draft = self.draft
+        if let event {
+            event.update(type: draft.type, date: draft.date, notes: draft.notes, pen: draft.pen, ink: draft.ink, paper: draft.paper, letterType: draft.letterType, ignore: draft.ignore, noFurtherActions: draft.noFurtherActions, trackingReference: draft.trackingReference, withPhotos: draft.photos, withCustomStationeryTypes: draft.customStationeryTypes, in: moc)
+        } else {
+            penpal.addEvent(ofType: draft.type, date: draft.date, notes: draft.notes, pen: draft.pen, ink: draft.ink, paper: draft.paper, letterType: draft.letterType, ignore: draft.ignore, noFurtherActions: draft.noFurtherActions, trackingReference: draft.trackingReference, withPhotos: draft.photos, withCustomStationeryTypes: draft.customStationeryTypes, in: moc)
+        }
+        done()
     }
 
     func updateStationery() async {
