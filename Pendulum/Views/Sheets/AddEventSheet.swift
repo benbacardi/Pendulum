@@ -85,11 +85,6 @@ struct AddEventSheet: View {
 
     @State private var customStationeryTypes: [CustomStationeryType] = []
 
-    var priorWrittenEventHeaderText: String {
-        guard let priorWrittenEvent = priorWrittenEvent else { return "" }
-        return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.wrappedDate, and: Date())
-    }
-
     var ignoreFooterText: String {
         if noFurtherActions {
             return "Pendulum will move \(penpal.wrappedName) to the \"No actions pending\" section if this is the most recent event."
@@ -262,21 +257,7 @@ struct AddEventSheet: View {
                             .focused($isNotesFieldActive)
                     }
 
-                    Section(header: Group {
-                        if let priorWrittenEvent = priorWrittenEvent {
-                            Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
-                        } else {
-                            EmptyView()
-                        }
-                    }) {
-                        StationeryTypeView(icon: StationeryType.pen.icon, title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: StationeryType.ink.icon, title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: StationeryType.paper.icon, title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
-
-                        ForEach($customStationeryTypes) { $customStationeryType in
-                            CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)
-                        }
-                    }
+                    EventStationeryFieldsSection(priorWrittenEvent: priorWrittenEvent, pen: $pen, ink: $ink, paper: $paper, penSuggestions: penSuggestions, inkSuggestions: inkSuggestions, paperSuggestions: paperSuggestions, iconWidth: $iconWidth, customStationeryTypes: $customStationeryTypes)
 
                     EventPhotosSection(eventPhotos: $eventPhotos, photoLoadPending: $photoLoadPending, showPickerChoice: $showPickerChoice, pickerType: $pickerType, showPhotoPicker: $showPhotoPicker)
 
