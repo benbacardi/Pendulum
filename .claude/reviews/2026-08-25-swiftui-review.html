@@ -660,7 +660,7 @@ html { scroll-behavior: smooth; }
     <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
     <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
     <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
-    <div class="stat is-fixed"><span class="n">25</span><span class="l">Fixed</span></div>
+    <div class="stat is-fixed"><span class="n">27</span><span class="l">Fixed</span></div>
     <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
     <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
   </div>
@@ -743,8 +743,8 @@ html { scroll-behavior: smooth; }
       </li>
       <li>
         <div>
-          <div class="q-title">Three views have outgrown their files <span class="sev sev-low">Low</span></div>
-          <div class="q-body"><code>AddEventSheet</code> (667 lines, four types), <code>EventPropertyDetailsSheet</code> (448) and <code>PenPalView</code> all need their <code>@ViewBuilder</code> properties extracted into real <code>View</code> structs.</div>
+          <div class="q-title">Three views have outgrown their files <span class="sev sev-low">Low</span> <span class="fixed-tag">Fixed <span class="sha">1 of 3</span></span></div>
+          <div class="q-body"><code>AddEventSheet</code> (667 lines, four types), <code>EventPropertyDetailsSheet</code> (448, <strong>now 320 — done</strong>) and <code>PenPalView</code> all need their <code>@ViewBuilder</code> properties extracted into real <code>View</code> structs. <code>EventPropertyDetailsSheet</code> is done as of <span class="mono">92b38ff</span>; <code>AddEventSheet</code> and <code>PenPalView</code> remain.</div>
           <span class="q-where">Views/Sheets · Views/PenPalView.swift</span>
         </div>
       </li>
@@ -1028,6 +1028,7 @@ html { scroll-behavior: smooth; }
       <ol>
         <li><a class="rail-link" href="#f-state"><span class="fname">Pen Pal state</span><span class="ct">4</span></a></li>
         <li><a class="rail-link" href="#f-second"><span class="fname">Second pass</span><span class="ct">3</span></a></li>
+        <li><a class="rail-link" href="#f-third"><span class="fname">Third pass</span><span class="ct">1</span></a></li>
         <li><a class="rail-link" href="#f-rejected"><span class="fname">Rejected</span><span class="ct">1</span></a></li>
       </ol>
       <h4>Verify</h4>
@@ -1617,15 +1618,18 @@ delete(penpal)
           </div>
         </article>
 
-        <article class="finding sf-low" data-sev="low">
+        <article class="finding is-fixed sf-low" data-sev="low" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-low">Low</span>
               <span class="f-lines">line 41–83</span>
               <span class="f-cat">view-structure</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">9e3cfc1</span></span>
             </div>
             <div class="f-claim"><code>yearPill(...)</code> and <code>mostUsed(...)</code> are <code>@ViewBuilder</code> methods.</div>
             <p class="f-why">A <code>@ViewBuilder</code> method doesn't give SwiftUI a distinct type to diff against, so the pills and rows are re-evaluated as part of the parent instead of independently. Extract to real structs — one per file.</p>
+            <p class="f-why"><strong>Confirmed on device (Rusty):</strong> the icon-width alignment across <code>MostUsedStationeryRow</code> instances — the trickiest part to get right, since it crosses the new view boundary via <code>PreferenceKey</code> — still lines pen/ink/paper icons up correctly.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -3005,6 +3009,32 @@ dismiss()</code></pre>
 
       <div class="note" style="margin-bottom: 3.2rem;"><strong>The sweep itself</strong> is twelve commits, in this order: <span class="mono">814bdab</span> foregroundStyle (65 sites) · <span class="mono">971a1b2</span> onChange (20) · <span class="mono">0875960</span> topBar placements (13) · <span class="mono">e2bffe9</span> cornerRadius (3) · <span class="mono">6e507bc</span> Color(uiColor:) (6) · <span class="mono">37d4b43</span> scrollIndicators (4) · <span class="mono">a457e9d</span> dismiss (7) · <span class="mono">aa1d493</span> alert · <span class="mono">aab3553</span> setBadgeCount · <span class="mono">0295706</span> #Preview (18) · <span class="mono">881b54c</span> Text interpolation · <span class="mono">652df40</span> verbatim sync state. Two spellings needed thought rather than replacement: a leading dot resolves against <code>ShapeStyle</code>, so <code>.foregroundStyle(.accentColor)</code> doesn't compile — those five sites are <code>Color.accentColor</code>, which is what they meant, rather than <code>.tint</code>, which reads the environment and would have changed colour wherever the app sets its own. Same for two <code>.adequatelyGinger</code> sites.</div>
 
+      <!-- ══════════════ Third pass ══════════════ -->
+      <div class="section-intro" id="f-third">
+        <span class="eyebrow">Third pass · 5 September 2026</span>
+        <h2>Splitting the two remaining oversized views</h2>
+        <p>Branch <span class="mono">split-statsview-viewbuilders</span>, unmerged. <code>StatsView</code>'s and <code>EventPropertyDetailsSheet</code>'s <code>@ViewBuilder</code> methods extracted into real views — the last two items rank 11 was waiting on, alongside a genuine bug the extraction surfaced that the original review never touched.</p>
+      </div>
+
+      <article class="finding is-fixed sf-high" data-sev="high" data-fixed="true">
+        <div class="f-head">
+          <div class="f-top">
+            <span class="sev sev-high">High</span>
+            <span class="f-lines">Views/Sheets/EventPropertyDetailsSheet.swift</span>
+            <span class="f-cat">correctness</span>
+
+            <span class="fixed-tag">Fixed <span class="sha">34fc653</span></span>
+            <span class="fixed-tag">Fixed <span class="sha">dd742d9</span></span>
+          </div>
+          <div class="f-claim">Not in the original review: delete confirmations anchored nowhere near what was being deleted.</div>
+          <p class="f-why">Caught verifying the <code>EventPropertyDetailsSheet</code> split (<span class="mono">92b38ff</span>) on device, not in code review. Both delete confirmations — one row, one whole custom category — are <code>confirmationDialog</code>s that were attached to the <code>List</code> the rows live in. Every route to this sheet applies a zoom <code>navigationTransition</code> on iOS 26+ (<code>PenPalView.swift</code>, <code>AppRouter.swift</code>); the leading theory is that the dialog was inheriting its anchor from that transition's source rect instead of the tapped row, landing pinned near the top of the screen.</p>
+          <p class="f-why">First attempt — moving the dialog to the outer <code>NavigationStack</code> — was wrong in a different way: it "fixed" the position by falling back to a plain full-width bottom sheet, detached from whatever was being deleted. What was actually wanted was a dialog anchored to the specific row or category, which a single dialog shared across every row can't do — there's no one view for it to anchor to.</p>
+          <p class="f-why">Landed on giving each row and each category its own local confirmation state, dialog attached directly to itself: <code>StationeryRow</code> (new) owns a row's, <code>CustomStationeryTypeSection</code> owns its category's on the "…" menu. <code>EventPropertyDetailsSheet</code> no longer tracks <code>toDelete</code>/<code>showDeleteAlert</code>/<code>customTypeToDelete</code>/<code>showDeleteCustomTypeAlert</code> at all — deletion is a callback each section performs directly.</p>
+          <p class="f-why">That surfaced a second bug: <code>role: .destructive</code> on a <code>.swipeActions</code> button makes the system play its own swipe-to-delete collapse animation on tap, independent of what the action closure does. With the dialog now living on the row itself, collapsing the row tore the dialog down with it before it could be answered, and the row popped back once SwiftUI noticed the data hadn't actually changed. <code>DeleteStationeryButton</code> now takes an optional role — <code>.destructive</code> for the context-menu item's red text (no such collapse there), <code>nil</code> for the swipe-action instance.</p>
+          <p class="f-why"><strong>Confirmed on device (Rusty)</strong> across all three attempts — the anchor position, the premature-collapse bug, and the final fix.</p>
+        </div>
+      </article>
+
       <!-- ══════════════ Cross-cutting ══════════════ -->
       <div class="section-intro" id="crosscutting">
         <span class="eyebrow">Sweeps</span>
@@ -3234,7 +3264,9 @@ dismiss()</code></pre>
     <span>Also, 4 September 2026: added a <strong>Pending only</strong> toggle beside the severity filter — on by default, it hides every <code>Fixed</code>/<code>Rejected</code> finding, the matching rows in the priority board, and any <code>Found since</code>/<code>Second pass</code>/<code>Rejected</code> cluster left with nothing showing, so scrolling the report surfaces only what's still open.</span>
     <span>Correction, 4 September 2026: the <code>TipJarView</code> alert finding (Smaller files) was already fixed in <span class="mono">aa1d493</span> but had no <code>Fixed</code> tag here. Its "after" sample also claimed the custom "🧡" dismiss button could be dropped for the system default — the actual commit kept the button; the sample here now matches the real diff.</span>
     <span>Update, 5 September 2026: both remaining half-fixed findings closed out on <span class="mono">main</span> — <code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and unscaled row height (<span class="mono">3b5be42</span>), and <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race (<span class="mono">82583a2</span>), the latter fixed differently to the original write-up — a derived comparison instead of a guard flag, since a guard flag reset via a synchronous <code>defer</code> doesn't actually close this particular race. Also closes the related low-severity <code>onChange</code>-duplication finding as a side effect.</span>
-    <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
+    <span>Update, 5 September 2026 (later): <code>StatsView</code>'s two <code>@ViewBuilder</code> methods extracted to <code>YearPill</code> and <code>MostUsedStationeryRow</code>, confirmed on device (Rusty) — <span class="mono">9e3cfc1</span> on branch <span class="mono">split-statsview-viewbuilders</span>.</span>
+    <span>Update, 5 September 2026 (even later): <code>EventPropertyDetailsSheet</code> split the same way (448 → 320 lines), same branch. Verifying it on device surfaced a genuine bug outside the original review — see <a href="#f-third">Third pass</a> — that took three attempts (wrong anchor, wrong dialog style, a swipe-action collapsing before its own confirmation could be answered) before landing right, confirmed on device throughout.</span>
+    <span>Remaining: rank 11, splitting <code>AddEventSheet</code> and <code>PenPalView</code> into real views · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 
 </div>
