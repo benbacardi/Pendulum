@@ -85,17 +85,6 @@ struct AddEventSheet: View {
 
     @State private var customStationeryTypes: [CustomStationeryType] = []
 
-    var ignoreFooterText: String {
-        if noFurtherActions {
-            return "Pendulum will move \(penpal.wrappedName) to the \"No actions pending\" section if this is the most recent event."
-        } else {
-            if eventType == .written || eventType == .sent || eventType == .theyReceived {
-                return "If enabled, Pendulum won't indicate that you are waiting for a response to this \(letterType.description)."
-            } else {
-                return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
-            }
-        }
-    }
 
     func parseStationery(for stationery: String?) -> String? {
         stationery?.replacingOccurrences(of: ",", with: "\n")
@@ -266,12 +255,7 @@ struct AddEventSheet: View {
                             .focused($isTrackingFieldActive)
                     }
 
-                    Section(footer: Text(ignoreFooterText)) {
-                        Toggle("No further actions", isOn: $noFurtherActions.animation())
-                        if !noFurtherActions {
-                            Toggle("No response needed", isOn: $ignore)
-                        }
-                    }
+                    EventTogglesSection(penPalName: penpal.wrappedName, eventType: eventType, letterType: letterType, noFurtherActions: $noFurtherActions, ignore: $ignore)
                 }
 
                 if #available(iOS 26, *) {
