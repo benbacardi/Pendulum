@@ -660,7 +660,7 @@ html { scroll-behavior: smooth; }
     <div class="stat"><span class="n">79</span><span class="l">Swift files</span></div>
     <div class="stat"><span class="n">10.3k</span><span class="l">Lines reviewed</span></div>
     <div class="stat"><span class="n">65</span><span class="l">Findings</span></div>
-    <div class="stat is-fixed"><span class="n">25</span><span class="l">Fixed</span></div>
+    <div class="stat is-fixed"><span class="n">27</span><span class="l">Fixed</span></div>
     <div class="stat is-high"><span class="n">9</span><span class="l">High severity</span></div>
     <div class="stat is-fixed"><span class="n">147</span><span class="l">Deprecated sites swept</span></div>
   </div>
@@ -743,8 +743,8 @@ html { scroll-behavior: smooth; }
       </li>
       <li>
         <div>
-          <div class="q-title">Three views have outgrown their files <span class="sev sev-low">Low</span></div>
-          <div class="q-body"><code>AddEventSheet</code> (667 lines, four types), <code>EventPropertyDetailsSheet</code> (448) and <code>PenPalView</code> all need their <code>@ViewBuilder</code> properties extracted into real <code>View</code> structs.</div>
+          <div class="q-title">Three views have outgrown their files <span class="sev sev-low">Low</span> <span class="fixed-tag">Fixed <span class="sha">1 of 3</span></span></div>
+          <div class="q-body"><code>AddEventSheet</code> (667 lines, four types, <strong>now 405 — done</strong>), <code>EventPropertyDetailsSheet</code> (448) and <code>PenPalView</code> all need their <code>@ViewBuilder</code> properties extracted into real <code>View</code> structs. <code>AddEventSheet</code> done on branch <span class="mono">split-addeventsheet</span> (unmerged); the other two remain as of this branch.</div>
           <span class="q-where">Views/Sheets · Views/PenPalView.swift</span>
         </div>
       </li>
@@ -2300,15 +2300,21 @@ dismiss()</code></pre>
           </div>
         </article>
 
-        <article class="finding sf-med" data-sev="med">
+        <article class="finding is-fixed sf-med" data-sev="med" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-med">Medium</span>
               <span class="f-lines">line 392–649</span>
               <span class="f-cat">view-structure</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">b6f89cd</span></span>
+              <span class="fixed-tag">Fixed <span class="sha">7fff02c</span></span>
+              <span class="fixed-tag">Fixed <span class="sha">bc09b94</span></span>
+              <span class="fixed-tag">Fixed <span class="sha">a2ed596</span></span>
             </div>
             <div class="f-claim">A 250-line <code>body</code> with the save logic inline in a toolbar button.</div>
             <p class="f-why">The save action at lines 633–639 is a single ~200-character expression with fourteen arguments, duplicated across the create and update branches, sitting inside the view hierarchy. Move it to a method; extract the photo, stationery and toggle sections into their own views.</p>
+            <p class="f-why"><strong>Confirmed on device (Rusty).</strong> <code>EventDraft</code> + <code>save()</code> replaced the duplicated call; <code>EventPhotosSection</code>, <code>EventStationeryFieldsSection</code> and <code>EventTogglesSection</code> now hold what used to be inline in the <code>Form</code>. 670 lines down to 405.</p>
           </div>
           <div class="diff two">
             <div class="pane before">
@@ -2326,20 +2332,20 @@ dismiss()</code></pre>
 }</code></pre>
             </div>
             <div class="pane after">
-              <div class="plabel">After</div>
-<pre><code><span class="k">private func</span> save() {
-    <span class="k">let</span> draft = <span class="t">EventDraft</span>(
-        type: eventType, date: date, notes: notes,
-        pen: pen, ink: ink, paper: paper,
-        letterType: letterType, ignore: ignore,
-        noFurtherActions: noFurtherActions,
-        trackingReference: trackingReference,
-        photos: eventPhotos, custom: customStationeryTypes
-    )
+              <div class="plabel">After — actual diff, not the tidier apply(draft:) this implies</div>
+<pre><code><span class="k">private var</span> draft: <span class="t">EventDraft</span> {
+    <span class="t">EventDraft</span>(type: eventType, date: date, notes: notes.isEmpty ? <span class="k">nil</span> : notes,
+        pen: …, ink: …, paper: …, letterType: letterType, ignore: ignore,
+        noFurtherActions: noFurtherActions, trackingReference: …,
+        photos: eventPhotos, customStationeryTypes: customStationeryTypes)
+}
+
+<span class="k">private func</span> save() {
+    <span class="k">let</span> draft = <span class="k">self</span>.draft
     <span class="k">if let</span> event {
-        event.apply(draft, <span class="k">in</span>: moc)
+        event.update(type: draft.type, date: draft.date, notes: draft.notes, <span class="c">/* +7 */</span>, <span class="k">in</span>: moc)
     } <span class="k">else</span> {
-        penpal.addEvent(draft, <span class="k">in</span>: moc)
+        penpal.addEvent(ofType: draft.type, date: draft.date, notes: draft.notes, <span class="c">/* +9 */</span>, <span class="k">in</span>: moc)
     }
     done()
 }
@@ -2391,15 +2397,18 @@ dismiss()</code></pre>
           </div>
         </article>
 
-        <article class="finding sf-low" data-sev="low">
+        <article class="finding is-fixed sf-low" data-sev="low" data-fixed="true">
           <div class="f-head">
             <div class="f-top">
               <span class="sev sev-low">Low</span>
               <span class="f-lines">line 11, 27, 117, 198</span>
               <span class="f-cat">hygiene</span>
+
+              <span class="fixed-tag">Fixed <span class="sha">c954948</span></span>
             </div>
             <div class="f-claim">Four types in one file.</div>
             <p class="f-why"><code>CustomStationeryTypeView</code>, <code>StationeryTypeView</code>, <code>AddStationeryTypeForm</code> and <code>AddEventSheet</code>. Split into four files under <code>Views/Sheets/</code>.</p>
+            <p class="f-why"><strong>Confirmed on device (Rusty).</strong> <code>IconWidthPreferenceKey</code> moved with <code>StationeryTypeView</code> (the view that emits it) rather than staying nested under <code>AddEventSheet</code>.</p>
           </div>
         </article>
 
@@ -3234,7 +3243,8 @@ dismiss()</code></pre>
     <span>Also, 4 September 2026: added a <strong>Pending only</strong> toggle beside the severity filter — on by default, it hides every <code>Fixed</code>/<code>Rejected</code> finding, the matching rows in the priority board, and any <code>Found since</code>/<code>Second pass</code>/<code>Rejected</code> cluster left with nothing showing, so scrolling the report surfaces only what's still open.</span>
     <span>Correction, 4 September 2026: the <code>TipJarView</code> alert finding (Smaller files) was already fixed in <span class="mono">aa1d493</span> but had no <code>Fixed</code> tag here. Its "after" sample also claimed the custom "🧡" dismiss button could be dropped for the system default — the actual commit kept the button; the sample here now matches the real diff.</span>
     <span>Update, 5 September 2026: both remaining half-fixed findings closed out on <span class="mono">main</span> — <code>MostUsedStationeryChart</code>'s double <code>parsedData</code> evaluation and unscaled row height (<span class="mono">3b5be42</span>), and <code>AddEventSheet</code>'s 100&nbsp;ms <code>thingsHaveChanged</code> race (<span class="mono">82583a2</span>), the latter fixed differently to the original write-up — a derived comparison instead of a guard flag, since a guard flag reset via a synchronous <code>defer</code> doesn't actually close this particular race. Also closes the related low-severity <code>onChange</code>-duplication finding as a side effect.</span>
-    <span>Remaining: rank 11, the three oversized view files · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
+    <span>Update, 6 September 2026: <code>AddEventSheet</code> split on branch <span class="mono">split-addeventsheet</span> (unmerged, off <span class="mono">main</span>) — 670 lines down to 405. Four commits: the three other types it declared moved to their own files (<span class="mono">c954948</span>), <code>EventDraft</code>/<code>save()</code> replacing the duplicated toolbar action (<span class="mono">b6f89cd</span>), and the photo/stationery-fields/toggles sections each extracted (<span class="mono">7fff02c</span>, <span class="mono">bc09b94</span>, <span class="mono">a2ed596</span>). Confirmed on device (Rusty). This branch was cut before <code>split-statsview-viewbuilders</code> merged, so its <code>EventPropertyDetailsSheet</code>/pending-only-filter updates aren't reflected here yet — the two docs will need reconciling whichever merges second.</span>
+    <span>Remaining: rank 11, <code>PenPalView</code> (as of this branch — see the note above re: <code>EventPropertyDetailsSheet</code>) · the two lines of <code>StatsView</code> pluralisation that route through <code>PenPalListItem</code>'s <code>subText: String</code> and can't carry inflect markup · and the app-group store migration, which has never shipped and wants designing rather than fixing.</span>
   </footer>
 
 </div>

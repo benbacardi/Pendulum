@@ -418,7 +418,8 @@
       "severity": "medium",
       "category": "view-structure",
       "summary": "250-line body; save action at 633-639 is a ~200-char 14-argument expression duplicated across create/update.",
-      "fix": "Extract a save() method and an EventDraft value type; split the photo, stationery and toggle sections into views."
+      "fix": "Extract a save() method and an EventDraft value type; split the photo, stationery and toggle sections into views.",
+      "outcome": "fixed, confirmed on device (Rusty) — b6f89cd (EventDraft/save), 7fff02c (EventPhotosSection), bc09b94 (EventStationeryFieldsSection), a2ed596 (EventTogglesSection) on branch split-addeventsheet (unmerged). 670 lines down to 405."
     },
     {
       "id": "addevent-repeated-onchange",
@@ -437,7 +438,8 @@
       "severity": "low",
       "category": "hygiene",
       "summary": "Four types in one file: CustomStationeryTypeView, StationeryTypeView, AddStationeryTypeForm, AddEventSheet.",
-      "fix": "Split into four files."
+      "fix": "Split into four files.",
+      "outcome": "fixed, confirmed on device (Rusty) — c954948 on branch split-addeventsheet (unmerged)"
     },
     {
       "id": "addevent-update-stationery-main",
