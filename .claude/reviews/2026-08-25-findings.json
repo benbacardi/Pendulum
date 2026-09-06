@@ -208,7 +208,7 @@
       "category": "localisation",
       "summary": "Manual English pluralisation. Also lines 220, 231.",
       "fix": "Text(\"^[\\(count) item](inflect: true)\").",
-      "outcome": "partially fixed, confirmed on device — 0ed33f8, b2b91a7, c5470ea, 24da3e2 on async-contact-sync (unmerged): line 148 (averageTimeToReply) took four attempts, three bugs caught on device rather than in the diff. 0ed33f8 interpolated roundToDecimalPlaces(1)'s return value, which is a String — inflect can't read a plural category off a String, so it silently fell back to singular (\"894 day\"). b2b91a7 switched to interpolating the Double directly with specifier: \"%.1f\", which fixed the pluralisation but always renders one decimal digit, so a whole-number average showed as \"894.0 days\". c5470ea replaced the specifier with format: .number.precision(.fractionLength(0...1)) to drop the trailing zero, but that broke pluralisation again — the inflector reads specifier:-based interpolation as a raw numeric argument but a format:-based one as an opaque formatted string, same failure mode as the first bug. 24da3e2 restored specifier:, chosen at runtime (\"%.0f\" vs \"%.1f\" depending on whether the value is whole) — confirmed correct on device for singular, a whole number, and a fractional one. Lines 220/231 (mostCommonRecipientCount/mostProlificPenPalCount) are passed into PenPalListItem's subText: String, which reaches Text(subText) via a variable, not a literal — inflect markup does not survive that hop and would render as literal \"^[...]\" text. Left as manual pluralisation; would need subText retyped to LocalizedStringKey or AttributedString to fix properly."
+      "outcome": "partially fixed, confirmed on device — 0ed33f8, b2b91a7, c5470ea, 24da3e2 on main: line 148 (averageTimeToReply) took four attempts, three bugs caught on device rather than in the diff. 0ed33f8 interpolated roundToDecimalPlaces(1)'s return value, which is a String — inflect can't read a plural category off a String, so it silently fell back to singular (\"894 day\"). b2b91a7 switched to interpolating the Double directly with specifier: \"%.1f\", which fixed the pluralisation but always renders one decimal digit, so a whole-number average showed as \"894.0 days\". c5470ea replaced the specifier with format: .number.precision(.fractionLength(0...1)) to drop the trailing zero, but that broke pluralisation again — the inflector reads specifier:-based interpolation as a raw numeric argument but a format:-based one as an opaque formatted string, same failure mode as the first bug. 24da3e2 restored specifier:, chosen at runtime (\"%.0f\" vs \"%.1f\" depending on whether the value is whole) — confirmed correct on device for singular, a whole number, and a fractional one. Lines 220/231 (mostCommonRecipientCount/mostProlificPenPalCount) are passed into PenPalListItem's subText: String, which reaches Text(subText) via a variable, not a literal — inflect markup does not survive that hop and would render as literal \"^[...]\" text. Left as manual pluralisation; would need subText retyped to LocalizedStringKey or AttributedString to fix properly."
     },
     {
       "id": "statsview-userdefaults-in-body",
@@ -228,7 +228,7 @@
       "category": "view-structure",
       "summary": "yearPill(...) and mostUsed(...) are @ViewBuilder methods.",
       "fix": "Extract to YearPill and MostUsedStationeryRow structs, one per file.",
-      "outcome": "fixed, confirmed on device (Rusty) — 9e3cfc1 on split-statsview-viewbuilders. Icon-width alignment across MostUsedStationeryRow instances still works: the row emits IconWidthPreferenceKey (now nested under MostUsedStationeryRow rather than StatsView), StatsView still collects it via onPreferenceChange and passes iconWidth back down as a parameter."
+      "outcome": "fixed, confirmed on device (Rusty) — 9e3cfc1 on branch combined-view-splits (unmerged). Icon-width alignment across MostUsedStationeryRow instances still works: the row emits IconWidthPreferenceKey (now nested under MostUsedStationeryRow rather than StatsView), StatsView still collects it via onPreferenceChange and passes iconWidth back down as a parameter."
     },
     {
       "id": "statsview-sort-in-body",
@@ -274,7 +274,7 @@
       "category": "localisation",
       "summary": "Manual pluralisation in dateDivider; also gets zero wrong in English.",
       "fix": "inflect: true.",
-      "outcome": "fixed — 0ed33f8 on async-contact-sync (unmerged). difference is an Int interpolated directly, so this one didn't hit the String-argument bug found in the StatsView sibling fix (see statsview-pluralisation) — worth confirming on device anyway since that's exactly how the StatsView regression was caught."
+      "outcome": "fixed — 0ed33f8 on main. difference is an Int interpolated directly, so this one didn't hit the String-argument bug found in the StatsView sibling fix (see statsview-pluralisation) — worth confirming on device anyway since that's exactly how the StatsView regression was caught."
     },
     {
       "id": "penpalview-dead-buttonheight",
@@ -419,7 +419,8 @@
       "severity": "medium",
       "category": "view-structure",
       "summary": "250-line body; save action at 633-639 is a ~200-char 14-argument expression duplicated across create/update.",
-      "fix": "Extract a save() method and an EventDraft value type; split the photo, stationery and toggle sections into views."
+      "fix": "Extract a save() method and an EventDraft value type; split the photo, stationery and toggle sections into views.",
+      "outcome": "fixed, confirmed on device (Rusty) — b6f89cd (EventDraft/save), 7fff02c (EventPhotosSection), bc09b94 (EventStationeryFieldsSection), a2ed596 (EventTogglesSection) on branch combined-view-splits (unmerged). 670 lines down to 405."
     },
     {
       "id": "addevent-repeated-onchange",
@@ -438,7 +439,8 @@
       "severity": "low",
       "category": "hygiene",
       "summary": "Four types in one file: CustomStationeryTypeView, StationeryTypeView, AddStationeryTypeForm, AddEventSheet.",
-      "fix": "Split into four files."
+      "fix": "Split into four files.",
+      "outcome": "fixed, confirmed on device (Rusty) — c954948 on branch combined-view-splits (unmerged)"
     },
     {
       "id": "addevent-update-stationery-main",
@@ -539,7 +541,7 @@
       "category": "deprecated-api",
       "summary": "alert(isPresented:) { Alert(...) } is the iOS 13 API; the lone dismiss button can be omitted entirely.",
       "fix": ".alert(_:isPresented:actions:message:).",
-      "outcome": "fixed — aa1d493 on async-contact-sync (unmerged). Correction: the review's proposed fix (an empty actions closure, falling back to the system default OK button) would have silently dropped the custom \"🧡\" dismiss button. The actual commit kept it: actions: { Button(\"🧡\") { } }, not actions: { }."
+      "outcome": "fixed — aa1d493 on main. Correction: the review's proposed fix (an empty actions closure, falling back to the system default OK button) would have silently dropped the custom \"🧡\" dismiss button. The actual commit kept it: actions: { Button(\"🧡\") { } }, not actions: { }."
     },
     {
       "id": "addpenpal-text-concat",
