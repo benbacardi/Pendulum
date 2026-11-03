@@ -8,192 +8,6 @@
 import SwiftUI
 import PhotosUI
 
-struct CustomStationeryTypeView: View {
-    @Environment(\.managedObjectContext) var moc
-
-    @Binding var type: CustomStationeryType
-    @Binding var iconWidth: CGFloat
-
-    @State private var suggestions: [String] = []
-
-    var body: some View {
-        StationeryTypeView(icon: type.icon, title: type.type, text: $type.value, suggestions: suggestions, suggestionTitle: "Choose \(type.type)", iconWidth: $iconWidth)
-            .task {
-                let type = type.type
-                suggestions = await PersistenceController.shared.fetching { context in
-                    CustomStationery.fetchDistinctValues(ofType: type, from: context)
-                }
-            }
-    }
-}
-
-struct StationeryTypeView: View {
-
-    let icon: String
-    let title: String
-    @Binding var text: String
-    let suggestions: [String]
-    let suggestionTitle: String
-    @Binding var iconWidth: CGFloat
-
-    @FocusState private var isTextFieldActive: Bool
-    @State private var presentSuggestionSheetFor: TextOptions? = nil
-
-    var autoSuggestions: [String] {
-        let search = text.lowercased().trimmingCharacters(in: .whitespaces)
-        return suggestions.filter { $0.lowercased().contains(search) }
-    }
-
-    var image: Image {
-        StationeryType.image(forIcon: icon)
-    }
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 0) {
-            HStack(alignment: .firstTextBaseline, spacing: 0) {
-                image
-                    .foregroundStyle(.secondary)
-                    .background {
-                        GeometryReader { geo in
-                            Color.clear.preference(key: AddEventSheet.IconWidthPreferenceKey.self, value: geo.size.width)
-                        }
-                    }
-                    .frame(width: iconWidth)
-                Text("?")
-                    .accessibilityHidden(true)
-                    .opacity(0)
-            }
-            TextField(title, text: $text, axis: .vertical)
-                .focused($isTextFieldActive)
-            if !suggestions.isEmpty {
-                HStack(alignment: .firstTextBaseline, spacing: 0) {
-                    Text("?")
-                        .accessibilityHidden(true)
-                        .opacity(0)
-                    Button(suggestionTitle, systemImage: "ellipsis") {
-                        presentSuggestionSheetFor = TextOptions(text: $text, options: suggestions, title: suggestionTitle)
-                    }
-                    .labelStyle(.iconOnly)
-                }
-            }
-        }
-        .toolbar {
-            if isTextFieldActive {
-                ToolbarItemGroup(placement: .keyboard) {
-                    ScrollView(.horizontal) {
-                        HStack {
-                            ForEach(autoSuggestions, id: \.self) { suggestion in
-                                Button(action: {
-                                    text = suggestion
-                                }) {
-                                    Text(suggestion)
-                                }
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .padding(5)
-                                .background {
-                                    Color(.secondarySystemBackground)
-                                }
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
-                            }
-                        }
-                    }
-                    .scrollIndicators(.hidden)
-                    Button(action: {
-                        isTextFieldActive = false
-                    }) { Text("Done")}
-                }
-            }
-        }
-        .sheet(item: $presentSuggestionSheetFor) { option in
-            ChooseTextSheet(text: option.text, options: option.options, title: option.title)
-                .presentationDetents([.medium, .large])
-        }
-    }
-
-}
-
-struct AddStationeryTypeForm: View {
-    @State private var typeName: String = ""
-    @State private var icon: String = "envelope"
-    @State private var showPicker: Bool = false
-    @Environment(\.managedObjectContext) private var moc
-    @State private var existingTypeNames: [String] = []
-    let initial: CustomStationeryType?
-    let done: (CustomStationeryType) -> ()
-
-    var isDuplicate: Bool {
-        let trimmed = typeName.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
-        return existingTypeNames.contains { $0.lowercased() == trimmed }
-    }
-
-    @ViewBuilder
-    var iconHeader: some View {
-        HStack {
-            Spacer()
-            Button(action: { showPicker = true }) {
-                VStack(spacing: 8) {
-                    ZStack {
-                        Circle()
-                            .fill(Color.accentColor)
-                            .frame(width: 80, height: 80)
-                        Image(systemName: icon)
-                            .font(.system(size: 32))
-                            .foregroundStyle(.white)
-                    }
-                    Text("Change Icon")
-                        .font(.caption)
-                }
-            }
-            .buttonStyle(.plain)
-            Spacer()
-        }
-        .padding(.bottom)
-        .textCase(nil)
-    }
-
-    var body: some View {
-        Form {
-            Section(header: iconHeader) {
-                TextField("Name", text: $typeName)
-                if isDuplicate {
-                    Text("A category with this name already exists.")
-                        .foregroundStyle(.red)
-                        .font(.caption)
-                }
-            }
-            Section {
-                Button(action: {
-                    let type = CustomStationeryType(type: typeName, icon: icon, value: "")
-                    done(type)
-                }) {
-                    Text(initial == nil ? "Add" : "Update")
-                        .fullWidth(alignment: .center)
-                }
-                .disabled(typeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isDuplicate)
-            }
-        }
-        .sheet(isPresented: $showPicker) {
-            SymbolPicker(selectedSymbol: $icon) {
-                showPicker = false
-            }
-        }
-        .task {
-            if let initial {
-                self.typeName = initial.type
-                self.icon = initial.icon
-            }
-            // Fetch all existing types except the current one (if editing)
-            let allTypes = CustomStationery.fetchDistinctTypes(from: moc).map { $0.type }
-            if let initial {
-                self.existingTypeNames = allTypes.filter { $0.caseInsensitiveCompare(initial.type) != .orderedSame }
-            } else {
-                self.existingTypeNames = allTypes
-            }
-        }
-    }
-}
-
 struct AddEventSheet: View {
 
     @Environment(\.managedObjectContext) var moc
@@ -271,22 +85,6 @@ struct AddEventSheet: View {
 
     @State private var customStationeryTypes: [CustomStationeryType] = []
 
-    var priorWrittenEventHeaderText: String {
-        guard let priorWrittenEvent = priorWrittenEvent else { return "" }
-        return Calendar.current.verboseNumberOfDaysBetween(priorWrittenEvent.wrappedDate, and: Date())
-    }
-
-    var ignoreFooterText: String {
-        if noFurtherActions {
-            return "Pendulum will move \(penpal.wrappedName) to the \"No actions pending\" section if this is the most recent event."
-        } else {
-            if eventType == .written || eventType == .sent || eventType == .theyReceived {
-                return "If enabled, Pendulum won't indicate that you are waiting for a response to this \(letterType.description)."
-            } else {
-                return "If enabled, Pendulum won't trigger prompts to respond to this \(letterType.description)."
-            }
-        }
-    }
 
     func parseStationery(for stationery: String?) -> String? {
         stationery?.replacingOccurrences(of: ",", with: "\n")
@@ -448,105 +246,16 @@ struct AddEventSheet: View {
                             .focused($isNotesFieldActive)
                     }
 
-                    Section(header: Group {
-                        if let priorWrittenEvent = priorWrittenEvent {
-                            Text("You wrote the \(priorWrittenEvent.letterType.description) \(priorWrittenEventHeaderText).").textCase(nil)
-                        } else {
-                            EmptyView()
-                        }
-                    }) {
-                        StationeryTypeView(icon: StationeryType.pen.icon, title: priorWrittenEvent?.pen ?? "Pen", text: $pen, suggestions: penSuggestions, suggestionTitle: "Choose Pens", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: StationeryType.ink.icon, title: priorWrittenEvent?.ink ?? "Ink", text: $ink, suggestions: inkSuggestions, suggestionTitle: "Choose Inks", iconWidth: $iconWidth)
-                        StationeryTypeView(icon: StationeryType.paper.icon, title: priorWrittenEvent?.paper ?? "Paper", text: $paper, suggestions: paperSuggestions, suggestionTitle: "Choose Paper", iconWidth: $iconWidth)
+                    EventStationeryFieldsSection(priorWrittenEvent: priorWrittenEvent, pen: $pen, ink: $ink, paper: $paper, penSuggestions: penSuggestions, inkSuggestions: inkSuggestions, paperSuggestions: paperSuggestions, iconWidth: $iconWidth, customStationeryTypes: $customStationeryTypes)
 
-                        ForEach($customStationeryTypes) { $customStationeryType in
-                            CustomStationeryTypeView(type: $customStationeryType, iconWidth: $iconWidth)
-                        }
-                    }
-
-                    Section {
-                        Button(action: {
-                            self.showPickerChoice = true
-                        }) {
-                            HStack {
-                                Text("Add a photo…")
-                                Spacer()
-                                if photoLoadPending {
-                                    ProgressView()
-                                }
-                            }
-                        }
-                        .confirmationDialog("Add a photo…", isPresented: $showPickerChoice) {
-                            Button(action: {
-                                self.pickerType = .photoLibrary
-                                self.showPhotoPicker = true
-                                self.photoLoadPending = true
-                            }) {
-                                Label("Photo Library", systemImage: "photo.on.rectangle")
-                            }
-                            Button(action: {
-                                self.pickerType = .camera
-                                self.showPhotoPicker = true
-                                self.photoLoadPending = true
-                            }) {
-                                Label("Camera", systemImage: "camera")
-                            }
-                        }
-                        .listRowSeparator(.hidden)
-                        if !eventPhotos.isEmpty {
-                            ScrollView(.horizontal) {
-                                LazyHStack {
-                                    ForEach(eventPhotos) { photo in
-                                        if let image = photo.thumbnail() ?? photo.image() {
-                                            ZStack(alignment: .topTrailing) {
-                                                image
-                                                    .resizable()
-                                                    .scaledToFill()
-                                                    .frame(width: 100, height: 100)
-                                                    .clipShape(.rect(cornerRadius: 10))
-                                                Button(role: .destructive, action: {
-                                                    let _ = withAnimation {
-                                                        self.eventPhotos = self.eventPhotos.filter { $0.id != photo.id }
-                                                    }
-                                                }) {
-                                                    ZStack(alignment: .topTrailing) {
-                                                        Rectangle()
-                                                            .fill(.clear)
-                                                            .frame(width: 30, height: 30)
-                                                        Label("Delete", systemImage: "minus.circle.fill")
-                                                            .font(.headline)
-                                                            .labelStyle(.iconOnly)
-                                                            .foregroundStyle(.gray)
-                                                            .background(.white)
-                                                            .clipShape(Circle())
-                                                    }
-                                                }
-                                                .contentShape(Rectangle())
-                                                .buttonStyle(.plain)
-                                                .offset(x: 5, y: -5)
-                                            }
-                                        }
-                                    }
-                                }
-                                .padding(.top, 5)
-                                .padding([.horizontal, .bottom])
-                            }
-                            .scrollIndicators(.hidden)
-                            .listRowInsets(EdgeInsets())
-                        }
-                    }
+                    EventPhotosSection(eventPhotos: $eventPhotos, photoLoadPending: $photoLoadPending, showPickerChoice: $showPickerChoice, pickerType: $pickerType, showPhotoPicker: $showPhotoPicker)
 
                     Section {
                         TextField("Tracking Reference", text: $trackingReference)
                             .focused($isTrackingFieldActive)
                     }
 
-                    Section(footer: Text(ignoreFooterText)) {
-                        Toggle("No further actions", isOn: $noFurtherActions.animation())
-                        if !noFurtherActions {
-                            Toggle("No response needed", isOn: $ignore)
-                        }
-                    }
+                    EventTogglesSection(penPalName: penpal.wrappedName, eventType: eventType, letterType: letterType, noFurtherActions: $noFurtherActions, ignore: $ignore)
                 }
 
                 if #available(iOS 26, *) {
@@ -569,7 +278,7 @@ struct AddEventSheet: View {
                     self.ignore = newValue.defaultIgnore
                 }
             }
-            .onPreferenceChange(Self.IconWidthPreferenceKey.self) { value in
+            .onPreferenceChange(StationeryTypeView.IconWidthPreferenceKey.self) { value in
                 self.iconWidth = value
             }
             .task(id: eventType) {
@@ -622,14 +331,7 @@ struct AddEventSheet: View {
                 }
 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        if let event = event {
-                            event.update(type: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
-                        } else {
-                            penpal.addEvent(ofType: eventType, date: date, notes: notes.isEmpty ? nil : notes, pen: pen.isEmpty ? nil : parseStationery(for: pen), ink: ink.isEmpty ? nil : parseStationery(for: ink), paper: paper.isEmpty ? nil : parseStationery(for: paper), letterType: letterType, ignore: self.ignore, noFurtherActions: self.noFurtherActions, trackingReference: trackingReference.isEmpty ? nil : trackingReference, withPhotos: eventPhotos, withCustomStationeryTypes: customStationeryTypes, in: moc)
-                        }
-                        done()
-                    }) {
+                    Button(action: save) {
                         Label(event == nil ? "Save" : "Update", systemImage: "checkmark")
                             .labelStyleIconOnlyOn26()
                     }
@@ -638,6 +340,48 @@ struct AddEventSheet: View {
             }
             .interactiveDismissDisabled(thingsHaveChanged)
         }
+    }
+
+    private struct EventDraft {
+        let type: EventType
+        let date: Date
+        let notes: String?
+        let pen: String?
+        let ink: String?
+        let paper: String?
+        let letterType: LetterType
+        let ignore: Bool
+        let noFurtherActions: Bool
+        let trackingReference: String?
+        let photos: [EventPhoto]
+        let customStationeryTypes: [CustomStationeryType]
+    }
+
+    private var draft: EventDraft {
+        EventDraft(
+            type: eventType,
+            date: date,
+            notes: notes.isEmpty ? nil : notes,
+            pen: pen.isEmpty ? nil : parseStationery(for: pen),
+            ink: ink.isEmpty ? nil : parseStationery(for: ink),
+            paper: paper.isEmpty ? nil : parseStationery(for: paper),
+            letterType: letterType,
+            ignore: ignore,
+            noFurtherActions: noFurtherActions,
+            trackingReference: trackingReference.isEmpty ? nil : trackingReference,
+            photos: eventPhotos,
+            customStationeryTypes: customStationeryTypes
+        )
+    }
+
+    private func save() {
+        let draft = self.draft
+        if let event {
+            event.update(type: draft.type, date: draft.date, notes: draft.notes, pen: draft.pen, ink: draft.ink, paper: draft.paper, letterType: draft.letterType, ignore: draft.ignore, noFurtherActions: draft.noFurtherActions, trackingReference: draft.trackingReference, withPhotos: draft.photos, withCustomStationeryTypes: draft.customStationeryTypes, in: moc)
+        } else {
+            penpal.addEvent(ofType: draft.type, date: draft.date, notes: draft.notes, pen: draft.pen, ink: draft.ink, paper: draft.paper, letterType: draft.letterType, ignore: draft.ignore, noFurtherActions: draft.noFurtherActions, trackingReference: draft.trackingReference, withPhotos: draft.photos, withCustomStationeryTypes: draft.customStationeryTypes, in: moc)
+        }
+        done()
     }
 
     func updateStationery() async {
@@ -658,13 +402,4 @@ struct AddEventSheet: View {
         self.paperSuggestions = suggestions.papers
     }
 
-}
-
-private extension AddEventSheet {
-    struct IconWidthPreferenceKey: PreferenceKey {
-        static let defaultValue: CGFloat = 0
-        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
-            value = max(value, nextValue())
-        }
-    }
 }
