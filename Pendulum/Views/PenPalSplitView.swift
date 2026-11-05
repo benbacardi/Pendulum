@@ -7,13 +7,17 @@
 
 import SwiftUI
 import Contacts
+import MapKit
 
 struct PenPalSplitView: View {
     
     // MARK: State
     @StateObject private var router = Router()
     @AppStorage(UserDefaults.Key.stopAskingAboutContacts, store: UserDefaults.shared) private var stopAskingAboutContacts: Bool = false
+    @AppStorage(UserDefaults.Key.hideMap, store: UserDefaults.shared) private var hideMap: Bool = false
     @FetchRequest(sortDescriptors: []) private var allPenPals: FetchedResults<PenPal>
+    
+    @State private var cameraPosition: MapCameraPosition = .automatic
     
     @Namespace private var transition
     
@@ -34,7 +38,16 @@ struct PenPalSplitView: View {
     var body: some View {
         SplitView {
             NavigationStack {
-                PenPalList()
+                PenPalList(cameraPosition: $cameraPosition)
+                    .task {
+                        if #available(iOS 26, *) {
+                            if !hideMap, let address = await Event.getLatestRelevantAddress(), let coord = address.location?.coordinate {
+                                DispatchQueue.main.async {
+                                    self.cameraPosition = MapCameraPosition.region(.init(center: coord, span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 10)))
+                                }
+                            }
+                        }
+                    }
                     .navigationTitle(navBarTitle)
                     .navigationBarTitleDisplayMode(navBarDisplayMode)
                     .toolbar {
@@ -46,6 +59,14 @@ struct PenPalSplitView: View {
                             }
                         }
                         .matchedTransitionSourceIfPossible(id: "settings", in: transition)
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(action: {
+                                router.presentedFullScreenCover = .map(namespace: transition, cameraPosition: $cameraPosition)
+                            }) {
+                                Label("Map", systemImage: "map")
+                            }
+                        }
+                        .matchedTransitionSourceIfPossible(id: "map", in: transition)
                         ToolbarItem(placement: .topBarTrailing) {
                             Button(action: {
                                 router.presentedSheet = .stationeryList(namespace: transition)
@@ -74,6 +95,7 @@ struct PenPalSplitView: View {
                         .matchedTransitionSourceIfPossible(id: "addPenPal", in: transition)
                     }
                     .withSheetDestinations(sheetDestination: $router.presentedSheet)
+                    .withFullScreenDestinations(fullScreenDestination: $router.presentedFullScreenCover)
             }
         } content: {
             NavigationStack {

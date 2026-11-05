@@ -22,7 +22,7 @@ struct PenPalList: View {
     @AppStorage(UserDefaults.Key.trackPostingLetters, store: UserDefaults.shared) private var trackPostingLetters: Bool = false
     @AppStorage(UserDefaults.Key.hideMap, store: UserDefaults.shared) private var hideMap: Bool = false
     
-    @State private var cameraPosition: MapCameraPosition = .automatic
+    @Binding var cameraPosition: MapCameraPosition
     
     var body: some View {
         /// Changed from a List to a scrolling LazyVStack, because List didn't properly update within the sections when the underlying Fetch Request data updated
@@ -56,15 +56,6 @@ struct PenPalList: View {
                 } else {
                     Color(.systemGroupedBackground)
                         .edgesIgnoringSafeArea(.all)
-                }
-            }
-        }
-        .task {
-            if #available(iOS 26, *) {
-                if !hideMap, let address = await Event.getLatestRelevantAddress(), let coord = address.location?.coordinate {
-                    DispatchQueue.main.async {
-                        self.cameraPosition = MapCameraPosition.region(.init(center: coord, span: MKCoordinateSpan(latitudeDelta: 1, longitudeDelta: 10)))
-                    }
                 }
             }
         }

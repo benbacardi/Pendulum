@@ -182,9 +182,7 @@ struct PenPalListSection: View {
                         Text(eventType.phrase)
                             .font(.headline)
                             .fullWidth()
-                        if eventType != .nothingToDo {
-                            eventType.sectionHeaderIcon
-                        }
+                        eventType.sectionHeaderIcon
                     }
                     .padding([.horizontal, .top])
                 }
