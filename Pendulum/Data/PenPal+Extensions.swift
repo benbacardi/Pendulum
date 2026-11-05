@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 import CoreData
 import Contacts
+import CoreLocation
 
 extension PenPal {
     
@@ -816,5 +817,17 @@ extension PenPal {
             }
         }
         return []
+    }
+}
+
+extension PenPal {
+    static func getPrimaryAddresses(from context: NSManagedObjectContext = PersistenceController.shared.container.viewContext) async -> [PenPal: CLPlacemark] {
+        var results: [PenPal: CLPlacemark] = [:]
+        for penpal in fetch(from: context) {
+            if !penpal.archived, let firstAddress = penpal.getAddresses().first, let placemark = await getLocationFromAddress(firstAddress) {
+                results[penpal] = placemark
+            }
+        }
+        return results
     }
 }

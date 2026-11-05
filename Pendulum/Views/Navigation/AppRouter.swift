@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MapKit
 
 enum Route: Hashable {
     case penPalDetail(penpal: PenPal)
@@ -41,10 +42,22 @@ enum SheetDestination: Identifiable {
     }
 }
 
+enum FullScreenDestination: Identifiable {
+    case map(namespace: Namespace.ID?, cameraPosition: Binding<MapCameraPosition>)
+    
+    var id: String {
+        switch self {
+        case .map:
+            return ".map"
+        }
+    }
+}
+
 @MainActor
 class Router: ObservableObject {
     @Published var path: [Route] = []
     @Published public var presentedSheet: SheetDestination?
+    @Published public var presentedFullScreenCover: FullScreenDestination?
     public func navigate(to route: Route) {
         replace(with: route)
     }
@@ -105,6 +118,23 @@ extension View {
                         .navigationTransition(.zoom(sourceID: "settings", in: namespace))
                 } else {
                     SettingsList()
+                }
+            }
+        }
+    }
+    func withFullScreenDestinations(fullScreenDestination: Binding<FullScreenDestination?>) -> some View {
+        fullScreenCover(item: fullScreenDestination) { destination in
+            switch destination {
+            case .map(let namespace, let cameraPosition):
+                if #available(iOS 26, *) {
+                    if let namespace {
+                        PenPalMapView(cameraPosition: cameraPosition)
+                            .navigationTransition(.zoom(sourceID: "map", in: namespace))
+                    } else {
+                        PenPalMapView(cameraPosition: cameraPosition)
+                    }
+                } else {
+                    PenPalMapView(cameraPosition: cameraPosition)
                 }
             }
         }

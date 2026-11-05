@@ -137,7 +137,7 @@ enum EventType: Int, CaseIterable, Identifiable {
         case .archived:
             return "archivebox"
         case .nothingToDo:
-            return "hand.thumbsup"
+            return "person"
         }
     }
     
@@ -182,28 +182,30 @@ enum EventType: Int, CaseIterable, Identifiable {
         }
     }
     
-    var sectionHeaderIcon: some View {
-        /// Section headers on the Pen Pal list view
-        let image: Image
+    var sectionHeaderIconName: String {
         switch self {
         case .noEvent:
-            image = Image(systemName: "star.fill")
+            return "star.fill"
         case .written:
-            image = Image(systemName: "envelope.fill")
+            return "envelope.fill"
         case .sent:
-            image = Image(systemName: "paperplane.fill")
+            return "paperplane.fill"
         case .inbound:
-            image = Image(systemName: "airplane.departure")
+            return "airplane.departure"
         case .received:
-            image = Image(systemName: "pencil")
+            return "pencil"
         case .theyReceived:
-            image = Image(systemName: "envelope.fill")
+            return "envelope.fill"
         case .archived:
-            image = Image(systemName: "archivebox.fill")
+            return "archivebox.fill"
         case .nothingToDo:
-            image = Image(systemName: "hand.thumbsup.fill")
+            return "person.fill"
         }
-        return image
+    }
+    
+    var sectionHeaderIcon: some View {
+        /// Section headers on the Pen Pal list view
+        Image(systemName: sectionHeaderIconName)
     }
     
     var datePrefix: String {
